@@ -84,3 +84,55 @@ a {
   margin: 8px 0 0;
   color: #4b5563;
 }
+
+.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.mirror-root[data-path="/our-leadership"] #comp-iq9l9vuc h2 {
+  color: #233954;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.mirror-root[data-path="/our-leadership"] #comp-ipzdtm45 p {
+  color: #334155;
+  line-height: 1.7;
+}
+
+.mirror-root[data-path="/our-leadership"] #comp-ipzdtm45 a {
+  color: #1d4f8f;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w h5 {
+  color: #1f3550;
+  letter-spacing: 0.01em;
+}
+
+.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w .wixui-rich-text p {
+  color: #334155;
+  text-wrap: pretty;
+}
+
+.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w .wixui-image img {
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w .wixui-image:hover img {
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 900px) {
+  .mirror-root[data-path="/our-leadership"] #comp-iq9l9vuc h2 {
+    letter-spacing: 0.04em;
+  }
+
+  .mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w .wixui-image img {
+    border-radius: 10px;
+  }
+}
