@@ -239,8 +239,21 @@ function sanitizeUrl(value: string) {
     return SAFE_DATA_IMAGE_PATTERN.test(raw) ? raw : "";
   }
 
+  if (normalized.startsWith("http://")) {
+    try {
+      const parsed = new URL(raw);
+      if (parsed.hostname === "localhost" || parsed.hostname.endsWith(".local")) {
+        return raw;
+      }
+
+      parsed.protocol = "https:";
+      return parsed.toString();
+    } catch {
+      return raw.replace(/^http:\/\//i, "https://");
+    }
+  }
+
   if (
-    normalized.startsWith("http://") ||
     normalized.startsWith("https://") ||
     normalized.startsWith("mailto:") ||
     normalized.startsWith("tel:") ||

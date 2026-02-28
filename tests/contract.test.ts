@@ -98,3 +98,19 @@ test("html sanitization: inline handlers and javascript URLs are removed", () =>
   assert.equal(cleanHtml.includes("javascript:"), false);
   assert.equal(cleanHtml.includes("<script"), false);
 });
+
+test("html sanitization: absolute http URLs are upgraded to https", () => {
+  const dirtyHtml = `
+    <div>
+      <img src="http://static.parastorage.com/fonts/v2/sample.woff2" />
+      <a href="http://example.com/path?q=1">external</a>
+      <img src="http://localhost:3000/dev-only.png" />
+    </div>
+  `;
+
+  const cleanHtml = sanitizeMirrorHtml(dirtyHtml);
+
+  assert.equal(cleanHtml.includes('src="https://static.parastorage.com/fonts/v2/sample.woff2"'), true);
+  assert.equal(cleanHtml.includes('href="https://example.com/path?q=1"'), true);
+  assert.equal(cleanHtml.includes('src="http://localhost:3000/dev-only.png"'), true);
+});
