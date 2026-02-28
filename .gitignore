@@ -46,6 +46,9 @@ next-env.d.ts
 .playwright-cli/
 output/
 
+# Mirror intermediates (keep structured manifests/docs, ignore heavy raw snapshots)
+mirror-data/raw/
+
 # Local extracted asset dumps (keep out of git; use Blob/object storage)
 rebuild-assets/raw/
 rebuild-assets/raw2/
@@ -71,3 +74,6 @@ rebuild-assets/flat/
 *.psd
 *.ai
 *.sketch
+
+# Large generated aggregate (keep local, do not commit)
+mirror-data/content/all-documents.json

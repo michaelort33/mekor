@@ -1,60 +1,60 @@
-# Mekor Starter
+# Mekor Mirror
 
-Minimal Next.js starter for the Mekor website.
+Deterministic Next.js rebuild of [mekorhabracha.org](https://www.mekorhabracha.org) with route/status parity, extracted content manifests, and Blob-backed public assets.
 
 ## Stack
 
-- Next.js (App Router) + React + TypeScript
-- Tailwind CSS (simple styling)
-- MySQL + Drizzle ORM
-- One API route: `/api/guest`
-- One page: `/guest`
-- Cookie token auth only (`guest_token`)
-- zod validation for payloads
+- Next.js 16 App Router + TypeScript
+- Mirror data pipeline with Playwright + tsx scripts
+- Vercel Blob for public asset storage
+- MySQL + Drizzle for form submissions
+- Resend for form notification emails
 
-## Setup
+## Local Setup
 
-1. Copy env values:
+1. Copy environment values:
 
 ```bash
 cp .env.example .env.local
 ```
 
-2. Update `.env.local`:
+2. Fill required values in `.env.local`:
 
-- `DATABASE_URL` for your MySQL database
-- `GUEST_API_TOKEN` for API access
+- `BLOB_READ_WRITE_TOKEN`
+- `DATABASE_URL`
+- `RESEND_API_KEY`
+- `FORM_NOTIFY_EMAIL_FROM`
+- `FORM_NOTIFY_EMAIL_TO`
 
-3. Push schema to database:
+3. Generate/apply DB schema:
 
 ```bash
+npm run db:generate
 npm run db:push
 ```
 
-4. Run app:
+4. Run the app:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and go to `/guest`.
+## Mirror Data Pipeline
 
-## API Contract
+Run the full extraction/validation pipeline:
 
-`/api/guest`
+```bash
+npm run mirror:all
+```
 
-- `GET`: returns guest list
-- `POST`: creates guest with `{ name, email }`
+Individual steps are available via:
 
-Both require a cookie:
+- `npm run mirror:discover`
+- `npm run mirror:snapshot`
+- `npm run mirror:extract-assets`
+- `npm run mirror:build-content`
+- `npm run mirror:build-search`
+- `npm run mirror:verify`
+- `npm run mirror:blob-sync`
 
-- cookie name: `guest_token`
-- value must equal `GUEST_API_TOKEN`
-
-The `/guest` page includes a token input that writes this cookie in-browser.
-
-## Notes
-
-- This is intentionally bare-bones.
-- No full auth, no third-party integrations, no extra routes.
-- Build from this baseline as Mekor product requirements grow.
+Generated structured outputs live under `mirror-data/` (`mirror-data/raw/` stays ignored).

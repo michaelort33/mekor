@@ -1,0 +1,12 @@
+[
+  {
+    "from": "/post/Cinnaholic",
+    "to": "/post/cinnaholic",
+    "reason": "case-or-encoding-variant"
+  },
+  {
+    "from": "/post/HipCityVeg",
+    "to": "/post/hipcityveg",
+    "reason": "case-or-encoding-variant"
+  }
+]

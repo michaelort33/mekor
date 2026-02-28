@@ -1,0 +1,710 @@
+[
+  {
+    "path": "/",
+    "sourceUrl": "https://www.mekorhabracha.org/"
+  },
+  {
+    "path": "/about-5",
+    "sourceUrl": "https://www.mekorhabracha.org/about-5"
+  },
+  {
+    "path": "/about-us",
+    "sourceUrl": "https://www.mekorhabracha.org/about-us"
+  },
+  {
+    "path": "/auxiliary-membership",
+    "sourceUrl": "https://www.mekorhabracha.org/auxiliary-membership"
+  },
+  {
+    "path": "/center-city",
+    "sourceUrl": "https://www.mekorhabracha.org/center-city"
+  },
+  {
+    "path": "/center-city-beit-midrash",
+    "sourceUrl": "https://www.mekorhabracha.org/center-city-beit-midrash"
+  },
+  {
+    "path": "/center-city-south-philly-er",
+    "sourceUrl": "https://www.mekorhabracha.org/center-city-south-philly-er"
+  },
+  {
+    "path": "/centercity-southphillyeruvupdate-old",
+    "sourceUrl": "https://www.mekorhabracha.org/centercity-southphillyeruvupdate-old"
+  },
+  {
+    "path": "/cherry-hill",
+    "sourceUrl": "https://www.mekorhabracha.org/cherry-hill"
+  },
+  {
+    "path": "/contact-us",
+    "sourceUrl": "https://www.mekorhabracha.org/contact-us"
+  },
+  {
+    "path": "/copy-of-center-city-beit-midrash",
+    "sourceUrl": "https://www.mekorhabracha.org/copy-of-center-city-beit-midrash"
+  },
+  {
+    "path": "/copy-of-pesach-at-mekor",
+    "sourceUrl": "https://www.mekorhabracha.org/copy-of-pesach-at-mekor"
+  },
+  {
+    "path": "/davening",
+    "sourceUrl": "https://www.mekorhabracha.org/davening"
+  },
+  {
+    "path": "/donation-thank-you-page",
+    "sourceUrl": "https://www.mekorhabracha.org/donation-thank-you-page"
+  },
+  {
+    "path": "/donations",
+    "sourceUrl": "https://www.mekorhabracha.org/donations"
+  },
+  {
+    "path": "/events",
+    "sourceUrl": "https://www.mekorhabracha.org/events"
+  },
+  {
+    "path": "/events-1/mekor-pesach-seders",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/mekor-pesach-seders"
+  },
+  {
+    "path": "/events-1/mekor-shabbat-with-the-sachers",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/mekor-shabbat-with-the-sachers"
+  },
+  {
+    "path": "/events-1/mekor-shabbat-with-the-sachers-1",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/mekor-shabbat-with-the-sachers-1"
+  },
+  {
+    "path": "/events-1/mekor-shabbat-with-the-sachers-2",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/mekor-shabbat-with-the-sachers-2"
+  },
+  {
+    "path": "/events-1/mekors-tot-shabbat",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/mekors-tot-shabbat"
+  },
+  {
+    "path": "/events-1/pesach-at-mekor",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/pesach-at-mekor"
+  },
+  {
+    "path": "/events-1/purim-at-mekor",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/purim-at-mekor"
+  },
+  {
+    "path": "/events-1/scholar-in-residence-shabbat-with-rabbi-aaron-goldscheider",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/scholar-in-residence-shabbat-with-rabbi-aaron-goldscheider"
+  },
+  {
+    "path": "/events-1/shabbat-dinner-and-conversation-with-moshe-shamah",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/shabbat-dinner-and-conversation-with-moshe-shamah"
+  },
+  {
+    "path": "/events-1/shabbat-shuva-dinner-kumzitz",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/shabbat-shuva-dinner-kumzitz"
+  },
+  {
+    "path": "/events-1/special-discussion-with-mark-trencher-of-nishma-research",
+    "sourceUrl": "https://www.mekorhabracha.org/events-1/special-discussion-with-mark-trencher-of-nishma-research"
+  },
+  {
+    "path": "/events-page",
+    "sourceUrl": "https://www.mekorhabracha.org/events-page"
+  },
+  {
+    "path": "/from-the-rabbi-s-desk",
+    "sourceUrl": "https://www.mekorhabracha.org/from-the-rabbi-s-desk"
+  },
+  {
+    "path": "/general-5",
+    "sourceUrl": "https://www.mekorhabracha.org/general-5"
+  },
+  {
+    "path": "/in-the-news",
+    "sourceUrl": "https://www.mekorhabracha.org/in-the-news"
+  },
+  {
+    "path": "/israel",
+    "sourceUrl": "https://www.mekorhabracha.org/israel"
+  },
+  {
+    "path": "/kiddush",
+    "sourceUrl": "https://www.mekorhabracha.org/kiddush"
+  },
+  {
+    "path": "/kosher-map",
+    "sourceUrl": "https://www.mekorhabracha.org/kosher-map"
+  },
+  {
+    "path": "/kosher-posts",
+    "sourceUrl": "https://www.mekorhabracha.org/kosher-posts"
+  },
+  {
+    "path": "/kosher-posts/categories/center-city",
+    "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/center-city"
+  },
+  {
+    "path": "/kosher-posts/categories/cherry-hill",
+    "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill"
+  },
+  {
+    "path": "/kosher-posts/categories/main-line-manyunk",
+    "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk"
+  },
+  {
+    "path": "/kosher-posts/categories/old-york-road-northeast",
+    "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast"
+  },
+  {
+    "path": "/letterfromisrael",
+    "sourceUrl": "https://www.mekorhabracha.org/letterfromisrael"
+  },
+  {
+    "path": "/main-line-manyunk",
+    "sourceUrl": "https://www.mekorhabracha.org/main-line-manyunk"
+  },
+  {
+    "path": "/mekor-bulletin-board",
+    "sourceUrl": "https://www.mekorhabracha.org/mekor-bulletin-board"
+  },
+  {
+    "path": "/mekorcouples",
+    "sourceUrl": "https://www.mekorhabracha.org/mekorcouples"
+  },
+  {
+    "path": "/membership",
+    "sourceUrl": "https://www.mekorhabracha.org/membership"
+  },
+  {
+    "path": "/membership-old",
+    "sourceUrl": "https://www.mekorhabracha.org/membership-old"
+  },
+  {
+    "path": "/news/a-night-of-megillah-and-music-at-mekor-habracha",
+    "sourceUrl": "https://www.mekorhabracha.org/news/a-night-of-megillah-and-music-at-mekor-habracha"
+  },
+  {
+    "path": "/news/activists-prepare-for-climate-march",
+    "sourceUrl": "https://www.mekorhabracha.org/news/activists-prepare-for-climate-march"
+  },
+  {
+    "path": "/news/american-rabbis-brush-off-being-named-on-chief-rabbinate%E2%80%99s-%E2%80%98blacklist%E2%80%99",
+    "sourceUrl": "https://www.mekorhabracha.org/news/american-rabbis-brush-off-being-named-on-chief-rabbinate%E2%80%99s-%E2%80%98blacklist%E2%80%99"
+  },
+  {
+    "path": "/news/annual-jewish-heritage-night-fills-phillies-game",
+    "sourceUrl": "https://www.mekorhabracha.org/news/annual-jewish-heritage-night-fills-phillies-game"
+  },
+  {
+    "path": "/news/back-to-jewish-day-school",
+    "sourceUrl": "https://www.mekorhabracha.org/news/back-to-jewish-day-school"
+  },
+  {
+    "path": "/news/calling-attention-to-plight-of-chained-women",
+    "sourceUrl": "https://www.mekorhabracha.org/news/calling-attention-to-plight-of-chained-women"
+  },
+  {
+    "path": "/news/creating-modern-orthodox-community",
+    "sourceUrl": "https://www.mekorhabracha.org/news/creating-modern-orthodox-community"
+  },
+  {
+    "path": "/news/crockpot-crapshoot",
+    "sourceUrl": "https://www.mekorhabracha.org/news/crockpot-crapshoot"
+  },
+  {
+    "path": "/news/etz-chaim-and-minyan-outgrowth-decide-to-go-their-separate-ways",
+    "sourceUrl": "https://www.mekorhabracha.org/news/etz-chaim-and-minyan-outgrowth-decide-to-go-their-separate-ways"
+  },
+  {
+    "path": "/news/federation-chosen-for-prestigious-leadership-program",
+    "sourceUrl": "https://www.mekorhabracha.org/news/federation-chosen-for-prestigious-leadership-program"
+  },
+  {
+    "path": "/news/first-ever-hava-nagrilla-barbecue-contest-attracts-thousands",
+    "sourceUrl": "https://www.mekorhabracha.org/news/first-ever-hava-nagrilla-barbecue-contest-attracts-thousands"
+  },
+  {
+    "path": "/news/focusing-on-kids-makes-sense-but-what-about-singles",
+    "sourceUrl": "https://www.mekorhabracha.org/news/focusing-on-kids-makes-sense-but-what-about-singles"
+  },
+  {
+    "path": "/news/graduate-level-matchmaking",
+    "sourceUrl": "https://www.mekorhabracha.org/news/graduate-level-matchmaking"
+  },
+  {
+    "path": "/news/its-all-about-location-when-it-comes-to-eruvin",
+    "sourceUrl": "https://www.mekorhabracha.org/news/its-all-about-location-when-it-comes-to-eruvin"
+  },
+  {
+    "path": "/news/jewish-weddings-are-blending-connubiality-with-individuality",
+    "sourceUrl": "https://www.mekorhabracha.org/news/jewish-weddings-are-blending-connubiality-with-individuality"
+  },
+  {
+    "path": "/news/keeping-jewish-heritage-alive-in-center-city",
+    "sourceUrl": "https://www.mekorhabracha.org/news/keeping-jewish-heritage-alive-in-center-city"
+  },
+  {
+    "path": "/news/leavens-fate-what-to-do-with-your-chametz",
+    "sourceUrl": "https://www.mekorhabracha.org/news/leavens-fate-what-to-do-with-your-chametz"
+  },
+  {
+    "path": "/news/local-rabbis-in-it-for-the-long-run",
+    "sourceUrl": "https://www.mekorhabracha.org/news/local-rabbis-in-it-for-the-long-run"
+  },
+  {
+    "path": "/news/locals-react-to-us-abstention-from-un-vote",
+    "sourceUrl": "https://www.mekorhabracha.org/news/locals-react-to-us-abstention-from-un-vote"
+  },
+  {
+    "path": "/news/making-carrying-shabbat-friendly",
+    "sourceUrl": "https://www.mekorhabracha.org/news/making-carrying-shabbat-friendly"
+  },
+  {
+    "path": "/news/marriage-equality-supporters-applaud-state-bill",
+    "sourceUrl": "https://www.mekorhabracha.org/news/marriage-equality-supporters-applaud-state-bill"
+  },
+  {
+    "path": "/news/mekor-habracha-scholar-in-residence-shabbaton-with-rabbi-saul-berman",
+    "sourceUrl": "https://www.mekorhabracha.org/news/mekor-habracha-scholar-in-residence-shabbaton-with-rabbi-saul-berman"
+  },
+  {
+    "path": "/news/moshav-band-and-moments-of-wrong-ready-to-rock-union-transfer",
+    "sourceUrl": "https://www.mekorhabracha.org/news/moshav-band-and-moments-of-wrong-ready-to-rock-union-transfer"
+  },
+  {
+    "path": "/news/moshav-band-presents-mekor-habracha-benefit-concert",
+    "sourceUrl": "https://www.mekorhabracha.org/news/moshav-band-presents-mekor-habracha-benefit-concert"
+  },
+  {
+    "path": "/news/music-bonfire-light-up-kensington-for-lag-bomer",
+    "sourceUrl": "https://www.mekorhabracha.org/news/music-bonfire-light-up-kensington-for-lag-bomer"
+  },
+  {
+    "path": "/news/philadelphia-jews-celebrate-lag-bomer-with-bonfire-and-music-fest",
+    "sourceUrl": "https://www.mekorhabracha.org/news/philadelphia-jews-celebrate-lag-bomer-with-bonfire-and-music-fest"
+  },
+  {
+    "path": "/news/purim-stressing-gods-role-in-evil-of-world",
+    "sourceUrl": "https://www.mekorhabracha.org/news/purim-stressing-gods-role-in-evil-of-world"
+  },
+  {
+    "path": "/news/rabbiscanrun",
+    "sourceUrl": "https://www.mekorhabracha.org/news/rabbiscanrun"
+  },
+  {
+    "path": "/news/ring-in-5773",
+    "sourceUrl": "https://www.mekorhabracha.org/news/ring-in-5773"
+  },
+  {
+    "path": "/news/speaking-their-minds-rabbis-address-israel-at-the-high-holidays",
+    "sourceUrl": "https://www.mekorhabracha.org/news/speaking-their-minds-rabbis-address-israel-at-the-high-holidays"
+  },
+  {
+    "path": "/news/understanding-yom-kippurs-focus-on-atonement-and-forgiveness",
+    "sourceUrl": "https://www.mekorhabracha.org/news/understanding-yom-kippurs-focus-on-atonement-and-forgiveness"
+  },
+  {
+    "path": "/news/us-rabbis-sign-letter-opposing-nuclear-agreement",
+    "sourceUrl": "https://www.mekorhabracha.org/news/us-rabbis-sign-letter-opposing-nuclear-agreement"
+  },
+  {
+    "path": "/news/waxman-and-snyder-to-challenge-sims-for-the-182nd-district",
+    "sourceUrl": "https://www.mekorhabracha.org/news/waxman-and-snyder-to-challenge-sims-for-the-182nd-district"
+  },
+  {
+    "path": "/news/what-message-are-we-sending-to-mourners",
+    "sourceUrl": "https://www.mekorhabracha.org/news/what-message-are-we-sending-to-mourners"
+  },
+  {
+    "path": "/news/why-i-cook-for-strangers",
+    "sourceUrl": "https://www.mekorhabracha.org/news/why-i-cook-for-strangers"
+  },
+  {
+    "path": "/old-kosher-restaurants",
+    "sourceUrl": "https://www.mekorhabracha.org/old-kosher-restaurants"
+  },
+  {
+    "path": "/old-yorkroad-northeast",
+    "sourceUrl": "https://www.mekorhabracha.org/old-yorkroad-northeast"
+  },
+  {
+    "path": "/our-communities",
+    "sourceUrl": "https://www.mekorhabracha.org/our-communities"
+  },
+  {
+    "path": "/our-leadership",
+    "sourceUrl": "https://www.mekorhabracha.org/our-leadership"
+  },
+  {
+    "path": "/our-rabbi",
+    "sourceUrl": "https://www.mekorhabracha.org/our-rabbi"
+  },
+  {
+    "path": "/philly-jewish-community",
+    "sourceUrl": "https://www.mekorhabracha.org/philly-jewish-community"
+  },
+  {
+    "path": "/post/_luhv",
+    "sourceUrl": "https://www.mekorhabracha.org/post/_luhv"
+  },
+  {
+    "path": "/post/_luhv-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/_luhv-1"
+  },
+  {
+    "path": "/post/_luhv-2",
+    "sourceUrl": "https://www.mekorhabracha.org/post/_luhv-2"
+  },
+  {
+    "path": "/post/bar-bombon",
+    "sourceUrl": "https://www.mekorhabracha.org/post/bar-bombon"
+  },
+  {
+    "path": "/post/barbara-and-harvey-brodsky-enrichment-center-of-jewish-family-and-children-services",
+    "sourceUrl": "https://www.mekorhabracha.org/post/barbara-and-harvey-brodsky-enrichment-center-of-jewish-family-and-children-services"
+  },
+  {
+    "path": "/post/ben-jerry-s-ice-cream",
+    "sourceUrl": "https://www.mekorhabracha.org/post/ben-jerry-s-ice-cream"
+  },
+  {
+    "path": "/post/best-cake-kosher-bakery",
+    "sourceUrl": "https://www.mekorhabracha.org/post/best-cake-kosher-bakery"
+  },
+  {
+    "path": "/post/c-r-kitchen",
+    "sourceUrl": "https://www.mekorhabracha.org/post/c-r-kitchen"
+  },
+  {
+    "path": "/post/c-r-kitchen-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/c-r-kitchen-1"
+  },
+  {
+    "path": "/post/cafe-613-at-temple-hillel",
+    "sourceUrl": "https://www.mekorhabracha.org/post/cafe-613-at-temple-hillel"
+  },
+  {
+    "path": "/post/charlie-was-a-sinner",
+    "sourceUrl": "https://www.mekorhabracha.org/post/charlie-was-a-sinner"
+  },
+  {
+    "path": "/post/cinnaholic",
+    "sourceUrl": "https://www.mekorhabracha.org/post/cinnaholic"
+  },
+  {
+    "path": "/post/copy-of-ben-jerry-s-ice-cream",
+    "sourceUrl": "https://www.mekorhabracha.org/post/copy-of-ben-jerry-s-ice-cream"
+  },
+  {
+    "path": "/post/diane-s-patisserie",
+    "sourceUrl": "https://www.mekorhabracha.org/post/diane-s-patisserie"
+  },
+  {
+    "path": "/post/dining-commons-at-penn-hillel",
+    "sourceUrl": "https://www.mekorhabracha.org/post/dining-commons-at-penn-hillel"
+  },
+  {
+    "path": "/post/dottie-s-donuts",
+    "sourceUrl": "https://www.mekorhabracha.org/post/dottie-s-donuts"
+  },
+  {
+    "path": "/post/dottie-s-donuts-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/dottie-s-donuts-1"
+  },
+  {
+    "path": "/post/dottie-s-donuts-2",
+    "sourceUrl": "https://www.mekorhabracha.org/post/dottie-s-donuts-2"
+  },
+  {
+    "path": "/post/dottie-s-donuts-3",
+    "sourceUrl": "https://www.mekorhabracha.org/post/dottie-s-donuts-3"
+  },
+  {
+    "path": "/post/espresso-cafe-sushi-bar",
+    "sourceUrl": "https://www.mekorhabracha.org/post/espresso-cafe-sushi-bar"
+  },
+  {
+    "path": "/post/fitz-on-4th",
+    "sourceUrl": "https://www.mekorhabracha.org/post/fitz-on-4th"
+  },
+  {
+    "path": "/post/giant",
+    "sourceUrl": "https://www.mekorhabracha.org/post/giant"
+  },
+  {
+    "path": "/post/giant-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/giant-1"
+  },
+  {
+    "path": "/post/goldie",
+    "sourceUrl": "https://www.mekorhabracha.org/post/goldie"
+  },
+  {
+    "path": "/post/goldie-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/goldie-1"
+  },
+  {
+    "path": "/post/goldie-2",
+    "sourceUrl": "https://www.mekorhabracha.org/post/goldie-2"
+  },
+  {
+    "path": "/post/goldie-3",
+    "sourceUrl": "https://www.mekorhabracha.org/post/goldie-3"
+  },
+  {
+    "path": "/post/goldie-4",
+    "sourceUrl": "https://www.mekorhabracha.org/post/goldie-4"
+  },
+  {
+    "path": "/post/hipcityveg",
+    "sourceUrl": "https://www.mekorhabracha.org/post/hipcityveg"
+  },
+  {
+    "path": "/post/hipcityveg-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/hipcityveg-1"
+  },
+  {
+    "path": "/post/house-of-kosher",
+    "sourceUrl": "https://www.mekorhabracha.org/post/house-of-kosher"
+  },
+  {
+    "path": "/post/insomnia-cookies-bala-cynwyd",
+    "sourceUrl": "https://www.mekorhabracha.org/post/insomnia-cookies-bala-cynwyd"
+  },
+  {
+    "path": "/post/insomnia-cookies-upenn-hup",
+    "sourceUrl": "https://www.mekorhabracha.org/post/insomnia-cookies-upenn-hup"
+  },
+  {
+    "path": "/post/insomnia-cookies-upenn-hup-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/insomnia-cookies-upenn-hup-1"
+  },
+  {
+    "path": "/post/joy-cafe",
+    "sourceUrl": "https://www.mekorhabracha.org/post/joy-cafe"
+  },
+  {
+    "path": "/post/judah-mediterranean-grill",
+    "sourceUrl": "https://www.mekorhabracha.org/post/judah-mediterranean-grill"
+  },
+  {
+    "path": "/post/kosher-corner-at-temple-university",
+    "sourceUrl": "https://www.mekorhabracha.org/post/kosher-corner-at-temple-university"
+  },
+  {
+    "path": "/post/kosher-experience",
+    "sourceUrl": "https://www.mekorhabracha.org/post/kosher-experience"
+  },
+  {
+    "path": "/post/kosher-experience-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/kosher-experience-1"
+  },
+  {
+    "path": "/post/la-chic-n-sweet",
+    "sourceUrl": "https://www.mekorhabracha.org/post/la-chic-n-sweet"
+  },
+  {
+    "path": "/post/luhv-factory-vegan-bistro",
+    "sourceUrl": "https://www.mekorhabracha.org/post/luhv-factory-vegan-bistro"
+  },
+  {
+    "path": "/post/magical-sweet-shop",
+    "sourceUrl": "https://www.mekorhabracha.org/post/magical-sweet-shop"
+  },
+  {
+    "path": "/post/mama-s-vegetarian-falafel",
+    "sourceUrl": "https://www.mekorhabracha.org/post/mama-s-vegetarian-falafel"
+  },
+  {
+    "path": "/post/mia-s-meals",
+    "sourceUrl": "https://www.mekorhabracha.org/post/mia-s-meals"
+  },
+  {
+    "path": "/post/mike-s-chicken",
+    "sourceUrl": "https://www.mekorhabracha.org/post/mike-s-chicken"
+  },
+  {
+    "path": "/post/miss-rachel-s-pantry",
+    "sourceUrl": "https://www.mekorhabracha.org/post/miss-rachel-s-pantry"
+  },
+  {
+    "path": "/post/moore-bakery-i-want-moore",
+    "sourceUrl": "https://www.mekorhabracha.org/post/moore-bakery-i-want-moore"
+  },
+  {
+    "path": "/post/nana-s-kitchen",
+    "sourceUrl": "https://www.mekorhabracha.org/post/nana-s-kitchen"
+  },
+  {
+    "path": "/post/new-york-bagel",
+    "sourceUrl": "https://www.mekorhabracha.org/post/new-york-bagel"
+  },
+  {
+    "path": "/post/new-york-bagel-bakery",
+    "sourceUrl": "https://www.mekorhabracha.org/post/new-york-bagel-bakery"
+  },
+  {
+    "path": "/post/nothing-bundt-cakes-cherry-hill",
+    "sourceUrl": "https://www.mekorhabracha.org/post/nothing-bundt-cakes-cherry-hill"
+  },
+  {
+    "path": "/post/nothing-bundt-cakes-marlton",
+    "sourceUrl": "https://www.mekorhabracha.org/post/nothing-bundt-cakes-marlton"
+  },
+  {
+    "path": "/post/nothing-bundt-cakes-springfield",
+    "sourceUrl": "https://www.mekorhabracha.org/post/nothing-bundt-cakes-springfield"
+  },
+  {
+    "path": "/post/nothing-bundt-cakes-wynnewood",
+    "sourceUrl": "https://www.mekorhabracha.org/post/nothing-bundt-cakes-wynnewood"
+  },
+  {
+    "path": "/post/picture-barbara-and-harvey-brodsky-enrichment-center",
+    "sourceUrl": "https://www.mekorhabracha.org/post/picture-barbara-and-harvey-brodsky-enrichment-center"
+  },
+  {
+    "path": "/post/plnt-burger",
+    "sourceUrl": "https://www.mekorhabracha.org/post/plnt-burger"
+  },
+  {
+    "path": "/post/plnt-burger-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/plnt-burger-1"
+  },
+  {
+    "path": "/post/primo-water-ice",
+    "sourceUrl": "https://www.mekorhabracha.org/post/primo-water-ice"
+  },
+  {
+    "path": "/post/ps-co",
+    "sourceUrl": "https://www.mekorhabracha.org/post/ps-co"
+  },
+  {
+    "path": "/post/rita-s-south-street-west",
+    "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-south-street-west"
+  },
+  {
+    "path": "/post/rita-s-water-ice",
+    "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-water-ice"
+  },
+  {
+    "path": "/post/rita-s-water-ice-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-water-ice-1"
+  },
+  {
+    "path": "/post/rita-s-water-ice-2",
+    "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-water-ice-2"
+  },
+  {
+    "path": "/post/rita-s-water-ice-3",
+    "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-water-ice-3"
+  },
+  {
+    "path": "/post/rollings-bakery",
+    "sourceUrl": "https://www.mekorhabracha.org/post/rollings-bakery"
+  },
+  {
+    "path": "/post/say-she-ate-caf%C3%A9",
+    "sourceUrl": "https://www.mekorhabracha.org/post/say-she-ate-caf%C3%A9"
+  },
+  {
+    "path": "/post/shalom-pizza",
+    "sourceUrl": "https://www.mekorhabracha.org/post/shalom-pizza"
+  },
+  {
+    "path": "/post/shevy-s-babka-paradise",
+    "sourceUrl": "https://www.mekorhabracha.org/post/shevy-s-babka-paradise"
+  },
+  {
+    "path": "/post/shevy-s-babka-paradise-1",
+    "sourceUrl": "https://www.mekorhabracha.org/post/shevy-s-babka-paradise-1"
+  },
+  {
+    "path": "/post/shtetl-kosher-restaurant",
+    "sourceUrl": "https://www.mekorhabracha.org/post/shtetl-kosher-restaurant"
+  },
+  {
+    "path": "/post/slices-and-rolls-pizza-shop",
+    "sourceUrl": "https://www.mekorhabracha.org/post/slices-and-rolls-pizza-shop"
+  },
+  {
+    "path": "/post/star-of-david-kosher-grill",
+    "sourceUrl": "https://www.mekorhabracha.org/post/star-of-david-kosher-grill"
+  },
+  {
+    "path": "/post/stephen-s-cafe",
+    "sourceUrl": "https://www.mekorhabracha.org/post/stephen-s-cafe"
+  },
+  {
+    "path": "/post/sweet-box-bakery",
+    "sourceUrl": "https://www.mekorhabracha.org/post/sweet-box-bakery"
+  },
+  {
+    "path": "/post/sweet-trading-company",
+    "sourceUrl": "https://www.mekorhabracha.org/post/sweet-trading-company"
+  },
+  {
+    "path": "/post/tasty-twisters-soft-pretzel-factory",
+    "sourceUrl": "https://www.mekorhabracha.org/post/tasty-twisters-soft-pretzel-factory"
+  },
+  {
+    "path": "/post/that-sushi-spot-lkwd-nj-lakewood",
+    "sourceUrl": "https://www.mekorhabracha.org/post/that-sushi-spot-lkwd-nj-lakewood"
+  },
+  {
+    "path": "/post/the-bagel-spot",
+    "sourceUrl": "https://www.mekorhabracha.org/post/the-bagel-spot"
+  },
+  {
+    "path": "/post/the-brazilian-bbq",
+    "sourceUrl": "https://www.mekorhabracha.org/post/the-brazilian-bbq"
+  },
+  {
+    "path": "/post/the-brazillan-bbq",
+    "sourceUrl": "https://www.mekorhabracha.org/post/the-brazillan-bbq"
+  },
+  {
+    "path": "/post/the-chilly-banana",
+    "sourceUrl": "https://www.mekorhabracha.org/post/the-chilly-banana"
+  },
+  {
+    "path": "/post/the-kosher-grill",
+    "sourceUrl": "https://www.mekorhabracha.org/post/the-kosher-grill"
+  },
+  {
+    "path": "/post/unit-su-vege",
+    "sourceUrl": "https://www.mekorhabracha.org/post/unit-su-vege"
+  },
+  {
+    "path": "/post/whole-foods-fresh-fish-counter",
+    "sourceUrl": "https://www.mekorhabracha.org/post/whole-foods-fresh-fish-counter"
+  },
+  {
+    "path": "/post/z-candy-bar",
+    "sourceUrl": "https://www.mekorhabracha.org/post/z-candy-bar"
+  },
+  {
+    "path": "/post/zevi-s-bakery",
+    "sourceUrl": "https://www.mekorhabracha.org/post/zevi-s-bakery"
+  },
+  {
+    "path": "/s-projects-side-by-side",
+    "sourceUrl": "https://www.mekorhabracha.org/s-projects-side-by-side"
+  },
+  {
+    "path": "/team-4",
+    "sourceUrl": "https://www.mekorhabracha.org/team-4"
+  },
+  {
+    "path": "/testimonials",
+    "sourceUrl": "https://www.mekorhabracha.org/testimonials"
+  },
+  {
+    "path": "/thank-you",
+    "sourceUrl": "https://www.mekorhabracha.org/thank-you"
+  },
+  {
+    "path": "/visit-us",
+    "sourceUrl": "https://www.mekorhabracha.org/visit-us"
+  }
+]

@@ -7,16 +7,27 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "mirror:discover": "tsx scripts/mirror/01_discover.ts",
+    "mirror:snapshot": "tsx scripts/mirror/02_snapshot_pages.ts",
+    "mirror:extract-assets": "tsx scripts/mirror/03_extract_assets.ts",
+    "mirror:build-content": "tsx scripts/mirror/04_build_content.ts",
+    "mirror:build-search": "tsx scripts/mirror/05_build_search_index.ts",
+    "mirror:verify": "tsx scripts/mirror/06_verify_contract.ts",
+    "mirror:blob-sync": "tsx scripts/mirror/07_sync_blob_assets.ts",
+    "mirror:all": "npm run mirror:discover && npm run mirror:snapshot && npm run mirror:extract-assets && npm run mirror:build-content && npm run mirror:build-search && npm run mirror:verify",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@vercel/blob": "^2.1.0",
+    "cheerio": "^1.1.2",
     "drizzle-orm": "^0.45.1",
     "mysql2": "^3.18.2",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.5.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -28,7 +39,9 @@
     "drizzle-kit": "^0.31.9",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "playwright": "^1.55.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
