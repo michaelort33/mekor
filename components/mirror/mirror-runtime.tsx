@@ -35,6 +35,44 @@ function isHashOnlyChange(url: URL) {
   return `${url.pathname}${url.search}` === `${current.pathname}${current.search}` && Boolean(url.hash);
 }
 
+function resolveSamePageAnchorScrollTarget(anchor: HTMLAnchorElement) {
+  const dataAnchor = anchor.getAttribute("data-anchor")?.trim();
+  if (!dataAnchor) {
+    return null;
+  }
+
+  const href = anchor.getAttribute("href")?.trim();
+  if (!href) {
+    return null;
+  }
+
+  let url: URL;
+  try {
+    url = new URL(href, window.location.href);
+  } catch {
+    return null;
+  }
+
+  const currentPath = `${window.location.pathname}${window.location.search}`;
+  const targetPath = `${url.pathname}${url.search}`;
+  if (currentPath !== targetPath || url.hash) {
+    return null;
+  }
+
+  const explicitTarget = document.getElementById(dataAnchor);
+  if (explicitTarget instanceof HTMLElement) {
+    return explicitTarget;
+  }
+
+  const currentSection = anchor.closest("section");
+  const nextSection = currentSection?.nextElementSibling;
+  if (nextSection instanceof HTMLElement) {
+    return nextSection;
+  }
+
+  return null;
+}
+
 function resolveInternalNavigationTarget(anchor: HTMLAnchorElement) {
   const rawHref = anchor.getAttribute("href")?.trim();
   if (!rawHref || rawHref.startsWith("#")) {
@@ -281,6 +319,13 @@ export function MirrorRuntime({
 
       const anchor = getAnchorFromEventTarget(event.target);
       if (!anchor || !root.contains(anchor)) {
+        return;
+      }
+
+      const samePageAnchorTarget = resolveSamePageAnchorScrollTarget(anchor);
+      if (samePageAnchorTarget) {
+        event.preventDefault();
+        samePageAnchorTarget.scrollIntoView({ behavior: "smooth", block: "start" });
         return;
       }
 
