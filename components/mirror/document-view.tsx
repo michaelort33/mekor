@@ -2,6 +2,7 @@ import type { PageDocument } from "@/lib/mirror/types";
 import { getStyleBundleById } from "@/lib/mirror/loaders";
 import { KosherRestaurantsEnhancer } from "@/components/mirror/kosher-restaurants-enhancer";
 import { InternalNavigationBridge } from "@/components/mirror/internal-navigation-bridge";
+import { PageFixes } from "@/components/mirror/page-fixes";
 
 type Props = {
   document: PageDocument;
@@ -23,6 +24,7 @@ export async function DocumentView({ document }: Props) {
       <div dangerouslySetInnerHTML={{ __html: html }} />
       <InternalNavigationBridge />
       <KosherRestaurantsEnhancer path={document.path} />
+      <PageFixes path={document.path} />
     </main>
   );
 }
