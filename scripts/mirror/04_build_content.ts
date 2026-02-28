@@ -4,6 +4,7 @@ import path from "node:path";
 import { load as loadHtml } from "cheerio";
 
 import {
+  ASSETS_DIR,
   CONTENT_DIR,
   SEO_DIR,
   SNAPSHOT_DIR,
@@ -67,6 +68,20 @@ type PageDocument = {
   capturedAt: string;
 };
 
+type BlobMapRecord = {
+  sourceUrl: string;
+  path: string;
+  blobKey: string;
+  blobUrl: string;
+  contentType: string;
+  sha1: string;
+  size: number;
+};
+
+type AssetResolver = {
+  resolveUrl: (input: string) => string;
+};
+
 function removeNoiseFromBody(html: string) {
   const $ = loadHtml(html);
 
@@ -77,57 +92,182 @@ function removeNoiseFromBody(html: string) {
   return $.root().html() ?? "";
 }
 
-function rewriteSrcset(value: string) {
-  return value
-    .split(",")
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .map((part) => {
-      const [urlPart, ...rest] = part.split(/\s+/);
-      const rewritten = toLocalMirrorPath(urlPart);
-      return [rewritten, ...rest].join(" ").trim();
-    })
-    .join(", ");
+function decodeHtmlAmpersands(value: string) {
+  return value.replace(/&amp;/g, "&");
 }
 
-function rewriteStyleUrls(value: string) {
+function getWixMediaKey(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl);
+    if (!url.hostname.endsWith("wixstatic.com")) {
+      return "";
+    }
+
+    const match = url.pathname.match(/^\/media\/([^/]+)/);
+    return match?.[1] ?? "";
+  } catch {
+    return "";
+  }
+}
+
+async function loadAssetResolver(): Promise<AssetResolver> {
+  let blobMap: BlobMapRecord[] = [];
+  try {
+    blobMap = JSON.parse(await fs.readFile(path.join(ASSETS_DIR, "blob-map.json"), "utf8")) as BlobMapRecord[];
+  } catch {
+    blobMap = [];
+  }
+
+  const bySource = new Map<string, string>();
+  const byPath = new Map<string, string>();
+  const byWixMedia = new Map<string, string>();
+
+  for (const row of blobMap) {
+    const source = decodeHtmlAmpersands((row.sourceUrl ?? "").trim());
+    const sourceLower = source.toLowerCase();
+    if (sourceLower) {
+      bySource.set(sourceLower, row.blobUrl);
+    }
+
+    const rowPath = (row.path ?? "").trim();
+    if (rowPath) {
+      byPath.set(rowPath, row.blobUrl);
+    }
+
+    const mediaKey = getWixMediaKey(source);
+    if (mediaKey && !byWixMedia.has(mediaKey)) {
+      byWixMedia.set(mediaKey, row.blobUrl);
+    }
+  }
+
+  function resolveUrl(input: string) {
+    const raw = decodeHtmlAmpersands((input ?? "").trim());
+    if (!raw) {
+      return raw;
+    }
+
+    const sourceHit = bySource.get(raw.toLowerCase());
+    if (sourceHit) {
+      return sourceHit;
+    }
+
+    try {
+      const parsed = new URL(raw);
+      const pathWithQuery = `${parsed.pathname}${parsed.search}`;
+      const pathHit = byPath.get(pathWithQuery) ?? byPath.get(parsed.pathname);
+      if (pathHit) {
+        return pathHit;
+      }
+
+      const mediaKey = getWixMediaKey(raw);
+      if (mediaKey) {
+        const mediaHit = byWixMedia.get(mediaKey);
+        if (mediaHit) {
+          return mediaHit;
+        }
+      }
+    } catch {
+      const pathHit = byPath.get(raw);
+      if (pathHit) {
+        return pathHit;
+      }
+    }
+
+    return toLocalMirrorPath(raw);
+  }
+
+  return {
+    resolveUrl,
+  };
+}
+
+function rewriteStyleUrls(value: string, resolveUrl: (input: string) => string) {
   return value.replace(/url\((['"]?)(https?:\/\/[^'")]+)\1\)/gi, (_, quote, url) => {
-    const rewritten = toLocalMirrorPath(String(url));
+    const rewritten = resolveUrl(String(url));
     return `url(${quote}${rewritten}${quote})`;
   });
 }
 
-function rewriteInternalHtml(html: string) {
-  const $ = loadHtml(html);
+function rewriteInternalHtml(html: string, resolver: AssetResolver) {
+  const $ = loadHtml(`<div id="__mirror_root">${html}</div>`);
+  const root = $("#__mirror_root");
   const hrefLikeAttrs = ["href", "src", "action", "poster", "data-src", "data-href"];
 
   for (const attr of hrefLikeAttrs) {
-    $(`[${attr}]`).each((_, element) => {
+    root.find(`[${attr}]`).each((_, element) => {
       const value = $(element).attr(attr);
       if (!value) return;
-      $(element).attr(attr, toLocalMirrorPath(value));
+      $(element).attr(attr, resolver.resolveUrl(value));
     });
   }
 
-  $("[srcset]").each((_, element) => {
+  // Keep srcset values untouched: Wix URLs contain commas in path transforms and splitting/parsing corrupts them.
+  root.find("[srcset]").each((_, element) => {
     const value = $(element).attr("srcset");
     if (!value) return;
-    $(element).attr("srcset", rewriteSrcset(value));
+    $(element).attr("srcset", value);
   });
 
-  $("[style]").each((_, element) => {
+  root.find("[style]").each((_, element) => {
     const value = $(element).attr("style");
     if (!value) return;
-    $(element).attr("style", rewriteStyleUrls(value));
+    $(element).attr("style", rewriteStyleUrls(value, resolver.resolveUrl));
   });
 
-  $("style").each((_, element) => {
+  root.find("style").each((_, element) => {
     const css = $(element).html();
     if (!css) return;
-    $(element).html(rewriteStyleUrls(css));
+    $(element).html(rewriteStyleUrls(css, resolver.resolveUrl));
   });
 
-  return $.root().html() ?? "";
+  const headerMenuTargets: Record<string, string> = {
+    "who we are": "/about-us",
+    "kosher restaurants": "/kosher-posts",
+    more: "/our-communities",
+  };
+
+  root.find('nav[aria-label="Site"] li').each((_, li) => {
+    const listItem = $(li);
+    const button = listItem.find("button").first();
+    if (button.length === 0) {
+      return;
+    }
+    const label = button.text().replace(/\s+/g, " ").trim().toLowerCase();
+    const target = headerMenuTargets[label];
+    if (!target) {
+      return;
+    }
+
+    const className = button.attr("class") ?? "";
+    const title = button.attr("aria-label") ?? button.text().trim();
+    const link = $("<a></a>")
+      .attr("href", target)
+      .attr("class", className)
+      .attr("aria-label", title)
+      .text(button.text().trim());
+
+    button.replaceWith(link);
+  });
+
+  root.find('nav[aria-label="Site"] [data-testid="linkElement"][role="button"]').each((_, element) => {
+    const node = $(element);
+    const label = node.text().replace(/\s+/g, " ").trim().toLowerCase();
+    const target = headerMenuTargets[label];
+    if (!target) {
+      return;
+    }
+
+    const className = node.attr("class") ?? "";
+    const replacement = $("<a></a>")
+      .attr("data-testid", "linkElement")
+      .attr("class", className)
+      .attr("href", target)
+      .html(node.html() ?? node.text());
+
+    node.replaceWith(replacement);
+  });
+
+  return root.html() ?? "";
 }
 
 function dedupe(values: string[]) {
@@ -156,6 +296,7 @@ async function loadSnapshots() {
 async function main() {
   await ensureMirrorDirs();
 
+  const assetResolver = await loadAssetResolver();
   const snapshots = await loadSnapshots();
   const docByPath = new Map<string, PageDocument>();
   const indexByPath = new Map<string, { path: string; type: string; file: string }>();
@@ -171,12 +312,12 @@ async function main() {
 
     const cleanedBody = removeNoiseFromBody(snapshot.bodyHtml || "");
     const styleBundle = [...(snapshot.styleLinks ?? []), ...(snapshot.styleTags ?? [])].join("\n");
-    const renderHtml = rewriteInternalHtml(`${styleBundle}\n${cleanedBody}`);
+    const renderHtml = rewriteInternalHtml(`${styleBundle}\n${cleanedBody}`, assetResolver);
 
     const text = (snapshot.text || "").replace(/\s+/g, " ").trim();
     const canonical = toLocalMirrorPath(snapshot.metadata?.canonical || pathValue);
     const ogImageRaw = snapshot.metadata?.ogImage || "";
-    const ogImage = isSourceHost(ogImageRaw) ? toLocalMirrorPath(ogImageRaw) : ogImageRaw;
+    const ogImage = ogImageRaw ? assetResolver.resolveUrl(ogImageRaw) : "";
 
     const document: PageDocument = {
       id: hashSha1(pathValue),
@@ -196,8 +337,8 @@ async function main() {
       headings: dedupe(snapshot.headings ?? []),
       text,
       textHash: snapshot.textHash || hashSha1(text),
-      links: dedupe((snapshot.links ?? []).map((value) => toLocalMirrorPath(value))),
-      assets: dedupe((snapshot.assets ?? []).map((value) => toLocalMirrorPath(value))),
+      links: dedupe((snapshot.links ?? []).map((value) => assetResolver.resolveUrl(value))),
+      assets: dedupe((snapshot.assets ?? []).map((value) => assetResolver.resolveUrl(value))),
       renderHtml,
       capturedAt: snapshot.capturedAt || new Date().toISOString(),
     };
