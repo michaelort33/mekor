@@ -110,6 +110,51 @@ function getWixMediaKey(rawUrl: string) {
   }
 }
 
+function getUgdId(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl);
+    const match =
+      url.pathname.match(/\/_files\/ugd\/([a-z0-9]+_[a-z0-9]+)/i) ??
+      url.pathname.match(/\/ugd\/([a-z0-9]+_[a-z0-9]+)/i);
+    return (match?.[1] ?? "").toLowerCase();
+  } catch {
+    const match = rawUrl.match(/\/_files\/ugd\/([a-z0-9]+_[a-z0-9]+)/i) ?? rawUrl.match(/\/ugd\/([a-z0-9]+_[a-z0-9]+)/i);
+    return (match?.[1] ?? "").toLowerCase();
+  }
+}
+
+function getFileBasename(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl);
+    return decodeURIComponent(path.basename(url.pathname || "")).trim();
+  } catch {
+    return decodeURIComponent(path.basename(rawUrl || "")).trim();
+  }
+}
+
+function fileToken(input: string) {
+  return input
+    .toLowerCase()
+    .replace(/\.[a-z0-9]+$/i, "")
+    .replace(/\(\d+\)/g, "")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+function looksLikeFileUrl(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl, "https://www.mekorhabracha.org");
+    const pathname = url.pathname.toLowerCase();
+    return (
+      /\.(pdf|doc|docx|jpg|jpeg|png|gif|webp|svg|avif|xml|txt|csv)$/i.test(pathname) ||
+      pathname.includes("/_files/ugd/") ||
+      pathname.includes("/uploads/") ||
+      pathname.includes("/ugd/")
+    );
+  } catch {
+    return /\.(pdf|doc|docx|jpg|jpeg|png|gif|webp|svg|avif|xml|txt|csv)$/i.test(rawUrl);
+  }
+}
+
 async function loadAssetResolver(): Promise<AssetResolver> {
   let blobMap: BlobMapRecord[] = [];
   try {
@@ -121,6 +166,8 @@ async function loadAssetResolver(): Promise<AssetResolver> {
   const bySource = new Map<string, string>();
   const byPath = new Map<string, string>();
   const byWixMedia = new Map<string, string>();
+  const byUgdId = new Map<string, string>();
+  const byFileToken = new Map<string, string>();
 
   for (const row of blobMap) {
     const source = decodeHtmlAmpersands((row.sourceUrl ?? "").trim());
@@ -137,6 +184,28 @@ async function loadAssetResolver(): Promise<AssetResolver> {
     const mediaKey = getWixMediaKey(source);
     if (mediaKey && !byWixMedia.has(mediaKey)) {
       byWixMedia.set(mediaKey, row.blobUrl);
+    }
+
+    const ugdFromSource = getUgdId(source);
+    if (ugdFromSource && !byUgdId.has(ugdFromSource)) {
+      byUgdId.set(ugdFromSource, row.blobUrl);
+    }
+
+    const ugdFromPath = getUgdId(rowPath);
+    if (ugdFromPath && !byUgdId.has(ugdFromPath)) {
+      byUgdId.set(ugdFromPath, row.blobUrl);
+    }
+
+    const sourceBase = getFileBasename(source);
+    const sourceToken = fileToken(sourceBase);
+    if (sourceToken && !byFileToken.has(sourceToken)) {
+      byFileToken.set(sourceToken, row.blobUrl);
+    }
+
+    const blobBase = getFileBasename(row.blobKey ?? "");
+    const blobToken = fileToken(blobBase);
+    if (blobToken && !byFileToken.has(blobToken)) {
+      byFileToken.set(blobToken, row.blobUrl);
     }
   }
 
@@ -170,6 +239,22 @@ async function loadAssetResolver(): Promise<AssetResolver> {
       const pathHit = byPath.get(raw);
       if (pathHit) {
         return pathHit;
+      }
+    }
+
+    const ugdId = getUgdId(raw);
+    if (ugdId) {
+      const ugdHit = byUgdId.get(ugdId);
+      if (ugdHit) {
+        return ugdHit;
+      }
+    }
+
+    if (looksLikeFileUrl(raw)) {
+      const token = fileToken(getFileBasename(raw));
+      const tokenHit = byFileToken.get(token);
+      if (tokenHit) {
+        return tokenHit;
       }
     }
 
