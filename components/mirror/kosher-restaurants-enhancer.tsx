@@ -11,6 +11,7 @@ const KOSHER_NEIGHBORHOOD_PATHS = new Set([
 ]);
 const KOSHER_MAP_PATH = "/kosher-map";
 const MAP_ENABLED_PATHS = new Set([...KOSHER_NEIGHBORHOOD_PATHS, KOSHER_MAP_PATH]);
+const NATIVE_NAV_ENABLED = process.env.NEXT_PUBLIC_NATIVE_NAV === "true";
 
 const ELFSIGHT_APP_CLASS = "elfsight-app-94318b42-b410-4983-8c4e-1eae94a93212";
 const MAP_CONTAINER_ID = "mekor-kosher-map-embed";
@@ -230,7 +231,9 @@ export function KosherRestaurantsEnhancer({ path }: Props) {
       }
     });
 
-    normalizeMainNavSubmenus();
+    if (!NATIVE_NAV_ENABLED) {
+      normalizeMainNavSubmenus();
+    }
 
     if (normalizedPath === KOSHER_MAP_PATH) {
       applyKosherMapPageFallback();
