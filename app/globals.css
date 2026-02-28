@@ -667,3 +667,132 @@ body.native-nav--mobile-open {
   height: auto !important;
   min-height: 0 !important;
 }
+
+.mirror-root[data-path="/donations"] .KaEeLN {
+  opacity: 1 !important;
+}
+
+.mirror-root[data-path="/donations"] #comp-m5l6fbzq #comp-m5l6fc05 .wixui-rich-text__text {
+  color: #3f4359 !important;
+}
+
+.mirror-root[data-path="/center-city"] .wixui-repeater,
+.mirror-root[data-path="/main-line-manyunk"] .wixui-repeater,
+.mirror-root[data-path="/old-yorkroad-northeast"] .wixui-repeater,
+.mirror-root[data-path="/cherry-hill"] .wixui-repeater {
+  opacity: 1 !important;
+}
+
+.mirror-root[data-path="/center-city"] [data-mekor-kosher-map],
+.mirror-root[data-path="/main-line-manyunk"] [data-mekor-kosher-map],
+.mirror-root[data-path="/old-yorkroad-northeast"] [data-mekor-kosher-map],
+.mirror-root[data-path="/cherry-hill"] [data-mekor-kosher-map],
+.mirror-root[data-path="/kosher-map"] [data-mekor-kosher-map] {
+  width: min(1200px, 92vw);
+  min-height: 520px;
+  margin: 24px auto 0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.mirror-root[data-path="/kosher-map"] [data-mekor-kosher-map][data-mekor-map-page="true"] {
+  min-height: 700px;
+  margin-top: 18px;
+}
+
+.mirror-root[data-path="/kosher-map"] [data-mekor-legacy-map="hidden"] {
+  display: none !important;
+}
+
+.mirror-root[data-path="/"] [data-mesh-id="comp-m5vl2ptb2inlineContent-gridContainer"] > #comp-m5vl2pte {
+  margin-top: 24px !important;
+}
+
+.mirror-root[data-path="/"] #comp-m5vlffw5 {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 420px !important;
+  overflow: hidden;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mirror-root[data-path="/"] #comp-m5vlffw5 iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.mirror-root[data-path="/"] #comp-m5vlffw5 .mirror-map-directions-link {
+  align-self: flex-start;
+  margin-top: 8px;
+  color: #ffffff;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+.mirror-root[data-path="/events"] [data-mesh-id="comp-m5ss52xcinlineContent-wedge-5"] {
+  display: none !important;
+  height: 0 !important;
+}
+
+.mirror-root [data-mekor-hidden-wedge="true"] {
+  display: none !important;
+  height: 0 !important;
+}
+
+.mirror-root[data-path="/events"] #comp-lvvd3qr7 {
+  height: 720px !important;
+  margin-bottom: 24px !important;
+}
+
+.mirror-root[data-path="/events"] #comp-lvvd3qr7 iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m5zo15ahinlineContent-gridContainer"] > #comp-m5zo4lc3 {
+  margin-top: 20px !important;
+}
+
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m62mowsxinlineContent-gridContainer"] {
+  min-height: auto !important;
+}
+
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m62mowsxinlineContent-gridContainer"] > #comp-m62mpz2b {
+  margin-top: 0 !important;
+}
+
+.mirror-root[data-path="/davening"] [data-mesh-id="comp-m75c6ob3inlineContent-gridContainer"] > #comp-m76t8v2r {
+  margin-top: 24px !important;
+}
+
+.mirror-root[data-path="/israel"] [data-mesh-id="comp-m8s6buxdinlineContent-gridContainer"] > #comp-m8s6buzl {
+  margin-top: 24px !important;
+}
+
+.mirror-root[data-path="/visit-us"] [data-mesh-id="comp-m61cugy8inlineContent-gridContainer"] > #comp-m61e45km {
+  margin-top: 24px !important;
+}
+
+.mirror-root[data-path="/testimonials"] [data-mesh-id="comp-m8oqgao5inlineContent-gridContainer"] > #comp-m8oqgaoi {
+  margin-top: 20px !important;
+}
+
+.mirror-root[data-path="/contact-us"] [data-mesh-id="comp-m61ebg0m2inlineContent-gridContainer"] > #comp-m61ebg0q {
+  margin-top: 24px !important;
+}
+
+.mirror-root[data-path="/mekor-bulletin-board"] [data-mesh-id="comp-m619lg9jinlineContent-gridContainer"] > #comp-m619v9sp {
+  margin-top: 20px !important;
+}
+
+.mirror-root[data-path="/donations"] [data-mesh-id="comp-m5l6fbzqinlineContent-gridContainer"] > #comp-m5l6fc05 {
+  margin-top: 24px !important;
+}
+
+.mirror-root[data-path="/philly-jewish-community"] [data-mesh-id="comp-m5y2u97tinlineContent-gridContainer"] > #comp-iqai4fsc1 {
+  margin-top: 24px !important;
+}
