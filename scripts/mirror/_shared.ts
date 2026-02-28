@@ -2,7 +2,9 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const SITE_URL = "https://www.mekorhabracha.org";
+export const SOURCE_SITE_URL = "https://www.mekorhabracha.org";
+const SITE_URL = SOURCE_SITE_URL;
+const SOURCE_HOSTS = new Set(["www.mekorhabracha.org", "mekorhabracha.org"]);
 
 export const REPO_ROOT = process.cwd();
 export const MIRROR_DIR = path.join(REPO_ROOT, "mirror-data");
@@ -62,6 +64,29 @@ export function toAbsoluteUrl(pathOrUrl: string) {
   }
 
   return new URL(pathOrUrl, SITE_URL).toString();
+}
+
+export function toLocalMirrorPath(pathOrUrl: string) {
+  try {
+    const parsed = new URL(pathOrUrl, SITE_URL);
+    if (!SOURCE_HOSTS.has(parsed.hostname)) {
+      return pathOrUrl;
+    }
+
+    const basePath = parsed.pathname === "/" ? "/" : parsed.pathname.replace(/\/+$/, "") || "/";
+    return `${basePath}${parsed.search}${parsed.hash}`;
+  } catch {
+    return pathOrUrl;
+  }
+}
+
+export function isSourceHost(pathOrUrl: string) {
+  try {
+    const parsed = new URL(pathOrUrl, SITE_URL);
+    return SOURCE_HOSTS.has(parsed.hostname);
+  } catch {
+    return false;
+  }
 }
 
 export async function readLines(filePath: string) {

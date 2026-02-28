@@ -57,13 +57,42 @@ async function loadHtmlRoutes() {
   return raw;
 }
 
+async function loadOnlyPaths() {
+  const inlineOnly = (process.env.MIRROR_SNAPSHOT_ONLY ?? "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const onlyFile = process.env.MIRROR_SNAPSHOT_ONLY_FILE?.trim();
+
+  if (!onlyFile) {
+    return new Set(inlineOnly);
+  }
+
+  try {
+    const content = await fs.readFile(onlyFile, "utf8");
+    for (const line of content.split(/\r?\n/g)) {
+      const value = line.trim();
+      if (value) {
+        inlineOnly.push(value);
+      }
+    }
+  } catch {
+    // ignore missing optional file
+  }
+
+  return new Set(inlineOnly);
+}
+
 async function main() {
   await ensureMirrorDirs();
 
   const htmlRoutes = await loadHtmlRoutes();
+  const onlyPaths = await loadOnlyPaths();
   const limitRaw = process.env.MIRROR_SNAPSHOT_LIMIT;
   const limit = limitRaw ? Number.parseInt(limitRaw, 10) : Number.MAX_SAFE_INTEGER;
-  const targetRoutes = htmlRoutes.slice(0, Number.isFinite(limit) ? limit : Number.MAX_SAFE_INTEGER);
+  const filteredRoutes =
+    onlyPaths.size === 0 ? htmlRoutes : htmlRoutes.filter((route) => onlyPaths.has(route.path));
+  const targetRoutes = filteredRoutes.slice(0, Number.isFinite(limit) ? limit : Number.MAX_SAFE_INTEGER);
 
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -74,17 +103,32 @@ async function main() {
 
   let okCount = 0;
   let errorCount = 0;
+  const failedPaths: string[] = [];
 
   for (let i = 0; i < targetRoutes.length; i += 1) {
     const route = targetRoutes[i];
     const targetUrl = toAbsoluteUrl(route.path);
 
     try {
-      const response = await page.goto(targetUrl, {
-        waitUntil: "domcontentloaded",
-        timeout: 25_000,
-      });
-      await page.waitForTimeout(700);
+      let response = null;
+      try {
+        response = await page.goto(targetUrl, {
+          waitUntil: "load",
+          timeout: 45_000,
+        });
+      } catch (primaryError) {
+        response = await page.goto(targetUrl, {
+          waitUntil: "domcontentloaded",
+          timeout: 20_000,
+        });
+        console.warn(`snapshot fallback(domcontentloaded) for ${route.path}: ${String(primaryError)}`);
+      }
+      try {
+        await page.waitForLoadState("networkidle", { timeout: 8_000 });
+      } catch {
+        // continue with captured DOM if network remains active
+      }
+      await page.waitForTimeout(900);
 
       const currentUrl = page.url();
       const finalPath = parseSiteUrl(currentUrl) ?? route.path;
@@ -194,7 +238,7 @@ async function main() {
         source: "playwright",
       };
 
-      const filename = `${slugFromPath(route.path)}.json`;
+      const filename = `${slugFromPath(route.path)}--${hashSha1(route.path).slice(0, 12)}.json`;
       await writeJson(path.join(SNAPSHOT_DIR, filename), snapshot);
 
       okCount += 1;
@@ -203,6 +247,7 @@ async function main() {
       }
     } catch (error) {
       errorCount += 1;
+      failedPaths.push(route.path);
       console.warn(`snapshot failed for ${route.path}: ${String(error)}`);
     }
   }
@@ -214,6 +259,7 @@ async function main() {
     requestedCount: targetRoutes.length,
     okCount,
     errorCount,
+    failedPaths,
   });
 
   console.log(`snapshot_ok=${okCount}`);

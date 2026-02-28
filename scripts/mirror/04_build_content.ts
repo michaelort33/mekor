@@ -10,7 +10,9 @@ import {
   classifyDocumentType,
   ensureMirrorDirs,
   hashSha1,
+  isSourceHost,
   slugFromPath,
+  toLocalMirrorPath,
   toAbsoluteUrl,
   writeJson,
 } from "./_shared";
@@ -75,6 +77,59 @@ function removeNoiseFromBody(html: string) {
   return $.root().html() ?? "";
 }
 
+function rewriteSrcset(value: string) {
+  return value
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const [urlPart, ...rest] = part.split(/\s+/);
+      const rewritten = toLocalMirrorPath(urlPart);
+      return [rewritten, ...rest].join(" ").trim();
+    })
+    .join(", ");
+}
+
+function rewriteStyleUrls(value: string) {
+  return value.replace(/url\((['"]?)(https?:\/\/[^'")]+)\1\)/gi, (_, quote, url) => {
+    const rewritten = toLocalMirrorPath(String(url));
+    return `url(${quote}${rewritten}${quote})`;
+  });
+}
+
+function rewriteInternalHtml(html: string) {
+  const $ = loadHtml(html);
+  const hrefLikeAttrs = ["href", "src", "action", "poster", "data-src", "data-href"];
+
+  for (const attr of hrefLikeAttrs) {
+    $(`[${attr}]`).each((_, element) => {
+      const value = $(element).attr(attr);
+      if (!value) return;
+      $(element).attr(attr, toLocalMirrorPath(value));
+    });
+  }
+
+  $("[srcset]").each((_, element) => {
+    const value = $(element).attr("srcset");
+    if (!value) return;
+    $(element).attr("srcset", rewriteSrcset(value));
+  });
+
+  $("[style]").each((_, element) => {
+    const value = $(element).attr("style");
+    if (!value) return;
+    $(element).attr("style", rewriteStyleUrls(value));
+  });
+
+  $("style").each((_, element) => {
+    const css = $(element).html();
+    if (!css) return;
+    $(element).html(rewriteStyleUrls(css));
+  });
+
+  return $.root().html() ?? "";
+}
+
 function dedupe(values: string[]) {
   return [...new Set(values.filter(Boolean))];
 }
@@ -102,8 +157,8 @@ async function main() {
   await ensureMirrorDirs();
 
   const snapshots = await loadSnapshots();
-  const docs: PageDocument[] = [];
-  const index: Array<{ path: string; type: string; file: string }> = [];
+  const docByPath = new Map<string, PageDocument>();
+  const indexByPath = new Map<string, { path: string; type: string; file: string }>();
 
   for (const snapshot of snapshots) {
     if (snapshot.status < 200 || snapshot.status >= 400) {
@@ -116,9 +171,12 @@ async function main() {
 
     const cleanedBody = removeNoiseFromBody(snapshot.bodyHtml || "");
     const styleBundle = [...(snapshot.styleLinks ?? []), ...(snapshot.styleTags ?? [])].join("\n");
-    const renderHtml = `${styleBundle}\n${cleanedBody}`;
+    const renderHtml = rewriteInternalHtml(`${styleBundle}\n${cleanedBody}`);
 
     const text = (snapshot.text || "").replace(/\s+/g, " ").trim();
+    const canonical = toLocalMirrorPath(snapshot.metadata?.canonical || pathValue);
+    const ogImageRaw = snapshot.metadata?.ogImage || "";
+    const ogImage = isSourceHost(ogImageRaw) ? toLocalMirrorPath(ogImageRaw) : ogImageRaw;
 
     const document: PageDocument = {
       id: hashSha1(pathValue),
@@ -128,32 +186,47 @@ async function main() {
       slug,
       title: snapshot.title || "",
       description: snapshot.metadata?.description || "",
-      canonical: snapshot.metadata?.canonical || toAbsoluteUrl(pathValue),
+      canonical,
       ogTitle: snapshot.metadata?.ogTitle || snapshot.title || "",
       ogDescription: snapshot.metadata?.ogDescription || snapshot.metadata?.description || "",
-      ogImage: snapshot.metadata?.ogImage || "",
+      ogImage,
       twitterCard: snapshot.metadata?.twitterCard || "summary_large_image",
       twitterTitle: snapshot.metadata?.twitterTitle || snapshot.title || "",
       twitterDescription: snapshot.metadata?.twitterDescription || snapshot.metadata?.description || "",
       headings: dedupe(snapshot.headings ?? []),
       text,
       textHash: snapshot.textHash || hashSha1(text),
-      links: dedupe(snapshot.links ?? []),
-      assets: dedupe(snapshot.assets ?? []),
+      links: dedupe((snapshot.links ?? []).map((value) => toLocalMirrorPath(value))),
+      assets: dedupe((snapshot.assets ?? []).map((value) => toLocalMirrorPath(value))),
       renderHtml,
       capturedAt: snapshot.capturedAt || new Date().toISOString(),
     };
 
-    const outFile = path.join("documents", type, `${slug}.json`);
+    const outFile = path.join(
+      "documents",
+      type,
+      `${slug}--${hashSha1(pathValue).slice(0, 12)}.json`,
+    );
     await writeJson(path.join(CONTENT_DIR, outFile), document);
 
-    docs.push(document);
-    index.push({
+    docByPath.set(pathValue, document);
+    indexByPath.set(pathValue, {
       path: pathValue,
       type,
       file: outFile,
     });
+
+    if (snapshot.path && snapshot.path !== pathValue) {
+      indexByPath.set(snapshot.path, {
+        path: snapshot.path,
+        type,
+        file: outFile,
+      });
+    }
   }
+
+  const docs = [...docByPath.values()];
+  const index = [...indexByPath.values()];
 
   docs.sort((a, b) => a.path.localeCompare(b.path));
   index.sort((a, b) => a.path.localeCompare(b.path));

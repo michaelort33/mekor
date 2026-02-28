@@ -1,6 +1,7 @@
 {
-  "generatedAt": "2026-02-28T14:20:23.516Z",
-  "requestedCount": 216,
-  "okCount": 213,
-  "errorCount": 3
+  "generatedAt": "2026-02-28T17:06:34.952Z",
+  "requestedCount": 215,
+  "okCount": 215,
+  "errorCount": 0,
+  "failedPaths": []
 }
