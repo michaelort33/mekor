@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1772136443340,
+      "tag": "0000_public_omega_sentinel",
+      "breakpoints": true
+    }
+  ]
+}
