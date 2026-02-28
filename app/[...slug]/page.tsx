@@ -26,6 +26,14 @@ function toPath(slug?: string[]) {
   return `/${slug.join("/")}`;
 }
 
+function normalizeBrandTitle(value: string | null | undefined) {
+  if (!value) {
+    return undefined;
+  }
+
+  return value.replace(/\bMekor 3\b/g, "Mekor Habracha");
+}
+
 export async function generateStaticParams() {
   const index = await loadContentIndex();
   const deduped = new Map<string, { slug: string[] }>();
@@ -68,13 +76,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: doc.title,
+    title: normalizeBrandTitle(doc.title),
     description: doc.description,
     alternates: {
       canonical: doc.canonical,
     },
     openGraph: {
-      title: doc.ogTitle,
+      title: normalizeBrandTitle(doc.ogTitle),
       description: doc.ogDescription,
       images: doc.ogImage ? [doc.ogImage] : [],
       url: doc.canonical,
@@ -82,7 +90,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: (doc.twitterCard as "summary" | "summary_large_image") || "summary_large_image",
-      title: doc.twitterTitle,
+      title: normalizeBrandTitle(doc.twitterTitle),
       description: doc.twitterDescription,
       images: doc.ogImage ? [doc.ogImage] : [],
     },
