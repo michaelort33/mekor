@@ -7,6 +7,7 @@ import { loadMirrorDocumentForPath, resolveMirrorRoute } from "@/lib/mirror/reso
 import { normalizePath } from "@/lib/mirror/url";
 
 export const dynamicParams = true;
+export const dynamic = "force-static";
 
 type PageProps = {
   params: Promise<{

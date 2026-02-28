@@ -144,6 +144,25 @@ export function MirrorRuntime({
   const loadMapScript = shouldLoadKosherMapScript(path);
 
   useEffect(() => {
+    if (!styleBundleHref) {
+      return;
+    }
+
+    const existing = document.querySelector<HTMLLinkElement>(
+      `head link[rel="stylesheet"][data-mirror-pinned-style="${styleBundleHref}"]`,
+    );
+    if (existing) {
+      return;
+    }
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = styleBundleHref;
+    link.dataset.mirrorPinnedStyle = styleBundleHref;
+    document.head.appendChild(link);
+  }, [styleBundleHref]);
+
+  useEffect(() => {
     const root = document.getElementById(rootId);
     const mirrorRoot = root?.closest<HTMLElement>(".mirror-root");
     if (!root || !mirrorRoot) {
