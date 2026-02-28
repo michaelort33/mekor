@@ -2,12 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { DocumentView } from "@/components/mirror/document-view";
-import {
-  getDocumentByPath,
-  loadContentIndex,
-  loadRouteSets,
-  resolveRequestPath,
-} from "@/lib/mirror/loaders";
+import { loadContentIndex } from "@/lib/mirror/loaders";
+import { loadMirrorDocumentForPath, resolveMirrorRoute } from "@/lib/mirror/resolve-route";
 import { normalizePath } from "@/lib/mirror/url";
 
 export const dynamicParams = false;
@@ -62,8 +58,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const requestPath = toPath(slug);
-  const resolved = await resolveRequestPath(requestPath);
-  const doc = (await getDocumentByPath(requestPath)) ?? (await getDocumentByPath(resolved.resolved));
+  const { document: doc } = await loadMirrorDocumentForPath(requestPath);
 
   if (!doc) {
     return {
@@ -100,11 +95,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CatchAllPage({ params }: PageProps) {
   const { slug } = await params;
   const requestPath = toPath(slug);
-
-  const resolved = await resolveRequestPath(requestPath);
-
-  const routeSets = await loadRouteSets();
-  const overrideStatus = routeSets.overrides.get(requestPath) ?? routeSets.overrides.get(resolved.resolved);
+  const route = await resolveMirrorRoute(requestPath);
+  const overrideStatus = route.overrideStatus;
 
   if (overrideStatus === 404) {
     notFound();
@@ -119,11 +111,11 @@ export default async function CatchAllPage({ params }: PageProps) {
     );
   }
 
-  if (!routeSets.twoHundred.has(requestPath) && !routeSets.twoHundred.has(resolved.resolved)) {
+  if (!route.isKnownRoute) {
     notFound();
   }
 
-  const document = (await getDocumentByPath(requestPath)) ?? (await getDocumentByPath(resolved.resolved));
+  const document = route.document;
   if (!document) {
     notFound();
   }
