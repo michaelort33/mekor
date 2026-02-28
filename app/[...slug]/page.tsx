@@ -2,9 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { DocumentView } from "@/components/mirror/document-view";
-import { getDocumentByPath, loadRouteSets, resolveRequestPath } from "@/lib/mirror/loaders";
+import {
+  getDocumentByPath,
+  loadContentIndex,
+  loadRouteSets,
+  resolveRequestPath,
+} from "@/lib/mirror/loaders";
+import { normalizePath } from "@/lib/mirror/url";
 
-export const dynamic = "force-dynamic";
+export const dynamicParams = false;
 
 type PageProps = {
   params: Promise<{
@@ -18,6 +24,31 @@ function toPath(slug?: string[]) {
   }
 
   return `/${slug.join("/")}`;
+}
+
+export async function generateStaticParams() {
+  const index = await loadContentIndex();
+  const deduped = new Map<string, { slug: string[] }>();
+
+  for (const item of index) {
+    const normalized = normalizePath(item.path);
+    if (
+      normalized === "/" ||
+      normalized.includes("?") ||
+      normalized.startsWith("/_files/")
+    ) {
+      continue;
+    }
+
+    const slug = normalized.replace(/^\//, "").split("/").filter(Boolean);
+    if (slug.length === 0) {
+      continue;
+    }
+
+    deduped.set(slug.join("/"), { slug });
+  }
+
+  return [...deduped.values()];
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

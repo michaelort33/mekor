@@ -6,6 +6,7 @@ import type {
   ContentIndexRecord,
   PageDocument,
   RouteContractRecord,
+  StyleBundleRecord,
   StatusOverrideRecord,
 } from "@/lib/mirror/types";
 import { ASSETS_DIR, CONTENT_DIR, ROUTES_DIR, SEARCH_DIR } from "@/lib/mirror/paths";
@@ -19,6 +20,7 @@ let routeCache: {
 } | null = null;
 
 let contentIndexCache: ContentIndexRecord[] | null = null;
+let contentIndexByPathCache: Map<string, ContentIndexRecord> | null = null;
 type SearchIndexItem = {
   path: string;
   type: string;
@@ -29,6 +31,7 @@ type SearchIndexItem = {
 };
 
 let searchIndexCache: SearchIndexItem[] | null = null;
+let styleBundleByIdCache: Map<string, StyleBundleRecord> | null = null;
 
 async function readJsonFile<T>(filePath: string, fallback: T): Promise<T> {
   try {
@@ -115,14 +118,17 @@ export async function loadContentIndex() {
     path.join(CONTENT_DIR, "index.json"),
     [],
   );
+  contentIndexByPathCache = new Map(
+    contentIndexCache.map((entry) => [normalizePath(entry.path), entry]),
+  );
 
   return contentIndexCache;
 }
 
 export async function getDocumentByPath(pathValue: string) {
-  const index = await loadContentIndex();
+  await loadContentIndex();
   const target = normalizePath(pathValue);
-  const item = index.find((entry) => normalizePath(entry.path) === target);
+  const item = contentIndexByPathCache?.get(target);
 
   if (!item) {
     return null;
@@ -155,6 +161,29 @@ export async function loadSearchIndex() {
   );
 
   return searchIndexCache;
+}
+
+export async function loadStyleBundles() {
+  if (styleBundleByIdCache) {
+    return styleBundleByIdCache;
+  }
+
+  const records = await readJsonFile<StyleBundleRecord[]>(
+    path.join(CONTENT_DIR, "style-bundles.json"),
+    [],
+  );
+
+  styleBundleByIdCache = new Map(records.map((record) => [record.id, record]));
+  return styleBundleByIdCache;
+}
+
+export async function getStyleBundleById(styleBundleId: string | null | undefined) {
+  if (!styleBundleId) {
+    return null;
+  }
+
+  const styleBundleMap = await loadStyleBundles();
+  return styleBundleMap.get(styleBundleId) ?? null;
 }
 
 export async function loadBlobMap() {
