@@ -13,6 +13,7 @@ type TransitionDocument = Document & {
 type Props = {
   rootId: string;
   path: string;
+  styleHref: string | null;
 };
 
 function hasModifierKey(event: MouseEvent) {
@@ -105,10 +106,29 @@ function setSubmenuOpen(item: HTMLLIElement, open: boolean) {
   toggle?.setAttribute("aria-expanded", open ? "true" : "false");
 }
 
-export function MirrorRuntime({ rootId, path }: Props) {
+export function MirrorRuntime({ rootId, path, styleHref }: Props) {
   const router = useRouter();
   const prefetchedPathsRef = useRef<Set<string>>(new Set());
   const loadMapScript = shouldLoadKosherMapScript(path);
+
+  useEffect(() => {
+    if (!styleHref) {
+      return;
+    }
+
+    const existing = document.querySelector<HTMLLinkElement>(
+      `head link[rel="stylesheet"][data-mirror-pinned-style="${styleHref}"]`,
+    );
+    if (existing) {
+      return;
+    }
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = styleHref;
+    link.dataset.mirrorPinnedStyle = styleHref;
+    document.head.appendChild(link);
+  }, [styleHref]);
 
   useEffect(() => {
     const root = document.getElementById(rootId);

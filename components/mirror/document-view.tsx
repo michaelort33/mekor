@@ -29,7 +29,7 @@ export async function DocumentView({ document }: Props) {
       ) : null}
       {nativeNavEnabled ? <SiteNavigation currentPath={document.path} /> : null}
       <div id={contentId} className="mirror-content" dangerouslySetInnerHTML={{ __html: html }} />
-      <MirrorRuntime rootId={contentId} path={document.path} />
+      <MirrorRuntime rootId={contentId} path={document.path} styleHref={styleBundle?.href ?? null} />
     </main>
   );
 }
