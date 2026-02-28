@@ -3,6 +3,7 @@ import path from "node:path";
 
 import type {
   AliasRecord,
+  AssetBlobRecord,
   ContentIndexRecord,
   PageDocument,
   RouteContractRecord,
@@ -32,6 +33,8 @@ type SearchIndexItem = {
 
 let searchIndexCache: SearchIndexItem[] | null = null;
 let styleBundleByIdCache: Map<string, StyleBundleRecord> | null = null;
+let blobMapCache: AssetBlobRecord[] | null = null;
+let blobMapByMirrorPathCache: Map<string, AssetBlobRecord> | null = null;
 
 async function readJsonFile<T>(filePath: string, fallback: T): Promise<T> {
   try {
@@ -187,15 +190,56 @@ export async function getStyleBundleById(styleBundleId: string | null | undefine
 }
 
 export async function loadBlobMap() {
-  return readJsonFile<
-    Array<{
-      sourceUrl: string;
-      path: string;
-      blobKey: string;
-      blobUrl: string;
-      contentType: string;
-      sha1: string;
-      size: number;
-    }>
-  >(path.join(ASSETS_DIR, "blob-map.json"), []);
+  if (blobMapCache) {
+    return blobMapCache;
+  }
+
+  blobMapCache = await readJsonFile<AssetBlobRecord[]>(path.join(ASSETS_DIR, "blob-map.json"), []);
+  return blobMapCache;
+}
+
+export async function loadBlobMapByMirrorPath() {
+  if (blobMapByMirrorPathCache) {
+    return blobMapByMirrorPathCache;
+  }
+
+  const rows = await loadBlobMap();
+  const byMirrorPath = new Map<string, AssetBlobRecord>();
+
+  const indexPath = (candidate: string, row: AssetBlobRecord) => {
+    if (!candidate) {
+      return;
+    }
+
+    const normalizedWithQuery = normalizePath(candidate);
+    if (normalizedWithQuery.startsWith("/_files/ugd/") && !byMirrorPath.has(normalizedWithQuery)) {
+      byMirrorPath.set(normalizedWithQuery, row);
+    }
+
+    const pathname = normalizedWithQuery.split("?")[0] ?? normalizedWithQuery;
+    if (pathname.startsWith("/_files/ugd/") && !byMirrorPath.has(pathname)) {
+      byMirrorPath.set(pathname, row);
+    }
+  };
+
+  for (const row of rows) {
+    if (row.path) {
+      indexPath(row.path, row);
+    }
+
+    if (!row.sourceUrl) {
+      continue;
+    }
+
+    try {
+      const parsed = new URL(row.sourceUrl);
+      indexPath(`${parsed.pathname}${parsed.search}`, row);
+      indexPath(parsed.pathname, row);
+    } catch {
+      // keep best-effort indexing for malformed source URLs
+    }
+  }
+
+  blobMapByMirrorPathCache = byMirrorPath;
+  return blobMapByMirrorPathCache;
 }

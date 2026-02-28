@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { load as loadHtml } from "cheerio";
 
+import { rewriteSrcsetValue, sanitizeMirrorHtml } from "../../lib/mirror/html-security";
+
 import {
   ASSETS_DIR,
   CONTENT_DIR,
@@ -357,11 +359,15 @@ function rewriteInternalHtml(html: string, resolver: AssetResolver) {
     });
   }
 
-  // Keep srcset values untouched: Wix URLs contain commas in path transforms and splitting/parsing corrupts them.
   root.find("[srcset]").each((_, element) => {
     const value = $(element).attr("srcset");
     if (!value) return;
-    $(element).attr("srcset", value);
+    const rewrittenSrcset = rewriteSrcsetValue(value, resolver.resolveUrl);
+    if (rewrittenSrcset) {
+      $(element).attr("srcset", rewrittenSrcset);
+    } else {
+      $(element).removeAttr("srcset");
+    }
   });
 
   root.find("[style]").each((_, element) => {
@@ -537,7 +543,8 @@ async function main() {
 
     const cleanedBody = removeNoiseFromBody(snapshot.bodyHtml || "");
     const rewrittenBody = rewriteInternalHtml(cleanedBody, assetResolver);
-    const bodyHtml = type === "event" ? rebalanceEventPortraitImages(rewrittenBody) : rewrittenBody;
+    const eventAdjustedBody = type === "event" ? rebalanceEventPortraitImages(rewrittenBody) : rewrittenBody;
+    const bodyHtml = sanitizeMirrorHtml(eventAdjustedBody);
     const styleBundleCss = buildStyleBundleCss(snapshot, assetResolver);
     const styleBundleId = styleBundleCss ? hashSha1(styleBundleCss).slice(0, 16) : "";
 

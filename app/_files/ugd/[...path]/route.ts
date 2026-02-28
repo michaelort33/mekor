@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { loadBlobMap } from "@/lib/mirror/loaders";
+import { loadBlobMapByMirrorPath } from "@/lib/mirror/loaders";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +15,8 @@ export async function GET(
   const incomingUrl = new URL(request.url);
   const withQuery = `${incomingPath}${incomingUrl.search || ""}`;
 
-  const blobMap = await loadBlobMap();
-  const matched =
-    blobMap.find((entry) => entry.path === withQuery) ??
-    blobMap.find((entry) => entry.path === incomingPath) ??
-    blobMap.find((entry) => entry.sourceUrl.endsWith(withQuery)) ??
-    blobMap.find((entry) => entry.sourceUrl.endsWith(incomingPath));
+  const blobMapByMirrorPath = await loadBlobMapByMirrorPath();
+  const matched = blobMapByMirrorPath.get(withQuery) ?? blobMapByMirrorPath.get(incomingPath);
 
   if (!matched) {
     return new NextResponse("Not Found", { status: 404 });
@@ -28,5 +24,8 @@ export async function GET(
 
   return NextResponse.redirect(matched.blobUrl, {
     status: 307,
+    headers: {
+      "cache-control": "public, max-age=86400, stale-while-revalidate=604800",
+    },
   });
 }
