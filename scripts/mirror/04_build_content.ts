@@ -389,6 +389,37 @@ function rewriteInternalHtml(html: string, resolver: AssetResolver) {
   return root.html() ?? "";
 }
 
+function rebalanceEventPortraitImages(html: string) {
+  const $ = loadHtml(`<div id="__event_root">${html}</div>`);
+  const root = $("#__event_root");
+
+  root.find("div[data-source-width][data-source-height]").each((_, element) => {
+    const node = $(element);
+    const width = Number.parseInt(node.attr("data-source-width") ?? "", 10);
+    const height = Number.parseInt(node.attr("data-source-height") ?? "", 10);
+
+    if (!Number.isFinite(width) || !Number.isFinite(height) || height <= width) {
+      return;
+    }
+
+    const image = node.find("img").first();
+    if (image.length === 0) {
+      return;
+    }
+
+    const className = node.attr("class") ?? "";
+    if (!className.includes("resize-5-cover")) {
+      return;
+    }
+
+    image.attr("style", "width:100%;height:100%;object-fit:contain;object-position:50% 50%;");
+    node.attr("data-resize", "contain");
+    node.addClass("mirror-event-portrait-fit");
+  });
+
+  return root.html() ?? "";
+}
+
 function dedupe(values: string[]) {
   return [...new Set(values.filter(Boolean))];
 }
@@ -431,7 +462,8 @@ async function main() {
 
     const cleanedBody = removeNoiseFromBody(snapshot.bodyHtml || "");
     const styleBundle = [...(snapshot.styleLinks ?? []), ...(snapshot.styleTags ?? [])].join("\n");
-    const renderHtml = rewriteInternalHtml(`${styleBundle}\n${cleanedBody}`, assetResolver);
+    const rewrittenHtml = rewriteInternalHtml(`${styleBundle}\n${cleanedBody}`, assetResolver);
+    const renderHtml = type === "event" ? rebalanceEventPortraitImages(rewrittenHtml) : rewrittenHtml;
 
     const text = (snapshot.text || "").replace(/\s+/g, " ").trim();
     const canonical = toLocalMirrorPath(snapshot.metadata?.canonical || pathValue);
