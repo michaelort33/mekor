@@ -154,3 +154,21 @@ a {
 .mirror-root[data-path="/donations"] #comp-m5l6fbzq #comp-m5l6fc05 .wixui-rich-text__text {
   color: #3f4359 !important;
 }
+
+.mirror-root[data-path="/center-city"] .wixui-repeater,
+.mirror-root[data-path="/main-line-manyunk"] .wixui-repeater,
+.mirror-root[data-path="/old-yorkroad-northeast"] .wixui-repeater,
+.mirror-root[data-path="/cherry-hill"] .wixui-repeater {
+  opacity: 1 !important;
+}
+
+.mirror-root[data-path="/center-city"] [data-mekor-kosher-map],
+.mirror-root[data-path="/main-line-manyunk"] [data-mekor-kosher-map],
+.mirror-root[data-path="/old-yorkroad-northeast"] [data-mekor-kosher-map],
+.mirror-root[data-path="/cherry-hill"] [data-mekor-kosher-map] {
+  width: min(1200px, 92vw);
+  min-height: 520px;
+  margin: 24px auto 0;
+  border-radius: 14px;
+  overflow: hidden;
+}

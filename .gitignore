@@ -45,6 +45,7 @@ next-env.d.ts
 # Local automation/crawl artifacts
 .playwright-cli/
 output/
+/.codex/
 
 # Mirror intermediates (keep structured manifests/docs, ignore heavy raw snapshots)
 mirror-data/raw/
