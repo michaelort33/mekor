@@ -2,8 +2,6 @@ import { load, type Cheerio, type CheerioAPI } from "cheerio";
 import type { AnyNode } from "domhandler";
 
 import { sanitizeMirrorHtml } from "@/lib/mirror/html-security";
-import { KOSHER_MAP_PATH, KOSHER_NEIGHBORHOOD_PATHS } from "@/lib/mirror/kosher-map";
-import { normalizePath } from "@/lib/mirror/url";
 
 const WIX_EVENTS_MAP_HOST = "events.wixapps.net";
 const WIX_EVENTS_MAP_PATH = "/events-server/html/google-map-v2";
@@ -24,18 +22,6 @@ const YOUTUBE_QUERY_PARAMS_TO_STRIP = [
 ];
 
 const SITE_HOSTS = new Set(["www.mekorhabracha.org", "mekorhabracha.org"]);
-
-const ELFSIGHT_APP_CLASS = "elfsight-app-94318b42-b410-4983-8c4e-1eae94a93212";
-const MAP_CONTAINER_ID = "mekor-kosher-map-embed";
-const MAP_PAGE_CONTAINER_ID = "mekor-kosher-map-page-embed";
-const LEGACY_MAP_IFRAME_FRAGMENT = "92f487_18faae6f3d17c0bfced150d83fa167cd.html";
-
-const HOMEPAGE_MAP_IFRAME_SRC =
-  "https://maps.google.com/maps?q=1500%20Walnut%20St%20Suite%20206%20Philadelphia%20PA&t=&z=15&ie=UTF8&iwloc=&output=embed";
-const HOMEPAGE_DIRECTIONS_HREF =
-  "https://www.google.com/maps/dir/?api=1&destination=1500+Walnut+St+Suite+206+Philadelphia+PA+19102";
-const EVENTS_CALENDAR_EMBED_SRC =
-  "https://calendar.google.com/calendar/embed?src=david%40mekorhabracha.org&ctz=America%2FNew_York";
 
 function toUrl(raw: string) {
   try {
@@ -142,101 +128,6 @@ function rewriteWixIframes($: CheerioAPI, root: Cheerio<AnyNode>) {
   });
 }
 
-function ensureHomepageMapEmbed($: CheerioAPI, root: Cheerio<AnyNode>) {
-  const mapRoot = root.find("#comp-m5vlffw5").first();
-  if (mapRoot.length === 0 || mapRoot.find("iframe").length > 0) {
-    return;
-  }
-
-  const iframe = $("<iframe></iframe>")
-    .attr("title", "Mekor Habracha Synagogue Map")
-    .attr("loading", "lazy")
-    .attr("referrerpolicy", "no-referrer-when-downgrade")
-    .attr("src", HOMEPAGE_MAP_IFRAME_SRC)
-    .attr("allowfullscreen", "");
-
-  const directions = $("<a></a>")
-    .attr("href", HOMEPAGE_DIRECTIONS_HREF)
-    .attr("target", "_blank")
-    .attr("rel", "noreferrer noopener")
-    .attr("class", "mirror-map-directions-link")
-    .text("Directions");
-
-  mapRoot.append(iframe, directions);
-}
-
-function ensureEventsCalendarEmbed(root: Cheerio<AnyNode>) {
-  const calendarFrame = root.find("#comp-lvvd3qr7 iframe").first();
-  if (calendarFrame.length > 0 && !calendarFrame.attr("src")) {
-    calendarFrame.attr("src", EVENTS_CALENDAR_EMBED_SRC);
-  }
-
-  const wedge = root.find('[data-mesh-id="comp-m5ss52xcinlineContent-wedge-5"]').first();
-  if (wedge.length > 0) {
-    wedge.attr("data-mekor-hidden-wedge", "true");
-  }
-}
-
-function findKosherMapHeading($: CheerioAPI, root: Cheerio<AnyNode>) {
-  return root
-    .find("h1,h2,h3,h4,h5,h6")
-    .filter((_, heading) => $(heading).text().trim().toLowerCase() === "kosher map")
-    .first();
-}
-
-function ensureMapContainer(
-  $: CheerioAPI,
-  root: Cheerio<AnyNode>,
-  containerId: string,
-  markMapPage: boolean,
-) {
-  const existing =
-    root.find(`#${containerId}`).first().get(0) ??
-    root.find(`.${ELFSIGHT_APP_CLASS}[data-mekor-kosher-map=\"true\"]`).first().get(0);
-
-  if (existing) {
-    if (markMapPage) {
-      $(existing).attr("data-mekor-map-page", "true");
-    }
-    return;
-  }
-
-  const mapHeading = findKosherMapHeading($, root);
-  if (mapHeading.length === 0) {
-    return;
-  }
-
-  const anchor = mapHeading.closest("div.wixui-rich-text");
-  const insertionTarget = anchor.length > 0 ? anchor : mapHeading;
-
-  const mapContainer = $("<div></div>")
-    .attr("id", containerId)
-    .attr("class", ELFSIGHT_APP_CLASS)
-    .attr("data-elfsight-app-lazy", "")
-    .attr("data-mekor-kosher-map", "true");
-
-  if (markMapPage) {
-    mapContainer.attr("data-mekor-map-page", "true");
-  }
-
-  insertionTarget.after(mapContainer);
-}
-
-function applyKosherMapPageFallback(root: Cheerio<AnyNode>) {
-  const legacyIframe = root.find(`iframe[src*="${LEGACY_MAP_IFRAME_FRAGMENT}"]`).first();
-
-  if (legacyIframe.length === 0) {
-    return;
-  }
-
-  const legacyContainer = legacyIframe.closest("div.RjABt4, div[id^='comp-']");
-  const target = legacyContainer.length > 0 ? legacyContainer : legacyIframe.parent();
-
-  if (target.length > 0) {
-    target.attr("data-mekor-legacy-map", "hidden");
-  }
-}
-
 function normalizeMainNavSubmenus($: CheerioAPI, root: Cheerio<AnyNode>) {
   root.find('nav[aria-label="Site"] li.mirror-native-has-submenu').each((_, node) => {
     const item = $(node);
@@ -294,28 +185,6 @@ function optimizeMediaLoading($: CheerioAPI, root: Cheerio<AnyNode>) {
   });
 }
 
-function applyPathSpecificFixes($: CheerioAPI, root: Cheerio<AnyNode>, path: string) {
-  if (path === "/") {
-    ensureHomepageMapEmbed($, root);
-    return;
-  }
-
-  if (path === "/events") {
-    ensureEventsCalendarEmbed(root);
-    return;
-  }
-
-  if (path === KOSHER_MAP_PATH) {
-    applyKosherMapPageFallback(root);
-    ensureMapContainer($, root, MAP_PAGE_CONTAINER_ID, true);
-    return;
-  }
-
-  if (KOSHER_NEIGHBORHOOD_PATHS.has(path)) {
-    ensureMapContainer($, root, MAP_CONTAINER_ID, false);
-  }
-}
-
 function rewriteAbsoluteMediaSources($: CheerioAPI, root: Cheerio<AnyNode>) {
   root.find("img[src],source[src],iframe[src]").each((_, element) => {
     const node = $(element);
@@ -334,7 +203,7 @@ function rewriteAbsoluteMediaSources($: CheerioAPI, root: Cheerio<AnyNode>) {
   });
 }
 
-export function prepareMirrorDocumentHtml(rawHtml: string, path: string) {
+export function prepareMirrorDocumentHtml(rawHtml: string) {
   if (!rawHtml) {
     return "";
   }
@@ -350,7 +219,6 @@ export function prepareMirrorDocumentHtml(rawHtml: string, path: string) {
   normalizeInternalLinks($, root);
   rewriteAbsoluteMediaSources($, root);
   normalizeMainNavSubmenus($, root);
-  applyPathSpecificFixes($, root, normalizePath(path));
   optimizeMediaLoading($, root);
 
   return root.html() ?? "";

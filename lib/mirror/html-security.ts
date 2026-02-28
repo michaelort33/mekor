@@ -11,6 +11,7 @@ const BANNED_TAGS = new Set([
 ]);
 
 const ALLOWED_TAGS = new Set([
+  "style",
   "a",
   "abbr",
   "address",
@@ -327,7 +328,8 @@ export function sanitizeMirrorHtml(html: string) {
       return;
     }
 
-    if (!ALLOWED_TAGS.has(tagName)) {
+    const isCustomElementTag = tagName.includes("-");
+    if (!ALLOWED_TAGS.has(tagName) && !isCustomElementTag) {
       $(element).replaceWith($(element).contents());
       return;
     }
