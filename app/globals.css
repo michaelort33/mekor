@@ -11,6 +11,12 @@ body {
   background: #fff;
 }
 
+html:has(.mirror-root),
+body:has(.mirror-root) {
+  height: auto !important;
+  min-height: 100%;
+}
+
 @supports (view-transition-name: root) {
   :root {
     view-transition-name: root;
@@ -763,6 +769,135 @@ body.native-nav--mobile-open {
 
 .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m62mowsxinlineContent-gridContainer"] > #comp-m62mpz2b {
   margin-top: 0 !important;
+}
+
+.mirror-root[data-path="/about-us"] #comp-m62mowsx .KaEeLN {
+  opacity: 1 !important;
+}
+
+.mirror-root[data-path="/about-us"] #comp-m8qlkif6,
+.mirror-root[data-path="/about-us"] #comp-m8qlkifo1,
+.mirror-root[data-path="/about-us"] #comp-m8qlkifx__item-kicx9qyp,
+.mirror-root[data-path="/about-us"] #comp-m8qls6dn,
+.mirror-root[data-path="/about-us"] #comp-m8qls6fd__item-kicx9qyp,
+.mirror-root[data-path="/about-us"] #comp-m8qm5auk,
+.mirror-root[data-path="/about-us"] #comp-m8qm5avr__item-kicx9qyp {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+}
+
+.mirror-root[data-path="/about-us"] #PAGES_CONTAINER,
+.mirror-root[data-path="/about-us"] #SITE_PAGES,
+.mirror-root[data-path="/about-us"] #Containerktlkb,
+.mirror-root[data-path="/about-us"] .wixui-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+.mirror-root[data-path="/about-us"] #comp-m8qlkifo1_wrapper,
+.mirror-root[data-path="/about-us"] #comp-m8qls6dn_wrapper,
+.mirror-root[data-path="/about-us"] #comp-m8qm5auk_wrapper {
+  width: min(1240px, 100%) !important;
+  margin: 0 auto !important;
+}
+
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qlkifx__item-kicx9qypinlineContent-gridContainer"],
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qls6fd__item-kicx9qypinlineContent-gridContainer"],
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qm5avr__item-kicx9qypinlineContent-gridContainer"] {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  column-gap: 48px !important;
+  row-gap: 14px !important;
+  align-items: start !important;
+  min-height: auto !important;
+}
+
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qlkifx__item-kicx9qypinlineContent-gridContainer"] > *,
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qls6fd__item-kicx9qypinlineContent-gridContainer"] > *,
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qm5avr__item-kicx9qypinlineContent-gridContainer"] > * {
+  position: relative !important;
+  inset: auto !important;
+  margin: 0 !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qlkifx__item-kicx9qypinlineContent-gridContainer"] > .wixui-image,
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qm5avr__item-kicx9qypinlineContent-gridContainer"] > .wixui-image {
+  grid-column: 1 !important;
+}
+
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qlkifx__item-kicx9qypinlineContent-gridContainer"] > :not(.wixui-image),
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qm5avr__item-kicx9qypinlineContent-gridContainer"] > :not(.wixui-image) {
+  grid-column: 2 !important;
+}
+
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qls6fd__item-kicx9qypinlineContent-gridContainer"] > .wixui-image {
+  grid-column: 2 !important;
+}
+
+.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qls6fd__item-kicx9qypinlineContent-gridContainer"] > :not(.wixui-image) {
+  grid-column: 1 !important;
+}
+
+@media (max-width: 1024px) {
+  .mirror-root[data-path="/about-us"] #PAGES_CONTAINER,
+  .mirror-root[data-path="/about-us"] #SITE_PAGES,
+  .mirror-root[data-path="/about-us"] .dBAkHi,
+  .mirror-root[data-path="/about-us"] .HT5ybB,
+  .mirror-root[data-path="/about-us"] #Containerktlkb {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .mirror-root[data-path="/about-us"] [data-mesh-id="ContainerktlkbinlineContent-gridContainer"],
+  .mirror-root[data-path="/about-us"] #comp-m5zn3fw8,
+  .mirror-root[data-path="/about-us"] #comp-m8qlkif6,
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m5zn3fw8inlineContent-gridContainer"],
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qlkif6inlineContent-gridContainer"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+  }
+
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m5zn3fw8inlineContent-gridContainer"] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    row-gap: 14px !important;
+    padding-inline: 16px !important;
+  }
+
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m5zn3fw8inlineContent-gridContainer"] > * {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-column: 1 !important;
+  }
+
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qlkifx__item-kicx9qypinlineContent-gridContainer"],
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qls6fd__item-kicx9qypinlineContent-gridContainer"],
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qm5avr__item-kicx9qypinlineContent-gridContainer"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    row-gap: 12px !important;
+    padding-inline: 16px !important;
+  }
+
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qlkifx__item-kicx9qypinlineContent-gridContainer"] > *,
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qls6fd__item-kicx9qypinlineContent-gridContainer"] > *,
+  .mirror-root[data-path="/about-us"] [data-mesh-id="comp-m8qm5avr__item-kicx9qypinlineContent-gridContainer"] > * {
+    grid-column: 1 !important;
+  }
 }
 
 .mirror-root[data-path="/davening"] [data-mesh-id="comp-m75c6ob3inlineContent-gridContainer"] > #comp-m76t8v2r {
