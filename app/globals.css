@@ -859,3 +859,9 @@ body.native-nav--mobile-open {
 .mirror-root[data-path="/philly-jewish-community"] [data-mesh-id="comp-m5y2u97tinlineContent-gridContainer"] > #comp-iqai4fsc1 {
   margin-top: 24px !important;
 }
+
+.mirror-root[data-path="/center-city-beit-midrash"] #comp-mdsyz89f,
+.mirror-root[data-path="/copy-of-center-city-beit-midrash"] #comp-mdsyz89f {
+  height: auto !important;
+  min-height: 0 !important;
+}
