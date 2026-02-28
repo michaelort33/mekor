@@ -1,5 +1,6 @@
 import type { PageDocument } from "@/lib/mirror/types";
 import { getStyleBundleById } from "@/lib/mirror/loaders";
+import { sanitizeMirrorHtml } from "@/lib/mirror/sanitize-html";
 import { KosherRestaurantsEnhancer } from "@/components/mirror/kosher-restaurants-enhancer";
 import { InternalNavigationBridge } from "@/components/mirror/internal-navigation-bridge";
 import { PageFixes } from "@/components/mirror/page-fixes";
@@ -10,7 +11,7 @@ type Props = {
 
 export async function DocumentView({ document }: Props) {
   const styleBundle = await getStyleBundleById(document.styleBundleId);
-  const html = document.bodyHtml || document.renderHtml || "";
+  const html = sanitizeMirrorHtml(document.bodyHtml || document.renderHtml || "");
 
   return (
     <main className="mirror-root" data-path={document.path}>
