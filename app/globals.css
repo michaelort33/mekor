@@ -146,3 +146,11 @@ a {
     border-radius: 10px;
   }
 }
+
+.mirror-root[data-path="/donations"] #comp-m5l6fbzq .KaEeLN {
+  opacity: 1 !important;
+}
+
+.mirror-root[data-path="/donations"] #comp-m5l6fbzq #comp-m5l6fc05 .wixui-rich-text__text {
+  color: #3f4359 !important;
+}
