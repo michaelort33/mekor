@@ -1,0 +1,19 @@
+# Keep deployment bundle lean and exclude non-runtime artifacts
+node_modules
+.git
+.next
+output
+
+# Heavy mirror intermediates and local aggregates
+mirror-data/raw/
+mirror-data/content/all-documents.json
+
+# Local-only asset archives and dumps
+rebuild-assets/raw/
+rebuild-assets/raw2/
+rebuild-assets/organized-by-page/
+rebuild-assets/organized-by-role/
+rebuild-assets/flat/
+
+# Local tooling artifacts
+.playwright-cli/
