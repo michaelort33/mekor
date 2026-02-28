@@ -32,6 +32,16 @@ a {
   max-width: 100%;
 }
 
+.mirror-root [id^="bgMedia_"] img,
+.mirror-root [id^="bgMedia_"] video {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  display: block;
+}
+
 .mirror-root nav[aria-label="Site"] li.mirror-native-has-submenu {
   position: relative;
 }
