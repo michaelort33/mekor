@@ -140,6 +140,12 @@ a {
   display: none !important;
 }
 
+.mirror-root[data-native-nav="true"] nav[aria-label="Site"],
+.mirror-root[data-native-nav="true"] wix-dropdown-menu,
+.mirror-root[data-native-nav="true"] [data-mesh-id^="SITE_HEADER"] {
+  display: none !important;
+}
+
 .mirror-root[data-native-nav="true"] #masterPage:not(.landingPage) {
   --header-height: 0px !important;
   --top-offset: 0px !important;
