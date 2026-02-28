@@ -13,6 +13,8 @@ type TransitionDocument = Document & {
 type Props = {
   rootId: string;
   path: string;
+  styleBundleHref?: string | null;
+  stylePrefetchHints?: Record<string, string>;
 };
 
 function hasModifierKey(event: MouseEvent) {
@@ -105,10 +107,147 @@ function setSubmenuOpen(item: HTMLLIElement, open: boolean) {
   toggle?.setAttribute("aria-expanded", open ? "true" : "false");
 }
 
-export function MirrorRuntime({ rootId, path }: Props) {
+function preloadStylesheet(href: string) {
+  let resolvedHref: string;
+  try {
+    resolvedHref = new URL(href, window.location.href).href;
+  } catch {
+    return;
+  }
+
+  const existing = Array.from(
+    document.querySelectorAll<HTMLLinkElement>(
+      'link[rel="stylesheet"][href], link[rel="preload"][as="style"][href]',
+    ),
+  );
+
+  if (existing.some((link) => link.href === resolvedHref)) {
+    return;
+  }
+
+  const preload = document.createElement("link");
+  preload.rel = "preload";
+  preload.as = "style";
+  preload.href = resolvedHref;
+  document.head.appendChild(preload);
+}
+
+export function MirrorRuntime({
+  rootId,
+  path,
+  styleBundleHref = null,
+  stylePrefetchHints = {},
+}: Props) {
   const router = useRouter();
   const prefetchedPathsRef = useRef<Set<string>>(new Set());
+  const prefetchedStyleHrefsRef = useRef<Set<string>>(new Set());
   const loadMapScript = shouldLoadKosherMapScript(path);
+
+  useEffect(() => {
+    const root = document.getElementById(rootId);
+    const mirrorRoot = root?.closest<HTMLElement>(".mirror-root");
+    if (!root || !mirrorRoot) {
+      return;
+    }
+
+    mirrorRoot.dataset.stylesReady = "false";
+    mirrorRoot.dataset.styleTimeout = "false";
+
+    if (!styleBundleHref) {
+      mirrorRoot.dataset.stylesReady = "true";
+      return;
+    }
+
+    let expectedHref: string;
+    try {
+      expectedHref = new URL(styleBundleHref, window.location.href).href;
+    } catch {
+      mirrorRoot.dataset.stylesReady = "true";
+      return;
+    }
+
+    let isDone = false;
+    const cleanupListeners: Array<() => void> = [];
+    const timeoutId = window.setTimeout(() => {
+      if (!isDone) {
+        mirrorRoot.dataset.styleTimeout = "true";
+      }
+    }, 2500);
+
+    const markReady = () => {
+      if (isDone) {
+        return;
+      }
+      isDone = true;
+      mirrorRoot.dataset.stylesReady = "true";
+      mirrorRoot.dataset.styleTimeout = "false";
+      window.clearTimeout(timeoutId);
+      cleanupListeners.forEach((cleanup) => {
+        cleanup();
+      });
+    };
+
+    const getExpectedStylesheetLink = () => {
+      const candidates = Array.from(
+        document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"][href]'),
+      );
+
+      return candidates.find((link) => link.href === expectedHref) ?? null;
+    };
+
+    const wireStylesheetLink = (link: HTMLLinkElement) => {
+      if (isDone) {
+        return;
+      }
+
+      if (link.sheet) {
+        markReady();
+        return;
+      }
+
+      const handleLoad = () => {
+        markReady();
+      };
+      const handleError = () => {
+        mirrorRoot.dataset.styleTimeout = "true";
+      };
+
+      link.addEventListener("load", handleLoad, { once: true });
+      link.addEventListener("error", handleError, { once: true });
+
+      cleanupListeners.push(() => {
+        link.removeEventListener("load", handleLoad);
+        link.removeEventListener("error", handleError);
+      });
+    };
+
+    const initialLink = getExpectedStylesheetLink();
+    if (initialLink) {
+      wireStylesheetLink(initialLink);
+    } else {
+      const observer = new MutationObserver(() => {
+        const discoveredLink = getExpectedStylesheetLink();
+        if (!discoveredLink) {
+          return;
+        }
+
+        observer.disconnect();
+        wireStylesheetLink(discoveredLink);
+      });
+
+      observer.observe(document.head, { childList: true, subtree: true });
+      cleanupListeners.push(() => {
+        observer.disconnect();
+      });
+    }
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      cleanupListeners.forEach((cleanup) => {
+        cleanup();
+      });
+    };
+  }, [rootId, styleBundleHref]);
 
   useEffect(() => {
     const root = document.getElementById(rootId);
@@ -167,6 +306,12 @@ export function MirrorRuntime({ rootId, path }: Props) {
 
       prefetchedPathsRef.current.add(href);
       router.prefetch(href);
+
+      const styleHref = stylePrefetchHints[url.pathname];
+      if (styleHref && !prefetchedStyleHrefsRef.current.has(styleHref)) {
+        prefetchedStyleHrefsRef.current.add(styleHref);
+        preloadStylesheet(styleHref);
+      }
     };
 
     const handlePointerOver = (event: PointerEvent) => {
@@ -186,7 +331,7 @@ export function MirrorRuntime({ rootId, path }: Props) {
       root.removeEventListener("pointerover", handlePointerOver, true);
       root.removeEventListener("focusin", handleFocusIn, true);
     };
-  }, [rootId, router]);
+  }, [rootId, router, stylePrefetchHints]);
 
   useEffect(() => {
     const root = document.getElementById(rootId);

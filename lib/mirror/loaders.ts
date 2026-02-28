@@ -33,6 +33,7 @@ type SearchIndexItem = {
 
 let searchIndexCache: SearchIndexItem[] | null = null;
 let styleBundleByIdCache: Map<string, StyleBundleRecord> | null = null;
+let styleHrefByPathCache: Map<string, string> | null = null;
 let blobMapCache: AssetBlobRecord[] | null = null;
 let blobMapByMirrorPathCache: Map<string, AssetBlobRecord> | null = null;
 
@@ -206,6 +207,87 @@ export async function getStyleBundleById(styleBundleId: string | null | undefine
 
   const styleBundleMap = await loadStyleBundles();
   return styleBundleMap.get(styleBundleId) ?? null;
+}
+
+async function loadStyleHrefByPath() {
+  if (styleHrefByPathCache) {
+    return styleHrefByPathCache;
+  }
+
+  const [index, styleBundleMap] = await Promise.all([loadContentIndex(), loadStyleBundles()]);
+  const byPath = new Map<string, string>();
+
+  await Promise.all(
+    index.map(async (item) => {
+      const fullPath = path.join(CONTENT_DIR, item.file);
+      const document = await readJsonFile<Pick<PageDocument, "path" | "styleBundleId"> | null>(
+        fullPath,
+        null,
+      );
+
+      if (!document?.styleBundleId) {
+        return;
+      }
+
+      const styleBundle = styleBundleMap.get(document.styleBundleId);
+      if (!styleBundle?.href) {
+        return;
+      }
+
+      for (const variant of getPathVariants(document.path)) {
+        if (!byPath.has(variant)) {
+          byPath.set(variant, styleBundle.href);
+        }
+      }
+    }),
+  );
+
+  styleHrefByPathCache = byPath;
+  return styleHrefByPathCache;
+}
+
+const SITE_HOSTS = new Set(["www.mekorhabracha.org", "mekorhabracha.org"]);
+
+function toInternalPath(candidate: string) {
+  if (!candidate) {
+    return null;
+  }
+
+  if (candidate.startsWith("/")) {
+    const withoutHash = candidate.split("#")[0] ?? candidate;
+    return normalizePath(withoutHash.split("?")[0] ?? withoutHash);
+  }
+
+  try {
+    const parsed = new URL(candidate);
+    if (!SITE_HOSTS.has(parsed.hostname)) {
+      return null;
+    }
+    return normalizePath(parsed.pathname);
+  } catch {
+    return null;
+  }
+}
+
+export async function getStylePrefetchHints(candidates: string[]) {
+  const byPath = await loadStyleHrefByPath();
+  const hints: Record<string, string> = {};
+
+  for (const candidate of candidates) {
+    const internalPath = toInternalPath(candidate);
+    if (!internalPath) {
+      continue;
+    }
+
+    const styleHref = byPath.get(internalPath);
+    if (!styleHref || hints[internalPath]) {
+      continue;
+    }
+
+    hints[internalPath] = styleHref;
+  }
+
+  return hints;
 }
 
 export async function loadBlobMap() {
