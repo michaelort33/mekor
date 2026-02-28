@@ -52,3 +52,22 @@ rebuild-assets/raw2/
 rebuild-assets/organized-by-page/
 rebuild-assets/organized-by-role/
 rebuild-assets/flat/
+
+# Heavy media/archive files should live in Vercel Blob, not Git
+*.zip
+*.tar
+*.gz
+*.tgz
+*.bz2
+*.7z
+*.rar
+*.heic
+*.mov
+*.mp4
+*.m4v
+*.avi
+*.mkv
+*.webm
+*.psd
+*.ai
+*.sketch
