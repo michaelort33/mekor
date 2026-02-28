@@ -1,3 +1,4 @@
+import { and, eq, gte } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb } from "@/db/client";
@@ -13,6 +14,65 @@ export const baseFormSchema = z.object({
 });
 
 type SubmitFormInput = z.infer<typeof baseFormSchema>;
+const DEDUPE_WINDOW_MS = 10 * 60 * 1000;
+
+async function findRecentDuplicateSubmission(
+  formType: "contact" | "kosher-inquiry",
+  data: SubmitFormInput,
+) {
+  const cutoff = new Date(Date.now() - DEDUPE_WINDOW_MS);
+
+  const [existing] = await getDb()
+    .select({ id: formSubmissions.id })
+    .from(formSubmissions)
+    .where(
+      and(
+        eq(formSubmissions.formType, formType),
+        eq(formSubmissions.name, data.name),
+        eq(formSubmissions.email, data.email),
+        eq(formSubmissions.phone, data.phone),
+        eq(formSubmissions.message, data.message),
+        eq(formSubmissions.sourcePath, data.sourcePath),
+        gte(formSubmissions.createdAt, cutoff),
+      ),
+    )
+    .limit(1);
+
+  return existing ?? null;
+}
+
+async function deliverFormNotification(
+  submissionId: number,
+  payload: {
+    formType: "contact" | "kosher-inquiry";
+    name: string;
+    email: string;
+    phone: string;
+    message: string;
+    sourcePath: string;
+  },
+) {
+  try {
+    await sendFormNotification({
+      ...payload,
+      submissionId,
+    });
+
+    await getDb().insert(formDeliveryLog).values({
+      submissionId,
+      provider: "resend",
+      status: "sent",
+      errorMessage: "",
+    });
+  } catch (error) {
+    await getDb().insert(formDeliveryLog).values({
+      submissionId,
+      provider: "resend",
+      status: "failed",
+      errorMessage: String(error).slice(0, 512),
+    });
+  }
+}
 
 export async function submitForm(formType: "contact" | "kosher-inquiry", payload: unknown) {
   const parsed = baseFormSchema.safeParse(payload);
@@ -26,6 +86,15 @@ export async function submitForm(formType: "contact" | "kosher-inquiry", payload
   }
 
   const data: SubmitFormInput = parsed.data;
+  const duplicate = await findRecentDuplicateSubmission(formType, data);
+  if (duplicate) {
+    return {
+      ok: true as const,
+      status: 200,
+      redirectTo: "/thank-you",
+      submissionId: duplicate.id,
+    };
+  }
 
   const [inserted] = await getDb()
     .insert(formSubmissions)
@@ -44,33 +113,14 @@ export async function submitForm(formType: "contact" | "kosher-inquiry", payload
     throw new Error("Insert failed");
   }
 
-  try {
-    await sendFormNotification({
-      formType,
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      message: data.message,
-      sourcePath: data.sourcePath,
-      submissionId: inserted.id,
-    });
-
-    await getDb().insert(formDeliveryLog).values({
-      submissionId: inserted.id,
-      provider: "resend",
-      status: "sent",
-      errorMessage: "",
-    });
-  } catch (error) {
-    await getDb().insert(formDeliveryLog).values({
-      submissionId: inserted.id,
-      provider: "resend",
-      status: "failed",
-      errorMessage: String(error).slice(0, 512),
-    });
-
-    throw error;
-  }
+  await deliverFormNotification(inserted.id, {
+    formType,
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    message: data.message,
+    sourcePath: data.sourcePath,
+  });
 
   return {
     ok: true as const,

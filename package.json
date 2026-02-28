@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "tsx --test tests/**/*.test.ts",
     "mirror:discover": "tsx scripts/mirror/01_discover.ts",
     "mirror:snapshot": "tsx scripts/mirror/02_snapshot_pages.ts",
     "mirror:extract-assets": "tsx scripts/mirror/03_extract_assets.ts",
