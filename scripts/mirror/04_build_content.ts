@@ -11,7 +11,6 @@ import {
   classifyDocumentType,
   ensureMirrorDirs,
   hashSha1,
-  isSourceHost,
   slugFromPath,
   toLocalMirrorPath,
   toAbsoluteUrl,
@@ -64,8 +63,17 @@ type PageDocument = {
   textHash: string;
   links: string[];
   assets: string[];
-  renderHtml: string;
+  bodyHtml: string;
+  styleBundleId: string;
   capturedAt: string;
+};
+
+type StyleBundleRecord = {
+  id: string;
+  href: string;
+  file: string;
+  bytes: number;
+  documentCount: number;
 };
 
 type BlobMapRecord = {
@@ -81,6 +89,8 @@ type BlobMapRecord = {
 type AssetResolver = {
   resolveUrl: (input: string) => string;
 };
+
+const PUBLIC_MIRROR_STYLES_DIR = path.join(process.cwd(), "public", "mirror-styles");
 
 function removeNoiseFromBody(html: string) {
   const $ = loadHtml(html);
@@ -273,6 +283,67 @@ function rewriteStyleUrls(value: string, resolveUrl: (input: string) => string) 
   });
 }
 
+function extractStylesheetHref(value: string) {
+  const raw = decodeHtmlAmpersands((value ?? "").trim());
+  if (!raw) {
+    return "";
+  }
+
+  if (raw.startsWith("<")) {
+    const $ = loadHtml(raw);
+    return $("link").attr("href")?.trim() ?? "";
+  }
+
+  return raw;
+}
+
+function extractStyleCss(value: string) {
+  const raw = (value ?? "").trim();
+  if (!raw) {
+    return "";
+  }
+
+  if (raw.startsWith("<")) {
+    const $ = loadHtml(raw);
+    return $("style").html()?.trim() ?? "";
+  }
+
+  return raw;
+}
+
+function normalizeStyleBundleCss(cssParts: string[]) {
+  return cssParts
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .join("\n\n")
+    .trim();
+}
+
+function buildStyleBundleCss(snapshot: SnapshotRecord, resolver: AssetResolver) {
+  const cssParts: string[] = [];
+
+  for (const styleLink of snapshot.styleLinks ?? []) {
+    const href = extractStylesheetHref(styleLink);
+    if (!href) {
+      continue;
+    }
+
+    const rewritten = resolver.resolveUrl(href).replace(/"/g, '\\"');
+    cssParts.push(`@import url("${rewritten}");`);
+  }
+
+  for (const styleTag of snapshot.styleTags ?? []) {
+    const css = extractStyleCss(styleTag);
+    if (!css) {
+      continue;
+    }
+
+    cssParts.push(rewriteStyleUrls(css, resolver.resolveUrl));
+  }
+
+  return normalizeStyleBundleCss(cssParts);
+}
+
 function rewriteInternalHtml(html: string, resolver: AssetResolver) {
   const $ = loadHtml(`<div id="__mirror_root">${html}</div>`);
   const root = $("#__mirror_root");
@@ -450,6 +521,10 @@ async function main() {
   const snapshots = await loadSnapshots();
   const docByPath = new Map<string, PageDocument>();
   const indexByPath = new Map<string, { path: string; type: string; file: string }>();
+  const styleBundleById = new Map<string, StyleBundleRecord & { css: string }>();
+
+  await fs.rm(PUBLIC_MIRROR_STYLES_DIR, { recursive: true, force: true });
+  await fs.mkdir(PUBLIC_MIRROR_STYLES_DIR, { recursive: true });
 
   for (const snapshot of snapshots) {
     if (snapshot.status < 200 || snapshot.status >= 400) {
@@ -461,9 +536,33 @@ async function main() {
     const slug = slugFromPath(pathValue);
 
     const cleanedBody = removeNoiseFromBody(snapshot.bodyHtml || "");
-    const styleBundle = [...(snapshot.styleLinks ?? []), ...(snapshot.styleTags ?? [])].join("\n");
-    const rewrittenHtml = rewriteInternalHtml(`${styleBundle}\n${cleanedBody}`, assetResolver);
-    const renderHtml = type === "event" ? rebalanceEventPortraitImages(rewrittenHtml) : rewrittenHtml;
+    const rewrittenBody = rewriteInternalHtml(cleanedBody, assetResolver);
+    const bodyHtml = type === "event" ? rebalanceEventPortraitImages(rewrittenBody) : rewrittenBody;
+    const styleBundleCss = buildStyleBundleCss(snapshot, assetResolver);
+    const styleBundleId = styleBundleCss ? hashSha1(styleBundleCss).slice(0, 16) : "";
+
+    if (styleBundleCss) {
+      let bundle = styleBundleById.get(styleBundleId);
+
+      if (!bundle) {
+        const fileName = `${styleBundleId}.css`;
+        const href = `/mirror-styles/${fileName}`;
+        const cssWithNewline = `${styleBundleCss}\n`;
+        await fs.writeFile(path.join(PUBLIC_MIRROR_STYLES_DIR, fileName), cssWithNewline, "utf8");
+
+        bundle = {
+          id: styleBundleId,
+          href,
+          file: `mirror-styles/${fileName}`,
+          bytes: Buffer.byteLength(cssWithNewline, "utf8"),
+          documentCount: 0,
+          css: styleBundleCss,
+        };
+        styleBundleById.set(styleBundleId, bundle);
+      }
+
+      bundle.documentCount += 1;
+    }
 
     const text = (snapshot.text || "").replace(/\s+/g, " ").trim();
     const canonical = toLocalMirrorPath(snapshot.metadata?.canonical || pathValue);
@@ -490,7 +589,8 @@ async function main() {
       textHash: snapshot.textHash || hashSha1(text),
       links: dedupe((snapshot.links ?? []).map((value) => assetResolver.resolveUrl(value))),
       assets: dedupe((snapshot.assets ?? []).map((value) => assetResolver.resolveUrl(value))),
-      renderHtml,
+      bodyHtml,
+      styleBundleId,
       capturedAt: snapshot.capturedAt || new Date().toISOString(),
     };
 
@@ -522,6 +622,15 @@ async function main() {
 
   docs.sort((a, b) => a.path.localeCompare(b.path));
   index.sort((a, b) => a.path.localeCompare(b.path));
+  const styleBundles = [...styleBundleById.values()]
+    .map((bundle) => ({
+      id: bundle.id,
+      href: bundle.href,
+      file: bundle.file,
+      bytes: bundle.bytes,
+      documentCount: bundle.documentCount,
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id));
 
   const metadataByPath = docs.map((doc) => ({
     path: doc.path,
@@ -539,10 +648,12 @@ async function main() {
   await Promise.all([
     writeJson(path.join(CONTENT_DIR, "index.json"), index),
     writeJson(path.join(CONTENT_DIR, "all-documents.json"), docs),
+    writeJson(path.join(CONTENT_DIR, "style-bundles.json"), styleBundles),
     writeJson(path.join(SEO_DIR, "metadata-by-path.json"), metadataByPath),
     writeJson(path.join(CONTENT_DIR, "content-summary.json"), {
       generatedAt: new Date().toISOString(),
       documentCount: docs.length,
+      styleBundleCount: styleBundles.length,
       byType: docs.reduce<Record<string, number>>((acc, doc) => {
         acc[doc.type] = (acc[doc.type] ?? 0) + 1;
         return acc;

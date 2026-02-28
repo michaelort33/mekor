@@ -18,8 +18,77 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+@supports (view-transition-name: root) {
+  :root {
+    view-transition-name: root;
+  }
+
+  .mirror-root {
+    view-transition-name: mirror-page;
+  }
+
+  ::view-transition-old(mirror-page),
+  ::view-transition-new(mirror-page) {
+    animation-duration: 180ms;
+    animation-timing-function: ease;
+  }
+}
+
 a {
   color: inherit;
+}
+
+.route-loading {
+  width: min(720px, calc(100vw - 48px));
+  margin: 22px auto 0;
+}
+
+.route-loading__bar {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.route-loading__bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 48%;
+  border-radius: inherit;
+  background: #1d4f8f;
+  animation: route-loading-slide 1s ease-in-out infinite;
+}
+
+.route-loading__skeleton {
+  margin-top: 12px;
+  width: 42%;
+  max-width: 240px;
+  height: 14px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 220% 100%;
+  animation: route-loading-shimmer 1.2s linear infinite;
+}
+
+@keyframes route-loading-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(240%);
+  }
+}
+
+@keyframes route-loading-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -40% 0;
+  }
 }
 
 .mirror-root {

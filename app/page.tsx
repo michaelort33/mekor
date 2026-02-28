@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import { DocumentView } from "@/components/mirror/document-view";
 import { getDocumentByPath, loadRouteSets } from "@/lib/mirror/loaders";
 
-export const dynamic = "force-dynamic";
-
 export default async function HomePage() {
   const routeSets = await loadRouteSets();
   if (!routeSets.twoHundred.has("/")) {

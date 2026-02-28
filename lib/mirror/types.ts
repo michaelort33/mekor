@@ -44,8 +44,18 @@ export type PageDocument = {
   textHash: string;
   links: string[];
   assets: string[];
-  renderHtml: string;
+  bodyHtml: string;
+  styleBundleId: string;
+  renderHtml?: string;
   capturedAt: string;
+};
+
+export type StyleBundleRecord = {
+  id: string;
+  href: string;
+  file: string;
+  bytes: number;
+  documentCount: number;
 };
 
 export type ContentIndexRecord = {
