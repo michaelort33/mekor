@@ -1,18 +1,14 @@
 import { notFound } from "next/navigation";
 
 import { DocumentView } from "@/components/mirror/document-view";
-import { getDocumentByPath, loadRouteSets } from "@/lib/mirror/loaders";
+import { resolveMirrorRoute } from "@/lib/mirror/resolve-route";
 
 export default async function HomePage() {
-  const routeSets = await loadRouteSets();
-  if (!routeSets.twoHundred.has("/")) {
+  const route = await resolveMirrorRoute("/");
+
+  if (route.overrideStatus === 404 || !route.isKnownRoute || !route.document) {
     notFound();
   }
 
-  const document = await getDocumentByPath("/");
-  if (!document) {
-    notFound();
-  }
-
-  return <DocumentView document={document} />;
+  return <DocumentView document={route.document} />;
 }

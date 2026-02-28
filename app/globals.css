@@ -95,6 +95,10 @@ a {
   width: 100%;
 }
 
+.mirror-content {
+  width: 100%;
+}
+
 .mirror-root img,
 .mirror-root video,
 .mirror-root iframe {
@@ -285,6 +289,11 @@ a {
 }
 
 .mirror-root[data-path="/events"] [data-mesh-id="comp-m5ss52xcinlineContent-wedge-5"] {
+  display: none !important;
+  height: 0 !important;
+}
+
+.mirror-root [data-mekor-hidden-wedge="true"] {
   display: none !important;
   height: 0 !important;
 }
