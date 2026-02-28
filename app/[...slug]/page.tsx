@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { DocumentView } from "@/components/mirror/document-view";
 import { getDocumentByPath, loadRouteSets, resolveRequestPath } from "@/lib/mirror/loaders";
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const requestPath = toPath(slug);
   const resolved = await resolveRequestPath(requestPath);
-  const doc = await getDocumentByPath(resolved.resolved);
+  const doc = (await getDocumentByPath(requestPath)) ?? (await getDocumentByPath(resolved.resolved));
 
   if (!doc) {
     return {
@@ -63,12 +63,9 @@ export default async function CatchAllPage({ params }: PageProps) {
   const requestPath = toPath(slug);
 
   const resolved = await resolveRequestPath(requestPath);
-  if (resolved.redirected) {
-    redirect(resolved.resolved);
-  }
 
   const routeSets = await loadRouteSets();
-  const overrideStatus = routeSets.overrides.get(resolved.resolved);
+  const overrideStatus = routeSets.overrides.get(requestPath) ?? routeSets.overrides.get(resolved.resolved);
 
   if (overrideStatus === 404) {
     notFound();
@@ -83,11 +80,11 @@ export default async function CatchAllPage({ params }: PageProps) {
     );
   }
 
-  if (!routeSets.twoHundred.has(resolved.resolved)) {
+  if (!routeSets.twoHundred.has(requestPath) && !routeSets.twoHundred.has(resolved.resolved)) {
     notFound();
   }
 
-  const document = await getDocumentByPath(resolved.resolved);
+  const document = (await getDocumentByPath(requestPath)) ?? (await getDocumentByPath(resolved.resolved));
   if (!document) {
     notFound();
   }
