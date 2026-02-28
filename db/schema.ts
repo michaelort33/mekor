@@ -1,14 +1,14 @@
 import {
-  int,
+  integer,
   json,
-  mysqlTable,
+  pgTable,
   serial,
   text,
   timestamp,
   varchar,
-} from "drizzle-orm/mysql-core";
+} from "drizzle-orm/pg-core";
 
-export const formSubmissions = mysqlTable("form_submissions", {
+export const formSubmissions = pgTable("form_submissions", {
   id: serial("id").primaryKey(),
   formType: varchar("form_type", { length: 80 }).notNull(),
   name: varchar("name", { length: 120 }).notNull(),
@@ -20,9 +20,9 @@ export const formSubmissions = mysqlTable("form_submissions", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const formDeliveryLog = mysqlTable("form_delivery_log", {
+export const formDeliveryLog = pgTable("form_delivery_log", {
   id: serial("id").primaryKey(),
-  submissionId: int("submission_id").notNull(),
+  submissionId: integer("submission_id").notNull(),
   provider: varchar("provider", { length: 60 }).notNull().default("resend"),
   status: varchar("status", { length: 40 }).notNull(),
   errorMessage: varchar("error_message", { length: 512 }).notNull().default(""),

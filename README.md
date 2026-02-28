@@ -7,7 +7,7 @@ Deterministic Next.js rebuild of [mekorhabracha.org](https://www.mekorhabracha.o
 - Next.js 16 App Router + TypeScript
 - Mirror data pipeline with Playwright + tsx scripts
 - Vercel Blob for public asset storage
-- MySQL + Drizzle for form submissions
+- Postgres (Neon-compatible) + Drizzle for form submissions
 - Resend for form notification emails
 
 ## Local Setup

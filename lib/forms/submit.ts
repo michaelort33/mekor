@@ -38,7 +38,7 @@ export async function submitForm(formType: "contact" | "kosher-inquiry", payload
       sourcePath: data.sourcePath,
       payloadJson: data as Record<string, unknown>,
     })
-    .$returningId();
+    .returning({ id: formSubmissions.id });
 
   if (!inserted) {
     throw new Error("Insert failed");

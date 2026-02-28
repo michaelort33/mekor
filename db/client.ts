@@ -1,10 +1,10 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres, { type Sql } from "postgres";
 
 import * as schema from "@/db/schema";
 
 declare global {
-  var mysqlPool: mysql.Pool | undefined;
+  var postgresSql: Sql | undefined;
 }
 
 function getDatabaseUrl() {
@@ -16,17 +16,18 @@ function getDatabaseUrl() {
   return databaseUrl;
 }
 
-function getPool() {
-  if (!global.mysqlPool) {
-    global.mysqlPool = mysql.createPool({
-      uri: getDatabaseUrl(),
-      connectionLimit: 10,
+function getSqlClient() {
+  if (!global.postgresSql) {
+    global.postgresSql = postgres(getDatabaseUrl(), {
+      max: 10,
+      // Neon pooler + serverless works best without prepared statements.
+      prepare: false,
     });
   }
 
-  return global.mysqlPool;
+  return global.postgresSql;
 }
 
 export function getDb() {
-  return drizzle(getPool(), { schema, mode: "default" });
+  return drizzle(getSqlClient(), { schema });
 }
