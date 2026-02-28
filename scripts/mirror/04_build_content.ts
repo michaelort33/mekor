@@ -352,6 +352,40 @@ function rewriteInternalHtml(html: string, resolver: AssetResolver) {
     node.replaceWith(replacement);
   });
 
+  root.find('nav[aria-label="Site"] li').each((_, li) => {
+    const listItem = $(li);
+    const submenu = listItem.children("ul").first();
+
+    if (submenu.length === 0) {
+      return;
+    }
+
+    listItem.addClass("mirror-native-has-submenu");
+    submenu.addClass("mirror-native-submenu");
+    submenu.removeAttr("style");
+    submenu.removeAttr("aria-hidden");
+
+    const trigger = listItem.children("a, button, [role='button']").first();
+    if (trigger.length > 0) {
+      trigger.addClass("mirror-native-submenu-trigger");
+    }
+
+    const toggle = listItem.children("button").last();
+    if (toggle.length > 0) {
+      toggle.attr("type", "button");
+      toggle.attr("aria-expanded", "false");
+      toggle.addClass("mirror-native-submenu-toggle");
+    }
+
+    submenu.find("a").each((__, link) => {
+      const href = $(link).attr("href");
+      if (!href) {
+        return;
+      }
+      $(link).attr("href", resolver.resolveUrl(href));
+    });
+  });
+
   return root.html() ?? "";
 }
 

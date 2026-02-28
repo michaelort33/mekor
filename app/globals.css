@@ -32,6 +32,21 @@ a {
   max-width: 100%;
 }
 
+.mirror-root nav[aria-label="Site"] li.mirror-native-has-submenu {
+  position: relative;
+}
+
+.mirror-root nav[aria-label="Site"] li.mirror-native-has-submenu > ul.mirror-native-submenu {
+  display: none !important;
+  z-index: 50;
+}
+
+.mirror-root nav[aria-label="Site"] li.mirror-native-has-submenu:hover > ul.mirror-native-submenu,
+.mirror-root nav[aria-label="Site"] li.mirror-native-has-submenu:focus-within > ul.mirror-native-submenu,
+.mirror-root nav[aria-label="Site"] li.mirror-native-has-submenu[data-open="true"] > ul.mirror-native-submenu {
+  display: block !important;
+}
+
 .mirror-error {
   margin: 0 auto;
   max-width: 760px;
