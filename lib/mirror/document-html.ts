@@ -36,6 +36,7 @@ const HOMEPAGE_DIRECTIONS_HREF =
   "https://www.google.com/maps/dir/?api=1&destination=1500+Walnut+St+Suite+206+Philadelphia+PA+19102";
 const EVENTS_CALENDAR_EMBED_SRC =
   "https://calendar.google.com/calendar/embed?src=david%40mekorhabracha.org&ctz=America%2FNew_York";
+const DONATION_HERO_BG_MEDIA_ID = "#bgMedia_comp-m5l2m4cv";
 
 function toUrl(raw: string) {
   try {
@@ -177,6 +178,62 @@ function ensureEventsCalendarEmbed(root: Cheerio<AnyNode>) {
   }
 }
 
+function ensureDonationHeroMedia($: CheerioAPI, root: Cheerio<AnyNode>) {
+  const heroMedia = root.find(DONATION_HERO_BG_MEDIA_ID).first();
+  if (heroMedia.length === 0 || heroMedia.children().length > 0) {
+    return;
+  }
+
+  const fallbackSource = root
+    .find("img[src]")
+    .toArray()
+    .map((node) => $(node))
+    .map((image) => {
+      const width = Number(image.attr("width") ?? "0");
+      const height = Number(image.attr("height") ?? "0");
+      return {
+        src: image.attr("src"),
+        width,
+        height,
+      };
+    })
+    .find((candidate) => candidate.src && candidate.width >= 900 && candidate.height >= 500);
+
+  if (!fallbackSource?.src) {
+    return;
+  }
+
+  const fallbackImage = $("<img />")
+    .attr("src", fallbackSource.src)
+    .attr("alt", "")
+    .attr("decoding", "async")
+    .attr("fetchpriority", "high")
+    .attr(
+      "style",
+      "width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;",
+    );
+
+  heroMedia.append(fallbackImage);
+}
+
+function prioritizeDonationPaymentIframe($: CheerioAPI, root: Cheerio<AnyNode>) {
+  root.find("iframe[src]").each((_, node) => {
+    const iframe = $(node);
+    const src = iframe.attr("src") ?? "";
+
+    if (!src.includes(".filesusr.com/html/")) {
+      return;
+    }
+
+    iframe.attr("loading", "eager");
+    iframe.attr("fetchpriority", "high");
+
+    if (!iframe.attr("title")) {
+      iframe.attr("title", "Donation payment form");
+    }
+  });
+}
+
 function findKosherMapHeading($: CheerioAPI, root: Cheerio<AnyNode>) {
   return root
     .find("h1,h2,h3,h4,h5,h6")
@@ -302,6 +359,12 @@ function applyPathSpecificFixes($: CheerioAPI, root: Cheerio<AnyNode>, path: str
 
   if (path === "/events") {
     ensureEventsCalendarEmbed(root);
+    return;
+  }
+
+  if (path === "/donations") {
+    ensureDonationHeroMedia($, root);
+    prioritizeDonationPaymentIframe($, root);
     return;
   }
 
