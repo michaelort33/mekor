@@ -1,0 +1,6 @@
+https://www.mekorhabracha.org/blog-categories-sitemap.xml
+https://www.mekorhabracha.org/blog-posts-sitemap.xml
+https://www.mekorhabracha.org/dynamic-news-sitemap.xml
+https://www.mekorhabracha.org/event-pages-sitemap.xml
+https://www.mekorhabracha.org/pages-sitemap.xml
+https://www.mekorhabracha.org/sitemap.xml

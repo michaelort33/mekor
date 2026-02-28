@@ -40,3 +40,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.env*.local
+
+# Local automation/crawl artifacts
+.playwright-cli/
+output/
+
+# Local extracted asset dumps (keep out of git; use Blob/object storage)
+rebuild-assets/raw/
+rebuild-assets/raw2/
+rebuild-assets/organized-by-page/
+rebuild-assets/organized-by-role/
+rebuild-assets/flat/

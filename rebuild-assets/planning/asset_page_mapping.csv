@@ -1,0 +1,321 @@
+asset_relative_path,asset_role,target_page_url,mapping_rationale,confidence,score
+Events/events.csv,events_export_csv,https://www.mekorhabracha.org/events,Events export feeds calendar/content migration.,high,1.00
+Events/events.csv,events_export_csv,https://www.mekorhabracha.org/events-page,Legacy events page may need same records.,medium,0.60
+Forms Inquiries csv/Home Contact Form.csv,form_export_csv,https://www.mekorhabracha.org/contact-us,Submission export migrates form records and workflows.,high,1.00
+Forms Inquiries csv/Kosher Inquiry.csv,form_export_csv,https://www.mekorhabracha.org/contact-us,Submission export migrates form records and workflows.,high,1.00
+Forms Inquiries csv/Kosher Inquiry.csv,form_export_csv,https://www.mekorhabracha.org/kosher-map,Kosher inquiry records tie to kosher-map contact funnel.,high,0.90
+IKC Certificates/IKC Certificates_unzipped/92f487_5779394e95544307960fcd1f0f06a6c7 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/92f487_5779394e95544307960fcd1f0f06a6c7 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/92f487_5779394e95544307960fcd1f0f06a6c7 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/92f487_5779394e95544307960fcd1f0f06a6c7 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/92f487_6256c0711f044f5086c72a471120db61 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/92f487_6256c0711f044f5086c72a471120db61 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/Bar Bombon 2025 updated.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Bar Bombon 2025 updated.pdf,ikc_certificate,https://www.mekorhabracha.org/post/bar-bombon,"Filename token match to post slug ""bar-bombon"".",high,0.67
+IKC Certificates/IKC Certificates_unzipped/Casa Borinqueña.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Casa Borinqueña.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/Center_City_South_Philly_Eruv_Update.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Center_City_South_Philly_Eruv_Update.pdf,ikc_certificate,https://www.mekorhabracha.org/post/rita-s-south-street-west,"Filename token match to post slug ""rita-s-south-street-west"".",medium,0.25
+IKC Certificates/IKC Certificates_unzipped/Charlie 2025 Certificate updated.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Charlie 2025 Certificate updated.pdf,ikc_certificate,https://www.mekorhabracha.org/post/charlie-was-a-sinner,"Filename token match to post slug ""charlie-was-a-sinner"".",medium,0.33
+"IKC Certificates/IKC Certificates_unzipped/Fitz on 4th 2025, updated.pdf",ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+"IKC Certificates/IKC Certificates_unzipped/Fitz on 4th 2025, updated.pdf",ikc_certificate,https://www.mekorhabracha.org/post/fitz-on-4th,"Filename token match to post slug ""fitz-on-4th"".",high,0.67
+IKC Certificates/IKC Certificates_unzipped/LUHV Factory & Vegan.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/LUHV Factory & Vegan.pdf,ikc_certificate,https://www.mekorhabracha.org/post/luhv-factory-vegan-bistro,"Filename token match to post slug ""luhv-factory-vegan-bistro"".",high,0.75
+IKC Certificates/IKC Certificates_unzipped/LUHV's VEGAN BISTRO-S. Philly.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/LUHV's VEGAN BISTRO-S. Philly.pdf,ikc_certificate,https://www.mekorhabracha.org/post/luhv-factory-vegan-bistro,"Filename token match to post slug ""luhv-factory-vegan-bistro"".",high,0.75
+IKC Certificates/IKC Certificates_unzipped/Luhv - N York.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Luhv - N York.pdf,ikc_certificate,https://www.mekorhabracha.org/post/_luhv,"Filename token match to post slug ""_luhv"".",high,0.50
+IKC Certificates/IKC Certificates_unzipped/Luhv Vegan Bistro.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Luhv Vegan Bistro.pdf,ikc_certificate,https://www.mekorhabracha.org/post/luhv-factory-vegan-bistro,"Filename token match to post slug ""luhv-factory-vegan-bistro"".",high,0.75
+IKC Certificates/IKC Certificates_unzipped/Magical Sweet Shop.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Magical Sweet Shop.pdf,ikc_certificate,https://www.mekorhabracha.org/post/magical-sweet-shop,"Filename token match to post slug ""magical-sweet-shop"".",high,1.00
+IKC Certificates/IKC Certificates_unzipped/PLNT Burger .pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/PLNT Burger .pdf,ikc_certificate,https://www.mekorhabracha.org/post/plnt-burger,"Filename token match to post slug ""plnt-burger"".",high,1.00
+IKC Certificates/IKC Certificates_unzipped/She say Ate Cafe.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/She say Ate Cafe.pdf,ikc_certificate,https://www.mekorhabracha.org/post/say-she-ate-café,"Filename token match to post slug ""say-she-ate-café"".",high,0.75
+IKC Certificates/IKC Certificates_unzipped/Sweet Box.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Sweet Box.pdf,ikc_certificate,https://www.mekorhabracha.org/post/sweet-box-bakery,"Filename token match to post slug ""sweet-box-bakery"".",high,0.67
+IKC Certificates/IKC Certificates_unzipped/Sweetbox Certificate .pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Sweetbox Certificate .pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/Unit Su Vege​.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Unit Su Vege​.pdf,ikc_certificate,https://www.mekorhabracha.org/post/unit-su-vege,"Filename token match to post slug ""unit-su-vege"".",high,1.00
+IKC Certificates/IKC Certificates_unzipped/Zevi's Bakery IKC certificate 2026.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/Zevi's Bakery IKC certificate 2026.pdf,ikc_certificate,https://www.mekorhabracha.org/post/zevi-s-bakery,"Filename token match to post slug ""zevi-s-bakery"".",high,0.50
+IKC Certificates/IKC Certificates_unzipped/bar_bombon_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/bar_bombon_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/bar-bombon,"Filename token match to post slug ""bar-bombon"".",high,0.67
+IKC Certificates/IKC Certificates_unzipped/bar_bombon_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/bar_bombon_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/bar-bombon,"Filename token match to post slug ""bar-bombon"".",high,0.67
+IKC Certificates/IKC Certificates_unzipped/ben_jerryscertificate_-w.philly_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/ben_jerryscertificate_-w.philly_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/ben-jerry-s-ice-cream,"Filename token match to post slug ""ben-jerry-s-ice-cream"".",medium,0.25
+IKC Certificates/IKC Certificates_unzipped/ben_jerryscertificate_-w.philly_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/ben_jerryscertificate_-w.philly_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/ben-jerry-s-ice-cream,"Filename token match to post slug ""ben-jerry-s-ice-cream"".",medium,0.25
+IKC Certificates/IKC Certificates_unzipped/blackbird_20thst_certificate_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/blackbird_20thst_certificate_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/blackbird_20thst_certificate_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/blackbird_20thst_certificate_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/chana_strauss_dinner_speech_excerpt_12-2-22.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/chana_strauss_dinner_speech_excerpt_12-2-22.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/charlie_2024_certificate (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/charlie_2024_certificate (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/charlie-was-a-sinner,"Filename token match to post slug ""charlie-was-a-sinner"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/charlie_2024_certificate.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/charlie_2024_certificate.pdf,ikc_certificate,https://www.mekorhabracha.org/post/charlie-was-a-sinner,"Filename token match to post slug ""charlie-was-a-sinner"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts 1.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts 1.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts 2.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts 2.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts 3.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts 3.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts_manayunk_certificate-website.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts_manayunk_certificate-website.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts_w.phila__certificate_2024 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts_w.phila__certificate_2024 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts_w.phila__certificate_2024.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/dottiesdonuts_w.phila__certificate_2024.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/fitz_on_4th_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/fitz_on_4th_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/fitz-on-4th,"Filename token match to post slug ""fitz-on-4th"".",high,0.67
+IKC Certificates/IKC Certificates_unzipped/fitz_on_4th_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/fitz_on_4th_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/fitz-on-4th,"Filename token match to post slug ""fitz-on-4th"".",high,0.67
+IKC Certificates/IKC Certificates_unzipped/goldie 5 locations.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/goldie 5 locations.pdf,ikc_certificate,https://www.mekorhabracha.org/post/goldie,"Filename token match to post slug ""goldie"".",high,0.50
+IKC Certificates/IKC Certificates_unzipped/goldie_fishtown_certificate-_2024 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/goldie_fishtown_certificate-_2024 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/goldie,"Filename token match to post slug ""goldie"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/goldie_fishtown_certificate-_2024.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/goldie_fishtown_certificate-_2024.pdf,ikc_certificate,https://www.mekorhabracha.org/post/goldie,"Filename token match to post slug ""goldie"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/hip_city_veg_ardmore_cert_2022 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/hip_city_veg_ardmore_cert_2022 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/hipcityvegardmore_website.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/hipcityvegardmore_website.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/hipcityvegrittenhouse_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/hipcityvegrittenhouse_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/joy_cafe_certificate_2024revd (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/joy_cafe_certificate_2024revd (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/joy-cafe,"Filename token match to post slug ""joy-cafe"".",high,0.67
+IKC Certificates/IKC Certificates_unzipped/joy_cafe_certificate_2024revd (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/joy_cafe_certificate_2024revd (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/joy-cafe,"Filename token match to post slug ""joy-cafe"".",high,0.67
+IKC Certificates/IKC Certificates_unzipped/kilwins_certificate_2024_-_website.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/kilwins_certificate_2024_-_website.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/luhv_vegan_deli_at_reading_terminal_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/luhv_vegan_deli_at_reading_terminal_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/luhv-factory-vegan-bistro,"Filename token match to post slug ""luhv-factory-vegan-bistro"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/luhv_vegan_deli_at_reading_terminal_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/luhv_vegan_deli_at_reading_terminal_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/luhv-factory-vegan-bistro,"Filename token match to post slug ""luhv-factory-vegan-bistro"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/mekor_pesach_at_home_services_2024.docx,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/mekor_pesach_at_home_services_2024.docx,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/p.s.___co._certification_2024 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/p.s.___co._certification_2024 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/ps-co,"Filename token match to post slug ""ps-co"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/p.s.___co._certification_2024.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/p.s.___co._certification_2024.pdf,ikc_certificate,https://www.mekorhabracha.org/post/ps-co,"Filename token match to post slug ""ps-co"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/rabbi_hirsch__2017_sermon_excerpt-_pd.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/rabbi_hirsch__2017_sermon_excerpt-_pd.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/rachels_pantry_certificate_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/rachels_pantry_certificate_2024 (1) (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/miss-rachel-s-pantry,"Filename token match to post slug ""miss-rachel-s-pantry"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/rachels_pantry_certificate_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/rachels_pantry_certificate_2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/miss-rachel-s-pantry,"Filename token match to post slug ""miss-rachel-s-pantry"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/ritas_kosher_certificate_2024_-website (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/ritas_kosher_certificate_2024_-website (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/house-of-kosher,"Filename token match to post slug ""house-of-kosher"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/ritas_kosher_certificate_2024_-website.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/ritas_kosher_certificate_2024_-website.pdf,ikc_certificate,https://www.mekorhabracha.org/post/house-of-kosher,"Filename token match to post slug ""house-of-kosher"".",medium,0.33
+IKC Certificates/IKC Certificates_unzipped/the_chillybanana_certificate_2024 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/the_chillybanana_certificate_2024 (1) (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/the_chillybanana_certificate_2024.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/the_chillybanana_certificate_2024.pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-posts,No strong restaurant slug match; map to kosher posts collection for manual attach.,low,0.10
+IKC Certificates/IKC Certificates_unzipped/unit_su_vege__certificate2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/kosher-map,Certificate source-of-truth for kosher listings.,high,1.00
+IKC Certificates/IKC Certificates_unzipped/unit_su_vege__certificate2024 (1).pdf,ikc_certificate,https://www.mekorhabracha.org/post/unit-su-vege,"Filename token match to post slug ""unit-su-vege"".",high,0.75
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/20190928_145210.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/2021-07-04.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/2022-01-20.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/2022-11-07.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/2023-01-05.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/2024-11-03.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/MM outdoors.JPG,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/PXL_20210724_223710198.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/kexp-img-9683-edit_1.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/screenshot-from-2021-08-30-19-45-26_1.png,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Cherry Hill_unzipped/unnamed.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/001_UPenn_int.JPG,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/20.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/20170624-172056_orig (More Smaller).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2019-05-17.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2022-05-14 (More Smaller).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2022-10-29 (More Smaller).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2023-09-25 (Large).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2023-11-30.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2024-11-13.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2024-11-15 (Large).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2024-12-12 (More Smaller).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2025-01-07.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2025-04-02.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/2994_015 (More Smaller).JPG,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/472874816_18047064302469507_507376375992382334_n.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/Casa Borinqueña.jpeg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/E85FFE49-750A-496A-94B2-8A06A377422D.jpeg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/FEFD5C7E-A5FA-4348-9E4F-6362D5E14B5A.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/IMG_2725 (More Smaller).JPG,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/IMG_3382.jpeg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/IMG_7036.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/IMG_9082.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/KosherCorner_LocationAlt_1137x640.avif,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/LifestyleKitchenVanillaFudge_1920x1920.webp,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/PXL_20230223_162540334.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/PXL_20240506_144438384.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/Screenshot_3 (Medium).png,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/Screenshot_4 (Small).png,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/Screenshot_6 (More Smaller).png,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/YFeh11395914 (More Smaller).png,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/_DSC0052 (3).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/exterior.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/fd1LUHV06-c.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/imgi_19_AC9h4nrLS6z3bzku8E3S96v1SMI9w62RcUQGr3ifn7O3RnYCWzGT_7_yJngTWL3eRYh2nI55bOWj3F5XqA4kzWgeYoo93-BjAfLSEX-89vkthA5ocQNSJgHWd3RV9cbM1XX9-9_M11ktHQ=s508-k-no.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/imgi_6_AG0ilSxW7LX9qRnRUalCyIYCxiz2oyMZTl4yRt09qvzKAgCsMd-a0MmuekczBkTcLJd66EAbZtlfcCFTdtqDNJFhUHdBnHghYzhD5gK8dRRoHmSyu6lg8iG4VYQfN2n6NkLzIrVGMTrKOHwBgKuu=w203-h270.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/location_01.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/location_02.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/location_03.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/location_04.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/location_05.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/unnamed (More Smaller).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/City Center_unzipped/unnamed.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/center-city,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/2020-07-16.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/2020-10-17.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/2022-11-02.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/2023-03-23.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/2023-04-20.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/2023-05-24 (More Smaller).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/2023-05-26.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/2023-07-17.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/2023-08-09.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/Bala-Cynwyd-1_1080x1080.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/IMG_6798.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/IMG_8371.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/IMG_9082.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Main Line_Manayunk_unzipped/unnamed.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2018-09-27.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2019-05-21.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2020-01-13 (More Smaller).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2021-11-19.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2021-12-07.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2023-04-08 (More Smaller).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2023-04-14.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2023-05-26.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2023-06-15 (More Smaller).jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/2023-09-14.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/58_orig.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Old York Road_Northeast_unzipped/60.jpg,blog_image,https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast,Folder name matches category.,high,1.00
+Media-Images/Blog Posts Images/Screenshot_1.png,blog_image,https://www.mekorhabracha.org/kosher-posts,General blog image pool.,medium,0.60
+Media-Images/Blog Posts Images/Screenshot_2.png,blog_image,https://www.mekorhabracha.org/kosher-posts,General blog image pool.,medium,0.60
+Media-Images/Blog Posts Images/Screenshot_3.png,blog_image,https://www.mekorhabracha.org/kosher-posts,General blog image pool.,medium,0.60
+Media-Images/Board Members_unzipped/Bruce.jpeg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/Bruce.jpeg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/Chana.jpeg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/Chana.jpeg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/David.jpeg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/David.jpeg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/Ellen.png,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/Ellen.png,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/Ethan.jpg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/Ethan.jpg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/Jonathan.jpeg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/Jonathan.jpeg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/Miriam.jpeg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/Miriam.jpeg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/NR_Profile_edited.jpg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/NR_Profile_edited.jpg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/Yoella.jpeg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/Yoella.jpeg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/jordan.jpeg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/jordan.jpeg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Board Members_unzipped/rabbi.jpeg,leadership_image,https://www.mekorhabracha.org/our-leadership,Board/leadership portraits.,high,1.00
+Media-Images/Board Members_unzipped/rabbi.jpeg,leadership_image,https://www.mekorhabracha.org/about-us,Secondary use in about page.,medium,0.50
+Media-Images/Random Pics_unzipped/9D84DEC1-8A82-4E7D-A137-A8973835D089.jpeg,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/9D84DEC1-8A82-4E7D-A137-A8973835D089.jpeg,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Random Pics_unzipped/CJSTUDIOS_1493.jpg,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/CJSTUDIOS_1493.jpg,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Random Pics_unzipped/Chanukkah 2023.jpeg,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/Chanukkah 2023.jpeg,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Random Pics_unzipped/IMG_3871.jpg,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/IMG_3871.jpg,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Random Pics_unzipped/IMG_8332.jpg,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/IMG_8332.jpg,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Random Pics_unzipped/PXL_20221219_002137847.jpg,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/PXL_20221219_002137847.jpg,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Random Pics_unzipped/PXL_20230127_010153771.NIGHT.jpg,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/PXL_20230127_010153771.NIGHT.jpg,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Random Pics_unzipped/Purim 2023 All Smiles v2.HEIC,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/Purim 2023 All Smiles v2.HEIC,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Random Pics_unzipped/events.jpeg,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/events.jpeg,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Random Pics_unzipped/kiddush pic.jpeg,event_or_community_image,https://www.mekorhabracha.org/events,Event gallery/supporting visuals.,medium,0.60
+Media-Images/Random Pics_unzipped/kiddush pic.jpeg,event_or_community_image,https://www.mekorhabracha.org/our-communities,Community highlights/gallery.,medium,0.60
+Media-Images/Stock images_unzipped/03bc1ca6-099c-4064-943d-0c1b1e7f7723 (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/1cb6afc2-c51d-4855-9490-d8d5072bd1d7 (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/40c2bd34-ed87-4894-bf34-e6bac966c9c9 (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/5e1c044e-c36a-4cba-ac59-5f10fb713aa6 (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/678b35bb-3578-419e-ba84-c81cc8a8facf (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/68763183-d7df-403a-9ebe-cf358449c1b7 (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/6fc32154-d1b9-47e9-aacd-04692fe0aa6b (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/7c838ce6-6309-46ca-977c-f57adb624379 (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/819201d4-dd1e-4935-8f8f-0e2070252137 (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/8a2c902d-1a7d-41b1-88c6-e5822bd21f8c (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/93079f37-e992-436a-be38-37c233ef604d (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/aa134484-c36e-4f68-8e8f-d14d2acfc78a (Medium).jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/aa1c0948-1dfd-4749-b079-c968f254d204.jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/ad2f107f-da43-4885-a76c-b2ba49903c12.jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/b5790770-bfb3-4df7-9128-6d25902c9776.jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/ceea28f0-2bf7-42f4-9af0-3936517bdf3c.jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Stock images_unzipped/ee50e99b-5f02-4f68-b7c1-53154d01775a.jpeg,stock_image,https://www.mekorhabracha.org/,Fallback stock image library for redesign.,low,0.20
+Media-Images/Website images _unzipped/11062b_8135b27108d04d2a97adc750a341fb79~mv2.avif,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/1280px-BaisMedrashInterior.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/1751460869628.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/33_orig.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/34_orig.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/358739435_603589091913526_3550973734746701646_n.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/438932459_3820687801496580_7246425563757743508_n.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/491996659_2155008681613515_41739.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/61DSFe1-cCL._SL1499_.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/6600b25c-0c91-4afa-938b-8419bf51b7fa.jpeg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/92f487_992c29615f9b402c905cc79ee0b17034~mv2.png.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/BeitMidrash.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/BeitMidrash.jpg,website_image,https://www.mekorhabracha.org/about-us,Institutional/brand imagery.,low,0.30
+Media-Images/Website images _unzipped/Brindar siempre lo mejor de ti._edited.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/Mekor Habracha.png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/Mekor Habracha.png,website_image,https://www.mekorhabracha.org/about-us,Institutional/brand imagery.,low,0.30
+Media-Images/Website images _unzipped/Mekor.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/Mekor.jpg,website_image,https://www.mekorhabracha.org/about-us,Institutional/brand imagery.,low,0.30
+Media-Images/Website images _unzipped/Mekor_edited.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/Mekor_edited.jpg,website_image,https://www.mekorhabracha.org/about-us,Institutional/brand imagery.,low,0.30
+Media-Images/Website images _unzipped/PHOTO-2025-10-24-15-03-56.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/PHOTO-2025-10-24-15-03-56_edited.png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/Shavuot_2025.png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/Things to do_edited.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/Things to do_edited_edited.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/WhatsApp Image 2025-08-10 at 20.09.16 (1).jpeg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/WhatsApp Image 2025-09-18 at 09.17.54.jpeg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/Zelle_-_FinTech_News.webp,website_image,https://www.mekorhabracha.org/donations,Payment/donation motif.,medium,0.70
+Media-Images/Website images _unzipped/Zelle_-_FinTech_News.webp,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/amazon-pay (1).png,website_image,https://www.mekorhabracha.org/donations,Payment/donation motif.,medium,0.70
+Media-Images/Website images _unzipped/amazon-pay (1).png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/apple-pay (1).png,website_image,https://www.mekorhabracha.org/donations,Payment/donation motif.,medium,0.70
+Media-Images/Website images _unzipped/apple-pay (1).png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/apple.png,website_image,https://www.mekorhabracha.org/donations,Payment/donation motif.,medium,0.70
+Media-Images/Website images _unzipped/apple.png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/credit-card (1).png,website_image,https://www.mekorhabracha.org/donations,Payment/donation motif.,medium,0.70
+Media-Images/Website images _unzipped/credit-card (1).png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/e-mail-global-communications-connection-social-networking-concept (Medium)_edited.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/e6b6bb7a-28a3-4f34-90df-df5e200cff1d.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/image.png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/image1 (1).png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/image10 (Medium).png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/image7 (Medium).png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/image8 (Medium).png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/image8.png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/image9 (Medium).png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/steptodown.com669495.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/steptodown.com822708.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/steptodown.com838809.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/tiktok.png,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/top-view-person-writing-laptop-with-copy-space (Medium).jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/top-view-person-writing-laptop-with-copy-space (Medium)_edited.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/unnamed (1).jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/unnamed (5).jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/unnamed.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/woman wears black tank top_edited.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/woman wears black tank top_edited_edited.jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
+Media-Images/Website images _unzipped/young-man-studying-library-using-his-laptop (Medium).jpg,website_image,https://www.mekorhabracha.org/,General website visual library (home/global sections).,medium,0.60
