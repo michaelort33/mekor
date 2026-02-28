@@ -10,7 +10,7 @@ type Props = {
 
 export async function DocumentView({ document }: Props) {
   const styleBundle = await getStyleBundleById(document.styleBundleId);
-  const html = prepareMirrorDocumentHtml(document.bodyHtml || document.renderHtml || "", document.path);
+  const html = prepareMirrorDocumentHtml(document.bodyHtml || document.renderHtml || "");
   const contentId = `mirror-content-${document.id.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
   const nativeNavEnabled = process.env.NEXT_PUBLIC_NATIVE_NAV === "true";
 

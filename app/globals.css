@@ -1,10 +1,5 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #111827;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -13,10 +8,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--background);
-  color: var(--foreground);
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  overflow-x: hidden;
+  background: #fff;
 }
 
 @supports (view-transition-name: root) {
@@ -94,7 +86,6 @@ a {
 
 .mirror-root {
   width: 100%;
-  overflow-x: hidden;
 }
 
 .mirror-root img:not([src]),
@@ -106,20 +97,13 @@ a {
   width: 100%;
 }
 
-.mirror-root img,
-.mirror-root video,
-.mirror-root iframe {
-  max-width: 100%;
+.mirror-root fluid-columns-repeater {
+  display: block !important;
+  width: 100% !important;
 }
 
-.mirror-root [id^="bgMedia_"] img,
-.mirror-root [id^="bgMedia_"] video {
-  width: 100% !important;
-  height: 100% !important;
-  max-width: none !important;
-  object-fit: cover !important;
-  object-position: center center !important;
-  display: block;
+.mirror-root fluid-columns-repeater[style*="visibility:hidden"] {
+  visibility: visible !important;
 }
 
 .mirror-root[data-native-nav="true"] {
@@ -667,48 +651,6 @@ body.native-nav--mobile-open {
   font-weight: 600;
 }
 
-.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-}
-
-.mirror-root[data-path="/our-leadership"] #comp-iq9l9vuc h2 {
-  color: #233954;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-}
-
-.mirror-root[data-path="/our-leadership"] #comp-ipzdtm45 p {
-  color: #334155;
-  line-height: 1.7;
-}
-
-.mirror-root[data-path="/our-leadership"] #comp-ipzdtm45 a {
-  color: #1d4f8f;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 2px;
-}
-
-.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w h5 {
-  color: #1f3550;
-  letter-spacing: 0.01em;
-}
-
-.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w .wixui-rich-text p {
-  color: #334155;
-  text-wrap: pretty;
-}
-
-.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w .wixui-image img {
-  border-radius: 12px;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
-  transition: transform 180ms ease, box-shadow 180ms ease;
-}
-
-.mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w .wixui-image:hover img {
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
-  transform: translateY(-2px);
-}
-
 @media (max-width: 900px) {
   .search-root {
     padding: 20px 16px 44px;
@@ -721,141 +663,4 @@ body.native-nav--mobile-open {
   .search-root li p {
     font-size: 0.95rem;
   }
-
-  .mirror-root[data-path="/our-leadership"] #comp-iq9l9vuc h2 {
-    letter-spacing: 0.04em;
-  }
-
-  .mirror-root[data-path="/our-leadership"] #comp-ljeg8q9w .wixui-image img {
-    border-radius: 10px;
-  }
-}
-
-.mirror-root[data-path="/donations"] #comp-m5l6fbzq .KaEeLN {
-  opacity: 1 !important;
-}
-
-.mirror-root[data-path="/donations"] #comp-m5l6fbzq #comp-m5l6fc05 .wixui-rich-text__text {
-  color: #3f4359 !important;
-}
-
-.mirror-root[data-path="/center-city"] .wixui-repeater,
-.mirror-root[data-path="/main-line-manyunk"] .wixui-repeater,
-.mirror-root[data-path="/old-yorkroad-northeast"] .wixui-repeater,
-.mirror-root[data-path="/cherry-hill"] .wixui-repeater {
-  opacity: 1 !important;
-}
-
-.mirror-root[data-path="/center-city"] [data-mekor-kosher-map],
-.mirror-root[data-path="/main-line-manyunk"] [data-mekor-kosher-map],
-.mirror-root[data-path="/old-yorkroad-northeast"] [data-mekor-kosher-map],
-.mirror-root[data-path="/cherry-hill"] [data-mekor-kosher-map],
-.mirror-root[data-path="/kosher-map"] [data-mekor-kosher-map] {
-  width: min(1200px, 92vw);
-  min-height: 520px;
-  margin: 24px auto 0;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.mirror-root[data-path="/kosher-map"] [data-mekor-kosher-map][data-mekor-map-page="true"] {
-  min-height: 700px;
-  margin-top: 18px;
-}
-
-.mirror-root[data-path="/kosher-map"] [data-mekor-legacy-map="hidden"] {
-  display: none !important;
-}
-
-.mirror-root[data-path="/"] [data-mesh-id="comp-m5vl2ptb2inlineContent-gridContainer"] > #comp-m5vl2pte {
-  margin-top: 24px !important;
-}
-
-.mirror-root[data-path="/"] #comp-m5vlffw5 {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: 420px !important;
-  overflow: hidden;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-}
-
-.mirror-root[data-path="/"] #comp-m5vlffw5 iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.mirror-root[data-path="/"] #comp-m5vlffw5 .mirror-map-directions-link {
-  align-self: flex-start;
-  margin-top: 8px;
-  color: #ffffff;
-  text-decoration: underline;
-  font-size: 14px;
-}
-
-.mirror-root[data-path="/events"] [data-mesh-id="comp-m5ss52xcinlineContent-wedge-5"] {
-  display: none !important;
-  height: 0 !important;
-}
-
-.mirror-root [data-mekor-hidden-wedge="true"] {
-  display: none !important;
-  height: 0 !important;
-}
-
-.mirror-root[data-path="/events"] #comp-lvvd3qr7 {
-  height: 720px !important;
-  margin-bottom: 24px !important;
-}
-
-.mirror-root[data-path="/events"] #comp-lvvd3qr7 iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m5zo15ahinlineContent-gridContainer"] > #comp-m5zo4lc3 {
-  margin-top: 20px !important;
-}
-
-.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m62mowsxinlineContent-gridContainer"] {
-  min-height: auto !important;
-}
-
-.mirror-root[data-path="/about-us"] [data-mesh-id="comp-m62mowsxinlineContent-gridContainer"] > #comp-m62mpz2b {
-  margin-top: 0 !important;
-}
-
-.mirror-root[data-path="/davening"] [data-mesh-id="comp-m75c6ob3inlineContent-gridContainer"] > #comp-m76t8v2r {
-  margin-top: 24px !important;
-}
-
-.mirror-root[data-path="/israel"] [data-mesh-id="comp-m8s6buxdinlineContent-gridContainer"] > #comp-m8s6buzl {
-  margin-top: 24px !important;
-}
-
-.mirror-root[data-path="/visit-us"] [data-mesh-id="comp-m61cugy8inlineContent-gridContainer"] > #comp-m61e45km {
-  margin-top: 24px !important;
-}
-
-.mirror-root[data-path="/testimonials"] [data-mesh-id="comp-m8oqgao5inlineContent-gridContainer"] > #comp-m8oqgaoi {
-  margin-top: 20px !important;
-}
-
-.mirror-root[data-path="/contact-us"] [data-mesh-id="comp-m61ebg0m2inlineContent-gridContainer"] > #comp-m61ebg0q {
-  margin-top: 24px !important;
-}
-
-.mirror-root[data-path="/mekor-bulletin-board"] [data-mesh-id="comp-m619lg9jinlineContent-gridContainer"] > #comp-m619v9sp {
-  margin-top: 20px !important;
-}
-
-.mirror-root[data-path="/donations"] [data-mesh-id="comp-m5l6fbzqinlineContent-gridContainer"] > #comp-m5l6fc05 {
-  margin-top: 24px !important;
-}
-
-.mirror-root[data-path="/philly-jewish-community"] [data-mesh-id="comp-m5y2u97tinlineContent-gridContainer"] > #comp-iqai4fsc1 {
-  margin-top: 24px !important;
 }
