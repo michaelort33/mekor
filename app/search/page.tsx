@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { loadSearchIndex } from "@/lib/mirror/loaders";
+import { SiteNavigation } from "@/components/navigation/site-navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,15 @@ type SearchProps = {
 
 function normalizeQuery(raw: string) {
   return raw.toLowerCase().replace(/[^a-z0-9\s]/g, " ").trim();
+}
+
+function cleanExcerpt(input: string) {
+  return input
+    .replace(/Skip to Main Content/gi, "")
+    .replace(/Membership\s+Events\s+Donate\s+Kiddush\s+Center City Beit Midrash/gi, "")
+    .replace(/Join Us\s+Davening\s+Who We Are\s+Kosher Restaurants\s+More\s+Support Mekor/gi, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export default async function SearchPage({ searchParams }: SearchProps) {
@@ -51,20 +61,27 @@ export default async function SearchPage({ searchParams }: SearchProps) {
           .slice(0, 60);
 
   return (
-    <main className="search-root">
-      <h1>Search</h1>
-      {queryTerms.length === 0 ? <p>Provide a query string with <code>?q=...</code>.</p> : null}
-      {queryTerms.length > 0 && results.length === 0 ? <p>No results found.</p> : null}
-      {results.length > 0 ? (
-        <ul>
-          {results.map(({ record }) => (
-            <li key={record.path}>
-              <Link href={record.path}>{record.title || record.path}</Link>
-              <p>{record.excerpt}</p>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+    <main className="search-page" data-native-nav="true">
+      <SiteNavigation currentPath="/search" />
+      <section className="search-root">
+        <h1>Search</h1>
+        {queryTerms.length === 0 ? (
+          <p>
+            Provide a search term with <code>?q=...</code>.
+          </p>
+        ) : null}
+        {queryTerms.length > 0 && results.length === 0 ? <p>No results found.</p> : null}
+        {results.length > 0 ? (
+          <ul>
+            {results.map(({ record }) => (
+              <li key={record.path}>
+                <Link href={record.path}>{record.title || record.path}</Link>
+                <p>{cleanExcerpt(record.excerpt)}</p>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
     </main>
   );
 }

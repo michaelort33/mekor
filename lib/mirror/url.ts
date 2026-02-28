@@ -16,6 +16,31 @@ export function normalizePath(rawPath: string) {
   return `${cleanPath}?${query}`;
 }
 
+export function getPathVariants(pathValue: string) {
+  const normalized = normalizePath(pathValue);
+  const [pathname, query = ""] = normalized.split("?");
+  const variants = new Set<string>([normalized]);
+
+  const add = (candidatePathname: string) => {
+    const clean = normalizePath(query ? `${candidatePathname}?${query}` : candidatePathname);
+    variants.add(clean);
+  };
+
+  try {
+    add(decodeURI(pathname));
+  } catch {
+    // keep default variant only when URI is malformed
+  }
+
+  try {
+    add(encodeURI(pathname));
+  } catch {
+    // keep default variant only when URI is malformed
+  }
+
+  return [...variants];
+}
+
 export function urlToPath(url: string) {
   const parsed = new URL(url, SITE_URL);
   const query = parsed.search || "";

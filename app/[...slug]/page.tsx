@@ -6,7 +6,7 @@ import { loadContentIndex } from "@/lib/mirror/loaders";
 import { loadMirrorDocumentForPath, resolveMirrorRoute } from "@/lib/mirror/resolve-route";
 import { normalizePath } from "@/lib/mirror/url";
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 type PageProps = {
   params: Promise<{

@@ -60,7 +60,7 @@ export const SITE_MENU: NavItem[] = [
   },
   {
     label: "Kosher Restaurants",
-    href: "/kosher-posts",
+    href: "/center-city",
     children: [
       { label: "Center City & Vicinity", href: "/center-city" },
       { label: "Main Line/Manyunk", href: "/main-line-manyunk" },

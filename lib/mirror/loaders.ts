@@ -11,7 +11,7 @@ import type {
   StatusOverrideRecord,
 } from "@/lib/mirror/types";
 import { ASSETS_DIR, CONTENT_DIR, ROUTES_DIR, SEARCH_DIR } from "@/lib/mirror/paths";
-import { normalizePath } from "@/lib/mirror/url";
+import { getPathVariants, normalizePath } from "@/lib/mirror/url";
 
 let routeCache: {
   canonical: RouteContractRecord[];
@@ -74,15 +74,24 @@ export async function loadRouteSets() {
   const aliases = new Map<string, string>();
 
   for (const record of [...routes.canonical, ...routes.reachable]) {
-    twoHundred.add(normalizePath(record.path));
+    for (const variant of getPathVariants(record.path)) {
+      twoHundred.add(variant);
+    }
   }
 
   for (const record of routes.statusOverrides) {
-    overrides.set(normalizePath(record.path), record.status);
+    for (const variant of getPathVariants(record.path)) {
+      overrides.set(variant, record.status);
+    }
   }
 
   for (const record of routes.aliases) {
-    aliases.set(normalizePath(record.from), normalizePath(record.to));
+    const targets = getPathVariants(record.to);
+    const target = targets[0] ?? normalizePath(record.to);
+
+    for (const fromVariant of getPathVariants(record.from)) {
+      aliases.set(fromVariant, target);
+    }
   }
 
   return {
@@ -121,17 +130,27 @@ export async function loadContentIndex() {
     path.join(CONTENT_DIR, "index.json"),
     [],
   );
-  contentIndexByPathCache = new Map(
-    contentIndexCache.map((entry) => [normalizePath(entry.path), entry]),
-  );
+  contentIndexByPathCache = new Map();
+  for (const entry of contentIndexCache) {
+    for (const variant of getPathVariants(entry.path)) {
+      if (!contentIndexByPathCache.has(variant)) {
+        contentIndexByPathCache.set(variant, entry);
+      }
+    }
+  }
 
   return contentIndexCache;
 }
 
 export async function getDocumentByPath(pathValue: string) {
   await loadContentIndex();
-  const target = normalizePath(pathValue);
-  const item = contentIndexByPathCache?.get(target);
+  let item: ContentIndexRecord | undefined;
+  for (const variant of getPathVariants(pathValue)) {
+    item = contentIndexByPathCache?.get(variant);
+    if (item) {
+      break;
+    }
+  }
 
   if (!item) {
     return null;
