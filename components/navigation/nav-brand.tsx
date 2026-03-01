@@ -15,7 +15,6 @@ export function NavBrand() {
         className="native-nav__brand-logo"
         priority
       />
-      <span className="native-nav__brand-subtitle">Center City Synagogue</span>
     </Link>
   );
 }

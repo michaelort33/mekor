@@ -81,34 +81,36 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
   }, [mobileOpen]);
 
   return (
-    <header className="native-nav" data-native-nav-root="true">
-      <div className="native-nav__container">
-        <NavBrand />
+    <>
+      <header className="native-nav" data-native-nav-root="true">
+        <div className="native-nav__container">
+          <NavBrand />
 
-        <DesktopNav
-          items={SITE_MENU}
-          currentPath={activePath}
-          openGroupId={openDesktopGroupId}
-          setOpenGroupId={setOpenDesktopGroupId}
-        />
+          <DesktopNav
+            items={SITE_MENU}
+            currentPath={activePath}
+            openGroupId={openDesktopGroupId}
+            setOpenGroupId={setOpenDesktopGroupId}
+          />
 
-        <div className="native-nav__actions">
-          <div className="native-nav__cta-wrap">
-            <NavCta />
+          <div className="native-nav__actions">
+            <div className="native-nav__cta-wrap">
+              <NavCta />
+            </div>
+            <button
+              ref={mobileTriggerRef}
+              type="button"
+              className="native-nav__mobile-toggle"
+              onClick={() => setMobileOpen(true)}
+              aria-expanded={mobileOpen}
+              aria-controls="native-mobile-drawer"
+            >
+              <span className="native-nav__sr-only">Open menu</span>
+              <span aria-hidden="true">☰</span>
+            </button>
           </div>
-          <button
-            ref={mobileTriggerRef}
-            type="button"
-            className="native-nav__mobile-toggle"
-            onClick={() => setMobileOpen(true)}
-            aria-expanded={mobileOpen}
-            aria-controls="native-mobile-drawer"
-          >
-            <span className="native-nav__sr-only">Open menu</span>
-            <span aria-hidden="true">☰</span>
-          </button>
         </div>
-      </div>
+      </header>
 
       <div id="native-mobile-drawer">
         <MobileDrawer
@@ -118,6 +120,6 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
           onClose={() => setMobileOpen(false)}
         />
       </div>
-    </header>
+    </>
   );
 }

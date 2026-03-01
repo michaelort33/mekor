@@ -5,6 +5,8 @@ import { getDb } from "@/db/client";
 import { formDeliveryLog, formSubmissions } from "@/db/schema";
 import { sendFormNotification } from "@/lib/forms/email";
 
+type FormType = "contact" | "kosher-inquiry" | "volunteer";
+
 export const baseFormSchema = z.object({
   name: z.string().trim().min(1).max(120),
   email: z.string().trim().email().max(255),
@@ -17,7 +19,7 @@ type SubmitFormInput = z.infer<typeof baseFormSchema>;
 const DEDUPE_WINDOW_MS = 10 * 60 * 1000;
 
 async function findRecentDuplicateSubmission(
-  formType: "contact" | "kosher-inquiry",
+  formType: FormType,
   data: SubmitFormInput,
 ) {
   const cutoff = new Date(Date.now() - DEDUPE_WINDOW_MS);
@@ -44,7 +46,7 @@ async function findRecentDuplicateSubmission(
 async function deliverFormNotification(
   submissionId: number,
   payload: {
-    formType: "contact" | "kosher-inquiry";
+    formType: FormType;
     name: string;
     email: string;
     phone: string;
@@ -74,7 +76,7 @@ async function deliverFormNotification(
   }
 }
 
-export async function submitForm(formType: "contact" | "kosher-inquiry", payload: unknown) {
+export async function submitForm(formType: FormType, payload: unknown) {
   const parsed = baseFormSchema.safeParse(payload);
   if (!parsed.success) {
     return {

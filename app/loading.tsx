@@ -1,3 +1,3 @@
 export default function Loading() {
-  return null;
+  return <main className="route-loading-shell" aria-hidden="true" />;
 }

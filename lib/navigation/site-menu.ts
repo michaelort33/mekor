@@ -18,6 +18,11 @@ export const JOIN_US_LINK = {
   href: "https://chat.whatsapp.com/G7JTiUN3aPN1V09lbBLC7G",
 } as const;
 
+export const SUPPORT_MEKOR_LINK = {
+  label: "Support Mekor",
+  href: "/donations",
+} as const;
+
 export const SITE_MENU: NavItem[] = [
   {
     label: "Membership",

@@ -9,6 +9,15 @@ import { normalizePath } from "@/lib/mirror/url";
 export const dynamicParams = true;
 export const dynamic = "force-static";
 
+const NATIVE_APP_PATHS = new Set([
+  "/center-city",
+  "/cherry-hill",
+  "/events",
+  "/in-the-news",
+  "/main-line-manyunk",
+  "/old-yorkroad-northeast",
+]);
+
 type PageProps = {
   params: Promise<{
     slug?: string[];
@@ -39,6 +48,7 @@ export async function generateStaticParams() {
     const normalized = normalizePath(item.path);
     if (
       normalized === "/" ||
+      NATIVE_APP_PATHS.has(normalized) ||
       normalized.includes("?") ||
       normalized.startsWith("/_files/")
     ) {

@@ -1,0 +1,21 @@
+CREATE TABLE "in_the_news" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"slug" varchar(255) NOT NULL,
+	"path" varchar(512) NOT NULL,
+	"title" varchar(255) NOT NULL,
+	"published_label" varchar(160) DEFAULT '' NOT NULL,
+	"published_at" timestamp,
+	"year" integer,
+	"author" varchar(255) DEFAULT '' NOT NULL,
+	"publication" varchar(255) DEFAULT '' NOT NULL,
+	"excerpt" text DEFAULT '' NOT NULL,
+	"body_text" text DEFAULT '' NOT NULL,
+	"source_url" text DEFAULT '' NOT NULL,
+	"source_captured_at" timestamp,
+	"source_type" varchar(40) DEFAULT 'mirror' NOT NULL,
+	"source_json" json NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "in_the_news_slug_unique" UNIQUE("slug"),
+	CONSTRAINT "in_the_news_path_unique" UNIQUE("path")
+);
