@@ -36,14 +36,6 @@ export const SITE_MENU: NavItem[] = [
     href: "/kiddush",
   },
   {
-    label: "Center City Beit Midrash",
-    href: "/center-city-beit-midrash",
-  },
-  {
-    label: "Davening",
-    href: "/davening",
-  },
-  {
     label: "Who We Are",
     href: "/about-us",
     children: [
@@ -73,6 +65,8 @@ export const SITE_MENU: NavItem[] = [
     href: "/our-communities",
     children: [
       { label: "Auxiliary & Alumni Membership", href: "/auxiliary-membership" },
+      { label: "Center City Beit Midrash", href: "/center-city-beit-midrash" },
+      { label: "Davening", href: "/davening" },
       { label: "Kosher Map", href: "/kosher-map" },
       { label: "Volunteer", href: "/team-4" },
       { label: "Mekor Bulletin Board", href: "/mekor-bulletin-board" },

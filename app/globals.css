@@ -142,72 +142,82 @@ a {
   position: sticky;
   top: 0;
   z-index: 300;
-  background: linear-gradient(180deg, rgba(249, 247, 242, 0.97) 0%, rgba(249, 247, 242, 0.91) 100%);
+  background: rgba(249, 247, 242, 0.96);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--native-nav-border);
+  box-shadow: 0 3px 14px rgba(21, 33, 46, 0.07);
 }
 
 .native-nav__container {
-  max-width: 1260px;
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 14px 24px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
 }
 
 .native-nav__brand {
-  min-width: 210px;
+  min-width: 198px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   text-decoration: none;
   color: var(--native-nav-text);
 }
 
-.native-nav__brand-title {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.1;
+.native-nav__brand-logo {
+  width: auto;
+  height: 42px;
+  object-fit: contain;
+  display: block;
 }
 
 .native-nav__brand-subtitle {
-  margin-top: 3px;
-  font-size: 0.72rem;
-  font-weight: 500;
+  margin-top: 2px;
+  font-size: 0.64rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   color: var(--native-nav-muted);
 }
 
 .native-nav__desktop {
   flex: 1;
+  min-width: 0;
 }
 
 .native-nav__desktop-list {
   margin: 0;
+  overflow: hidden;
   padding: 0;
   list-style: none;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 4px;
+  flex-wrap: nowrap;
+  gap: 2px;
 }
 
 .native-nav__desktop-item {
   position: relative;
+  flex-shrink: 0;
+}
+
+.native-nav__desktop-item--group {
+  padding-bottom: 8px;
+  margin-bottom: -8px;
 }
 
 .native-nav__desktop-link {
   display: inline-flex;
   align-items: center;
-  height: 40px;
+  height: 42px;
   border-radius: 999px;
-  padding: 0 12px;
+  padding: 0 10px;
   color: var(--native-nav-text);
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.015em;
   transition: background-color 130ms ease, color 130ms ease;
@@ -265,7 +275,7 @@ a {
 
 .native-nav__submenu {
   position: absolute;
-  top: calc(100% + 10px);
+  top: 100%;
   left: 0;
   min-width: 250px;
   max-width: min(360px, 78vw);
@@ -323,6 +333,7 @@ a {
 
 .native-nav__actions {
   margin-left: auto;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -496,7 +507,7 @@ a {
   display: block;
   text-decoration: none;
   color: var(--native-nav-muted);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   padding: 8px 4px;
 }
 
@@ -532,7 +543,7 @@ body.native-nav--mobile-open {
   overflow: hidden;
 }
 
-@media (max-width: 1140px) {
+@media (max-width: 1220px) {
   .native-nav__container {
     padding: 12px 14px;
     gap: 10px;
@@ -547,8 +558,8 @@ body.native-nav--mobile-open {
     min-width: 0;
   }
 
-  .native-nav__brand-title {
-    font-size: 0.95rem;
+  .native-nav__brand-logo {
+    height: 34px;
   }
 
   .native-nav__brand-subtitle {
@@ -558,6 +569,24 @@ body.native-nav--mobile-open {
   .native-nav__mobile-toggle {
     display: inline-flex;
   }
+}
+
+
+.mirror-root [class~="bgImage"] {
+  width: 100% !important;
+  min-width: 100% !important;
+  height: 100% !important;
+}
+
+.mirror-root [class~="bgImage"] > img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: 50% 50% !important;
+}
+
+.mirror-root .mirror-content :where(img, video, iframe, canvas, svg) {
+  max-width: 100% !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -664,7 +693,7 @@ body.native-nav--mobile-open {
   }
 
   .search-root li p {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
   }
 }
 
