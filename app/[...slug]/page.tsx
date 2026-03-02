@@ -3,20 +3,15 @@ import { notFound } from "next/navigation";
 
 import { DocumentView } from "@/components/mirror/document-view";
 import { loadContentIndex } from "@/lib/mirror/loaders";
-import { loadMirrorDocumentForPath, resolveMirrorRoute } from "@/lib/mirror/resolve-route";
+import { loadMirrorDocumentForPath } from "@/lib/mirror/resolve-route";
+import { MirrorBadRequestView, resolveMirrorRenderResult } from "@/lib/mirror/render-route";
 import { normalizePath } from "@/lib/mirror/url";
+import { getEffectiveRenderMode, listConfiguredRenderModes } from "@/lib/routing/render-mode";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
 
-const NATIVE_APP_PATHS = new Set([
-  "/center-city",
-  "/cherry-hill",
-  "/events",
-  "/in-the-news",
-  "/main-line-manyunk",
-  "/old-yorkroad-northeast",
-]);
+const MANAGED_APP_PATHS = new Set(listConfiguredRenderModes().map((entry) => entry.path));
 
 type PageProps = {
   params: Promise<{
@@ -48,7 +43,7 @@ export async function generateStaticParams() {
     const normalized = normalizePath(item.path);
     if (
       normalized === "/" ||
-      NATIVE_APP_PATHS.has(normalized) ||
+      MANAGED_APP_PATHS.has(normalized) ||
       normalized.includes("?") ||
       normalized.startsWith("/_files/")
     ) {
@@ -106,30 +101,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CatchAllPage({ params }: PageProps) {
   const { slug } = await params;
   const requestPath = toPath(slug);
-  const route = await resolveMirrorRoute(requestPath);
-  const overrideStatus = route.overrideStatus;
+  const resolved = await resolveMirrorRenderResult(requestPath);
 
-  if (overrideStatus === 404) {
+  if (resolved.kind === "not-found") {
     notFound();
   }
 
-  if (overrideStatus === 400) {
-    return (
-      <main className="mirror-error">
-        <h1>400 - Bad Request</h1>
-        <p>This request path is intentionally preserved as a bad request route.</p>
-      </main>
-    );
+  if (resolved.kind === "bad-request") {
+    return <MirrorBadRequestView />;
   }
 
-  if (!route.isKnownRoute) {
+  if (getEffectiveRenderMode(requestPath) === "native") {
     notFound();
   }
 
-  const document = route.document;
-  if (!document) {
-    notFound();
-  }
-
-  return <DocumentView document={document} />;
+  return <DocumentView document={resolved.document} />;
 }

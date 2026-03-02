@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import { KosherPlacesPage } from "@/components/kosher/kosher-places-page";
+import { renderMirrorRoute } from "@/lib/mirror/render-route";
+import { getEffectiveRenderMode } from "@/lib/routing/render-mode";
 
 export const metadata: Metadata = {
   title: "Old York Road / Northeast Kosher Places | Mekor Habracha",
@@ -10,6 +12,10 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function OldYorkRoadNortheastKosherPage() {
+  if (getEffectiveRenderMode("/old-yorkroad-northeast") === "mirror") {
+    return renderMirrorRoute("/old-yorkroad-northeast");
+  }
+
   return (
     <KosherPlacesPage
       currentPath="/old-yorkroad-northeast"

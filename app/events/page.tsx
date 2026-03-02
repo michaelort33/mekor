@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { EventsCalendar } from "@/app/events/events-calendar";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import { getManagedEvents } from "@/lib/events/store";
+import { renderMirrorRoute } from "@/lib/mirror/render-route";
+import { getEffectiveRenderMode } from "@/lib/routing/render-mode";
 
 export const metadata: Metadata = {
   title: "Events | Mekor Habracha",
@@ -12,6 +14,10 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function EventsHubPage() {
+  if (getEffectiveRenderMode("/events") === "mirror") {
+    return renderMirrorRoute("/events");
+  }
+
   const events = await getManagedEvents();
 
   return (

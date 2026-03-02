@@ -56,5 +56,33 @@ Individual steps are available via:
 - `npm run mirror:build-search`
 - `npm run mirror:verify`
 - `npm run mirror:blob-sync`
+- `npm run mirror:render-mode-report`
 
 Generated structured outputs live under `mirror-data/` (`mirror-data/raw/` stays ignored).
+
+## Route Render Mode Control
+
+Render mode is configured per route in `lib/routing/render-mode.ts`.
+
+- `native`: serve the native page implementation.
+- `mirror`: serve the mirrored document renderer.
+- Default for unmapped routes: `mirror`.
+
+Global rollback kill switch:
+
+- Set `FORCE_MIRROR_ALL=true` to force every route into mirror mode.
+- Set `FORCE_MIRROR_ALL=false` (or unset) to use per-route modes.
+
+### Safe Enable/Disable Runbook
+
+1. Open `lib/routing/render-mode.ts`.
+2. Toggle the route path mode:
+   - Enable native: set `"/your-route": "native"`.
+   - Roll back route: set `"/your-route": "mirror"`.
+3. Run diagnostics:
+   - `npm run mirror:render-mode-report`
+4. Verify behavior:
+   - Route appears under `native-enabled routes` when native.
+   - Route disappears from `native-enabled routes` after rollback.
+5. Emergency global rollback:
+   - Set `FORCE_MIRROR_ALL=true` and redeploy/restart.
