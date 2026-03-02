@@ -1,0 +1,189 @@
+.page {
+  background: linear-gradient(180deg, #f8f8f4 0%, #f2f6fb 58%, #eef3f9 100%);
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.welcome {
+  display: grid;
+  gap: 10px;
+}
+
+.welcomeTitle {
+  margin: 0;
+  color: #2b3a4f;
+  font-size: clamp(1.34rem, 2.9vw, 2.4rem);
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+}
+
+.welcomeText {
+  margin: 0;
+  color: #46576c;
+  line-height: 1.65;
+}
+
+.featureGrid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.eventsGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.eventCard {
+  border: 1px solid #d8d0bf;
+  border-radius: 14px;
+  background: #fcfbf7;
+  overflow: hidden;
+  display: grid;
+}
+
+.eventCard img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.eventCardBody {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.eventCardBody h3 {
+  margin: 0;
+  color: #1e2f42;
+  font-size: 1.02rem;
+}
+
+.eventMeta {
+  margin: 0;
+  color: #5e6672;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.eventLink {
+  color: #204d79;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.rabbisGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rabbiCard {
+  border: 1px solid #d8d0bf;
+  border-radius: 14px;
+  background: #fcfbf7;
+  overflow: hidden;
+  display: grid;
+}
+
+.rabbiCard img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.rabbiCardBody {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.rabbiRole {
+  margin: 0;
+  color: #4f5f75;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.rabbiCardBody h3 {
+  margin: 0;
+  color: #1e2f42;
+  font-size: 1.08rem;
+}
+
+.rabbiCardBody p {
+  margin: 0;
+  color: #4f5b69;
+  line-height: 1.55;
+}
+
+.rabbiLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.rabbiLinks a {
+  color: #204d79;
+  text-decoration: underline;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.touchGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+}
+
+.touchText {
+  margin: 0;
+  color: #4f5b69;
+  line-height: 1.6;
+}
+
+.touchPanel {
+  border: 1px solid #d8d0bf;
+  border-radius: 14px;
+  background: #fcfbf7;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.touchPanel h3 {
+  margin: 0;
+  color: #23384f;
+  font-size: 1rem;
+}
+
+.touchPanel a {
+  color: #204d79;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+@media (max-width: 980px) {
+  .featureGrid,
+  .eventsGrid,
+  .rabbisGrid,
+  .touchGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .eventCard img,
+  .rabbiCard img {
+    height: 200px;
+  }
+}

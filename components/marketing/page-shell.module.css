@@ -1,0 +1,54 @@
+.page {
+  min-height: 100svh;
+  background: #f9f7f2;
+}
+
+.content {
+  width: min(1240px, calc(100vw - 28px));
+  margin: 0 auto;
+  padding: 18px 0 52px;
+  display: grid;
+  gap: 18px;
+}
+
+.footer {
+  border: 1px solid #d8d0bf;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #ffffff 0%, #f6f2e8 100%);
+  padding: clamp(16px, 2.6vw, 28px);
+  display: grid;
+  gap: 14px;
+}
+
+.footerTitle {
+  margin: 0;
+  color: #26384e;
+  font-size: clamp(1.18rem, 2.6vw, 1.72rem);
+  letter-spacing: 0.03em;
+}
+
+.footerContact {
+  margin: 0;
+  color: #4f5d70;
+  line-height: 1.6;
+}
+
+.footerContact a {
+  color: #1f4f83;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footerMeta {
+  margin: 0;
+  color: #5e6672;
+  font-size: 0.82rem;
+}
+
+@media (max-width: 760px) {
+  .content {
+    width: min(1240px, calc(100vw - 18px));
+    padding: 14px 0 40px;
+    gap: 14px;
+  }
+}

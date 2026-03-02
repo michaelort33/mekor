@@ -14,8 +14,11 @@ export const dynamicParams = true;
 export const dynamic = "force-static";
 
 const EXTRA_NATIVE_PATHS = new Set([
+  "/about-us",
   "/from-the-rabbi-s-desk",
+  "/israel",
   "/kosher-map",
+  "/our-rabbi",
   "/team-4",
 ]);
 

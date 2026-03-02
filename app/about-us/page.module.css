@@ -1,0 +1,20 @@
+.page {
+  background: linear-gradient(180deg, #f8f8f4 0%, #f2f6fb 62%, #eef3f9 100%);
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.missionText {
+  margin: 0;
+  color: #4a586b;
+  line-height: 1.66;
+}
+
+.contactText {
+  margin: 0;
+  color: #4a586b;
+  line-height: 1.6;
+}
