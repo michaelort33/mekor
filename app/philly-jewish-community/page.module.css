@@ -1,0 +1,51 @@
+.page {
+  background:
+    radial-gradient(920px 420px at 6% -16%, rgba(182, 206, 230, 0.28) 0%, rgba(182, 206, 230, 0) 64%),
+    radial-gradient(860px 380px at 92% -12%, rgba(252, 231, 187, 0.26) 0%, rgba(252, 231, 187, 0) 68%),
+    #f9f7f2;
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.mapShell {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #cfd9e6;
+  box-shadow: 0 14px 30px rgba(20, 34, 50, 0.14);
+}
+
+.mapFrame {
+  width: 100%;
+  height: min(58vh, 520px);
+  min-height: 330px;
+  border: 0;
+  display: block;
+}
+
+.guidelineList {
+  margin: 0;
+  padding: 0 0 0 18px;
+  display: grid;
+  gap: 6px;
+  color: #445367;
+  line-height: 1.58;
+}
+
+@media (max-width: 760px) {
+  .stack {
+    gap: 14px;
+  }
+
+  .mapFrame {
+    height: 58vh;
+    min-height: 280px;
+  }
+
+  .guidelineList {
+    padding-left: 16px;
+    font-size: 0.96rem;
+  }
+}

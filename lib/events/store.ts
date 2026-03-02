@@ -90,7 +90,7 @@ export async function getManagedEvents() {
     }),
   );
 
-  if (!process.env.DATABASE_URL) {
+  if (!process.env.DATABASE_URL || process.env.EVENTS_DIRECTORY_USE_DB !== "1") {
     return validateManagedEventsContract(
       extractedManaged,
       "getManagedEvents: extracted mirror fallback",
@@ -99,8 +99,6 @@ export async function getManagedEvents() {
 
   let managed: ManagedEvent[];
   try {
-    await syncExtractedEventsToDb(extracted);
-
     const rows = await getDb()
       .select({
         slug: events.slug,
@@ -117,6 +115,9 @@ export async function getManagedEvents() {
       .orderBy(asc(events.startAt), desc(events.updatedAt));
 
     managed = rows.map((row) => toManagedEvent(row));
+    if (managed.length === 0) {
+      managed = extractedManaged;
+    }
   } catch {
     managed = extractedManaged;
   }

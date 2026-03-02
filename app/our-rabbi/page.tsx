@@ -18,17 +18,14 @@ export default function OurRabbiPage() {
     <MarketingPageShell currentPath="/our-rabbi" className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         title="Our Rabbis"
-        image={{
-          src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/d024efffb51cdefe90a026a6cbbde80293c4735e-92f487_d26f360d09cc45e4bebe89d9f14643d3-mv2-20copy2-20-medium-.jpg",
-          alt: "Rabbi at Mekor Habracha",
-        }}
+        className={styles.heroGraphic}
       />
 
       <SectionCard>
         <SplitMediaText
           title="Rabbi Eliezer Hirsch"
           media={{
-            src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/d024efffb51cdefe90a026a6cbbde80293c4735e-92f487_d26f360d09cc45e4bebe89d9f14643d3-mv2-20copy2-20-medium-.jpg",
+            src: "https://static.wixstatic.com/media/92f487_e03dc964305644a9b5eb3894502ed630~mv2.jpg",
             alt: "Rabbi Eliezer Hirsch",
           }}
           paragraphs={[
@@ -76,7 +73,7 @@ export default function OurRabbiPage() {
           reverse
           title="Rabbi Steven Gotlib"
           media={{
-            src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/0c559a12d9586665be9d15e30e9f5bd86cb69113-r-20gotlib.jpg",
+            src: "https://static.wixstatic.com/media/66bc7c_7ded87b518b94c619c3f89f470cb4a9d~mv2.jpg",
             alt: "Rabbi Steven Gotlib",
           }}
           paragraphs={[

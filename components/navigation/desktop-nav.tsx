@@ -100,6 +100,7 @@ export function DesktopNav({
               <li key={item.label} className="native-nav__desktop-item">
                 <Link
                   href={item.href}
+                  prefetch={false}
                   className={`native-nav__desktop-link${active ? " is-active" : ""}`}
                   onClick={() => setOpenGroupId(null)}
                   aria-current={active ? "page" : undefined}
@@ -124,6 +125,7 @@ export function DesktopNav({
               <div className="native-nav__desktop-group-trigger">
                 <Link
                   href={item.href}
+                  prefetch={false}
                   className={`native-nav__desktop-link${active ? " is-active" : ""}`}
                   onFocus={() => setOpenGroupId(groupId)}
                   onKeyDown={(event) => {
@@ -177,6 +179,7 @@ export function DesktopNav({
                       <li key={child.label}>
                         <Link
                           href={child.href}
+                          prefetch={false}
                           className={`native-nav__submenu-link${childActive ? " is-active" : ""}`}
                           aria-current={childActive ? "page" : undefined}
                           onClick={() => setOpenGroupId(null)}

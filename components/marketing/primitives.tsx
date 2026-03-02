@@ -20,6 +20,7 @@ type HeroSectionProps = {
     src: string;
     alt: string;
     objectPosition?: string;
+    objectFit?: "cover" | "contain" | "scale-down";
   };
   actions?: CtaItem[];
   tone?: "light" | "dark";
@@ -35,6 +36,7 @@ type SplitMediaTextProps = {
     src: string;
     alt: string;
     objectPosition?: string;
+    objectFit?: "cover" | "contain" | "scale-down";
   };
   links?: CtaItem[];
   reverse?: boolean;
@@ -116,7 +118,17 @@ export function HeroSection({
     >
       {image ? (
         <div className={styles.heroMedia}>
-          <img src={image.src} alt={image.alt} style={{ objectPosition: image.objectPosition }} />
+          <img
+            src={image.src}
+            alt={image.alt}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            style={{
+              objectPosition: image.objectPosition,
+              objectFit: image.objectFit,
+            }}
+          />
         </div>
       ) : null}
       <div className={styles.heroOverlay} />
@@ -155,7 +167,16 @@ export function SplitMediaText({
   return (
     <article className={joinClassNames(styles.split, reverse && styles.splitReverse, className)}>
       <div className={styles.splitMedia}>
-        <img src={media.src} alt={media.alt} style={{ objectPosition: media.objectPosition }} />
+        <img
+          src={media.src}
+          alt={media.alt}
+          loading="lazy"
+          decoding="async"
+          style={{
+            objectPosition: media.objectPosition,
+            objectFit: media.objectFit,
+          }}
+        />
       </div>
       <div className={styles.splitBody}>
         {kicker ? <p className={styles.splitKicker}>{kicker}</p> : null}

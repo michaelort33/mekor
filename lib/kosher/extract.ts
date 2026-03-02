@@ -176,6 +176,70 @@ function normalizeWebsite(rawValue: string) {
   }
 }
 
+function extractWixImageUri(imageInfo: string) {
+  if (!imageInfo) {
+    return "";
+  }
+
+  const normalized = imageInfo.replace(/&quot;/g, '"');
+  return normalized.match(/"uri"\s*:\s*"([^"]+)"/i)?.[1] ?? "";
+}
+
+function toWixMediaUrl(uri: string) {
+  if (!uri) {
+    return "";
+  }
+
+  return `https://static.wixstatic.com/media/${encodeURI(uri)}`;
+}
+
+function parseBestSrcsetUrl(srcset: string) {
+  if (!srcset) {
+    return "";
+  }
+
+  const entries = srcset
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [url, descriptor] = entry.split(/\s+/, 2);
+      const widthMatch = descriptor?.match(/^(\d+)w$/i);
+      const densityMatch = descriptor?.match(/^(\d+(?:\.\d+)?)x$/i);
+      const score = widthMatch ? Number(widthMatch[1]) : densityMatch ? Number(densityMatch[1]) * 1000 : 0;
+      return { url, score };
+    })
+    .filter((entry) => entry.url.startsWith("http"));
+
+  if (entries.length === 0) {
+    return "";
+  }
+
+  entries.sort((a, b) => b.score - a.score);
+  return entries[0]?.url ?? "";
+}
+
+function pickBestWixImageUrl(candidates: string[]) {
+  const normalized = uniqueOrdered(
+    candidates.map((value) => cleanText(value)).filter((value) => value.startsWith("http")),
+  );
+  if (normalized.length === 0) {
+    return "";
+  }
+
+  const wixMedia = normalized.find((value) => value.includes("static.wixstatic.com/media/"));
+  if (wixMedia) {
+    return wixMedia;
+  }
+
+  const wixOther = normalized.find((value) => value.includes("wixstatic.com"));
+  if (wixOther) {
+    return wixOther;
+  }
+
+  return normalized[0] ?? "";
+}
+
 function looksLikeAddress(line: string) {
   if (!/\d/.test(line)) {
     return false;
@@ -331,6 +395,27 @@ function extractDetails(document: PageDocument) {
         !normalizeWebsite(line),
     ) ?? "";
 
+  const heroImageNode =
+    scope.find("[data-hook='post-hero-image'] wow-image[data-image-info]").first().length > 0
+      ? scope.find("[data-hook='post-hero-image'] wow-image[data-image-info]").first()
+      : scope.find("[data-hook='figure-IMAGE'] wow-image[data-image-info]").first();
+  const heroImageInfo = heroImageNode.attr("data-image-info") ?? "";
+  const heroImageUri = extractWixImageUri(heroImageInfo);
+  const heroImageFromUri = toWixMediaUrl(heroImageUri);
+  const heroImageFromSrcset = parseBestSrcsetUrl(heroImageNode.find("img").first().attr("srcset") ?? "");
+  const heroImageFromSrc = heroImageNode.find("img").first().attr("src") ?? "";
+
+  const firstInlineImageNode = scope.find("img[src], img[srcset]").first();
+  const firstInlineFromSrcset = parseBestSrcsetUrl(firstInlineImageNode.attr("srcset") ?? "");
+  const firstInlineFromSrc = firstInlineImageNode.attr("src") ?? "";
+  const heroImage = pickBestWixImageUrl([
+    heroImageFromUri,
+    heroImageFromSrcset,
+    heroImageFromSrc,
+    firstInlineFromSrcset,
+    firstInlineFromSrc,
+  ]);
+
   return {
     title,
     address,
@@ -339,6 +424,7 @@ function extractDetails(document: PageDocument) {
     supervision,
     summary,
     locationHref,
+    heroImage,
     detailLines,
   };
 }
@@ -380,6 +466,7 @@ function extractKosherPlace(document: PageDocument): ExtractedKosherPlace | null
       headings: document.headings,
       description: document.description,
       canonical: document.canonical,
+      heroImage: details.heroImage,
       detailLines: details.detailLines,
       links: document.links,
       textHash: document.textHash,

@@ -183,19 +183,17 @@ export async function getManagedInTheNews(filters: InTheNewsFilters = {}) {
       sourceCapturedAt: row.capturedAt ? new Date(row.capturedAt) : null,
     }),
   );
+  const extractedFiltered = filterInTheNews(extractedManaged, filters);
 
-  if (!process.env.DATABASE_URL) {
-    const filtered = filterInTheNews(extractedManaged, filters);
+  if (!process.env.DATABASE_URL || process.env.IN_THE_NEWS_DIRECTORY_USE_DB !== "1") {
     return validateManagedInTheNewsContract(
-      filtered,
+      extractedFiltered,
       "getManagedInTheNews: extracted mirror fallback",
     );
   }
 
   let managed: ManagedInTheNewsArticle[];
   try {
-    await syncExtractedInTheNewsToDb(extracted);
-
     const rows = await getDb()
       .select({
         slug: inTheNews.slug,
@@ -215,6 +213,9 @@ export async function getManagedInTheNews(filters: InTheNewsFilters = {}) {
       .orderBy(desc(inTheNews.publishedAt), desc(inTheNews.year), asc(inTheNews.title));
 
     managed = rows.map((row) => toManagedInTheNewsArticle(row));
+    if (managed.length === 0) {
+      managed = extractedManaged;
+    }
   } catch {
     managed = extractedManaged;
   }

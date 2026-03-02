@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const NAV_LOGO_SRC =
-  "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/0e7eb1aca1600d826faed04eadbc5835ac195a52-unnamed-20-5-.jpg";
+  "/images/branding/mekor-wordmark.jpg";
 
 export function NavBrand() {
   return (

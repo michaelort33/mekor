@@ -32,6 +32,7 @@ export type ManagedKosherPlace = {
   title: string;
   neighborhood: KosherNeighborhood;
   neighborhoodLabel: string;
+  heroImage: string;
   tags: string[];
   categoryPaths: string[];
   tagPaths: string[];
@@ -88,12 +89,31 @@ function searchableTagValue(value: string) {
   return normalizeSearchValue(value);
 }
 
+function readSourceHeroImage(sourceJson: Record<string, unknown> | null | undefined) {
+  const value = sourceJson?.heroImage;
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.toString();
+    }
+  } catch {
+    return "";
+  }
+
+  return "";
+}
+
 function toManagedKosherPlace(row: {
   slug: string;
   path: string;
   title: string;
   neighborhood: KosherNeighborhood;
   neighborhoodLabel: string;
+  sourceJson?: Record<string, unknown>;
   tags: string[];
   categoryPaths: string[];
   tagPaths: string[];
@@ -111,6 +131,7 @@ function toManagedKosherPlace(row: {
     title: row.title,
     neighborhood: row.neighborhood,
     neighborhoodLabel: row.neighborhoodLabel,
+    heroImage: readSourceHeroImage(row.sourceJson),
     tags: row.tags ?? [],
     categoryPaths: row.categoryPaths ?? [],
     tagPaths: row.tagPaths ?? [],
@@ -343,19 +364,17 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
       sourceCapturedAt: row.capturedAt ? new Date(row.capturedAt) : null,
     }),
   );
+  const extractedFiltered = filterKosherPlaces(extractedManaged, filters);
 
-  if (!process.env.DATABASE_URL) {
-    const filtered = filterKosherPlaces(extractedManaged, filters);
+  if (!process.env.DATABASE_URL || process.env.KOSHER_DIRECTORY_USE_DB !== "1") {
     return validateManagedKosherPlacesContract(
-      filtered,
+      extractedFiltered,
       "getManagedKosherPlaces: extracted mirror fallback",
     );
   }
 
   let managed: ManagedKosherPlace[];
   try {
-    await syncExtractedKosherPlacesToDb(extracted);
-
     const rows = await getDb()
       .select({
         slug: kosherPlaces.slug,
@@ -363,6 +382,7 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
         title: kosherPlaces.title,
         neighborhood: kosherPlaces.neighborhood,
         neighborhoodLabel: kosherPlaces.neighborhoodLabel,
+        sourceJson: kosherPlaces.sourceJson,
         tags: kosherPlaces.tags,
         categoryPaths: kosherPlaces.categoryPaths,
         tagPaths: kosherPlaces.tagPaths,
@@ -385,6 +405,9 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
           row.neighborhoodLabel || KOSHER_NEIGHBORHOOD_LABELS[toKosherNeighborhood(row.neighborhood)],
       }),
     );
+    if (managed.length === 0) {
+      managed = extractedManaged;
+    }
   } catch {
     managed = extractedManaged;
   }

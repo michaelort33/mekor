@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import type { ArticleTemplateData } from "@/lib/templates/template-data";
@@ -13,6 +14,15 @@ function isExternalHref(href: string) {
 }
 
 export function ArticleTemplate({ data }: ArticleTemplateProps) {
+  const heroWidth = data.heroImageWidth ?? 1200;
+  const heroHeight = data.heroImageHeight ?? 675;
+  const heroDesktopWidth = Math.min(heroWidth, 920);
+  const heroSizes = `(max-width: 920px) 100vw, ${heroDesktopWidth}px`;
+  const postHeroStyle: CSSProperties | undefined =
+    data.type === "post" && data.heroImageWidth
+      ? ({ ["--template-hero-width" as string]: `${Math.min(data.heroImageWidth, 920)}px` } as CSSProperties)
+      : undefined;
+
   return (
     <main className="template-page template-page--article" data-native-nav="true">
       <SiteNavigation currentPath={data.path} />
@@ -28,13 +38,14 @@ export function ArticleTemplate({ data }: ArticleTemplateProps) {
         </header>
 
         {data.heroImage ? (
-          <div className="template-card__hero">
+          <div className={`template-card__hero ${data.type === "post" ? "template-card__hero--post" : ""}`} style={postHeroStyle}>
             <Image
               src={data.heroImage}
               alt={data.title}
-              width={1200}
-              height={675}
-              sizes="(max-width: 920px) 100vw, 920px"
+              width={heroWidth}
+              height={heroHeight}
+              sizes={heroSizes}
+              unoptimized={data.type === "post"}
             />
           </div>
         ) : null}

@@ -37,6 +37,8 @@ export type ArticleTemplateData = {
   title: string;
   subtitle: string;
   heroImage: string | null;
+  heroImageWidth: number | null;
+  heroImageHeight: number | null;
   metadata: string[];
   facts: TemplateFact[];
   body: string[];
@@ -257,6 +259,41 @@ function splitHtmlByBreaks(html: string) {
     .filter(Boolean);
 }
 
+function extractWixImageUri(imageInfo: string) {
+  if (!imageInfo) {
+    return "";
+  }
+
+  return (
+    imageInfo.match(/"uri"\s*:\s*"([^"]+)"/)?.[1] ??
+    imageInfo.match(/&quot;uri&quot;\s*:\s*&quot;([^&]+)&quot;/)?.[1] ??
+    ""
+  );
+}
+
+function extractWixImageDimension(imageInfo: string, dimension: "width" | "height") {
+  if (!imageInfo) {
+    return null;
+  }
+
+  const normalized = imageInfo.replace(/&quot;/g, '"');
+  const imageDataMatch = normalized.match(
+    new RegExp(`"imageData"\\s*:\\s*\\{[^}]*"${dimension}"\\s*:\\s*(\\d+)`, "i"),
+  );
+  const fallbackMatch = normalized.match(new RegExp(`"${dimension}"\\s*:\\s*(\\d+)`, "i"));
+  const value = Number.parseInt(imageDataMatch?.[1] ?? fallbackMatch?.[1] ?? "", 10);
+
+  return Number.isFinite(value) ? value : null;
+}
+
+function wixMediaUrlFromUri(uri: string) {
+  if (!uri) {
+    return "";
+  }
+
+  return `https://static.wixstatic.com/media/${encodeURI(uri)}`;
+}
+
 function isInternalUrl(value: string) {
   try {
     const parsed = new URL(value);
@@ -444,7 +481,17 @@ export function buildArticleTemplateData(document: NativePageDocument): ArticleT
       label: pathLabel(href),
     }));
 
+    const heroImageContainer =
+      root.find('[data-hook="post-hero-image"] wow-image').first().length > 0
+        ? root.find('[data-hook="post-hero-image"] wow-image').first()
+        : root.find('[data-hook="figure-IMAGE"] wow-image').first();
+    const heroImageInfo = heroImageContainer.attr("data-image-info") ?? "";
+    const heroImageUri = extractWixImageUri(heroImageInfo);
+    const heroImageWidth = extractWixImageDimension(heroImageInfo, "width");
+    const heroImageHeight = extractWixImageDimension(heroImageInfo, "height");
+
     const heroImage =
+      wixMediaUrlFromUri(heroImageUri) ||
       root.find('[data-hook="post-hero-image"] img').first().attr("src") ||
       root.find('[data-hook="figure-IMAGE"] img').first().attr("src") ||
       null;
@@ -458,6 +505,8 @@ export function buildArticleTemplateData(document: NativePageDocument): ArticleT
       title: pathTitleOrFallback(document.path, title),
       subtitle: cleanText(subtitle),
       heroImage,
+      heroImageWidth,
+      heroImageHeight,
       metadata,
       facts,
       body: contentLines.length > 0 ? contentLines : [cleanText(document.description)].filter(Boolean),
@@ -493,6 +542,8 @@ export function buildArticleTemplateData(document: NativePageDocument): ArticleT
       cleanText(document.description) ||
       "Press coverage and community stories connected to Mekor Habracha.",
     heroImage: null,
+    heroImageWidth: null,
+    heroImageHeight: null,
     metadata,
     facts:
       sourceUrl && !isInternalUrl(sourceUrl)
@@ -536,7 +587,20 @@ export function buildEventTemplateData(document: NativePageDocument): EventTempl
       .filter(Boolean),
   );
 
-  const eventImage = $('[data-hook="event-image"]').find("img").first().attr("src") ?? null;
+  const eventImageRoot = $('[data-hook="event-image"]').first();
+  const wixImageUri =
+    eventImageRoot
+      .find("wow-image")
+      .toArray()
+      .map((node) => extractWixImageUri($(node).attr("data-image-info") ?? ""))
+      .find(Boolean) ?? "";
+  const wixImage = wixMediaUrlFromUri(wixImageUri);
+  const imageCandidates = eventImageRoot
+    .find("img")
+    .toArray()
+    .map((node) => cleanText($(node).attr("src")))
+    .filter(Boolean);
+  const eventImage = wixImage || imageCandidates.at(-1) || imageCandidates[0] || null;
 
   return {
     path: document.path,

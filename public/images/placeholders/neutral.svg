@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Decorative placeholder image</title>
+  <desc id="desc">Soft gradient background with abstract shapes.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5efe2" />
+      <stop offset="55%" stop-color="#dbe7f3" />
+      <stop offset="100%" stop-color="#eef3f8" />
+    </linearGradient>
+    <radialGradient id="orb1" cx="35%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#d0a15e" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#d0a15e" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="orb2" cx="70%" cy="65%" r="45%">
+      <stop offset="0%" stop-color="#29486b" stop-opacity="0.28" />
+      <stop offset="100%" stop-color="#29486b" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)" />
+  <rect width="1600" height="1000" fill="url(#orb1)" />
+  <rect width="1600" height="1000" fill="url(#orb2)" />
+  <g fill="none" stroke="#2f5278" stroke-opacity="0.2">
+    <path d="M-20 660C220 500 430 560 640 660C860 765 1110 770 1620 560" stroke-width="14" />
+    <path d="M-20 760C260 640 520 700 760 800C1040 915 1290 890 1620 760" stroke-width="10" />
+  </g>
+</svg>

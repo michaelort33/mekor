@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/primitives";
 import { MarketingPageShell } from "@/components/marketing/page-shell";
@@ -9,6 +10,17 @@ import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
 
 const PATH = "/membership" as const;
+
+const MEMBERSHIP_IMAGES = {
+  hero:
+    "https://static.wixstatic.com/media/11062b_6ef3ee78b5784e3586f8a9366c89f5ee~mv2.jpeg",
+  community:
+    "https://static.wixstatic.com/media/92f487_1b9e6a717396499c912c95ed541884b4~mv2.jpg",
+  benefits:
+    "https://static.wixstatic.com/media/92f487_e06bca9eef7844c4b8dbaef89fa60417~mv2.jpeg",
+  join:
+    "https://static.wixstatic.com/media/92f487_1b9e6a717396499c912c95ed541884b4~mv2.jpg",
+} as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getNativeDocumentByPath(PATH);
@@ -27,6 +39,11 @@ export default async function MembershipPage() {
       <HeroSection
         title="Join Mekor Habracha!"
         subtitle="Membership in Mekor Habracha"
+        image={{
+          src: MEMBERSHIP_IMAGES.hero,
+          alt: "Mekor Habracha community gathering",
+          objectFit: "scale-down",
+        }}
         description={[
           "We offer 2 simple ways to join or renew and become part of a synagogue community that keeps Jewish life vibrant in Center City.",
           "Choose from annual membership options below and connect directly for payment support.",
@@ -80,6 +97,13 @@ export default async function MembershipPage() {
           and Mekor Habracha depends on membership dues. When you join, you become part of a shul
           community that is committed to its loyal members.
         </p>
+        <Image
+          src={MEMBERSHIP_IMAGES.community}
+          alt="Mekor Habracha community members"
+          width={1400}
+          height={900}
+          className={styles.illustrationImage}
+        />
       </SectionCard>
 
       <SectionCard title="Benefits of Membership">
@@ -102,6 +126,13 @@ export default async function MembershipPage() {
           <li>Discounts on Kiddush sponsorships and private event rentals.</li>
           <li>And much, much more.</li>
         </ul>
+        <Image
+          src={MEMBERSHIP_IMAGES.benefits}
+          alt="Mekor Habracha membership community moments"
+          width={1400}
+          height={900}
+          className={styles.illustrationImage}
+        />
       </SectionCard>
 
       <SectionCard title="How to Join or Renew">
@@ -123,6 +154,13 @@ export default async function MembershipPage() {
           {" "}
           <a href="tel:+12155254246">(215) 525-4246</a> or email the shul.
         </p>
+        <Image
+          src={MEMBERSHIP_IMAGES.join}
+          alt="Mekor Habracha members at synagogue"
+          width={1400}
+          height={900}
+          className={styles.illustrationImage}
+        />
       </SectionCard>
 
       <SectionCard title="Contact Us">

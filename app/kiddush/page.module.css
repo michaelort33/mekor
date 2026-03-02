@@ -1,0 +1,78 @@
+.page {
+  background:
+    radial-gradient(920px 430px at 8% -12%, rgba(182, 206, 230, 0.28) 0%, rgba(182, 206, 230, 0) 68%),
+    radial-gradient(880px 420px at 92% -16%, rgba(250, 236, 198, 0.28) 0%, rgba(250, 236, 198, 0) 72%),
+    #f9f7f2;
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.optionGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.optionCard {
+  border-radius: 14px;
+  border: 1px solid #d8e1ec;
+  background: linear-gradient(145deg, #f8fbff 0%, #eef4fc 100%);
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.optionTitle {
+  margin: 0;
+  color: #1e3f65;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.28;
+}
+
+.optionRate {
+  margin: 0;
+  color: #2a5683;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.optionBody {
+  margin: 0;
+  color: #47576b;
+  line-height: 1.56;
+}
+
+.optionAction {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  border-radius: 999px;
+  border: 1px solid #2c6ca4;
+  background: #f4f9ff;
+  color: #1d4f7c;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0 12px;
+}
+
+.optionAction:hover {
+  border-color: #214f78;
+  background: #eaf3fd;
+}
+
+@media (max-width: 760px) {
+  .stack {
+    gap: 14px;
+  }
+}

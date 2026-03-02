@@ -28,6 +28,7 @@ export function EventTemplate({ data }: EventTemplateProps) {
               width={1200}
               height={675}
               sizes="(max-width: 920px) 100vw, 920px"
+              unoptimized
             />
           </div>
         ) : null}

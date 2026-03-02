@@ -23,8 +23,9 @@ export default function IsraelPage() {
         subtitle="Events and Initiatives Online and in the Greater Philadelphia Jewish Community"
         description="Updated 12/30/2024"
         image={{
-          src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/9a1c305c9b204620be934bd55d866f3e1c06e961-92f487_fe9c18db72464a00804c50ec36bba116-mv2.jpg",
+          src: "https://static.wixstatic.com/media/92f487_fe9c18db72464a00804c50ec36bba116~mv2.jpg",
           alt: "Israel solidarity event banner",
+          objectFit: "scale-down",
         }}
       />
 
@@ -32,7 +33,7 @@ export default function IsraelPage() {
         <SplitMediaText
           title="Israel's Civil Defense Efforts"
           media={{
-            src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/142c369818029b6d312a6fd41107d1c33c93adf9-66bc7c_6e7e760f838c45358a24f54b9f2927ea-mv2.jpg",
+            src: "https://static.wixstatic.com/media/66bc7c_6e7e760f838c45358a24f54b9f2927ea~mv2.jpg",
             alt: "Mishmar volunteers in Israel",
           }}
           paragraphs={[
@@ -75,7 +76,7 @@ export default function IsraelPage() {
           </div>
           <div className={styles.sparkImage}>
             <img
-              src="https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/339de5af025a89406e33ff6ee819d9d9dc11cff2-92f487_34e64b1fb2e94c56886578290ef2bcd0-mv2.jpeg"
+              src="https://static.wixstatic.com/media/92f487_34e64b1fb2e94c56886578290ef2bcd0~mv2.jpeg"
               alt="SparkIL community initiative visual"
             />
           </div>
@@ -87,7 +88,7 @@ export default function IsraelPage() {
           title="Advocate for Yourself"
           kicker="A Free Workshop on Responding to Antisemitism"
           media={{
-            src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/2c5b9a0ac2d5bf9d3bffc4513863223e3aeedc58-image1-20-1-.png",
+            src: "https://static.wixstatic.com/media/92f487_be81df46a7ea4ddbb37daf1934fb12e6~mv2.png",
             alt: "Workshop promotional graphic",
           }}
           reverse
@@ -107,7 +108,7 @@ export default function IsraelPage() {
         <SplitMediaText
           title="Simchat Torah Project 2024/5785"
           media={{
-            src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/bbcd24569e126dce77917e2e571f2b1f1c1075fd-92f487_b487ff3e7e4c4f8482887973e48a3412-mv2.png",
+            src: "https://static.wixstatic.com/media/92f487_b487ff3e7e4c4f8482887973e48a3412~mv2.png",
             alt: "Simchat Torah project commemorative image",
           }}
           paragraphs={[

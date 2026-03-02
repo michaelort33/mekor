@@ -7,6 +7,38 @@
   gap: 16px;
 }
 
+.heroGraphic {
+  background:
+    radial-gradient(40% 62% at 14% 10%, rgba(157, 194, 228, 0.44) 0%, rgba(157, 194, 228, 0) 100%),
+    radial-gradient(46% 68% at 84% 18%, rgba(96, 159, 208, 0.48) 0%, rgba(96, 159, 208, 0) 100%),
+    radial-gradient(62% 74% at 54% 98%, rgba(53, 96, 142, 0.6) 0%, rgba(53, 96, 142, 0) 100%),
+    linear-gradient(132deg, #1c3248 0%, #264669 48%, #2f5b86 100%);
+}
+
+.heroGraphic::before,
+.heroGraphic::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  border: 1px solid rgba(232, 241, 252, 0.22);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.heroGraphic::before {
+  width: min(56vw, 520px);
+  height: min(56vw, 520px);
+  top: -34%;
+  right: -10%;
+}
+
+.heroGraphic::after {
+  width: min(44vw, 420px);
+  height: min(44vw, 420px);
+  bottom: -28%;
+  left: -8%;
+}
+
 .subheading {
   margin: 0;
   color: #4f5b69;

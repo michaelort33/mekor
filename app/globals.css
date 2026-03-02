@@ -187,6 +187,9 @@ a {
 
 .mirror-root[data-native-nav="true"] #PAGES_CONTAINER .wixui-image:not(.bgImage) img {
   border-radius: 14px;
+  object-fit: scale-down !important;
+  object-position: center top !important;
+  background: #f3f7fc;
 }
 
 @media (max-width: 1024px) {
@@ -1562,10 +1565,26 @@ body.native-nav--mobile-open {
   background: var(--native-shell-bg);
 }
 
+.kosher-places-page--food {
+  background:
+    radial-gradient(68% 54% at 0% 0%, rgba(255, 236, 192, 0.5) 0%, rgba(255, 236, 192, 0) 100%),
+    radial-gradient(52% 44% at 100% 0%, rgba(186, 218, 245, 0.45) 0%, rgba(186, 218, 245, 0) 100%),
+    linear-gradient(180deg, #f9f6ef 0%, #f4f8fc 100%);
+}
+
 .kosher-places {
   max-width: var(--native-page-max);
   margin: 0 auto;
   padding: var(--native-page-pad-block) var(--native-page-pad-inline);
+}
+
+.kosher-places--food {
+  padding-bottom: calc(var(--native-page-pad-block) + 16px);
+}
+
+.kosher-places__header {
+  display: grid;
+  gap: 8px;
 }
 
 .kosher-places__header h1 {
@@ -1586,12 +1605,116 @@ body.native-nav--mobile-open {
   color: #2f4f71;
 }
 
+.kosher-places__kicker {
+  margin: 0;
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid #c6d5e6;
+  background: #e9f2fb;
+  color: #2a567e;
+  padding: 3px 11px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kosher-places__highlights {
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.kosher-places__highlights li {
+  border-radius: 11px;
+  border: 1px solid #d1dced;
+  background: rgba(239, 246, 254, 0.88);
+  color: #344c67;
+  padding: 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.kosher-places__highlights li span,
+.kosher-places__highlights li a {
+  display: block;
+  padding: 8px 10px;
+}
+
+.kosher-places__highlights li a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kosher-places__highlights li a:hover {
+  background: rgba(220, 233, 248, 0.92);
+}
+
+.kosher-places__highlights li a:focus-visible {
+  outline: 2px solid #7a9ec2;
+  outline-offset: 1px;
+}
+
+.kosher-places__showcase {
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.kosher-places__showcase-item {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid #d4ddeb;
+  background: #e9eff6;
+  box-shadow: 0 12px 24px rgba(20, 39, 59, 0.1);
+}
+
+.kosher-places__showcase-item img {
+  display: block;
+  width: 100%;
+  height: 176px;
+  object-fit: cover;
+}
+
+.kosher-places__showcase-caption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 10px 11px;
+  display: grid;
+  gap: 2px;
+  background: linear-gradient(180deg, rgba(13, 26, 41, 0) 0%, rgba(13, 26, 41, 0.82) 100%);
+}
+
+.kosher-places__showcase-caption span {
+  color: rgba(228, 239, 252, 0.86);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.kosher-places__showcase-caption strong {
+  color: #f6fbff;
+  font-size: 0.9rem;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
 .kosher-directory {
   margin-top: 18px;
   border: 1px solid var(--native-nav-border);
-  border-radius: 16px;
-  background: var(--native-nav-surface);
-  padding: 16px;
+  border-radius: 20px;
+  background: linear-gradient(160deg, #ffffff 0%, #f7fafd 100%);
+  padding: 18px;
+  box-shadow: 0 12px 26px rgba(25, 44, 65, 0.08);
 }
 
 .kosher-directory__controls {
@@ -1633,6 +1756,25 @@ body.native-nav--mobile-open {
   font-size: 0.84rem;
 }
 
+.kosher-directory__sections {
+  margin-top: 14px;
+  display: grid;
+  gap: 14px;
+}
+
+.kosher-directory__section {
+  display: grid;
+  gap: 2px;
+}
+
+.kosher-directory__section-title {
+  margin: 0;
+  color: var(--native-page-heading);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .kosher-directory__tabs {
   margin-top: 12px;
   display: flex;
@@ -1668,17 +1810,41 @@ body.native-nav--mobile-open {
 }
 
 .kosher-directory__grid {
-  margin-top: 14px;
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .kosher-directory__card {
-  border: 1px solid var(--native-nav-border);
-  border-radius: 12px;
-  background: var(--native-nav-surface-muted);
+  border: 1px solid #cfdae7;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fbfdff 0%, #f6f9fc 100%);
   padding: 12px;
+  display: grid;
+  gap: 8px;
+  box-shadow: 0 8px 18px rgba(19, 42, 66, 0.07);
+}
+
+.kosher-directory__card-image-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.kosher-directory__card-image {
+  margin: -12px -12px 1px;
+  border-radius: 13px 13px 11px 11px;
+  overflow: hidden;
+  border-bottom: 1px solid #ccd9e7;
+  background: #e8edf5;
+}
+
+.kosher-directory__card-image img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
 }
 
 .kosher-directory__meta {
@@ -1728,7 +1894,7 @@ body.native-nav--mobile-open {
 .kosher-directory__card h3 {
   margin: 7px 0 6px;
   color: var(--native-page-heading);
-  font-size: 1.03rem;
+  font-size: 1.08rem;
 }
 
 .kosher-directory__card p {
@@ -1740,6 +1906,7 @@ body.native-nav--mobile-open {
 
 .kosher-directory__summary {
   color: #364353;
+  line-height: 1.45;
 }
 
 .kosher-directory__links {
@@ -2594,6 +2761,18 @@ body.native-nav--mobile-open {
     padding: 5px;
   }
 
+  .kosher-places__showcase {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kosher-places__showcase-item img {
+    height: 196px;
+  }
+
+  .kosher-places__highlights {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .kosher-directory__grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -2623,6 +2802,15 @@ body.native-nav--mobile-open {
 @media (max-width: 900px) {
   .kosher-directory__controls {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kosher-directory {
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .kosher-directory__card-image {
+    margin: -12px -12px 2px;
   }
 
   .in-news-directory__controls {
@@ -3429,6 +3617,18 @@ body.native-nav--mobile-open {
 .template-card__hero img {
   display: block;
   width: 100%;
+  height: auto;
+  object-fit: scale-down;
+  object-position: center top;
+}
+
+.template-card__hero--post {
+  display: flex;
+  justify-content: center;
+}
+
+.template-card__hero--post img {
+  width: min(100%, var(--template-hero-width, 920px));
   height: auto;
 }
 

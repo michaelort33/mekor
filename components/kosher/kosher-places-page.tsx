@@ -7,13 +7,23 @@ import {
   getManagedKosherPlaces,
 } from "@/lib/kosher/store";
 
+type KosherPlacesHighlight = {
+  label: string;
+  tag?: string;
+};
+
 type KosherPlacesPageProps = {
   currentPath: string;
   heading: string;
   description: string;
   defaultNeighborhood: KosherNeighborhood | "all";
   lastUpdatedKey?: KosherDirectoryFreshnessKey;
+  kicker?: string;
+  highlights?: KosherPlacesHighlight[];
+  designTone?: "default" | "food";
 };
+
+const KOSHER_FALLBACK_IMAGE_SRC = "/images/kosher/fallback-food.svg";
 
 function formatLastUpdatedDate(value: string | null) {
   if (!value) {
@@ -38,18 +48,62 @@ export async function KosherPlacesPage({
   description,
   defaultNeighborhood,
   lastUpdatedKey,
+  kicker,
+  highlights = [],
+  designTone = "default",
 }: KosherPlacesPageProps) {
   const places = await getManagedKosherPlaces();
+  const showcasePlaces =
+    defaultNeighborhood === "all"
+      ? places.slice(0, 6)
+      : places.filter((place) => place.neighborhood === defaultNeighborhood).slice(0, 6);
   const lastUpdatedDate = formatLastUpdatedDate(
     lastUpdatedKey ? await getKosherDirectoryLastUpdated(lastUpdatedKey) : null,
   );
 
   return (
-    <NativeShell currentPath={currentPath} className="kosher-places-page" contentClassName="kosher-places">
-      <header className="kosher-places__header">
+    <NativeShell
+      currentPath={currentPath}
+      className={`kosher-places-page${designTone === "food" ? " kosher-places-page--food" : ""}`}
+      contentClassName={`kosher-places${designTone === "food" ? " kosher-places--food" : ""}`}
+    >
+      <header className={`kosher-places__header${designTone === "food" ? " kosher-places__header--food" : ""}`}>
+        {kicker ? <p className="kosher-places__kicker">{kicker}</p> : null}
         <h1>{heading}</h1>
         <p>{description}</p>
         {lastUpdatedDate ? <p className="kosher-places__last-updated">Last updated: {lastUpdatedDate}</p> : null}
+        {highlights.length > 0 ? (
+          <ul className="kosher-places__highlights" aria-label="Dining highlights">
+            {highlights.map((highlight) => (
+              <li key={`${highlight.label}|${highlight.tag ?? "none"}`}>
+                {highlight.tag ? (
+                  <a href={`${currentPath}?tag=${encodeURIComponent(highlight.tag)}#kosher-directory`}>
+                    {highlight.label}
+                  </a>
+                ) : (
+                  <span>{highlight.label}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {showcasePlaces.length > 0 ? (
+          <div className="kosher-places__showcase" aria-label="Featured kosher food spots">
+            {showcasePlaces.map((place) => (
+              <article key={`showcase-${place.path}`} className="kosher-places__showcase-item">
+                <img
+                  src={place.heroImage || KOSHER_FALLBACK_IMAGE_SRC}
+                  alt={place.title}
+                  loading="lazy"
+                />
+                <div className="kosher-places__showcase-caption">
+                  <span>{place.neighborhoodLabel}</span>
+                  <strong>{place.title}</strong>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : null}
       </header>
       <KosherDirectory places={places} defaultNeighborhood={defaultNeighborhood} />
     </NativeShell>

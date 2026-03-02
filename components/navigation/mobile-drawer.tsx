@@ -161,6 +161,7 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose, drawerId, ti
                 <li key={item.label} className="native-nav__mobile-item">
                   <Link
                     href={item.href}
+                    prefetch={false}
                     className={`native-nav__mobile-link${isPathActive(currentPath, item.href) ? " is-active" : ""}`}
                     onClick={onClose}
                     aria-current={isPathActive(currentPath, item.href) ? "page" : undefined}
@@ -179,6 +180,7 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose, drawerId, ti
                 <div className="native-nav__mobile-group-row">
                   <Link
                     href={item.href}
+                    prefetch={false}
                     className={`native-nav__mobile-link${isPathActive(currentPath, item.href) ? " is-active" : ""}`}
                     onClick={onClose}
                     aria-current={isPathActive(currentPath, item.href) ? "page" : undefined}
@@ -214,6 +216,7 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose, drawerId, ti
                       <li key={child.label}>
                         <Link
                           href={child.href}
+                          prefetch={false}
                           className={`native-nav__mobile-sublink${isPathActive(currentPath, child.href) ? " is-active" : ""}`}
                           onClick={onClose}
                           aria-current={isPathActive(currentPath, child.href) ? "page" : undefined}

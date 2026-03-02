@@ -652,7 +652,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
     secondaryLinks: [
       {
         label: "Pre-Passover letter",
-        href: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8ec79805bb1829cd0e6fc905afa857992bdc6c01-chana_strauss_dinner_speech_excerpt_12-2-22.pdf",
+        href: "https://www.mekorhabracha.org/_files/ugd/92f487_649e9ef91ce343ab81f0cd94411298e2.pdf",
         external: true,
       },
     ],

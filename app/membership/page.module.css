@@ -22,6 +22,15 @@
   color: #536278;
 }
 
+.illustrationImage {
+  width: 100%;
+  height: auto;
+  margin-top: 8px;
+  border-radius: 14px;
+  border: 1px solid #d9e3ef;
+  box-shadow: 0 14px 28px rgba(22, 35, 54, 0.12);
+}
+
 .rateGrid {
   margin-top: 0.25rem;
   display: grid;

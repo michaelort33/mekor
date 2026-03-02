@@ -22,8 +22,10 @@ export default function HomePage() {
         title="Mekor Habracha"
         subtitle="Center City Synagogue"
         image={{
-          src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/c65062f0988a1d51a856aa9c037d2020c40df820-11062b_8135b27108d04d2a97adc750a341fb79-mv2.jpeg",
+          src: "https://static.wixstatic.com/media/11062b_8135b27108d04d2a97adc750a341fb79~mv2.jpeg",
           alt: "Mekor Habracha community gathering",
+          objectFit: "cover",
+          objectPosition: "center center",
         }}
         actions={[
           { label: "Join Us", href: "https://chat.whatsapp.com/G7JTiUN3aPN1V09lbBLC7G" },
@@ -63,7 +65,7 @@ export default function HomePage() {
             title="Purim at Mekor"
             kicker="Featured Event"
             media={{
-              src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/6eb19189fdda0e39881aecd97fc9c7117898ee43-92f487_518da3eb34cf4128806d9b17c5933881-mv2.jpg",
+              src: "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg",
               alt: "Purim community celebration",
             }}
             paragraphs={[
@@ -85,7 +87,7 @@ export default function HomePage() {
             title="Davening"
             kicker="Shabbat and Weekday Services"
             media={{
-              src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/dcdd623c1d8f5897af1126ed3ddfe29953c50a4a-92f487_34e64b1fb2e94c56886578290ef2bcd0-mv2.jpeg",
+              src: "https://static.wixstatic.com/media/92f487_34e64b1fb2e94c56886578290ef2bcd0~mv2.jpeg",
               alt: "Prayer service at Mekor",
             }}
             paragraphs={[
@@ -100,7 +102,7 @@ export default function HomePage() {
         <div className={styles.eventsGrid}>
           <article className={styles.eventCard}>
             <img
-              src="https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8134dcaa3b3b0d7bc61eb1e91ba63127094eb8ad-92f487_518da3eb34cf4128806d9b17c5933881-mv2.jpg"
+              src="https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg"
               alt="Purim at Mekor event poster"
             />
             <div className={styles.eventCardBody}>
@@ -113,7 +115,7 @@ export default function HomePage() {
           </article>
           <article className={styles.eventCard}>
             <img
-              src="https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/472ee2bb31a07e33d2f1dc87b406b658971c6140-92f487_a7ee1919f498484d90fb90f912123602-mv2.png"
+              src="https://static.wixstatic.com/media/92f487_a7ee1919f498484d90fb90f912123602~mv2.png"
               alt="Mekor Tot Shabbat event"
             />
             <div className={styles.eventCardBody}>
@@ -131,7 +133,7 @@ export default function HomePage() {
         <div className={styles.rabbisGrid}>
           <article className={styles.rabbiCard}>
             <img
-              src="https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/18252d53ced06155ea40feb7616bedf8ddc84949-92f487_d26f360d09cc45e4bebe89d9f14643d3-mv2-20copy2-20-medium-.jpg"
+              src="https://static.wixstatic.com/media/92f487_e03dc964305644a9b5eb3894502ed630~mv2.jpg"
               alt="Rabbi Eliezer Hirsch"
             />
             <div className={styles.rabbiCardBody}>
@@ -152,7 +154,7 @@ export default function HomePage() {
           </article>
           <article className={styles.rabbiCard}>
             <img
-              src="https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8f415a349a311e5c78b0eed19734d55541d8d0f6-r-20gotlib.jpg"
+              src="https://static.wixstatic.com/media/66bc7c_7ded87b518b94c619c3f89f470cb4a9d~mv2.jpg"
               alt="Rabbi Steven Gotlib"
             />
             <div className={styles.rabbiCardBody}>

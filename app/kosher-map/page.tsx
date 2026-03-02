@@ -12,10 +12,11 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const NEIGHBORHOOD_LINKS = [
-  { href: "/center-city", label: "Center City & Vicinity" },
-  { href: "/main-line-manyunk", label: "Main Line / Manyunk" },
-  { href: "/old-yorkroad-northeast", label: "Old York Road / Northeast" },
-  { href: "/cherry-hill", label: "Cherry Hill" },
+  { href: "/center-city", label: "All Neighborhoods" },
+  { href: "/center-city?neighborhood=center-city#kosher-directory", label: "Center City & Vicinity" },
+  { href: "/center-city?neighborhood=main-line-manyunk#kosher-directory", label: "Main Line / Manyunk" },
+  { href: "/center-city?neighborhood=old-yorkroad-northeast#kosher-directory", label: "Old York Road / Northeast" },
+  { href: "/center-city?neighborhood=cherry-hill#kosher-directory", label: "Cherry Hill" },
 ];
 
 export default async function KosherMapPage() {
@@ -26,7 +27,10 @@ export default async function KosherMapPage() {
         <header className="kosher-map-page__header">
           <p className="kosher-map-page__kicker">Kosher Directory</p>
           <h1>Kosher Map</h1>
-          <p>Use the interactive map and neighborhood pages to find kosher places across the region.</p>
+          <p>
+            Use the interactive map and the unified kosher directory to browse all neighborhoods together, or jump
+            directly into a single location filter.
+          </p>
         </header>
 
         <KosherMapEmbed />

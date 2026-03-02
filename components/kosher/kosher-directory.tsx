@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 import type { KosherNeighborhood } from "@/lib/kosher/extract";
 import type { ManagedKosherPlace } from "@/lib/kosher/store";
@@ -11,12 +12,15 @@ type KosherDirectoryProps = {
   defaultNeighborhood?: KosherNeighborhood | "all";
 };
 
+const KOSHER_FALLBACK_IMAGE_SRC = "/images/kosher/fallback-food.svg";
+
 const NEIGHBORHOOD_OPTIONS: Array<{ value: KosherNeighborhood | "all"; label: string }> = [
   { value: "all", label: "All Neighborhoods" },
   { value: "center-city", label: "Center City & Vicinity" },
   { value: "main-line-manyunk", label: "Main Line / Manyunk" },
   { value: "old-yorkroad-northeast", label: "Old York Road / Northeast" },
   { value: "cherry-hill", label: "Cherry Hill" },
+  { value: "unknown", label: "Other" },
 ];
 
 function normalize(value: string) {
@@ -54,6 +58,9 @@ function normalizeWebsiteLabel(website: string) {
 }
 
 export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherDirectoryProps) {
+  const searchParams = useSearchParams();
+  const urlTag = searchParams.get("tag") ?? "";
+  const urlNeighborhood = searchParams.get("neighborhood") ?? "";
   const [search, setSearch] = useState("");
   const [selectedNeighborhood, setSelectedNeighborhood] =
     useState<KosherNeighborhood | "all">(defaultNeighborhood);
@@ -70,6 +77,37 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
 
     return ["all", ...[...tags].sort((a, b) => a.localeCompare(b))];
   }, [places]);
+
+  useEffect(() => {
+    const requestedTag = normalize(urlTag);
+    if (!requestedTag) {
+      return;
+    }
+
+    if (requestedTag === "all") {
+      setSelectedTag("all");
+      return;
+    }
+
+    const matchedTag = tagOptions.find((tag) => normalize(tag) === requestedTag);
+    if (matchedTag) {
+      setSelectedTag(matchedTag);
+    }
+  }, [tagOptions, urlTag]);
+
+  useEffect(() => {
+    const requestedNeighborhood = normalize(urlNeighborhood);
+    if (!requestedNeighborhood) {
+      return;
+    }
+
+    const matchedNeighborhood = NEIGHBORHOOD_OPTIONS.find(
+      (option) => normalize(option.value) === requestedNeighborhood,
+    );
+    if (matchedNeighborhood) {
+      setSelectedNeighborhood(matchedNeighborhood.value);
+    }
+  }, [urlNeighborhood]);
 
   const filteredPlaces = useMemo(() => {
     const searchValue = normalize(search);
@@ -104,13 +142,91 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
   }, [places, search, selectedNeighborhood, selectedTagValue]);
 
   const quickTagOptions = useMemo(() => tagOptions.filter((tag) => tag !== "all"), [tagOptions]);
+  const groupedPlaces = useMemo(() => {
+    const byNeighborhood = new Map<KosherNeighborhood, ManagedKosherPlace[]>();
+    for (const place of filteredPlaces) {
+      const existing = byNeighborhood.get(place.neighborhood);
+      if (existing) {
+        existing.push(place);
+      } else {
+        byNeighborhood.set(place.neighborhood, [place]);
+      }
+    }
+
+    return NEIGHBORHOOD_OPTIONS
+      .filter((option) => option.value !== "all")
+      .map((option) => ({
+        neighborhood: option.value as KosherNeighborhood,
+        label: option.label,
+        places: byNeighborhood.get(option.value as KosherNeighborhood) ?? [],
+      }))
+      .filter((group) => group.places.length > 0);
+  }, [filteredPlaces]);
 
   function selectCategoryTag(tag: string) {
     setSelectedTag((current) => (normalize(current) === normalize(tag) ? "all" : tag));
   }
 
+  function renderPlaceCard(place: ManagedKosherPlace) {
+    return (
+      <article key={place.path} className="kosher-directory__card">
+        <Link href={place.path} className="kosher-directory__card-image-link" aria-label={`Open ${place.title}`}>
+          <div className="kosher-directory__card-image">
+            <img
+              src={place.heroImage || KOSHER_FALLBACK_IMAGE_SRC}
+              alt={place.title}
+              loading="lazy"
+              onError={(event) => {
+                const image = event.currentTarget;
+                if (!image.src.endsWith(KOSHER_FALLBACK_IMAGE_SRC)) {
+                  image.src = KOSHER_FALLBACK_IMAGE_SRC;
+                }
+              }}
+            />
+          </div>
+        </Link>
+
+        <div className="kosher-directory__meta">
+          <span>{place.neighborhoodLabel}</span>
+          {place.tags.map((tag) => (
+            <button
+              key={`${place.path}-${tag}`}
+              type="button"
+              className={`kosher-directory__tag${
+                selectedTagValue !== "all" && normalize(tag) === selectedTagValue ? " is-active" : ""
+              }`}
+              onClick={() => selectCategoryTag(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+
+        <h3>{place.title}</h3>
+        {place.summary ? <p className="kosher-directory__summary">{place.summary}</p> : null}
+        {place.address ? <p>{place.address}</p> : null}
+        {place.supervision ? <p>{place.supervision}</p> : null}
+
+        <div className="kosher-directory__links">
+          <Link href={place.path}>Details</Link>
+          {place.locationHref ? (
+            <a href={place.locationHref} target="_blank" rel="noreferrer noopener">
+              Map
+            </a>
+          ) : null}
+          {place.website ? (
+            <a href={place.website} target="_blank" rel="noreferrer noopener">
+              {normalizeWebsiteLabel(place.website)}
+            </a>
+          ) : null}
+          {place.phone ? <a href={`tel:${place.phone}`}>{formatPhone(place.phone)}</a> : null}
+        </div>
+      </article>
+    );
+  }
+
   return (
-    <section className="kosher-directory" aria-label="Kosher places directory">
+    <section id="kosher-directory" className="kosher-directory" aria-label="Kosher places directory">
       <div className="kosher-directory__controls">
         <label className="kosher-directory__control">
           <span>Search</span>
@@ -123,7 +239,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
         </label>
 
         <label className="kosher-directory__control">
-          <span>Neighborhood</span>
+          <span>Location</span>
           <select
             value={selectedNeighborhood}
             onChange={(event) => setSelectedNeighborhood(event.target.value as KosherNeighborhood | "all")}
@@ -184,47 +300,24 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
           No places match these filters. Try a broader neighborhood, category, or search term.
         </p>
       ) : (
-        <div className="kosher-directory__grid">
-          {filteredPlaces.map((place) => (
-            <article key={place.path} className="kosher-directory__card">
-              <div className="kosher-directory__meta">
-                <span>{place.neighborhoodLabel}</span>
-                {place.tags.map((tag) => (
-                  <button
-                    key={`${place.path}-${tag}`}
-                    type="button"
-                    className={`kosher-directory__tag${
-                      selectedTagValue !== "all" && normalize(tag) === selectedTagValue ? " is-active" : ""
-                    }`}
-                    onClick={() => selectCategoryTag(tag)}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
-
-              <h3>{place.title}</h3>
-              {place.summary ? <p className="kosher-directory__summary">{place.summary}</p> : null}
-              {place.address ? <p>{place.address}</p> : null}
-              {place.supervision ? <p>{place.supervision}</p> : null}
-
-              <div className="kosher-directory__links">
-                <Link href={place.path}>Details</Link>
-                {place.locationHref ? (
-                  <a href={place.locationHref} target="_blank" rel="noreferrer noopener">
-                    Map
-                  </a>
-                ) : null}
-                {place.website ? (
-                  <a href={place.website} target="_blank" rel="noreferrer noopener">
-                    {normalizeWebsiteLabel(place.website)}
-                  </a>
-                ) : null}
-                {place.phone ? <a href={`tel:${place.phone}`}>{formatPhone(place.phone)}</a> : null}
-              </div>
-            </article>
-          ))}
-        </div>
+        <>
+          {selectedNeighborhood === "all" ? (
+            <div className="kosher-directory__sections">
+              {groupedPlaces.map((group) => (
+                <section
+                  key={`group-${group.neighborhood}`}
+                  className="kosher-directory__section"
+                  aria-label={group.label}
+                >
+                  <h3 className="kosher-directory__section-title">{group.label}</h3>
+                  <div className="kosher-directory__grid">{group.places.map((place) => renderPlaceCard(place))}</div>
+                </section>
+              ))}
+            </div>
+          ) : (
+            <div className="kosher-directory__grid">{filteredPlaces.map((place) => renderPlaceCard(place))}</div>
+          )}
+        </>
       )}
     </section>
   );
