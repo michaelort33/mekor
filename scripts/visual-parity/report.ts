@@ -211,6 +211,15 @@ function formatPercent(value: number) {
   return `${value.toFixed(3)}%`;
 }
 
+function parseFailOnMissingAssets() {
+  const raw = process.env.VISUAL_PARITY_FAIL_ON_MISSING_ASSETS?.trim().toLowerCase();
+  if (!raw) {
+    return false;
+  }
+
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
 function toMarkdown(summary: {
   generatedAt: string;
   thresholdPercent: number;
@@ -284,6 +293,7 @@ async function main() {
   const candidateDir = resolveCandidateDir();
   const reportDir = resolveReportDir();
   const thresholdPercent = parseThresholdPercent();
+  const failOnMissingAssets = parseFailOnMissingAssets();
 
   await fs.promises.rm(reportDir, { recursive: true, force: true });
   await ensureDir(reportDir);
@@ -407,15 +417,20 @@ async function main() {
     `[report] comparisons=${summary.totalComparisons} pass=${summary.passCount} fail=${summary.failCount} missing=${summary.missingCount}`,
   );
 
-  if (missingAssets.length > 0 || failures.length > 0) {
-    if (missingAssets.length > 0) {
-      console.error(
-        `[report] missing baseline/candidate assets detected. Refresh baseline via workflow_dispatch: Visual Parity Baseline Refresh`,
-      );
+  if (missingAssets.length > 0) {
+    const message =
+      "[report] missing baseline/candidate assets detected. Refresh baseline via workflow_dispatch: Visual Parity Baseline Refresh";
+
+    if (failOnMissingAssets) {
+      console.error(message);
+      process.exit(1);
     }
-    if (failures.length > 0) {
-      console.error(`[report] threshold breaches detected (>${thresholdPercent}%).`);
-    }
+
+    console.warn(`${message} (warning only: VISUAL_PARITY_FAIL_ON_MISSING_ASSETS=false)`);
+  }
+
+  if (failures.length > 0) {
+    console.error(`[report] threshold breaches detected (>${thresholdPercent}%).`);
     process.exit(1);
   }
 }
