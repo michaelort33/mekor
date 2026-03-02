@@ -99,3 +99,18 @@ Native route enablement is guarded by screenshot parity checks across mobile/tab
 See `docs/visual-parity.md` for commands, report interpretation, and baseline refresh workflow.
 
 Native route contract matrix: [`docs/native-data-contract-matrix.md`](docs/native-data-contract-matrix.md)
+
+## Native Rollout Governance
+
+Route-by-route native rollout tracking artifacts:
+
+- Tracker source: `mirror-data/rollout/route-rollout-tracker.json`
+- Tracker report: `docs/mirror-rollout/rollout-tracker.md`
+- Retirement checklist: `docs/mirror-rollout/mirror-retirement-checklist.md`
+- Completion report: `docs/mirror-rollout/mirror-retirement-completion-report.md`
+
+Generate/update rollout reports and retirement audit:
+
+```bash
+npm run mirror:rollout-audit
+```

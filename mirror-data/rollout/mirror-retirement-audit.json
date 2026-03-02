@@ -1,0 +1,567 @@
+{
+  "summary": {
+    "auditedAt": "2026-03-02T00:42:19.438Z",
+    "trackerVersion": 1,
+    "stabilityWindowDays": 7,
+    "totalRoutes": 10,
+    "nativeEnabledRoutes": 6,
+    "checksPassedRoutes": 0,
+    "stabilitySatisfiedRoutes": 0,
+    "routesEligibleForPatchRemoval": 0,
+    "retiredRoutes": 0,
+    "routesWithPatchDebt": 10
+  },
+  "waves": [
+    {
+      "id": "W1",
+      "dateStart": "2026-03-02",
+      "dateEnd": "2026-03-15",
+      "engineeringOwner": "web-platform",
+      "qaOwner": "qa-web",
+      "seoOwner": "seo-web",
+      "routes": [
+        "/events",
+        "/in-the-news"
+      ]
+    },
+    {
+      "id": "W2",
+      "dateStart": "2026-03-16",
+      "dateEnd": "2026-03-29",
+      "engineeringOwner": "web-platform",
+      "qaOwner": "qa-web",
+      "seoOwner": "seo-web",
+      "routes": [
+        "/center-city",
+        "/main-line-manyunk",
+        "/old-yorkroad-northeast",
+        "/cherry-hill"
+      ]
+    },
+    {
+      "id": "W3",
+      "dateStart": "2026-03-30",
+      "dateEnd": "2026-04-12",
+      "engineeringOwner": "web-platform",
+      "qaOwner": "qa-web",
+      "seoOwner": "seo-web",
+      "routes": [
+        "/team-4",
+        "/from-the-rabbi-s-desk"
+      ]
+    },
+    {
+      "id": "W4",
+      "dateStart": "2026-04-13",
+      "dateEnd": "2026-04-26",
+      "engineeringOwner": "web-platform",
+      "qaOwner": "qa-web",
+      "seoOwner": "seo-web",
+      "routes": [
+        "/donations",
+        "/kosher-map"
+      ]
+    }
+  ],
+  "checkCommands": {
+    "visual": "AUDIT_BASE_URL=<preview-or-prod-url> node scripts/_responsive_audit.mjs",
+    "functional": "npm test",
+    "seo": "npm run mirror:verify"
+  },
+  "routes": [
+    {
+      "path": "/events",
+      "wave": "W1",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_EVENTS",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 2,
+        "globalCssOverrides": 3
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 2,
+        "globalCssOverrides": 3
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "monitoring-checks-pending",
+      "blockers": [
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Native app route exists in app/events/page.tsx."
+    },
+    {
+      "path": "/in-the-news",
+      "wave": "W1",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_IN_THE_NEWS",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 2
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 2
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "monitoring-checks-pending",
+      "blockers": [
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Native app route exists in app/in-the-news/page.tsx."
+    },
+    {
+      "path": "/center-city",
+      "wave": "W2",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_CENTER_CITY",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 1,
+        "globalCssOverrides": 2
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 1,
+        "globalCssOverrides": 2
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "monitoring-checks-pending",
+      "blockers": [
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Native app route exists in app/center-city/page.tsx."
+    },
+    {
+      "path": "/main-line-manyunk",
+      "wave": "W2",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_MAIN_LINE_MANYUNK",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 2
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 2
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "monitoring-checks-pending",
+      "blockers": [
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Native app route exists in app/main-line-manyunk/page.tsx."
+    },
+    {
+      "path": "/old-yorkroad-northeast",
+      "wave": "W2",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_OLD_YORKROAD_NORTHEAST",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 2
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 2
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "monitoring-checks-pending",
+      "blockers": [
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Native app route exists in app/old-yorkroad-northeast/page.tsx."
+    },
+    {
+      "path": "/cherry-hill",
+      "wave": "W2",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_CHERRY_HILL",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 2
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 2
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "monitoring-checks-pending",
+      "blockers": [
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Native app route exists in app/cherry-hill/page.tsx."
+    },
+    {
+      "path": "/team-4",
+      "wave": "W3",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_TEAM_4",
+      "nativeFlagEnabled": false,
+      "nativeFlagImplemented": false,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 1,
+        "globalCssOverrides": 10
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 1,
+        "globalCssOverrides": 10
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "pending-native-enable",
+      "blockers": [
+        "native flag is off",
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Volunteer form remains mirror-backed and patch-heavy."
+    },
+    {
+      "path": "/from-the-rabbi-s-desk",
+      "wave": "W3",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_FROM_THE_RABBI_S_DESK",
+      "nativeFlagEnabled": false,
+      "nativeFlagImplemented": false,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 1
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 1
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "pending-native-enable",
+      "blockers": [
+        "native flag is off",
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Podcast fallback logic is currently route-specific in mirror runtime."
+    },
+    {
+      "path": "/donations",
+      "wave": "W4",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_DONATIONS",
+      "nativeFlagEnabled": false,
+      "nativeFlagImplemented": false,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 1,
+        "globalCssOverrides": 3
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 1,
+        "globalCssOverrides": 3
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "pending-native-enable",
+      "blockers": [
+        "native flag is off",
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Donation media and payment iframe prioritization still use mirror path hooks."
+    },
+    {
+      "path": "/kosher-map",
+      "wave": "W4",
+      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_KOSHER_MAP",
+      "nativeFlagEnabled": false,
+      "nativeFlagImplemented": false,
+      "checks": {
+        "visual": "pending",
+        "functional": "pending",
+        "seo": "pending",
+        "allPassed": false
+      },
+      "stability": {
+        "startedOn": null,
+        "endsOn": null,
+        "satisfied": false
+      },
+      "baselinePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 4
+      },
+      "livePatchDebt": {
+        "runtimeHooks": 1,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 4
+      },
+      "patchDebtDelta": {
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
+        "globalCssOverrides": 0
+      },
+      "decommissionChecklist": {
+        "runtimeHooksRemoved": false,
+        "documentHtmlFixesRemoved": false,
+        "globalCssOverridesRemoved": false,
+        "allComplete": false
+      },
+      "eligibleForPatchRemoval": false,
+      "retired": false,
+      "status": "pending-native-enable",
+      "blockers": [
+        "native flag is off",
+        "visual/functional/seo checks are incomplete",
+        "7-day stability window has not elapsed",
+        "decommission checklist is incomplete",
+        "route-specific patch debt remains"
+      ],
+      "notes": "Map-page fallback is still routed through mirror-only patch logic."
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { DocumentView } from "@/components/mirror/document-view";
 import { NATIVE_ROUTE_SET } from "@/lib/native-routes";
 import { loadContentIndex } from "@/lib/mirror/loaders";
+import { NATIVE_APP_PATHS } from "@/lib/mirror/native-rollout";
 import { loadMirrorDocumentForPath } from "@/lib/mirror/resolve-route";
 import { MirrorBadRequestView, resolveMirrorRenderResult } from "@/lib/mirror/render-route";
 import { normalizePath } from "@/lib/mirror/url";
@@ -14,6 +15,7 @@ export const dynamic = "force-static";
 
 const MANAGED_APP_PATHS = new Set([
   ...NATIVE_ROUTE_SET,
+  ...NATIVE_APP_PATHS,
   ...listConfiguredRenderModes().map((entry) => entry.path),
 ]);
 type PageProps = {
@@ -46,7 +48,6 @@ export async function generateStaticParams() {
     const normalized = normalizePath(item.path);
     if (
       normalized === "/" ||
-      MANAGED_APP_PATHS.has(normalized) ||
       MANAGED_APP_PATHS.has(normalized) ||
       normalized.includes("?") ||
       normalized.startsWith("/_files/")
