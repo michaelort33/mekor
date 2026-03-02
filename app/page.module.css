@@ -49,7 +49,9 @@
 .eventCard img {
   width: 100%;
   height: 220px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center top;
+  background: #f6f8fb;
   display: block;
 }
 
@@ -95,7 +97,9 @@
 .rabbiCard img {
   width: 100%;
   height: 240px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center top;
+  background: #f6f8fb;
   display: block;
 }
 
@@ -185,5 +189,6 @@
   .eventCard img,
   .rabbiCard img {
     height: 200px;
+    object-fit: contain;
   }
 }
