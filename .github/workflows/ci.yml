@@ -31,3 +31,45 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Visual parity gate (<=2% per route/breakpoint)
+        run: |
+          set -euo pipefail
+
+          npm run start -- --hostname 127.0.0.1 --port 3000 > /tmp/mekor-next-start.log 2>&1 &
+          APP_PID=$!
+          trap "kill $APP_PID" EXIT
+
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3000 >/dev/null; then
+              break
+            fi
+            sleep 2
+          done
+
+          if ! curl -fsS http://127.0.0.1:3000 >/dev/null; then
+            echo "Next.js server failed to start within timeout"
+            cat /tmp/mekor-next-start.log
+            exit 1
+          fi
+
+          VISUAL_PARITY_OUTPUT_ROOT=output \
+          VISUAL_PARITY_NATIVE_BASE_URL=http://127.0.0.1:3000 \
+          npm run visual:candidate:capture
+
+          VISUAL_PARITY_OUTPUT_ROOT=output \
+          VISUAL_PARITY_THRESHOLD_PERCENT=2 \
+          npm run visual:parity:report
+
+      - name: Upload visual parity artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-parity-report-${{ github.run_id }}
+          path: |
+            output/visual-parity/candidate
+            output/visual-parity/report
+          if-no-files-found: warn

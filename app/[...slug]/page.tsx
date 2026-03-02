@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { DocumentView } from "@/components/mirror/document-view";
+import { NATIVE_ROUTE_SET } from "@/lib/native-routes";
 import { loadContentIndex } from "@/lib/mirror/loaders";
 import { loadMirrorDocumentForPath } from "@/lib/mirror/resolve-route";
 import { MirrorBadRequestView, resolveMirrorRenderResult } from "@/lib/mirror/render-route";
@@ -11,8 +12,10 @@ import { getEffectiveRenderMode, listConfiguredRenderModes } from "@/lib/routing
 export const dynamicParams = true;
 export const dynamic = "force-static";
 
-const MANAGED_APP_PATHS = new Set(listConfiguredRenderModes().map((entry) => entry.path));
-
+const MANAGED_APP_PATHS = new Set([
+  ...NATIVE_ROUTE_SET,
+  ...listConfiguredRenderModes().map((entry) => entry.path),
+]);
 type PageProps = {
   params: Promise<{
     slug?: string[];

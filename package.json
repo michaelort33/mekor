@@ -17,6 +17,11 @@
     "mirror:blob-sync": "tsx scripts/mirror/07_sync_blob_assets.ts",
     "mirror:render-mode-report": "tsx scripts/mirror/08_render_mode_report.ts",
     "mirror:all": "npm run mirror:discover && npm run mirror:snapshot && npm run mirror:extract-assets && npm run mirror:build-content && npm run mirror:build-search && npm run mirror:verify",
+    "visual:baseline:capture": "tsx scripts/visual-parity/capture.ts baseline",
+    "visual:candidate:capture": "tsx scripts/visual-parity/capture.ts candidate",
+    "visual:parity:report": "tsx scripts/visual-parity/report.ts",
+    "visual:baseline:approve": "tsx scripts/visual-parity/approve-baseline.ts",
+    "visual:parity:gate": "npm run visual:candidate:capture && npm run visual:parity:report",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
@@ -33,6 +38,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/pngjs": "^6.0.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -41,7 +47,9 @@
     "drizzle-kit": "^0.31.9",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "pixelmatch": "^7.1.0",
     "playwright": "^1.55.0",
+    "pngjs": "^7.0.0",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "typescript": "^5"

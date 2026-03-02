@@ -86,3 +86,13 @@ Global rollback kill switch:
    - Route disappears from `native-enabled routes` after rollback.
 5. Emergency global rollback:
    - Set `FORCE_MIRROR_ALL=true` and redeploy/restart.
+
+## Visual Parity Gate
+
+Native route enablement is guarded by screenshot parity checks across mobile/tablet/desktop breakpoints.
+
+- Mirror baseline and approval records are tracked in `visual-parity/`
+- Candidate and report artifacts are generated under `output/visual-parity/`
+- Threshold breach (`>2%`) fails CI
+
+See `docs/visual-parity.md` for commands, report interpretation, and baseline refresh workflow.

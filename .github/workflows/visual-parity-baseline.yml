@@ -1,0 +1,84 @@
+name: Visual Parity Baseline Refresh
+
+on:
+  workflow_dispatch:
+    inputs:
+      mirror_base_url:
+        description: Mirror base URL for baseline capture
+        required: true
+        default: https://www.mekorhabracha.org
+      approval_note:
+        description: Why this baseline refresh is approved
+        required: true
+      routes:
+        description: Optional comma-separated native routes subset
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh-baseline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Capture mirror baseline
+        env:
+          VISUAL_PARITY_OUTPUT_ROOT: output
+          VISUAL_PARITY_MIRROR_BASE_URL: ${{ inputs.mirror_base_url }}
+          VISUAL_PARITY_ROUTES: ${{ inputs.routes }}
+        run: npm run visual:baseline:capture
+
+      - name: Approve and promote baseline
+        env:
+          VISUAL_PARITY_OUTPUT_ROOT: output
+          VISUAL_PARITY_APPROVED_BY: ${{ github.actor }}
+          VISUAL_PARITY_APPROVAL_NOTE: ${{ inputs.approval_note }}
+        run: npm run visual:baseline:approve
+
+      - name: Upload baseline capture artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-parity-baseline-capture-${{ github.run_id }}
+          path: |
+            output/visual-parity/proposed-baseline
+            visual-parity/baseline
+            visual-parity/approvals
+          if-no-files-found: error
+
+      - name: Create baseline refresh PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: codex/visual-parity-baseline-${{ github.run_id }}
+          title: "chore: refresh visual parity baseline"
+          commit-message: "chore: refresh visual parity baseline"
+          body: |
+            Automated visual baseline refresh.
+
+            - Mirror URL: `${{ inputs.mirror_base_url }}`
+            - Routes filter: `${{ inputs.routes }}`
+            - Approval note: `${{ inputs.approval_note }}`
+            - Approved by: `${{ github.actor }}`
+
+            Includes updated baseline screenshots and approval audit log.
+          add-paths: |
+            visual-parity/baseline
+            visual-parity/approvals
+          delete-branch: true
