@@ -15,11 +15,29 @@ export const dynamic = "force-static";
 
 const EXTRA_NATIVE_PATHS = new Set([
   "/about-us",
+  "/center-city",
+  "/center-city-beit-midrash",
+  "/cherry-hill",
+  "/contact-us",
+  "/copy-of-center-city-beit-midrash",
+  "/davening",
+  "/donations",
+  "/events",
   "/from-the-rabbi-s-desk",
+  "/general-5",
+  "/in-the-news",
   "/israel",
   "/kosher-map",
+  "/main-line-manyunk",
+  "/mekor-bulletin-board",
+  "/old-kosher-restaurants",
+  "/old-yorkroad-northeast",
+  "/our-communities",
   "/our-rabbi",
+  "/philly-jewish-community",
   "/team-4",
+  "/testimonials",
+  "/visit-us",
 ]);
 
 const MANAGED_APP_PATHS = new Set([
