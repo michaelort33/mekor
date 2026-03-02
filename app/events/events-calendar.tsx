@@ -20,11 +20,45 @@ type MonthBucket = {
 };
 
 function monthKey(date: Date) {
-  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
 function monthLabel(date: Date) {
-  return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(date);
+  return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(date);
+}
+
+function closestMonthIndex(months: MonthBucket[], anchorDate: Date) {
+  if (months.length === 0) {
+    return -1;
+  }
+
+  const currentMonthKey = monthKey(anchorDate);
+  const currentIndex = months.findIndex((month) => month.key === currentMonthKey);
+
+  if (currentIndex >= 0) {
+    return currentIndex;
+  }
+
+  let chosenIndex = 0;
+  let bestDistance = Number.POSITIVE_INFINITY;
+
+  for (let index = 0; index < months.length; index += 1) {
+    const bucket = months[index];
+    const distance =
+      (bucket.firstDay.getFullYear() - anchorDate.getFullYear()) * 12 +
+      (bucket.firstDay.getMonth() - anchorDate.getMonth());
+    const absDistance = Math.abs(distance);
+
+    if (
+      absDistance < bestDistance ||
+      (absDistance === bestDistance && distance > 0)
+    ) {
+      bestDistance = absDistance;
+      chosenIndex = index;
+    }
+  }
+
+  return chosenIndex;
 }
 
 function dayNumber(dateIso: string | null) {
@@ -35,7 +69,7 @@ function dayNumber(dateIso: string | null) {
   if (Number.isNaN(date.getTime())) {
     return null;
   }
-  return date.getUTCDate();
+  return date.getDate();
 }
 
 function buildMonthBuckets(events: ManagedEvent[]): MonthBucket[] {
@@ -51,10 +85,10 @@ function buildMonthBuckets(events: ManagedEvent[]): MonthBucket[] {
       continue;
     }
 
-    const firstDay = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1));
+    const firstDay = new Date(start.getFullYear(), start.getMonth(), 1);
     const key = monthKey(firstDay);
     const existing = byKey.get(key);
-    const day = start.getUTCDate();
+    const day = start.getDate();
 
     if (existing) {
       existing.events.push(event);
@@ -69,8 +103,8 @@ function buildMonthBuckets(events: ManagedEvent[]): MonthBucket[] {
       key,
       label: monthLabel(firstDay),
       firstDay,
-      daysInMonth: new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 1, 0)).getUTCDate(),
-      startsOn: firstDay.getUTCDay(),
+      daysInMonth: new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate(),
+      startsOn: firstDay.getDay(),
       byDay: { [day]: [event] },
       events: [event],
     });
@@ -81,8 +115,38 @@ function buildMonthBuckets(events: ManagedEvent[]): MonthBucket[] {
 
 export function EventsCalendar({ events }: EventsCalendarProps) {
   const months = useMemo(() => buildMonthBuckets(events), [events]);
-  const [selectedMonthKey, setSelectedMonthKey] = useState(months[0]?.key ?? "");
-  const selectedMonth = months.find((month) => month.key === selectedMonthKey) ?? months[0] ?? null;
+  const [selectedMonthKey, setSelectedMonthKey] = useState("");
+  const defaultMonthIndex = useMemo(() => closestMonthIndex(months, new Date()), [months]);
+  const selectedMonthIndex = useMemo(() => {
+    if (months.length === 0) {
+      return -1;
+    }
+
+    const explicitIndex = selectedMonthKey ? months.findIndex((month) => month.key === selectedMonthKey) : -1;
+    return explicitIndex >= 0 ? explicitIndex : defaultMonthIndex;
+  }, [months, selectedMonthKey, defaultMonthIndex]);
+
+  const selectedMonth = selectedMonthIndex >= 0 ? months[selectedMonthIndex] : null;
+  const canGoPreviousMonth = selectedMonthIndex > 0;
+  const canGoNextMonth = selectedMonthIndex >= 0 && selectedMonthIndex < months.length - 1;
+
+  const navigateToMonth = (step: number) => {
+    const nextIndex = selectedMonthIndex + step;
+    if (nextIndex < 0 || nextIndex >= months.length) {
+      return;
+    }
+    const nextMonth = months[nextIndex];
+    if (!nextMonth) {
+      return;
+    }
+    setSelectedMonthKey(nextMonth.key);
+  };
+
+  const selectMonthByKey = (monthKeyValue: string) => {
+    if (months.some((month) => month.key === monthKeyValue)) {
+      setSelectedMonthKey(monthKeyValue);
+    }
+  };
 
   if (!selectedMonth) {
     return <p className="events-hub__empty">No event dates are currently available.</p>;
@@ -108,13 +172,34 @@ export function EventsCalendar({ events }: EventsCalendarProps) {
 
   return (
     <section className="events-hub__calendar-block" aria-label="Events calendar">
+      <div className="events-hub__month-nav">
+        <button
+          type="button"
+          className="events-hub__pager-btn"
+          onClick={() => navigateToMonth(-1)}
+          disabled={!canGoPreviousMonth}
+          aria-label="Previous month"
+        >
+          ←
+        </button>
+        <div className="events-hub__month-summary">{selectedMonth.label}</div>
+        <button
+          type="button"
+          className="events-hub__pager-btn"
+          onClick={() => navigateToMonth(1)}
+          disabled={!canGoNextMonth}
+          aria-label="Next month"
+        >
+          →
+        </button>
+      </div>
       <div className="events-hub__month-tabs">
         {months.map((month) => (
           <button
             key={month.key}
             type="button"
             className={`events-hub__month-tab${selectedMonth.key === month.key ? " is-active" : ""}`}
-            onClick={() => setSelectedMonthKey(month.key)}
+            onClick={() => selectMonthByKey(month.key)}
           >
             {month.label}
           </button>

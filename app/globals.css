@@ -1396,6 +1396,24 @@ body.native-nav--mobile-open {
   margin-bottom: 14px;
 }
 
+.events-hub__month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.events-hub__month-summary {
+  margin: 0;
+  padding: 0 10px;
+  color: var(--native-page-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
 .events-hub__month-tab {
   border: 1px solid var(--native-nav-border);
   border-radius: 999px;
@@ -1404,6 +1422,32 @@ body.native-nav--mobile-open {
   padding: 6px 12px;
   font-size: 0.85rem;
   cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.events-hub__pager-btn {
+  border: 1px solid var(--native-nav-accent);
+  border-radius: 999px;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--native-nav-accent-soft);
+  color: var(--native-nav-accent);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.events-hub__pager-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.events-hub__pager-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(27, 63, 101, 0.16);
 }
 
 .events-hub__month-tab.is-active {

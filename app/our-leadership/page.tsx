@@ -5,14 +5,14 @@ import { DocumentView } from "@/components/mirror/document-view";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 
-const PATH = "/contact-us" as const;
+const PATH = "/our-leadership" as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getNativeDocumentByPath(PATH);
   return buildDocumentMetadata(document);
 }
 
-export default async function ContactUsPage() {
+export default async function OurLeadershipPage() {
   const document = await getNativeDocumentByPath(PATH);
 
   if (!document) {
