@@ -3282,3 +3282,211 @@ body.native-nav--mobile-open {
 .mirror-root[data-path="/philly-jewish-community"] [data-mesh-id="comp-m5y2u97tinlineContent-gridContainer"] > #comp-iqai4fsc1 {
   margin-top: 24px !important;
 }
+
+.template-page {
+  min-height: 100vh;
+  background: #f4f6f9;
+  padding: 28px 16px 40px;
+}
+
+.template-card {
+  max-width: 920px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #d8e0e8;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(15, 34, 56, 0.08);
+  padding: 28px;
+}
+
+.template-card__header {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.template-card__eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  font-weight: 700;
+  color: #355f86;
+}
+
+.template-card__header h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.15;
+}
+
+.template-card__header p {
+  margin: 0;
+  color: #314a63;
+  line-height: 1.55;
+}
+
+.template-card__meta {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.template-card__hero {
+  margin-bottom: 22px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #d8e0e8;
+  background: #edf2f7;
+}
+
+.template-card__hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.template-facts {
+  margin: 0 0 22px;
+  padding: 16px;
+  background: #f8fbff;
+  border: 1px solid #d8e0e8;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px 16px;
+}
+
+.template-facts div {
+  display: grid;
+  gap: 4px;
+}
+
+.template-facts dt {
+  margin: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: #4c6580;
+}
+
+.template-facts dd {
+  margin: 0;
+  color: #1d3046;
+  line-height: 1.45;
+}
+
+.template-content {
+  display: grid;
+  gap: 14px;
+}
+
+.template-content h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.template-content p {
+  margin: 0;
+  color: #1f334a;
+  line-height: 1.7;
+}
+
+.template-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.template-list li {
+  line-height: 1.5;
+}
+
+.template-chip-list {
+  margin-top: 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.template-chip-list h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.template-chip-list div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.template-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #c8d8e7;
+  background: #f7fbff;
+  font-size: 13px;
+  text-decoration: none;
+  color: #245481;
+}
+
+.template-chip:hover {
+  background: #eaf4ff;
+}
+
+.template-card__source {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.template-archive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.template-archive-card {
+  border: 1px solid #d8e0e8;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fdfefe;
+}
+
+.template-archive-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.template-archive-card p {
+  margin: 0;
+  color: #314a63;
+  line-height: 1.55;
+}
+
+.template-card__empty {
+  margin: 0;
+  color: #435b73;
+}
+
+.template-pagination {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .template-page {
+    padding: 16px 12px 28px;
+  }
+
+  .template-card {
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .template-facts {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+}

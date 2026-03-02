@@ -1,0 +1,100 @@
+{
+  "generatedAt": "2026-03-02T00:45:54.334Z",
+  "templateTypeCounts": {
+    "event": 19,
+    "category": 6,
+    "tag": 7,
+    "news": 35,
+    "post": 92,
+    "profile": 2
+  },
+  "routeSamples": {
+    "event": [
+      "/events-1/1008",
+      "/events-1/1024",
+      "/events-1/1236",
+      "/events-1/1600",
+      "/events-1/2447"
+    ],
+    "category": [
+      "/kosher-posts/categories/center-city",
+      "/kosher-posts/categories/center-city/page/2",
+      "/kosher-posts/categories/cherry-hill",
+      "/kosher-posts/categories/main-line-manyunk",
+      "/kosher-posts/categories/main-line-manyunk/page/2"
+    ],
+    "tag": [
+      "/kosher-posts/tags/bakery",
+      "/kosher-posts/tags/bakery/page/2",
+      "/kosher-posts/tags/cafe",
+      "/kosher-posts/tags/ice-cream",
+      "/kosher-posts/tags/restaurants"
+    ],
+    "news": [
+      "/news/a-night-of-megillah-and-music-at-mekor-habracha",
+      "/news/activists-prepare-for-climate-march",
+      "/news/american-rabbis-brush-off-being-named-on-chief-rabbinate%E2%80%99s-%E2%80%98blacklist%E2%80%99",
+      "/news/annual-jewish-heritage-night-fills-phillies-game",
+      "/news/back-to-jewish-day-school"
+    ],
+    "post": [
+      "/post/_blog",
+      "/post/_luhv",
+      "/post/_luhv-1",
+      "/post/_luhv-2",
+      "/post/20th-street-pizza"
+    ],
+    "profile": [
+      "/profile/rabbiehirsch/profile",
+      "/profile/rabbiehirsch/profile?disableScrollToTop=true"
+    ]
+  },
+  "aliasRoutes": {
+    "total": 2,
+    "entries": [
+      {
+        "from": "/post/Cinnaholic",
+        "to": "/post/cinnaholic",
+        "reason": "case-or-encoding-variant"
+      },
+      {
+        "from": "/post/HipCityVeg",
+        "to": "/post/hipcityveg",
+        "reason": "case-or-encoding-variant"
+      }
+    ]
+  },
+  "statusOverrides": {
+    "total": 270,
+    "byStatus": {
+      "404": 270
+    },
+    "samplePaths": [
+      "/kosher-posts/categories/2447",
+      "/kosher-posts/categories/center-city/page/2447",
+      "/kosher-posts/categories/center-city/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "/kosher-posts/categories/center-city/page/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "/kosher-posts/categories/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "/kosher-posts/categories/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "/kosher-posts/categories/main-line-manyunk/page/2447",
+      "/kosher-posts/categories/main-line-manyunk/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "/kosher-posts/categories/main-line-manyunk/page/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "/kosher-posts/tags/2447",
+      "/kosher-posts/tags/bakery/page/2447",
+      "/kosher-posts/tags/bakery/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    ]
+  },
+  "seoParity": {
+    "checkedRoutes": 161,
+    "missingRequiredSeoFieldRoutes": 0,
+    "missingRequiredSeoFieldPaths": [],
+    "optionalFieldCoverage": {
+      "description": 8,
+      "ogTitle": 161,
+      "ogDescription": 100,
+      "twitterCard": 161,
+      "twitterTitle": 161,
+      "twitterDescription": 100
+    }
+  }
+}

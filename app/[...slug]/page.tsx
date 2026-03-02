@@ -7,6 +7,7 @@ import { loadContentIndex } from "@/lib/mirror/loaders";
 import { NATIVE_APP_PATHS as NATIVE_ROLLOUT_PATHS } from "@/lib/mirror/native-rollout";
 import { loadMirrorDocumentForPath } from "@/lib/mirror/resolve-route";
 import { MirrorBadRequestView, resolveMirrorRenderResult } from "@/lib/mirror/render-route";
+import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { normalizePath } from "@/lib/mirror/url";
 import { getEffectiveRenderMode, listConfiguredRenderModes } from "@/lib/routing/render-mode";
 
@@ -46,6 +47,15 @@ const MANAGED_APP_PATHS = new Set([
   ...EXTRA_NATIVE_PATHS,
   ...listConfiguredRenderModes().map((entry) => entry.path),
 ]);
+
+const NATIVE_TEMPLATE_PREFIXES = [
+  "/post/",
+  "/news/",
+  "/events-1/",
+  "/profile/",
+  "/kosher-posts/categories/",
+  "/kosher-posts/tags/",
+];
 type PageProps = {
   params: Promise<{
     slug?: string[];
@@ -60,14 +70,6 @@ function toPath(slug?: string[]) {
   return `/${slug.join("/")}`;
 }
 
-function normalizeBrandTitle(value: string | null | undefined) {
-  if (!value) {
-    return undefined;
-  }
-
-  return value.replace(/\bMekor 3\b/g, "Mekor Habracha");
-}
-
 export async function generateStaticParams() {
   const index = await loadContentIndex();
   const deduped = new Map<string, { slug: string[] }>();
@@ -77,6 +79,7 @@ export async function generateStaticParams() {
     if (
       normalized === "/" ||
       MANAGED_APP_PATHS.has(normalized) ||
+      NATIVE_TEMPLATE_PREFIXES.some((prefix) => normalized.startsWith(prefix)) ||
       normalized.includes("?") ||
       normalized.startsWith("/_files/")
     ) {
@@ -98,37 +101,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const requestPath = toPath(slug);
   const { document: doc } = await loadMirrorDocumentForPath(requestPath);
-
-  if (!doc) {
-    return {
-      title: "Not Found",
-      robots: {
-        index: false,
-        follow: false,
-      },
-    };
-  }
-
-  return {
-    title: normalizeBrandTitle(doc.title),
-    description: doc.description,
-    alternates: {
-      canonical: doc.canonical,
-    },
-    openGraph: {
-      title: normalizeBrandTitle(doc.ogTitle),
-      description: doc.ogDescription,
-      images: doc.ogImage ? [doc.ogImage] : [],
-      url: doc.canonical,
-      type: "website",
-    },
-    twitter: {
-      card: (doc.twitterCard as "summary" | "summary_large_image") || "summary_large_image",
-      title: normalizeBrandTitle(doc.twitterTitle),
-      description: doc.twitterDescription,
-      images: doc.ogImage ? [doc.ogImage] : [],
-    },
-  };
+  return buildDocumentMetadata(doc);
 }
 
 export default async function CatchAllPage({ params }: PageProps) {

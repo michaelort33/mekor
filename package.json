@@ -18,7 +18,7 @@
     "mirror:blob-sync": "tsx scripts/mirror/07_sync_blob_assets.ts",
     "mirror:render-mode-report": "tsx scripts/mirror/08_render_mode_report.ts",
     "mirror:rollout-audit": "tsx scripts/mirror/08_rollout_audit.ts",
-    "mirror:render-mode-report": "tsx scripts/mirror/08_render_mode_report.ts",
+    "template:parity-report": "tsx scripts/template/generate_parity_report.ts",
     "mirror:all": "npm run mirror:discover && npm run mirror:snapshot && npm run mirror:extract-assets && npm run mirror:build-content && npm run mirror:build-search && npm run mirror:verify",
     "visual:baseline:capture": "tsx scripts/visual-parity/capture.ts baseline",
     "visual:candidate:capture": "tsx scripts/visual-parity/capture.ts candidate",
