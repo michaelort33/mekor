@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { DocumentView } from "@/components/mirror/document-view";
 import { NATIVE_ROUTE_SET } from "@/lib/native-routes";
 import { loadContentIndex } from "@/lib/mirror/loaders";
-import { NATIVE_APP_PATHS } from "@/lib/mirror/native-rollout";
+import { NATIVE_APP_PATHS as NATIVE_ROLLOUT_PATHS } from "@/lib/mirror/native-rollout";
 import { loadMirrorDocumentForPath } from "@/lib/mirror/resolve-route";
 import { MirrorBadRequestView, resolveMirrorRenderResult } from "@/lib/mirror/render-route";
 import { normalizePath } from "@/lib/mirror/url";
@@ -13,9 +13,16 @@ import { getEffectiveRenderMode, listConfiguredRenderModes } from "@/lib/routing
 export const dynamicParams = true;
 export const dynamic = "force-static";
 
+const EXTRA_NATIVE_PATHS = new Set([
+  "/from-the-rabbi-s-desk",
+  "/kosher-map",
+  "/team-4",
+]);
+
 const MANAGED_APP_PATHS = new Set([
   ...NATIVE_ROUTE_SET,
-  ...NATIVE_APP_PATHS,
+  ...NATIVE_ROLLOUT_PATHS,
+  ...EXTRA_NATIVE_PATHS,
   ...listConfiguredRenderModes().map((entry) => entry.path),
 ]);
 type PageProps = {

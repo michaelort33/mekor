@@ -2,7 +2,7 @@ import { load, type Cheerio, type CheerioAPI } from "cheerio";
 import type { AnyNode } from "domhandler";
 
 import { sanitizeMirrorHtml } from "@/lib/mirror/html-security";
-import { KOSHER_MAP_PATH, KOSHER_NEIGHBORHOOD_PATHS } from "@/lib/mirror/kosher-map";
+import { KOSHER_NEIGHBORHOOD_PATHS } from "@/lib/mirror/kosher-map";
 import { normalizePath } from "@/lib/mirror/url";
 
 const WIX_EVENTS_MAP_HOST = "events.wixapps.net";
@@ -27,8 +27,6 @@ const SITE_HOSTS = new Set(["www.mekorhabracha.org", "mekorhabracha.org"]);
 
 const ELFSIGHT_APP_CLASS = "elfsight-app-94318b42-b410-4983-8c4e-1eae94a93212";
 const MAP_CONTAINER_ID = "mekor-kosher-map-embed";
-const MAP_PAGE_CONTAINER_ID = "mekor-kosher-map-page-embed";
-const LEGACY_MAP_IFRAME_FRAGMENT = "92f487_18faae6f3d17c0bfced150d83fa167cd.html";
 
 const HOMEPAGE_MAP_IFRAME_SRC =
   "https://maps.google.com/maps?q=1500%20Walnut%20St%20Suite%20206%20Philadelphia%20PA&t=&z=15&ie=UTF8&iwloc=&output=embed";
@@ -357,65 +355,6 @@ function ensureDonationHeroMedia($: CheerioAPI, root: Cheerio<AnyNode>) {
   heroMedia.append(fallbackImage);
 }
 
-function configureVolunteerForm(root: Cheerio<AnyNode>) {
-  const form = root.find("form#comp-m61av52i").first();
-  if (form.length === 0) {
-    return;
-  }
-
-  form.attr("data-mekor-form", "volunteer");
-  form.attr("action", "/api/forms/volunteer");
-  form.attr("method", "post");
-
-  const firstName = form.find("#input_comp-m61av52x1").first();
-  const lastName = form.find("#input_comp-m61av53e").first();
-  const email = form.find("#input_comp-m61av53k").first();
-  const phone = form.find("#input_comp-m61avtok").first();
-  const dateInput = form.find("#input_comp-m61aworb").first();
-  const opportunity = form.find("#collection_comp-m61awzry").first();
-  const submitButton = form.find("#comp-m61av53r button").first();
-  const successMessage = form.find("#comp-m61av541").first();
-
-  if (firstName.length > 0) {
-    firstName.attr("name", "firstName");
-    firstName.attr("autocomplete", "given-name");
-  }
-
-  if (lastName.length > 0) {
-    lastName.attr("name", "lastName");
-    lastName.attr("autocomplete", "family-name");
-  }
-
-  if (email.length > 0) {
-    email.attr("name", "email");
-    email.attr("autocomplete", "email");
-  }
-
-  if (phone.length > 0) {
-    phone.attr("name", "phone");
-    phone.attr("autocomplete", "tel");
-  }
-
-  if (dateInput.length > 0) {
-    dateInput.attr("name", "availabilityDate");
-    dateInput.attr("inputmode", "none");
-  }
-
-  if (opportunity.length > 0) {
-    opportunity.attr("name", "opportunity");
-  }
-
-  if (submitButton.length > 0) {
-    submitButton.attr("type", "submit");
-  }
-
-  if (successMessage.length > 0) {
-    successMessage.attr("data-mekor-form-success", "true");
-    successMessage.attr("hidden", "hidden");
-    successMessage.attr("aria-live", "polite");
-  }
-}
-
 function prioritizeDonationPaymentIframe($: CheerioAPI, root: Cheerio<AnyNode>) {
   root.find("iframe[src]").each((_, node) => {
     const iframe = $(node);
@@ -477,21 +416,6 @@ function ensureMapContainer(
   }
 
   insertionTarget.after(mapContainer);
-}
-
-function applyKosherMapPageFallback(root: Cheerio<AnyNode>) {
-  const legacyIframe = root.find(`iframe[src*="${LEGACY_MAP_IFRAME_FRAGMENT}"]`).first();
-
-  if (legacyIframe.length === 0) {
-    return;
-  }
-
-  const legacyContainer = legacyIframe.closest("div.RjABt4, div[id^='comp-']");
-  const target = legacyContainer.length > 0 ? legacyContainer : legacyIframe.parent();
-
-  if (target.length > 0) {
-    target.attr("data-mekor-legacy-map", "hidden");
-  }
 }
 
 function normalizeMainNavSubmenus($: CheerioAPI, root: Cheerio<AnyNode>) {
@@ -567,17 +491,6 @@ function applyPathSpecificFixes($: CheerioAPI, root: Cheerio<AnyNode>, path: str
   if (path === "/donations") {
     ensureDonationHeroMedia($, root);
     prioritizeDonationPaymentIframe($, root);
-    return;
-  }
-
-  if (path === "/team-4") {
-    configureVolunteerForm(root);
-    return;
-  }
-
-  if (path === KOSHER_MAP_PATH) {
-    applyKosherMapPageFallback(root);
-    ensureMapContainer($, root, MAP_PAGE_CONTAINER_ID, true);
     return;
   }
 

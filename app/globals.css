@@ -1872,6 +1872,315 @@ body.native-nav--mobile-open {
   text-decoration: underline;
 }
 
+.volunteer-page,
+.rabbi-desk-page,
+.kosher-map-page {
+  min-height: 100svh;
+  background: #f9f7f2;
+}
+
+.volunteer-page__content,
+.rabbi-desk-page__content,
+.kosher-map-page__content {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.volunteer-page__header,
+.rabbi-desk-page__header,
+.kosher-map-page__header {
+  display: grid;
+  gap: 8px;
+}
+
+.volunteer-page__kicker,
+.rabbi-desk-page__kicker,
+.kosher-map-page__kicker {
+  margin: 0;
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid #c6d5e6;
+  background: #ebf1f8;
+  color: #1f4f83;
+  padding: 3px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.volunteer-page__header h1,
+.rabbi-desk-page__header h1,
+.kosher-map-page__header h1 {
+  margin: 0;
+  color: #1e2f42;
+  font-size: clamp(1.7rem, 2.5vw, 2.4rem);
+}
+
+.volunteer-page__header > p,
+.rabbi-desk-page__header > p,
+.kosher-map-page__header > p {
+  margin: 0;
+  color: #425063;
+  max-width: 72ch;
+}
+
+.volunteer-form {
+  margin-top: 18px;
+  border: 1px solid #d8d0bf;
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px;
+}
+
+.volunteer-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.volunteer-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #445468;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.volunteer-form__field--wide {
+  grid-column: 1 / -1;
+}
+
+.volunteer-form__field :is(input, select) {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #d9d1c1;
+  border-radius: 10px;
+  padding: 0 11px;
+  background: #fcfbf7;
+  color: #1e2f42;
+  font-size: 0.9rem;
+}
+
+.volunteer-form__field :is(input, select):focus-visible,
+.volunteer-form__actions button:focus-visible {
+  outline: 2px solid #204d79;
+  outline-offset: 1px;
+}
+
+.volunteer-form__actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.volunteer-form__actions button {
+  border: 1px solid #252a3a;
+  color: #252a3a;
+  background: transparent;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.volunteer-form__actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.volunteer-form__success {
+  margin: 0;
+  color: #1f5a2a;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.rabbi-podcast {
+  margin-top: 18px;
+  border: 1px solid #d8d0bf;
+  border-radius: 16px;
+  background: #f3f4f8;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.rabbi-podcast__search {
+  display: grid;
+  gap: 5px;
+}
+
+.rabbi-podcast__search-label {
+  color: #445468;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.rabbi-podcast__search input {
+  width: min(360px, 100%);
+  border: 1px solid #b8becd;
+  border-radius: 999px;
+  padding: 11px 14px;
+  font-size: 0.9rem;
+  color: #2f3850;
+  background: #fff;
+}
+
+.rabbi-podcast__search input:focus-visible,
+.rabbi-podcast__load-more:focus-visible {
+  outline: 2px solid #204d79;
+  outline-offset: 1px;
+}
+
+.rabbi-podcast__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rabbi-podcast__episode {
+  background: #fff;
+  border: 1px solid #d7dce7;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.rabbi-podcast__episode-header h2 {
+  margin: 0;
+  color: #333c56;
+  font-size: 1.38rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.rabbi-podcast__episode-header p {
+  margin: 4px 0 0;
+  color: #6f778f;
+  font-size: 0.81rem;
+}
+
+.rabbi-podcast__episode-description {
+  margin: 0;
+  color: #515a72;
+  font-size: 0.89rem;
+  line-height: 1.5;
+}
+
+.rabbi-podcast__episode-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.rabbi-podcast__episode-actions audio {
+  width: min(460px, 100%);
+  max-width: 100%;
+}
+
+.rabbi-podcast__episode-actions a,
+.rabbi-podcast__error a {
+  color: #2c5e8d;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.rabbi-podcast__empty {
+  margin: 0;
+  color: #4f5975;
+  font-size: 0.9rem;
+}
+
+.rabbi-podcast__error {
+  margin-top: 18px;
+  border: 1px solid #d8d0bf;
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.rabbi-podcast__load-more {
+  justify-self: center;
+  border: 1px solid #252a3a;
+  color: #252a3a;
+  background: transparent;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.kosher-map-embed {
+  margin-top: 18px;
+  border: 1px solid #d8d0bf;
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px;
+}
+
+.kosher-map-embed .elfsight-app-94318b42-b410-4983-8c4e-1eae94a93212 {
+  min-height: 560px;
+}
+
+.kosher-map-embed__loading {
+  margin: 8px 0 0;
+  color: #5e6672;
+  font-size: 0.9rem;
+}
+
+.kosher-map-embed__fallback {
+  display: grid;
+  gap: 12px;
+}
+
+.kosher-map-embed__fallback p {
+  margin: 0;
+  color: #4f5b69;
+  font-size: 0.9rem;
+}
+
+.kosher-map-embed__fallback iframe {
+  width: 100%;
+  min-height: 560px;
+  border: 1px solid #d8d0bf;
+  border-radius: 12px;
+}
+
+.kosher-map-embed__fallback-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.kosher-map-embed__fallback-links a,
+.kosher-map-page__regions a {
+  color: #204d79;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.kosher-map-page__regions {
+  margin-top: 14px;
+  border: 1px solid #d8d0bf;
+  border-radius: 16px;
+  background: #fff;
+  padding: 12px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
 @media (max-width: 760px) {
   .events-hub__calendar-grid,
   .events-hub__weekday-row {
@@ -1889,6 +2198,23 @@ body.native-nav--mobile-open {
 
   .in-news-directory__grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .volunteer-form__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rabbi-podcast {
+    padding: 16px 12px;
+  }
+
+  .rabbi-podcast__episode {
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .rabbi-podcast__episode-header h2 {
+    font-size: 1.18rem;
   }
 }
 
