@@ -55,6 +55,7 @@ Individual steps are available via:
 - `npm run mirror:build-content`
 - `npm run mirror:build-search`
 - `npm run mirror:verify`
+- `npm run native:verify`
 - `npm run mirror:blob-sync`
 - `npm run mirror:render-mode-report`
 
@@ -96,3 +97,5 @@ Native route enablement is guarded by screenshot parity checks across mobile/tab
 - Threshold breach (`>2%`) fails CI
 
 See `docs/visual-parity.md` for commands, report interpretation, and baseline refresh workflow.
+
+Native route contract matrix: [`docs/native-data-contract-matrix.md`](docs/native-data-contract-matrix.md)

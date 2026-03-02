@@ -3,6 +3,7 @@ import { asc, desc } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { events } from "@/db/schema";
 import { loadExtractedEvents, type ExtractedEvent } from "@/lib/events/extract";
+import { validateManagedEventsContract } from "@/lib/native/contracts";
 
 export type ManagedEvent = {
   slug: string;
@@ -83,15 +84,20 @@ async function syncExtractedEventsToDb(rows: ExtractedEvent[]) {
 
 export async function getManagedEvents() {
   const extracted = await loadExtractedEvents();
+  const extractedManaged = extracted.map((row) =>
+    toManagedEvent({
+      ...row,
+    }),
+  );
 
   if (!process.env.DATABASE_URL) {
-    return extracted.map((row) =>
-      toManagedEvent({
-        ...row,
-      }),
+    return validateManagedEventsContract(
+      extractedManaged,
+      "getManagedEvents: extracted mirror fallback",
     );
   }
 
+  let managed: ManagedEvent[];
   try {
     await syncExtractedEventsToDb(extracted);
 
@@ -110,12 +116,10 @@ export async function getManagedEvents() {
       .from(events)
       .orderBy(asc(events.startAt), desc(events.updatedAt));
 
-    return rows.map((row) => toManagedEvent(row));
+    managed = rows.map((row) => toManagedEvent(row));
   } catch {
-    return extracted.map((row) =>
-      toManagedEvent({
-        ...row,
-      }),
-    );
+    managed = extractedManaged;
   }
+
+  return validateManagedEventsContract(managed, "getManagedEvents: final output");
 }

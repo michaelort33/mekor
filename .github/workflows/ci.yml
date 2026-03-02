@@ -29,6 +29,9 @@ jobs:
       - name: Test
         run: npm run test
 
+      - name: Verify Native Contracts
+        run: npm run native:verify
+
       - name: Build
         run: npm run build
 

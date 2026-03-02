@@ -47,6 +47,7 @@ export async function generateStaticParams() {
     if (
       normalized === "/" ||
       MANAGED_APP_PATHS.has(normalized) ||
+      MANAGED_APP_PATHS.has(normalized) ||
       normalized.includes("?") ||
       normalized.startsWith("/_files/")
     ) {

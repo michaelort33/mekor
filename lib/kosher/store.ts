@@ -9,6 +9,7 @@ import {
   type KosherNeighborhood,
   loadExtractedKosherPlaces,
 } from "@/lib/kosher/extract";
+import { validateManagedKosherPlacesContract } from "@/lib/native/contracts";
 
 type NeighborhoodFilter = KosherNeighborhood | "all";
 
@@ -344,9 +345,14 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
   );
 
   if (!process.env.DATABASE_URL) {
-    return filterKosherPlaces(extractedManaged, filters);
+    const filtered = filterKosherPlaces(extractedManaged, filters);
+    return validateManagedKosherPlacesContract(
+      filtered,
+      "getManagedKosherPlaces: extracted mirror fallback",
+    );
   }
 
+  let managed: ManagedKosherPlace[];
   try {
     await syncExtractedKosherPlacesToDb(extracted);
 
@@ -371,7 +377,7 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
       .from(kosherPlaces)
       .orderBy(asc(kosherPlaces.neighborhood), asc(kosherPlaces.title));
 
-    const managed = rows.map((row) =>
+    managed = rows.map((row) =>
       toManagedKosherPlace({
         ...row,
         neighborhood: toKosherNeighborhood(row.neighborhood),
@@ -379,9 +385,10 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
           row.neighborhoodLabel || KOSHER_NEIGHBORHOOD_LABELS[toKosherNeighborhood(row.neighborhood)],
       }),
     );
-
-    return filterKosherPlaces(managed, filters);
   } catch {
-    return filterKosherPlaces(extractedManaged, filters);
+    managed = extractedManaged;
   }
+
+  const filtered = filterKosherPlaces(managed, filters);
+  return validateManagedKosherPlacesContract(filtered, "getManagedKosherPlaces: final output");
 }

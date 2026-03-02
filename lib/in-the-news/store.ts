@@ -6,6 +6,7 @@ import {
   loadExtractedInTheNews,
   type ExtractedInTheNewsArticle,
 } from "@/lib/in-the-news/extract";
+import { validateManagedInTheNewsContract } from "@/lib/native/contracts";
 
 export type ManagedInTheNewsArticle = {
   slug: string;
@@ -184,9 +185,14 @@ export async function getManagedInTheNews(filters: InTheNewsFilters = {}) {
   );
 
   if (!process.env.DATABASE_URL) {
-    return filterInTheNews(extractedManaged, filters);
+    const filtered = filterInTheNews(extractedManaged, filters);
+    return validateManagedInTheNewsContract(
+      filtered,
+      "getManagedInTheNews: extracted mirror fallback",
+    );
   }
 
+  let managed: ManagedInTheNewsArticle[];
   try {
     await syncExtractedInTheNewsToDb(extracted);
 
@@ -208,11 +214,11 @@ export async function getManagedInTheNews(filters: InTheNewsFilters = {}) {
       .from(inTheNews)
       .orderBy(desc(inTheNews.publishedAt), desc(inTheNews.year), asc(inTheNews.title));
 
-    return filterInTheNews(
-      rows.map((row) => toManagedInTheNewsArticle(row)),
-      filters,
-    );
+    managed = rows.map((row) => toManagedInTheNewsArticle(row));
   } catch {
-    return filterInTheNews(extractedManaged, filters);
+    managed = extractedManaged;
   }
+
+  const filtered = filterInTheNews(managed, filters);
+  return validateManagedInTheNewsContract(filtered, "getManagedInTheNews: final output");
 }

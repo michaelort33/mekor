@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { loadSearchIndex } from "@/lib/mirror/loaders";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
+import { validateSearchIndexContract } from "@/lib/native/contracts";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,10 @@ export default async function SearchPage({ searchParams }: SearchProps) {
   const queryRaw = Array.isArray(params.q) ? params.q[0] ?? "" : params.q ?? "";
   const query = normalizeQuery(queryRaw);
 
-  const records = await loadSearchIndex();
+  const records = validateSearchIndexContract(
+    await loadSearchIndex(),
+    "Search page: loadSearchIndex",
+  );
   const queryTerms = query.split(/\s+/).filter(Boolean);
 
   const results =
