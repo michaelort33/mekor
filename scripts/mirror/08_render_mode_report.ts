@@ -8,6 +8,11 @@ import {
   isForceMirrorAllEnabled,
   listConfiguredRenderModes,
 } from "../../lib/routing/render-mode";
+import {
+  NATIVE_APP_ROUTE_PATHS,
+  NATIVE_TEMPLATE_PREFIXES,
+  isNativeAppOwnedPath,
+} from "../../lib/routing/native-app-routes";
 import { ROUTES_DIR } from "./_shared";
 
 type RouteRecord = { path: string; sourceUrl: string };
@@ -59,8 +64,13 @@ async function main() {
   const nativeEnabledRoutes = uniqueSorted(
     configuredPaths.filter((pathValue) => getEffectiveRenderMode(pathValue) === "native"),
   );
+  const nativeAppOwnedRoutes = uniqueSorted(NATIVE_APP_ROUTE_PATHS);
+  const nativeTemplatePrefixes = [...NATIVE_TEMPLATE_PREFIXES];
   const mirrorOnlyRoutes = uniqueSorted(
-    knownMirrorPaths.filter((pathValue) => getEffectiveRenderMode(pathValue) === "mirror"),
+    knownMirrorPaths.filter(
+      (pathValue) =>
+        getEffectiveRenderMode(pathValue) === "mirror" && !isNativeAppOwnedPath(pathValue),
+    ),
   );
   const unknownOrUnmappedRoutes = uniqueSorted(
     configuredPaths.filter((pathValue) => !knownMirrorPathSet.has(pathValue)),
@@ -72,6 +82,10 @@ async function main() {
   console.log(`force_mirror_all=${isForceMirrorAllEnabled()}`);
   console.log("");
   printSection("native-enabled routes", nativeEnabledRoutes);
+  console.log("");
+  printSection("native app-owned routes", nativeAppOwnedRoutes);
+  console.log("");
+  printSection("native template prefixes", nativeTemplatePrefixes);
   console.log("");
   printSection("mirror-only routes", mirrorOnlyRoutes);
   console.log("");

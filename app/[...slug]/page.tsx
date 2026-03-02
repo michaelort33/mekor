@@ -7,55 +7,20 @@ import { loadContentIndex } from "@/lib/mirror/loaders";
 import { NATIVE_APP_PATHS as NATIVE_ROLLOUT_PATHS } from "@/lib/mirror/native-rollout";
 import { loadMirrorDocumentForPath } from "@/lib/mirror/resolve-route";
 import { MirrorBadRequestView, resolveMirrorRenderResult } from "@/lib/mirror/render-route";
-import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { normalizePath } from "@/lib/mirror/url";
+import { NATIVE_APP_ROUTE_PATHS, NATIVE_TEMPLATE_PREFIXES } from "@/lib/routing/native-app-routes";
 import { getEffectiveRenderMode, listConfiguredRenderModes } from "@/lib/routing/render-mode";
+import { buildDocumentMetadata } from "@/lib/templates/metadata";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
 
-const EXTRA_NATIVE_PATHS = new Set([
-  "/about-us",
-  "/center-city",
-  "/center-city-beit-midrash",
-  "/cherry-hill",
-  "/contact-us",
-  "/copy-of-center-city-beit-midrash",
-  "/davening",
-  "/donations",
-  "/events",
-  "/from-the-rabbi-s-desk",
-  "/general-5",
-  "/in-the-news",
-  "/israel",
-  "/kosher-map",
-  "/main-line-manyunk",
-  "/mekor-bulletin-board",
-  "/old-kosher-restaurants",
-  "/old-yorkroad-northeast",
-  "/our-communities",
-  "/our-rabbi",
-  "/philly-jewish-community",
-  "/team-4",
-  "/testimonials",
-  "/visit-us",
-]);
-
 const MANAGED_APP_PATHS = new Set([
   ...NATIVE_ROUTE_SET,
   ...NATIVE_ROLLOUT_PATHS,
-  ...EXTRA_NATIVE_PATHS,
+  ...NATIVE_APP_ROUTE_PATHS,
   ...listConfiguredRenderModes().map((entry) => entry.path),
 ]);
-
-const NATIVE_TEMPLATE_PREFIXES = [
-  "/post/",
-  "/news/",
-  "/events-1/",
-  "/profile/",
-  "/kosher-posts/categories/",
-  "/kosher-posts/tags/",
-];
 type PageProps = {
   params: Promise<{
     slug?: string[];

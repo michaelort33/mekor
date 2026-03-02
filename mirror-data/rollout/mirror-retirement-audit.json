@@ -1,10 +1,10 @@
 {
   "summary": {
-    "auditedAt": "2026-03-02T00:42:19.438Z",
+    "auditedAt": "2026-03-02T01:09:17.951Z",
     "trackerVersion": 1,
     "stabilityWindowDays": 7,
     "totalRoutes": 10,
-    "nativeEnabledRoutes": 6,
+    "nativeEnabledRoutes": 10,
     "checksPassedRoutes": 0,
     "stabilitySatisfiedRoutes": 0,
     "routesEligibleForPatchRemoval": 0,
@@ -366,9 +366,9 @@
     {
       "path": "/team-4",
       "wave": "W3",
-      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_TEAM_4",
-      "nativeFlagEnabled": false,
-      "nativeFlagImplemented": false,
+      "nativeFlagEnv": "TEAM0_NATIVE_TEAM_4",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
       "checks": {
         "visual": "pending",
         "functional": "pending",
@@ -386,13 +386,13 @@
         "globalCssOverrides": 10
       },
       "livePatchDebt": {
-        "runtimeHooks": 1,
-        "documentHtmlFixes": 1,
+        "runtimeHooks": 0,
+        "documentHtmlFixes": 0,
         "globalCssOverrides": 10
       },
       "patchDebtDelta": {
-        "runtimeHooks": 0,
-        "documentHtmlFixes": 0,
+        "runtimeHooks": -1,
+        "documentHtmlFixes": -1,
         "globalCssOverrides": 0
       },
       "decommissionChecklist": {
@@ -403,22 +403,21 @@
       },
       "eligibleForPatchRemoval": false,
       "retired": false,
-      "status": "pending-native-enable",
+      "status": "monitoring-checks-pending",
       "blockers": [
-        "native flag is off",
         "visual/functional/seo checks are incomplete",
         "7-day stability window has not elapsed",
         "decommission checklist is incomplete",
         "route-specific patch debt remains"
       ],
-      "notes": "Volunteer form remains mirror-backed and patch-heavy."
+      "notes": "Native app route exists in app/team-4/page.tsx with Team 0 flag rollback support."
     },
     {
       "path": "/from-the-rabbi-s-desk",
       "wave": "W3",
-      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_FROM_THE_RABBI_S_DESK",
-      "nativeFlagEnabled": false,
-      "nativeFlagImplemented": false,
+      "nativeFlagEnv": "TEAM0_NATIVE_FROM_THE_RABBI_S_DESK",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
       "checks": {
         "visual": "pending",
         "functional": "pending",
@@ -436,12 +435,12 @@
         "globalCssOverrides": 1
       },
       "livePatchDebt": {
-        "runtimeHooks": 1,
+        "runtimeHooks": 0,
         "documentHtmlFixes": 0,
         "globalCssOverrides": 1
       },
       "patchDebtDelta": {
-        "runtimeHooks": 0,
+        "runtimeHooks": -1,
         "documentHtmlFixes": 0,
         "globalCssOverrides": 0
       },
@@ -453,22 +452,21 @@
       },
       "eligibleForPatchRemoval": false,
       "retired": false,
-      "status": "pending-native-enable",
+      "status": "monitoring-checks-pending",
       "blockers": [
-        "native flag is off",
         "visual/functional/seo checks are incomplete",
         "7-day stability window has not elapsed",
         "decommission checklist is incomplete",
         "route-specific patch debt remains"
       ],
-      "notes": "Podcast fallback logic is currently route-specific in mirror runtime."
+      "notes": "Native app route exists in app/from-the-rabbi-s-desk/page.tsx with Team 0 flag rollback support."
     },
     {
       "path": "/donations",
       "wave": "W4",
-      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_DONATIONS",
-      "nativeFlagEnabled": false,
-      "nativeFlagImplemented": false,
+      "nativeFlagEnv": "NATIVE_APP_ROUTE_DONATIONS",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
       "checks": {
         "visual": "pending",
         "functional": "pending",
@@ -503,22 +501,21 @@
       },
       "eligibleForPatchRemoval": false,
       "retired": false,
-      "status": "pending-native-enable",
+      "status": "monitoring-checks-pending",
       "blockers": [
-        "native flag is off",
         "visual/functional/seo checks are incomplete",
         "7-day stability window has not elapsed",
         "decommission checklist is incomplete",
         "route-specific patch debt remains"
       ],
-      "notes": "Donation media and payment iframe prioritization still use mirror path hooks."
+      "notes": "Native app route exists in app/donations/page.tsx."
     },
     {
       "path": "/kosher-map",
       "wave": "W4",
-      "nativeFlagEnv": "NEXT_PUBLIC_NATIVE_ROUTE_KOSHER_MAP",
-      "nativeFlagEnabled": false,
-      "nativeFlagImplemented": false,
+      "nativeFlagEnv": "TEAM0_NATIVE_KOSHER_MAP",
+      "nativeFlagEnabled": true,
+      "nativeFlagImplemented": true,
       "checks": {
         "visual": "pending",
         "functional": "pending",
@@ -553,15 +550,14 @@
       },
       "eligibleForPatchRemoval": false,
       "retired": false,
-      "status": "pending-native-enable",
+      "status": "monitoring-checks-pending",
       "blockers": [
-        "native flag is off",
         "visual/functional/seo checks are incomplete",
         "7-day stability window has not elapsed",
         "decommission checklist is incomplete",
         "route-specific patch debt remains"
       ],
-      "notes": "Map-page fallback is still routed through mirror-only patch logic."
+      "notes": "Native app route exists in app/kosher-map/page.tsx with Team 0 flag rollback support."
     }
   ]
 }

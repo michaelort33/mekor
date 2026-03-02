@@ -267,9 +267,9 @@
         "seo": "seo-web"
       },
       "nativeFlag": {
-        "env": "NEXT_PUBLIC_NATIVE_ROUTE_TEAM_4",
-        "implemented": false,
-        "enabled": false,
+        "env": "TEAM0_NATIVE_TEAM_4",
+        "implemented": true,
+        "enabled": true,
         "enabledOn": null
       },
       "monitoring": {
@@ -289,7 +289,7 @@
         "documentHtmlFixes": 1,
         "globalCssOverrides": 10
       },
-      "notes": "Volunteer form remains mirror-backed and patch-heavy."
+      "notes": "Native app route exists in app/team-4/page.tsx with Team 0 flag rollback support."
     },
     {
       "path": "/from-the-rabbi-s-desk",
@@ -300,9 +300,9 @@
         "seo": "seo-web"
       },
       "nativeFlag": {
-        "env": "NEXT_PUBLIC_NATIVE_ROUTE_FROM_THE_RABBI_S_DESK",
-        "implemented": false,
-        "enabled": false,
+        "env": "TEAM0_NATIVE_FROM_THE_RABBI_S_DESK",
+        "implemented": true,
+        "enabled": true,
         "enabledOn": null
       },
       "monitoring": {
@@ -322,7 +322,7 @@
         "documentHtmlFixes": 0,
         "globalCssOverrides": 1
       },
-      "notes": "Podcast fallback logic is currently route-specific in mirror runtime."
+      "notes": "Native app route exists in app/from-the-rabbi-s-desk/page.tsx with Team 0 flag rollback support."
     },
     {
       "path": "/donations",
@@ -333,9 +333,9 @@
         "seo": "seo-web"
       },
       "nativeFlag": {
-        "env": "NEXT_PUBLIC_NATIVE_ROUTE_DONATIONS",
-        "implemented": false,
-        "enabled": false,
+        "env": "NATIVE_APP_ROUTE_DONATIONS",
+        "implemented": true,
+        "enabled": true,
         "enabledOn": null
       },
       "monitoring": {
@@ -355,7 +355,7 @@
         "documentHtmlFixes": 1,
         "globalCssOverrides": 3
       },
-      "notes": "Donation media and payment iframe prioritization still use mirror path hooks."
+      "notes": "Native app route exists in app/donations/page.tsx."
     },
     {
       "path": "/kosher-map",
@@ -366,9 +366,9 @@
         "seo": "seo-web"
       },
       "nativeFlag": {
-        "env": "NEXT_PUBLIC_NATIVE_ROUTE_KOSHER_MAP",
-        "implemented": false,
-        "enabled": false,
+        "env": "TEAM0_NATIVE_KOSHER_MAP",
+        "implemented": true,
+        "enabled": true,
         "enabledOn": null
       },
       "monitoring": {
@@ -388,7 +388,7 @@
         "documentHtmlFixes": 0,
         "globalCssOverrides": 4
       },
-      "notes": "Map-page fallback is still routed through mirror-only patch logic."
+      "notes": "Native app route exists in app/kosher-map/page.tsx with Team 0 flag rollback support."
     }
   ]
 }

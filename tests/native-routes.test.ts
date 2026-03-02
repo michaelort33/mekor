@@ -6,6 +6,7 @@ import test from "node:test";
 import { filterPodcastEpisodes } from "../components/podcast/rabbi-desk-podcast-list";
 import { buildVolunteerPayload } from "../components/volunteer/volunteer-form";
 import { isTeam0NativeRouteEnabled } from "../lib/native-routes/team0-flags";
+import { NATIVE_APP_ROUTE_PATHS, NATIVE_TEMPLATE_PREFIXES } from "../lib/routing/native-app-routes";
 
 async function readTextFile(relativePath: string) {
   const filePath = path.join(process.cwd(), relativePath);
@@ -100,17 +101,16 @@ test("podcast search behavior matches title and description filtering", () => {
 });
 
 test("cutover removed route-specific mirror runtime surgery and keeps native route exclusions", async () => {
-  const [runtimeSource, catchAllSource] = await Promise.all([
-    readTextFile("components/mirror/mirror-runtime.tsx"),
-    readTextFile("app/[...slug]/page.tsx"),
-  ]);
+  const runtimeSource = await readTextFile("components/mirror/mirror-runtime.tsx");
 
   assert.equal(runtimeSource.includes('path !== "/team-4"'), false);
   assert.equal(runtimeSource.includes('path !== "/from-the-rabbi-s-desk"'), false);
 
-  assert.equal(catchAllSource.includes('"/team-4"'), true);
-  assert.equal(catchAllSource.includes('"/from-the-rabbi-s-desk"'), true);
-  assert.equal(catchAllSource.includes('"/kosher-map"'), true);
+  const nativePaths = new Set<string>(NATIVE_APP_ROUTE_PATHS);
+  assert.equal(nativePaths.has("/team-4"), true);
+  assert.equal(nativePaths.has("/from-the-rabbi-s-desk"), true);
+  assert.equal(nativePaths.has("/kosher-map"), true);
+  assert.equal(NATIVE_TEMPLATE_PREFIXES.includes("/post/"), true);
 });
 
 test("document-html no longer applies team-4 and kosher-map route patches", async () => {

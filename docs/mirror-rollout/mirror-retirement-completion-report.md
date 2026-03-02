@@ -5,7 +5,7 @@ Generated on 2026-03-02.
 ## Summary
 
 - Total target routes: 10
-- Native-enabled routes: 6
+- Native-enabled routes: 10
 - Routes with all checks passing: 0
 - Routes that completed 7-day stability window: 0
 - Routes eligible for patch removal now: 0
@@ -20,10 +20,10 @@ Generated on 2026-03-02.
 - /main-line-manyunk: visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (monitoring-checks-pending)
 - /old-yorkroad-northeast: visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (monitoring-checks-pending)
 - /cherry-hill: visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (monitoring-checks-pending)
-- /team-4: native flag is off; visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (pending-native-enable)
-- /from-the-rabbi-s-desk: native flag is off; visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (pending-native-enable)
-- /donations: native flag is off; visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (pending-native-enable)
-- /kosher-map: native flag is off; visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (pending-native-enable)
+- /team-4: visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (monitoring-checks-pending)
+- /from-the-rabbi-s-desk: visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (monitoring-checks-pending)
+- /donations: visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (monitoring-checks-pending)
+- /kosher-map: visual/functional/seo checks are incomplete; 7-day stability window has not elapsed; decommission checklist is incomplete; route-specific patch debt remains (monitoring-checks-pending)
 
 ## Artifacts
 
