@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import { VolunteerForm } from "@/components/volunteer/volunteer-form";
-import { renderMirrorFallbackForPath } from "@/lib/native-routes/mirror-fallback";
-import { isTeam0NativeRouteEnabled } from "@/lib/native-routes/team0-flags";
 
 export const metadata: Metadata = {
   title: "Volunteer | Mekor Habracha",
@@ -13,10 +11,6 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function Team4Page() {
-  if (!isTeam0NativeRouteEnabled("/team-4")) {
-    return renderMirrorFallbackForPath("/team-4");
-  }
-
   return (
     <main className="volunteer-page" data-native-nav="true">
       <SiteNavigation currentPath="/team-4" />

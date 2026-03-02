@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
-import { getMirrorRouteMetadata } from "@/lib/marketing/route-metadata";
+import { buildDocumentMetadata } from "@/lib/templates/metadata";
+import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "@/app/about-us/page.module.css";
 
 export const dynamic = "force-static";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return getMirrorRouteMetadata("/about-us");
+  const document = await getNativeDocumentByPath("/about-us");
+  return buildDocumentMetadata(document);
 }
 
 export default function AboutUsPage() {

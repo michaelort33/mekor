@@ -1,10 +1,12 @@
 import { MediumStaticRoutePage } from "@/components/medium-pages/route-page";
-import { getMirrorPageMetadata } from "@/lib/seo/mirror-metadata";
+import { buildDocumentMetadata } from "@/lib/templates/metadata";
+import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 
 const PATH = "/center-city-beit-midrash" as const;
 
 export async function generateMetadata() {
-  return getMirrorPageMetadata(PATH);
+  const document = await getNativeDocumentByPath(PATH);
+  return buildDocumentMetadata(document);
 }
 
 export default function Page() {

@@ -1,10 +1,10 @@
-import type { PageDocument } from "@/lib/mirror/types";
-import { resolveMirrorRoute } from "@/lib/mirror/resolve-route";
+import type { NativePageDocument } from "@/lib/native-content/content-loader";
+import { resolveNativeTemplatePath } from "@/lib/native-content/content-loader";
 
 export type TemplateRouteResolution =
   | {
       status: "ok";
-      document: PageDocument;
+      document: NativePageDocument;
       requestPath: string;
       resolvedPath: string;
     }
@@ -16,7 +16,7 @@ export type TemplateRouteResolution =
     };
 
 export async function resolveTemplateRoute(pathValue: string): Promise<TemplateRouteResolution> {
-  const route = await resolveMirrorRoute(pathValue);
+  const route = await resolveNativeTemplatePath(pathValue);
 
   if (route.overrideStatus === 400) {
     return {

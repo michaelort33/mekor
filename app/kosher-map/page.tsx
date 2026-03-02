@@ -3,8 +3,6 @@ import Link from "next/link";
 
 import { KosherMapEmbed } from "@/components/kosher/kosher-map-embed";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
-import { renderMirrorFallbackForPath } from "@/lib/native-routes/mirror-fallback";
-import { isTeam0NativeRouteEnabled } from "@/lib/native-routes/team0-flags";
 
 export const metadata: Metadata = {
   title: "Kosher Map | Mekor Habracha",
@@ -21,10 +19,6 @@ const NEIGHBORHOOD_LINKS = [
 ];
 
 export default async function KosherMapPage() {
-  if (!isTeam0NativeRouteEnabled("/kosher-map")) {
-    return renderMirrorFallbackForPath("/kosher-map");
-  }
-
   return (
     <main className="kosher-map-page" data-native-nav="true">
       <SiteNavigation currentPath="/kosher-map" />

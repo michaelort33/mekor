@@ -1,9 +1,14 @@
 import { cache } from "react";
 import { load } from "cheerio";
 
-import { getDocumentByPath, loadContentIndex } from "@/lib/mirror/loaders";
-import type { DocumentType, PageDocument } from "@/lib/mirror/types";
-import { normalizePath } from "@/lib/mirror/url";
+import {
+  getNativeDocumentByPath,
+  normalizePath,
+  getPathVariants,
+  loadNativeContentIndex,
+  type NativeDocumentType,
+  type NativePageDocument,
+} from "@/lib/native-content/content-loader";
 
 const FOOTER_PHONE = "+12155254246";
 const PHONE_PATTERN = /(?:\+?1[\s\-().]*)?(?:\(?\d{3}\)?[\s\-().]*)\d{3}[\s\-().]*\d{4}/;
@@ -297,17 +302,17 @@ function pathTitleOrFallback(pathValue: string, title: string) {
   return pathLabel(pathValue);
 }
 
-const loadArchivePathSet = cache(async (type: DocumentType) => {
-  const index = await loadContentIndex();
+const loadArchivePathSet = cache(async (type: NativeDocumentType) => {
+  const index = await loadNativeContentIndex();
   return new Set(
     index
       .filter((entry) => entry.type === type)
-      .map((entry) => normalizePath(entry.path))
+      .map((entry) => getPathVariants(entry.path)[0] ?? entry.path)
       .filter(Boolean),
   );
 });
 
-export function buildArticleTemplateData(document: PageDocument): ArticleTemplateData {
+export function buildArticleTemplateData(document: NativePageDocument): ArticleTemplateData {
   const $ = load(document.bodyHtml || document.renderHtml || "");
   const root =
     document.type === "post"
@@ -506,7 +511,7 @@ export function buildArticleTemplateData(document: PageDocument): ArticleTemplat
   };
 }
 
-export function buildEventTemplateData(document: PageDocument): EventTemplateData {
+export function buildEventTemplateData(document: NativePageDocument): EventTemplateData {
   const $ = load(document.bodyHtml || document.renderHtml || "");
 
   const title =
@@ -547,7 +552,9 @@ export function buildEventTemplateData(document: PageDocument): EventTemplateDat
   };
 }
 
-export async function buildProfileTemplateData(document: PageDocument): Promise<ProfileTemplateData> {
+export async function buildProfileTemplateData(
+  document: NativePageDocument,
+): Promise<ProfileTemplateData> {
   const $ = load(document.bodyHtml || document.renderHtml || "");
   const h1 = cleanText($("h1").first().text());
   const rawMemberName = cleanText($('[data-hook="ProfileCard-memberName"]').first().text());
@@ -571,7 +578,7 @@ export async function buildProfileTemplateData(document: PageDocument): Promise<
 
   const featuredPosts = await Promise.all(
     postPaths.slice(0, 12).map(async (pathValue) => {
-      const linked = await getDocumentByPath(pathValue);
+      const linked = await getNativeDocumentByPath(pathValue);
       return {
         href: pathValue,
         label: cleanDocTitle(linked?.title ?? "") || pathLabel(pathValue),
@@ -589,13 +596,15 @@ export async function buildProfileTemplateData(document: PageDocument): Promise<
   };
 }
 
-export async function buildArchiveTemplateData(document: PageDocument): Promise<ArchiveTemplateData> {
+export async function buildArchiveTemplateData(
+  document: NativePageDocument,
+): Promise<ArchiveTemplateData> {
   const normalizedPath = normalizePath(document.path);
   const type = normalizedPath.includes("/kosher-posts/categories/") ? "category" : "tag";
   const currentPage = Number.parseInt(normalizedPath.match(/\/page\/(\d+)$/)?.[1] ?? "1", 10);
   const pageNumber = Number.isNaN(currentPage) ? 1 : currentPage;
   const basePath = normalizedPath.replace(/\/page\/\d+$/i, "");
-  const archiveType: DocumentType = type === "category" ? "category" : "tag";
+  const archiveType: NativeDocumentType = type === "category" ? "category" : "tag";
   const archivePathSet = await loadArchivePathSet(archiveType);
 
   const postPaths = uniqueOrdered(
@@ -606,7 +615,7 @@ export async function buildArchiveTemplateData(document: PageDocument): Promise<
 
   const entries = await Promise.all(
     postPaths.map(async (pathValue) => {
-      const post = await getDocumentByPath(pathValue);
+      const post = await getNativeDocumentByPath(pathValue);
       return {
         path: pathValue,
         title: cleanDocTitle(post?.title ?? "") || pathLabel(pathValue),

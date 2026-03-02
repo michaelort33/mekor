@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 
 import { RabbiDeskPodcastList } from "@/components/podcast/rabbi-desk-podcast-list";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
-import { renderMirrorFallbackForPath } from "@/lib/native-routes/mirror-fallback";
-import { isTeam0NativeRouteEnabled } from "@/lib/native-routes/team0-flags";
 
 export const metadata: Metadata = {
   title: "From The Rabbi's Desk | Mekor Habracha",
@@ -13,10 +11,6 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function FromTheRabbisDeskPage() {
-  if (!isTeam0NativeRouteEnabled("/from-the-rabbi-s-desk")) {
-    return renderMirrorFallbackForPath("/from-the-rabbi-s-desk");
-  }
-
   return (
     <main className="rabbi-desk-page" data-native-nav="true">
       <SiteNavigation currentPath="/from-the-rabbi-s-desk" />

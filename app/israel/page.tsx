@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
-import { getMirrorRouteMetadata } from "@/lib/marketing/route-metadata";
+import { buildDocumentMetadata } from "@/lib/templates/metadata";
+import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "@/app/israel/page.module.css";
 
 export const dynamic = "force-static";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return getMirrorRouteMetadata("/israel");
+  const document = await getNativeDocumentByPath("/israel");
+  return buildDocumentMetadata(document);
 }
 
 export default function IsraelPage() {
@@ -113,7 +115,7 @@ export default function IsraelPage() {
             "The project honors the 1200 souls and the soldiers and hostages who have died Al Kiddush Hashem. Mekor's commemorative event displayed the new cover and remembered the kadosh named on our me'il.",
             "May we merit to fulfill the words of Tehillim, 'You have turned my mourning into dancing,' and see the coming of Mashiach speedily in our days.",
           ]}
-          links={[{ label: "Rabbi Hirsch's Introduction to Oct 7 Commemoration", href: "/from-the-rabbis-desk.html" }]}
+          links={[{ label: "Rabbi Hirsch's Introduction to Oct 7 Commemoration", href: "/from-the-rabbi-s-desk" }]}
         />
         <p className={styles.longCopy}>
           Mekor Habracha/Center City Synagogue Commemoration of October 7: 6:15pm Mincha, 6:45pm Program.

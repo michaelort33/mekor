@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { NativeShell } from "@/components/navigation/native-shell";
-import { loadSearchIndex } from "@/lib/mirror/loaders";
+import { getNativeSearchIndex } from "@/lib/native-content/content-loader";
 import { validateSearchIndexContract } from "@/lib/native/contracts";
 
 export const dynamic = "force-dynamic";
@@ -35,8 +35,8 @@ export default async function SearchPage({ searchParams }: SearchProps) {
   const query = normalizeQuery(queryRaw);
 
   const records = validateSearchIndexContract(
-    await loadSearchIndex(),
-    "Search page: loadSearchIndex",
+    await getNativeSearchIndex(),
+    "Search page: getNativeSearchIndex",
   );
   const queryTerms = query.split(/\s+/).filter(Boolean);
 

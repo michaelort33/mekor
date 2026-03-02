@@ -3,13 +3,15 @@ import Link from "next/link";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
-import { getMirrorRouteMetadata } from "@/lib/marketing/route-metadata";
+import { buildDocumentMetadata } from "@/lib/templates/metadata";
+import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "@/app/page.module.css";
 
 export const dynamic = "force-static";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return getMirrorRouteMetadata("/");
+  const document = await getNativeDocumentByPath("/");
+  return buildDocumentMetadata(document);
 }
 
 export default function HomePage() {

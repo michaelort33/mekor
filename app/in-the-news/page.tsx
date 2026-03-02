@@ -3,8 +3,6 @@ import type { Metadata } from "next";
 import { InTheNewsDirectory } from "@/components/in-the-news/in-the-news-directory";
 import { NativeShell } from "@/components/navigation/native-shell";
 import { getManagedInTheNews } from "@/lib/in-the-news/store";
-import { renderMirrorRoute } from "@/lib/mirror/render-route";
-import { getEffectiveRenderMode } from "@/lib/routing/render-mode";
 
 export const metadata: Metadata = {
   title: "In The News | Mekor Habracha",
@@ -34,10 +32,6 @@ function buildFeaturedByline(publishedLabel: string, author: string) {
 }
 
 export default async function InTheNewsPage() {
-  if (getEffectiveRenderMode("/in-the-news") === "mirror") {
-    return renderMirrorRoute("/in-the-news");
-  }
-
   const articles = await getManagedInTheNews();
   const featured = articles[0] ?? null;
 

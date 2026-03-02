@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 
 import { KosherPlacesPage } from "@/components/kosher/kosher-places-page";
-import { renderMirrorRoute } from "@/lib/mirror/render-route";
-import { getEffectiveRenderMode } from "@/lib/routing/render-mode";
 
 export const metadata: Metadata = {
   title: "Main Line / Manyunk Kosher Places | Mekor Habracha",
@@ -12,10 +10,6 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function MainLineManyunkKosherPage() {
-  if (getEffectiveRenderMode("/main-line-manyunk") === "mirror") {
-    return renderMirrorRoute("/main-line-manyunk");
-  }
-
   return (
     <KosherPlacesPage
       currentPath="/main-line-manyunk"

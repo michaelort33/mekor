@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import type { PageDocument } from "@/lib/mirror/types";
+import type { NativePageDocument } from "@/lib/native-content/content-loader";
 
 function normalizeBrandTitle(value: string | null | undefined) {
   if (!value) {
@@ -10,7 +10,7 @@ function normalizeBrandTitle(value: string | null | undefined) {
   return value.replace(/\bMekor 3\b/g, "Mekor Habracha");
 }
 
-export function buildDocumentMetadata(document: PageDocument | null): Metadata {
+export function buildDocumentMetadata(document: NativePageDocument | null): Metadata {
   if (!document) {
     return {
       title: "Not Found",

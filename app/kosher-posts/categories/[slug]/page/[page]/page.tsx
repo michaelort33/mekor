@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { ArchiveTemplate } from "@/components/templates/archive-template";
 import { BadRequestTemplate } from "@/components/templates/bad-request-template";
-import { loadContentIndex } from "@/lib/mirror/loaders";
+import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
 import { buildArchiveTemplateData } from "@/lib/templates/template-data";
@@ -23,7 +23,7 @@ function toPath(slug: string, page: string) {
 }
 
 export async function generateStaticParams() {
-  const index = await loadContentIndex();
+  const index = await loadNativeContentIndex();
   const deduped = new Map<string, { slug: string; page: string }>();
 
   for (const item of index) {
