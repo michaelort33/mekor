@@ -1,0 +1,120 @@
+.content {
+  display: grid;
+  gap: 18px;
+}
+
+.intro,
+.leadText,
+.bodyText,
+.sectionLead,
+.note {
+  margin: 0;
+  color: #445262;
+  line-height: 1.65;
+}
+
+.sectionLead {
+  font-weight: 600;
+}
+
+.note {
+  margin-top: 0.35rem;
+  color: #536278;
+}
+
+.rateGrid {
+  margin-top: 0.25rem;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.rateCard {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #dde4ef;
+  background: linear-gradient(145deg, #f8fbff 0%, #eef4fb 100%);
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+
+.rateTitle {
+  margin: 0;
+  font-weight: 700;
+  color: #1f3f64;
+}
+
+.rateAmount {
+  margin: 0;
+  color: #2e4e75;
+  font-size: 1.52rem;
+  line-height: 1.05;
+}
+
+.rateTerm {
+  margin: 0;
+  color: #536178;
+  font-size: 0.92rem;
+}
+
+.inlineAction {
+  margin-top: 2px;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid #2a68a0;
+  color: #1d4f7c;
+  text-decoration: none;
+  background: #f7fbff;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.inlineAction:hover {
+  border-color: #214f78;
+  background: #ecf5fe;
+}
+
+.bulletList {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: #445262;
+  display: grid;
+  gap: 8px;
+}
+
+.actionRow {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  min-width: 170px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #2a68a0;
+  text-decoration: none;
+  color: #f8fbff;
+  background: #2f73ac;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.actionButton:hover {
+  border-color: #214f78;
+  background: #25598c;
+}

@@ -2,6 +2,7 @@ export const MEDIUM_STATIC_PATHS = [
   "/donations",
   "/visit-us",
   "/contact-us",
+  "/our-leadership",
   "/our-communities",
   "/davening",
   "/mekor-bulletin-board",
@@ -258,6 +259,64 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
         label: "Latest Newsletters",
         href: "https://us2.campaign-archive.com/home/?u=f9fe87a16c42c24704c099073&id=94f3350887",
         external: true,
+      },
+    ],
+  },
+  "/our-leadership": {
+    archetype: "directory",
+    path: "/our-leadership",
+    eyebrow: "Board and Officers",
+    title: "Our Leadership",
+    intro: [
+      "Mekor Habracha's board is made up of community members committed to building vibrant Jewish life in Center City.",
+      "For board questions, email mekorboard@gmail.com.",
+    ],
+    primaryLinks: [
+      { label: "Email the Board", href: "mailto:mekorboard@gmail.com" },
+      { label: "Our Rabbi", href: "/our-rabbi" },
+    ],
+    groups: [
+      {
+        heading: "Officers",
+        entries: [
+          {
+            title: "Bruce Taubman, President",
+            body: "Dr. Bruce Taubman is a pediatrician with a practice in Cherry Hill, New Jersey. He has lived in Center City since 1972 and serves as the synagogue's president.",
+          },
+          {
+            title: "Ellen B. Geller, Treasurer",
+            body: "Ellen Geller retired in 2020 from her work at Temple Medical School and the College on Problems of Drug Dependence. She has lived in Center City since 1972 and serves as the synagogue's treasurer.",
+          },
+        ],
+      },
+      {
+        heading: "Board Members",
+        entries: [
+          {
+            title: "Yoella Epstein, Esq.",
+            body: "Yoella Epstein is a litigation associate at Blank Rome LLP. She has lived in Center City since 2008 with her husband Jeremy Kriger and their four daughters.",
+          },
+          {
+            title: "Chana Strauss",
+            body: "Chana Strauss is a Midwife and Women's Health Nurse Practitioner at AtlantiCare Regional Medical Center. She moved to Center City in 2021 and is an active member of Mekor.",
+          },
+          {
+            title: "Ethan Lewis",
+            body: "Ethan Lewis moved to Center City in 2022 with his wife Hannah. He works at Susquehanna International Group and has served on the board since 2025.",
+          },
+          {
+            title: "Jonathan Goldstein",
+            body: "Jonathan Goldstein is an e-commerce specialist and chazzan. He lives in Philadelphia with his wife Gwenn and is a dedicated member of the community.",
+          },
+          {
+            title: "David Margules",
+            body: "David Margules is a partner at Ballard Spahr and leads the Delaware Chancery Court/Corporate Governance practice group. He has served in leadership roles across national and local Jewish organizations.",
+          },
+          {
+            title: "Ralph Shapira",
+            body: "Board member.",
+          },
+        ],
       },
     ],
   },
@@ -878,6 +937,7 @@ export const MEDIUM_STATIC_ARCHETYPE_MAP: Record<MediumStaticPath, MediumStaticP
   "/donations": "info",
   "/visit-us": "contact",
   "/contact-us": "contact",
+  "/our-leadership": "directory",
   "/our-communities": "info",
   "/davening": "info",
   "/mekor-bulletin-board": "directory",

@@ -13,6 +13,21 @@ async function readTextFile(relativePath: string) {
   return fs.readFile(filePath, "utf8");
 }
 
+async function collectPageFiles(dir: string, acc: string[] = []) {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      await collectPageFiles(fullPath, acc);
+      continue;
+    }
+    if (entry.isFile() && entry.name === "page.tsx") {
+      acc.push(path.relative(process.cwd(), fullPath));
+    }
+  }
+  return acc;
+}
+
 test("team0 route flags default to native enabled and accept explicit rollback values", () => {
   const key = "TEAM0_NATIVE_TEAM_4";
   const previous = process.env[key];
@@ -120,4 +135,21 @@ test("document-html no longer applies team-4 and kosher-map route patches", asyn
   assert.equal(source.includes("applyKosherMapPageFallback"), false);
   assert.equal(source.includes('path === "/team-4"'), false);
   assert.equal(source.includes("path === KOSHER_MAP_PATH"), false);
+});
+
+test("app routes do not import mirror DocumentView", async () => {
+  const pageFiles = await collectPageFiles(path.join(process.cwd(), "app"));
+  for (const routeFile of pageFiles) {
+    const source = await readTextFile(routeFile);
+    assert.equal(
+      source.includes('from "@/components/mirror/document-view"'),
+      false,
+      `mirror DocumentView import found in ${routeFile}`,
+    );
+    assert.equal(
+      source.includes("<DocumentView"),
+      false,
+      `mirror DocumentView usage found in ${routeFile}`,
+    );
+  }
 });
