@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
@@ -13,6 +13,8 @@ type MobileDrawerProps = {
   currentPath: string;
   isOpen: boolean;
   onClose: () => void;
+  drawerId: string;
+  titleId: string;
 };
 
 function normalizePath(path: string) {
@@ -42,7 +44,15 @@ function getGroupId(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
-export function MobileDrawer({ items, currentPath, isOpen, onClose }: MobileDrawerProps) {
+function getFocusableElements(root: HTMLElement) {
+  return Array.from(
+    root.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter((element) => !element.hasAttribute("hidden"));
+}
+
+export function MobileDrawer({ items, currentPath, isOpen, onClose, drawerId, titleId }: MobileDrawerProps) {
   const initialExpanded = useMemo(() => {
     const expanded = new Set<string>();
 
@@ -60,6 +70,8 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose }: MobileDraw
   }, [currentPath, items]);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(initialExpanded);
+  const drawerRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     setExpandedIds(initialExpanded);
@@ -72,18 +84,48 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose }: MobileDraw
     }
 
     document.body.classList.add("native-nav--mobile-open");
+    closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        event.preventDefault();
         onClose();
+        return;
+      }
+
+      if (event.key !== "Tab") {
+        return;
+      }
+
+      const drawer = drawerRef.current;
+      if (!drawer) {
+        return;
+      }
+
+      const focusableElements = getFocusableElements(drawer);
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && (active === first || !drawer.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown, true);
 
     return () => {
       document.body.classList.remove("native-nav--mobile-open");
-      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [isOpen, onClose]);
 
@@ -92,10 +134,20 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose }: MobileDraw
   }
 
   return (
-    <div className="native-nav__mobile-drawer" role="dialog" aria-modal="true" aria-label="Main menu">
+    <div
+      ref={drawerRef}
+      id={drawerId}
+      className="native-nav__mobile-drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+    >
+      <h2 id={titleId} className="native-nav__sr-only">
+        Main menu
+      </h2>
       <div className="native-nav__mobile-header">
         <NavBrand />
-        <button type="button" className="native-nav__mobile-close" onClick={onClose}>
+        <button ref={closeButtonRef} type="button" className="native-nav__mobile-close" onClick={onClose}>
           <span className="native-nav__sr-only">Close menu</span>
           <span aria-hidden="true">✕</span>
         </button>
@@ -111,6 +163,7 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose }: MobileDraw
                     href={item.href}
                     className={`native-nav__mobile-link${isPathActive(currentPath, item.href) ? " is-active" : ""}`}
                     onClick={onClose}
+                    aria-current={isPathActive(currentPath, item.href) ? "page" : undefined}
                   >
                     {item.label}
                   </Link>
@@ -128,6 +181,7 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose }: MobileDraw
                     href={item.href}
                     className={`native-nav__mobile-link${isPathActive(currentPath, item.href) ? " is-active" : ""}`}
                     onClick={onClose}
+                    aria-current={isPathActive(currentPath, item.href) ? "page" : undefined}
                   >
                     {item.label}
                   </Link>
@@ -136,6 +190,7 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose }: MobileDraw
                     className="native-nav__mobile-expand"
                     aria-expanded={isExpanded}
                     aria-controls={`native-mobile-submenu-${groupId}`}
+                    aria-label={`Toggle ${item.label} submenu`}
                     onClick={() => {
                       setExpandedIds((prev) => {
                         const next = new Set(prev);
@@ -153,22 +208,22 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose }: MobileDraw
                   </button>
                 </div>
 
-                <ul
-                  id={`native-mobile-submenu-${groupId}`}
-                  className={`native-nav__mobile-submenu${isExpanded ? " is-open" : ""}`}
-                >
-                  {item.children.map((child) => (
-                    <li key={child.label}>
-                      <Link
-                        href={child.href}
-                        className={`native-nav__mobile-sublink${isPathActive(currentPath, child.href) ? " is-active" : ""}`}
-                        onClick={onClose}
-                      >
-                        {child.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                {isExpanded ? (
+                  <ul id={`native-mobile-submenu-${groupId}`} className="native-nav__mobile-submenu is-open">
+                    {item.children.map((child) => (
+                      <li key={child.label}>
+                        <Link
+                          href={child.href}
+                          className={`native-nav__mobile-sublink${isPathActive(currentPath, child.href) ? " is-active" : ""}`}
+                          onClick={onClose}
+                          aria-current={isPathActive(currentPath, child.href) ? "page" : undefined}
+                        >
+                          {child.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </li>
             );
           })}

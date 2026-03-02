@@ -1,18 +1,15 @@
 import Link from "next/link";
 
-import { SiteNavigation } from "@/components/navigation/site-navigation";
+import { NativeShell } from "@/components/navigation/native-shell";
 
 export default function NotFound() {
   return (
-    <main className="not-found-page" data-native-nav="true">
-      <SiteNavigation currentPath="/" />
-      <section className="mirror-error">
-        <h1>404 - Not Found</h1>
-        <p>The requested URL does not exist in the mirrored public route contract.</p>
-        <p>
-          <Link href="/">Go back to home</Link>
-        </p>
-      </section>
-    </main>
+    <NativeShell currentPath="/" className="not-found-page" contentClassName="mirror-error">
+      <h1>404 - Not Found</h1>
+      <p>The requested URL does not exist in the mirrored public route contract.</p>
+      <p>
+        <Link href="/">Go back to home</Link>
+      </p>
+    </NativeShell>
   );
 }

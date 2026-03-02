@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { NativeShell } from "@/components/navigation/native-shell";
 import { loadSearchIndex } from "@/lib/mirror/loaders";
-import { SiteNavigation } from "@/components/navigation/site-navigation";
 import { validateSearchIndexContract } from "@/lib/native/contracts";
 
 export const dynamic = "force-dynamic";
@@ -65,27 +65,24 @@ export default async function SearchPage({ searchParams }: SearchProps) {
           .slice(0, 60);
 
   return (
-    <main className="search-page" data-native-nav="true">
-      <SiteNavigation currentPath="/search" />
-      <section className="search-root">
-        <h1>Search</h1>
-        {queryTerms.length === 0 ? (
-          <p>
-            Provide a search term with <code>?q=...</code>.
-          </p>
-        ) : null}
-        {queryTerms.length > 0 && results.length === 0 ? <p>No results found.</p> : null}
-        {results.length > 0 ? (
-          <ul>
-            {results.map(({ record }) => (
-              <li key={record.path}>
-                <Link href={record.path}>{record.title || record.path}</Link>
-                <p>{cleanExcerpt(record.excerpt)}</p>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </section>
-    </main>
+    <NativeShell currentPath="/search" className="search-page" contentClassName="search-root">
+      <h1>Search</h1>
+      {queryTerms.length === 0 ? (
+        <p>
+          Provide a search term with <code>?q=...</code>.
+        </p>
+      ) : null}
+      {queryTerms.length > 0 && results.length === 0 ? <p>No results found.</p> : null}
+      {results.length > 0 ? (
+        <ul>
+          {results.map(({ record }) => (
+            <li key={record.path}>
+              <Link href={record.path}>{record.title || record.path}</Link>
+              <p>{cleanExcerpt(record.excerpt)}</p>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </NativeShell>
   );
 }

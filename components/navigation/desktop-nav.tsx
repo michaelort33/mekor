@@ -47,6 +47,16 @@ export function DesktopNav({
   setOpenGroupId,
 }: DesktopNavProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const groupButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  const focusFirstSubmenuLink = (groupId: string) => {
+    window.requestAnimationFrame(() => {
+      const firstSubmenuLink = rootRef.current?.querySelector<HTMLAnchorElement>(
+        `#native-nav-submenu-${groupId} .native-nav__submenu-link`,
+      );
+      firstSubmenuLink?.focus();
+    });
+  };
 
   useEffect(() => {
     const handlePointerDown = (event: PointerEvent) => {
@@ -71,7 +81,16 @@ export function DesktopNav({
   }, [setOpenGroupId]);
 
   return (
-    <div className="native-nav__desktop" ref={rootRef}>
+    <div
+      className="native-nav__desktop"
+      ref={rootRef}
+      onBlur={(event) => {
+        const nextTarget = event.relatedTarget;
+        if (!(nextTarget instanceof Node) || !rootRef.current?.contains(nextTarget)) {
+          setOpenGroupId(null);
+        }
+      }}
+    >
       <ul className="native-nav__desktop-list">
         {items.map((item) => {
           const active = isPathActive(currentPath, item.href);
@@ -83,6 +102,7 @@ export function DesktopNav({
                   href={item.href}
                   className={`native-nav__desktop-link${active ? " is-active" : ""}`}
                   onClick={() => setOpenGroupId(null)}
+                  aria-current={active ? "page" : undefined}
                 >
                   {item.label}
                 </Link>
@@ -106,20 +126,39 @@ export function DesktopNav({
                   href={item.href}
                   className={`native-nav__desktop-link${active ? " is-active" : ""}`}
                   onFocus={() => setOpenGroupId(groupId)}
+                  onKeyDown={(event) => {
+                    if (event.key === "ArrowDown") {
+                      event.preventDefault();
+                      setOpenGroupId(groupId);
+                      focusFirstSubmenuLink(groupId);
+                    }
+                  }}
+                  aria-current={active ? "page" : undefined}
                 >
                   {item.label}
                 </Link>
                 <button
+                  ref={(node) => {
+                    groupButtonRefs.current[groupId] = node;
+                  }}
                   type="button"
                   className="native-nav__desktop-chevron"
                   aria-expanded={isOpen}
                   aria-controls={submenuId}
+                  aria-haspopup="true"
+                  aria-label={`Toggle ${item.label} submenu`}
                   onClick={() => setOpenGroupId(isOpen ? null : groupId)}
                   onFocus={() => setOpenGroupId(groupId)}
                   onKeyDown={(event) => {
                     if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
                       event.preventDefault();
                       setOpenGroupId(groupId);
+                      focusFirstSubmenuLink(groupId);
+                    }
+
+                    if (event.key === "Escape") {
+                      event.preventDefault();
+                      setOpenGroupId(null);
                     }
                   }}
                 >
@@ -130,7 +169,6 @@ export function DesktopNav({
               <div
                 id={submenuId}
                 className={`native-nav__submenu${isOpen ? " is-open" : ""}`}
-                role="menu"
               >
                 <ul className="native-nav__submenu-list">
                   {item.children.map((child) => {
@@ -140,8 +178,15 @@ export function DesktopNav({
                         <Link
                           href={child.href}
                           className={`native-nav__submenu-link${childActive ? " is-active" : ""}`}
-                          role="menuitem"
+                          aria-current={childActive ? "page" : undefined}
                           onClick={() => setOpenGroupId(null)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Escape") {
+                              event.preventDefault();
+                              setOpenGroupId(null);
+                              groupButtonRefs.current[groupId]?.focus();
+                            }
+                          }}
                         >
                           {child.label}
                         </Link>

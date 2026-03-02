@@ -1,4 +1,4 @@
-import { SiteNavigation } from "@/components/navigation/site-navigation";
+import { NativeShell } from "@/components/navigation/native-shell";
 import { KosherDirectory } from "@/components/kosher/kosher-directory";
 import type { KosherNeighborhood } from "@/lib/kosher/extract";
 import {
@@ -45,16 +45,13 @@ export async function KosherPlacesPage({
   );
 
   return (
-    <main className="kosher-places-page" data-native-nav="true">
-      <SiteNavigation currentPath={currentPath} />
-      <section className="kosher-places">
-        <header className="kosher-places__header">
-          <h1>{heading}</h1>
-          <p>{description}</p>
-          {lastUpdatedDate ? <p className="kosher-places__last-updated">Last updated: {lastUpdatedDate}</p> : null}
-        </header>
-        <KosherDirectory places={places} defaultNeighborhood={defaultNeighborhood} />
-      </section>
-    </main>
+    <NativeShell currentPath={currentPath} className="kosher-places-page" contentClassName="kosher-places">
+      <header className="kosher-places__header">
+        <h1>{heading}</h1>
+        <p>{description}</p>
+        {lastUpdatedDate ? <p className="kosher-places__last-updated">Last updated: {lastUpdatedDate}</p> : null}
+      </header>
+      <KosherDirectory places={places} defaultNeighborhood={defaultNeighborhood} />
+    </NativeShell>
   );
 }

@@ -56,23 +56,6 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
   );
 
   useEffect(() => {
-    const targets = Array.from(
-      document.querySelectorAll<HTMLElement>("#SITE_HEADER, #SITE_HEADER_WRAPPER, #SITE_HEADER-placeholder"),
-    );
-
-    targets.forEach((element) => {
-      element.style.setProperty("display", "none", "important");
-      element.style.setProperty("visibility", "hidden", "important");
-    });
-
-    const masterPage = document.querySelector<HTMLElement>("#masterPage");
-    if (masterPage) {
-      masterPage.style.setProperty("--header-height", "0px");
-      masterPage.style.setProperty("--top-offset", "0px");
-    }
-  }, []);
-
-  useEffect(() => {
     if (previousMobileOpenRef.current && !mobileOpen) {
       mobileTriggerRef.current?.focus();
     }
@@ -104,6 +87,8 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
               onClick={() => setMobileOpen(true)}
               aria-expanded={mobileOpen}
               aria-controls="native-mobile-drawer"
+              aria-haspopup="dialog"
+              aria-label="Open main menu"
             >
               <span className="native-nav__sr-only">Open menu</span>
               <span aria-hidden="true">☰</span>
@@ -112,12 +97,14 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
         </div>
       </header>
 
-      <div id="native-mobile-drawer">
+      <div>
         <MobileDrawer
           items={SITE_MENU}
           currentPath={activePath}
           isOpen={mobileOpen}
           onClose={() => setMobileOpen(false)}
+          drawerId="native-mobile-drawer"
+          titleId="native-mobile-drawer-title"
         />
       </div>
     </>

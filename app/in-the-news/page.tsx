@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { InTheNewsDirectory } from "@/components/in-the-news/in-the-news-directory";
-import { SiteNavigation } from "@/components/navigation/site-navigation";
+import { NativeShell } from "@/components/navigation/native-shell";
 import { getManagedInTheNews } from "@/lib/in-the-news/store";
 import { renderMirrorRoute } from "@/lib/mirror/render-route";
 import { getEffectiveRenderMode } from "@/lib/routing/render-mode";
@@ -42,28 +42,25 @@ export default async function InTheNewsPage() {
   const featured = articles[0] ?? null;
 
   return (
-    <main className="in-news-page" data-native-nav="true">
-      <SiteNavigation currentPath="/in-the-news" />
-      <section className="in-news">
-        <header className="in-news__header">
-          <p className="in-news__kicker">Press Mentions</p>
-          <h1>In The News</h1>
-          <p>
-            Search and filter every archived story from our backend directory. Open each article on
-            Mekor or jump to the original source.
-          </p>
+    <NativeShell currentPath="/in-the-news" className="in-news-page" contentClassName="in-news">
+      <header className="in-news__header">
+        <p className="in-news__kicker">Press Mentions</p>
+        <h1>In The News</h1>
+        <p>
+          Search and filter every archived story from our backend directory. Open each article on
+          Mekor or jump to the original source.
+        </p>
 
-          {featured ? (
-            <div className="in-news__featured">
-              <span>Featured</span>
-              <h2>{featured.title}</h2>
-              <p>{buildFeaturedByline(featured.publishedLabel, featured.author)}</p>
-            </div>
-          ) : null}
-        </header>
+        {featured ? (
+          <div className="in-news__featured">
+            <span>Featured</span>
+            <h2>{featured.title}</h2>
+            <p>{buildFeaturedByline(featured.publishedLabel, featured.author)}</p>
+          </div>
+        ) : null}
+      </header>
 
-        <InTheNewsDirectory articles={articles} />
-      </section>
-    </main>
+      <InTheNewsDirectory articles={articles} />
+    </NativeShell>
   );
 }
