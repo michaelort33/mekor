@@ -768,6 +768,49 @@ body.native-nav--mobile-open {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
+
+  .mirror-root :where(.wixui-rich-text__text, .wixui-text__text) {
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    hyphens: auto !important;
+  }
+
+  .mirror-root :where(.wixui-column-strip > [data-testid="columns"]) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .mirror-root :where(.wixui-column-strip__column) {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .mirror-root :where(.wixui-column-strip__column > [data-mesh-id$="inlineContent-gridContainer"]) {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding-inline: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .mirror-root :where(fluid-columns-repeater) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .mirror-root :where(fluid-columns-repeater > .wixui-repeater__item) {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
