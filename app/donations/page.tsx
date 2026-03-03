@@ -246,22 +246,18 @@ export default async function DonationsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Donate by Card (Embedded Stripe Iframe)" className={styles.stripeCard}>
-        <p className={styles.copyText}>
-          Use the embedded Stripe donation form below for Credit, ACH, and Apple Pay.
-        </p>
-        <div className={styles.stripeShell}>
-          <iframe
-            className={styles.stripeFrame}
-            src={STRIPE_DONATION_URL}
-            title="Mekor donation checkout"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
+      <SectionCard className={styles.stripeCard}>
+        <div className={styles.stripePromo}>
+          <div className={styles.stripePromoText}>
+            <h2 className={styles.stripePromoHeading}>Donate by Card</h2>
+            <p className={styles.copyText}>
+              Make a secure one-time or recurring donation with Credit Card, ACH bank transfer, or Apple Pay through Stripe.
+            </p>
+          </div>
+          <a href={STRIPE_DONATION_URL} target="_blank" rel="noreferrer noopener" className={styles.stripeButton}>
+            Donate Now via Stripe →
+          </a>
         </div>
-        <a href={STRIPE_DONATION_URL} target="_blank" rel="noreferrer noopener" className={styles.stripeFallback}>
-          Open Stripe checkout in a new tab
-        </a>
       </SectionCard>
 
       <SectionCard title="Quick Donation Links">

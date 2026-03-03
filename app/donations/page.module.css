@@ -201,42 +201,59 @@
     #fbfdff;
 }
 
-.stripeShell {
+.stripePromo {
   display: grid;
-  border-radius: 16px;
-  border: 1px solid #d4e0ee;
-  background: linear-gradient(145deg, #f7fbff 0%, #eef4fc 100%);
-  overflow: hidden;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px;
 }
 
-.stripeFrame {
-  display: block;
-  width: 100%;
-  min-height: 720px;
-  border: 0;
-  background: #f2f6fc;
+.stripePromoText {
+  display: grid;
+  gap: 8px;
 }
 
-.stripeFallback {
-  width: fit-content;
+.stripePromoHeading {
+  margin: 0;
+  color: #1d3f66;
+  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
+  line-height: 1.15;
+}
+
+.stripeButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 36px;
-  border-radius: 999px;
-  border: 1px solid #2f73ac;
-  background: #f4f9ff;
-  color: #1d4f7c;
+  min-height: 52px;
+  border-radius: 14px;
+  border: 1px solid #4a6cf7;
+  background: linear-gradient(160deg, #635bff 0%, #4a3fdb 100%);
+  color: #ffffff;
   text-decoration: none;
-  padding: 0 14px;
-  font-size: 0.84rem;
+  padding: 0 28px;
+  font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(99, 91, 255, 0.3);
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
 }
 
-.stripeFallback:hover {
-  border-color: #214f78;
-  background: #eaf3fd;
+.stripeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(99, 91, 255, 0.4);
+  filter: brightness(1.06);
+}
+
+@media (max-width: 600px) {
+  .stripePromo {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .stripeButton {
+    width: 100%;
+  }
 }
 
 @media (max-width: 760px) {
