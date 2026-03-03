@@ -25,7 +25,7 @@ export default function IsraelPage() {
         image={{
           src: "https://static.wixstatic.com/media/92f487_fe9c18db72464a00804c50ec36bba116~mv2.jpg",
           alt: "Israel solidarity event banner",
-          objectFit: "scale-down",
+          objectFit: "cover",
         }}
       />
 

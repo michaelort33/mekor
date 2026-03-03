@@ -42,7 +42,7 @@ export default async function MembershipPage() {
         image={{
           src: MEMBERSHIP_IMAGES.hero,
           alt: "Mekor Habracha community gathering",
-          objectFit: "scale-down",
+          objectFit: "cover",
         }}
         description={[
           "We offer 2 simple ways to join or renew and become part of a synagogue community that keeps Jewish life vibrant in Center City.",

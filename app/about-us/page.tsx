@@ -21,7 +21,7 @@ export default function AboutUsPage() {
         image={{
           src: "https://static.wixstatic.com/media/92f487_9d5ea30d3f994577b7580692f3db4cf1~mv2.jpg",
           alt: "Mekor Habracha sanctuary",
-          objectFit: "scale-down",
+          objectFit: "cover",
         }}
       />
 
