@@ -36,6 +36,13 @@
       "when": 1772361646283,
       "tag": "0004_ordinary_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772571600000,
+      "tag": "0005_mvp_member_ops",
+      "breakpoints": true
     }
   ]
 }
