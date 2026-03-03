@@ -473,10 +473,24 @@ a {
   line-height: 1;
 }
 
+.native-nav__cta-icon {
+  width: 15px;
+  height: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.native-nav__cta-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
 .native-nav__cta--join {
-  border-color: #4a6c8f;
-  color: #2a4663 !important;
-  background: #fff;
+  border-color: #1e9c4f;
+  color: #ffffff !important;
+  background: #24b45d;
 }
 
 .native-nav__cta--support {
@@ -510,6 +524,13 @@ a {
   color: #1f3f5e !important;
   outline: 2px solid var(--native-focus-ring);
   outline-offset: 2px;
+}
+
+.native-nav__cta--join:hover,
+.native-nav__cta--join:focus-visible {
+  background: #1ea555;
+  border-color: #168043;
+  color: #ffffff !important;
 }
 
 .native-nav__mobile-toggle {
