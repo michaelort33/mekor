@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { and, eq, inArray } from "drizzle-orm";
+import { notFound } from "next/navigation";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
