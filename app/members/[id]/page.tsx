@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
+import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
 import { getUserSession } from "@/lib/auth/session";
 import { isAnonymousVisibility } from "@/lib/users/visibility";
 import styles from "./page.module.css";
@@ -54,6 +55,14 @@ export default async function MemberProfilePage({ params }: PageProps) {
 
   return (
     <main className={styles.page}>
+      <MembersBreadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Members Area", href: "/members" },
+          { label: "Member Profile" },
+        ]}
+      />
+
       <article className={styles.card}>
         <header className={styles.header}>
           {member.avatarUrl && !isAnonymousVisibility(member.profileVisibility) ? (

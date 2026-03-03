@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
 import styles from "./page.module.css";
 
 type Schedule = {
@@ -121,6 +122,14 @@ export default function AccountDuesPage() {
 
   return (
     <main className={styles.page}>
+      <MembersBreadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Members Area", href: "/members" },
+          { label: "Dues & Payments" },
+        ]}
+      />
+
       <header className={styles.header}>
         <h1>Dues & Payments</h1>
         <p>Review open dues, payment history, and saved payment methods.</p>

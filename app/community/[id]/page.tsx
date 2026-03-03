@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
+import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
 import { isFeatureEnabled } from "@/lib/config/features";
 import { isAnonymousVisibility } from "@/lib/users/visibility";
 import styles from "./page.module.css";
@@ -20,6 +21,13 @@ export default async function CommunityProfilePage({ params }: PageProps) {
   if (!isFeatureEnabled("FEATURE_PUBLIC_DIRECTORY")) {
     return (
       <main className={styles.page}>
+        <MembersBreadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Community Directory" },
+          ]}
+        />
+
         <header className={styles.header}>
           <h1>Community Directory</h1>
           <p>Public directory is temporarily unavailable. Sign in to access the Members Directory.</p>
@@ -64,6 +72,14 @@ export default async function CommunityProfilePage({ params }: PageProps) {
 
   return (
     <main className={styles.page}>
+      <MembersBreadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Community Directory", href: "/community" },
+          { label: "Profile" },
+        ]}
+      />
+
       <article className={styles.card}>
         <header className={styles.header}>
           {member.avatarUrl && !anonymous ? (

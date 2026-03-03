@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
+import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
 import { getUserSession } from "@/lib/auth/session";
 import { isAnonymousVisibility } from "@/lib/users/visibility";
 import styles from "./page.module.css";
@@ -37,6 +38,8 @@ export default async function MembersPage() {
 
   return (
     <main className={styles.page}>
+      <MembersBreadcrumbs items={[{ label: "Home", href: "/" }, { label: "Members Area" }]} />
+
       <header className={styles.header}>
         <h1>Members Area</h1>
         <p>Browse community members who chose to be visible.</p>

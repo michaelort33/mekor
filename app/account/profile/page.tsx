@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
 import styles from "./page.module.css";
 
 type ProfileResponse = {
@@ -166,6 +167,14 @@ export default function AccountProfilePage() {
 
   return (
     <main className={styles.page}>
+      <MembersBreadcrumbs
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Members Area", href: "/members" },
+          { label: "Your Profile" },
+        ]}
+      />
+
       <form className={styles.card} onSubmit={saveProfile}>
         <div className={styles.header}>
           <h1>Your profile</h1>
