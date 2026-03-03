@@ -9,6 +9,10 @@ const STATUS_MAP = new Map<string, number>(
 const ADMIN_SESSION_COOKIE = "mekor_admin_session";
 const USER_SESSION_COOKIE = "mekor_user_session";
 
+function matchesPathPrefix(pathname: string, prefix: string) {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
 function getSecret(secretValue: string | undefined) {
   if (!secretValue) return null;
   return toArrayBuffer(new TextEncoder().encode(secretValue.padEnd(32, "0").slice(0, 32)));
@@ -76,7 +80,7 @@ async function hasValidUserSession(token: string) {
   const role = parsed.role;
   const exp = parsed.exp;
   if (!Number.isInteger(userId) || Number(userId) < 1) return false;
-  if (role !== "visitor" && role !== "member" && role !== "admin") return false;
+  if (role !== "visitor" && role !== "member" && role !== "admin" && role !== "super_admin") return false;
   if (typeof exp !== "number" || Date.now() > exp) return false;
   return true;
 }
@@ -134,7 +138,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAdminPage = pathname.startsWith("/admin");
   const isAdminApi = pathname.startsWith("/api/admin");
-  const isUserProtectedPage = pathname.startsWith("/account") || pathname.startsWith("/members");
+  const isUserProtectedPage = matchesPathPrefix(pathname, "/account") || matchesPathPrefix(pathname, "/members");
   const isUserProtectedApi = pathname.startsWith("/api/account");
 
   if (!isAdminPage && !isAdminApi && !isUserProtectedPage && !isUserProtectedApi) {
