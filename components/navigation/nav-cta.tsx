@@ -9,12 +9,12 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   const authAction = isCheckingAuth
     ? { label: "Checking…", href: "/login?next=%2Fmembers", variant: "signin" as const }
     : isSignedIn
-      ? { label: "Members Area", href: "/members", variant: "members" as const }
+      ? { label: "Account", href: "/account/profile", variant: "members" as const }
       : { label: "Sign In", href: "/login?next=%2Fmembers", variant: "signin" as const };
   const signOutAction = { label: "Sign Out", href: "/logout", variant: "signout" as const };
 
   const links = [
-    { ...JOIN_US_LINK, label: "Join WhatsApp Community", variant: "join" as const },
+    { ...JOIN_US_LINK, label: "WhatsApp", variant: "join" as const },
     { ...SUPPORT_MEKOR_LINK, variant: "support" as const },
     authAction,
     ...(isSignedIn && !isCheckingAuth ? [signOutAction] : []),

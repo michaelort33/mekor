@@ -439,7 +439,7 @@ a {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .native-nav__cta-wrap {
@@ -449,7 +449,7 @@ a {
 .native-nav__cta-list {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .native-nav__cta {
@@ -458,15 +458,16 @@ a {
   justify-content: center;
   height: 36px;
   border-radius: 10px;
-  padding: 0 12px;
+  padding: 0 10px;
   border: 1px solid var(--native-nav-border);
   color: var(--native-nav-text) !important;
   background: var(--native-nav-surface);
   text-decoration: none;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   transition: background-color 130ms ease, color 130ms ease, border-color 130ms ease;
+  white-space: nowrap;
 }
 
 .native-nav__cta-label {
