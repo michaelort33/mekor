@@ -3813,6 +3813,28 @@ body.native-nav--mobile-open {
   background: #e1edf9;
 }
 
+.event-ask-organizer {
+  margin-top: 20px;
+  border: 1px solid #d8e0e8;
+  border-radius: 12px;
+  background: #f8fbff;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.event-ask-organizer h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #1d3046;
+}
+
+.event-ask-organizer__privacy {
+  margin: 0;
+  color: #42566d;
+  font-size: 0.9rem;
+}
+
 .template-archive-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
