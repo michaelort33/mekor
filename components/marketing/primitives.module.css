@@ -3,7 +3,7 @@
   isolation: isolate;
   border-radius: 22px;
   overflow: hidden;
-  min-height: clamp(280px, 42vw, 560px);
+  min-height: clamp(320px, 48vw, 620px);
   display: grid;
   align-items: end;
   background: #243c57;
@@ -30,7 +30,8 @@
 .heroOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(24, 34, 48, 0.2) 0%, rgba(13, 20, 30, 0.82) 100%);
+  background:
+    linear-gradient(180deg, rgba(24, 34, 48, 0.12) 0%, rgba(13, 20, 30, 0.78) 70%, rgba(8, 14, 22, 0.92) 100%);
 }
 
 .heroContent {
@@ -60,10 +61,11 @@
 .heroTitle {
   margin: 0;
   max-width: 20ch;
-  font-size: clamp(2rem, 7.2vw, 6.2rem);
-  line-height: 0.96;
+  font-size: clamp(2.2rem, 7.6vw, 6.6rem);
+  line-height: 0.94;
   letter-spacing: 0.045em;
   text-wrap: balance;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.25);
 }
 
 .heroSubtitle {
@@ -92,22 +94,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
+  min-height: 44px;
   border-radius: 999px;
-  border: 1px solid rgba(229, 238, 250, 0.36);
-  background: rgba(241, 246, 255, 0.14);
+  border: 1px solid rgba(229, 238, 250, 0.42);
+  background: rgba(241, 246, 255, 0.16);
+  backdrop-filter: blur(8px);
   color: #f8fbff;
   text-decoration: none;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  padding: 0 16px;
-  transition: background-color 120ms ease, border-color 120ms ease;
+  padding: 0 20px;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
 }
 
 .heroAction:hover {
-  background: rgba(241, 246, 255, 0.24);
-  border-color: rgba(229, 238, 250, 0.58);
+  background: rgba(241, 246, 255, 0.28);
+  border-color: rgba(229, 238, 250, 0.62);
+  transform: translateY(-1px);
 }
 
 .sectionCard {
@@ -131,6 +135,7 @@
   border-color: #2e6ea8;
   background: linear-gradient(150deg, #2e75b3 0%, #245f95 100%);
   color: #eaf3ff;
+  box-shadow: 0 16px 36px rgba(30, 70, 110, 0.22);
 }
 
 .sectionCardHeading {
@@ -150,13 +155,13 @@
 
 .split {
   display: grid;
-  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
   align-items: start;
-  gap: clamp(16px, 2.4vw, 32px);
+  gap: clamp(18px, 2.8vw, 36px);
 }
 
 .splitReverse {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
 }
 
 .splitReverse .splitMedia {
@@ -258,15 +263,17 @@
   border-radius: 14px;
   border: 1px solid #d4dce9;
   background: #f7f9fc;
-  padding: 11px 12px;
+  padding: 12px 14px;
   text-decoration: none;
   color: #1f4f83;
-  transition: border-color 120ms ease, background-color 120ms ease;
+  transition: border-color 120ms ease, background-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;
 }
 
 .ctaItem:hover {
   border-color: #2b5f92;
   background: #ebf2fb;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(30, 60, 100, 0.1);
 }
 
 .ctaLabel {
