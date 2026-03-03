@@ -23,6 +23,12 @@
   color: #1a2a3a;
 }
 
+.headerActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .subtitle {
   margin: 8px 0 0;
   color: #5a6a7a;
