@@ -26,25 +26,33 @@ async function verifyToken(token: string): Promise<boolean> {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const isAdminPage = pathname.startsWith("/admin");
+  const isAdminApi = pathname.startsWith("/api/admin");
+  const isAdminRoute = isAdminPage || isAdminApi;
 
-  if (!pathname.startsWith("/admin")) {
+  if (!isAdminRoute) {
     return NextResponse.next();
   }
 
-  if (pathname === "/admin/login") {
+  if (pathname === "/admin/login" || pathname === "/api/admin/login" || pathname === "/api/admin/logout") {
     return NextResponse.next();
   }
 
   const token = request.cookies.get(SESSION_COOKIE)?.value;
 
   if (!token) {
+    if (isAdminApi) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
   const valid = await verifyToken(token);
 
   if (!valid) {
-    const response = NextResponse.redirect(new URL("/admin/login", request.url));
+    const response = isAdminApi
+      ? NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      : NextResponse.redirect(new URL("/admin/login", request.url));
     response.cookies.delete(SESSION_COOKIE);
     return response;
   }
@@ -53,5 +61,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

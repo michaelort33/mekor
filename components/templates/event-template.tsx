@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { EventRsvpForm } from "@/components/events/event-rsvp-form";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import type { EventTemplateData } from "@/lib/templates/template-data";
 
@@ -70,6 +71,12 @@ export function EventTemplate({ data }: EventTemplateProps) {
             <p key={line}>{line}</p>
           ))}
         </section>
+
+        {!data.isClosed && data.slug ? (
+          <section className="template-content" aria-label="RSVP">
+            <EventRsvpForm eventSlug={data.slug} eventPath={data.path} />
+          </section>
+        ) : null}
 
         <div className="template-card__source template-card__source--actions">
           <Link href={data.seeOtherEventsHref}>See other events</Link>

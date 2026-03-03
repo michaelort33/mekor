@@ -49,6 +49,7 @@ export type ArticleTemplateData = {
 
 export type EventTemplateData = {
   path: string;
+  slug: string;
   title: string;
   subtitle: string;
   heroImage: string | null;
@@ -604,6 +605,7 @@ export function buildEventTemplateData(document: NativePageDocument): EventTempl
 
   return {
     path: document.path,
+    slug: document.path.startsWith("/events-1/") ? document.path.slice("/events-1/".length) : "",
     title: pathTitleOrFallback(document.path, title),
     subtitle: cleanText(document.description) || "Event details and schedule.",
     heroImage: eventImage,

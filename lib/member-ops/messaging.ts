@@ -215,7 +215,6 @@ export async function relayMessageFromAdmin(input: {
     body = `${body}\n\nTo reply privately through Mekor: ${baseUrl}/member-connect/reply?token=${encodeURIComponent(token)}`;
   }
 
-  const now = new Date();
   let deliveryStatus = "sent";
   let errorMessage = "";
 

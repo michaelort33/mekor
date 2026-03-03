@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { AdminTabs } from "@/components/admin/admin-tabs";
 import styles from "./page.module.css";
 
 const STARTER_HTML = `<div style="max-width:600px;margin:0 auto;font-family:Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;color:#1a2a3a;line-height:1.6;">
@@ -88,7 +89,10 @@ export default function NewTemplatePage() {
     <div className={styles.page}>
       <header className={styles.header}>
         <h1>New Newsletter Template</h1>
-        <Link href="/admin/templates" className={styles.backLink}>← Back to templates</Link>
+        <div className={styles.headerActions}>
+          <AdminTabs current="templates" />
+          <Link href="/admin/templates" className={styles.backLink}>← Back to templates</Link>
+        </div>
       </header>
 
       <div className={styles.layout}>

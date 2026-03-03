@@ -1,0 +1,25 @@
+.tabs {
+  display: inline-flex;
+  gap: 8px;
+  border: 1px solid #d4dbe5;
+  border-radius: 12px;
+  padding: 4px;
+  background: #f4f7fb;
+}
+
+.tab {
+  min-height: 36px;
+  border-radius: 8px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: #38506a;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.tabActive {
+  background: #2d6ea8;
+  color: #ffffff;
+}

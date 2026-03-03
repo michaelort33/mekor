@@ -25,6 +25,11 @@ const TRANSITIONS: Record<RenewalStatus, RenewalStatus[]> = {
   on_hold: ["invited", "form_submitted", "payment_pending", "active"],
 };
 
+export function isRenewalTransitionAllowed(current: RenewalStatus, next: RenewalStatus) {
+  const allowed = TRANSITIONS[current] ?? [];
+  return allowed.includes(next);
+}
+
 function currentCycleWindow(anchor: Date) {
   const year = anchor.getUTCFullYear();
   const month = anchor.getUTCMonth();
@@ -136,8 +141,7 @@ export async function transitionRenewalStatus(termId: number, nextStatus: Renewa
     throw new Error("Membership term not found");
   }
 
-  const allowed = TRANSITIONS[current.renewalStatus] ?? [];
-  if (!allowed.includes(nextStatus)) {
+  if (!isRenewalTransitionAllowed(current.renewalStatus, nextStatus)) {
     throw new Error(`Invalid renewal transition: ${current.renewalStatus} -> ${nextStatus}`);
   }
 

@@ -8,6 +8,10 @@ import {
   volunteerSlots,
 } from "@/db/schema";
 
+export function resolveVolunteerSignupStatus(confirmedCount: number, capacity: number) {
+  return confirmedCount < capacity ? "confirmed" : "waitlisted";
+}
+
 export async function getVolunteerSlots() {
   const db = getDb();
   const now = new Date();
@@ -98,7 +102,7 @@ export async function signupVolunteerSlot(input: {
     .where(and(eq(volunteerSlotSignups.slotId, slot.id), eq(volunteerSlotSignups.status, "confirmed")));
 
   const confirmedCount = countRow?.count ?? 0;
-  const nextStatus = confirmedCount < slot.capacity ? "confirmed" : "waitlisted";
+  const nextStatus = resolveVolunteerSignupStatus(confirmedCount, slot.capacity);
   const now = new Date();
 
   const [signup] = await db
