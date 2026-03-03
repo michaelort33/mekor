@@ -7,10 +7,10 @@ async function read(relativePath: string) {
   return fs.readFile(path.join(process.cwd(), relativePath), "utf8");
 }
 
-test("middleware protects /api/admin routes", async () => {
-  const source = await read("middleware.ts");
-  assert.match(source, /"\/api\/admin\/:path\*"/);
+test("proxy protects /api/admin routes", async () => {
+  const source = await read("proxy.ts");
   assert.match(source, /pathname\.startsWith\("\/api\/admin"\)/);
+  assert.match(source, /SESSION_COOKIE/);
 });
 
 test("admin member-ops endpoints enforce session guard", async () => {
