@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 export const USER_SESSION_COOKIE = "mekor_user_session";
 export const USER_SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-export type UserSessionRole = "visitor" | "member" | "admin";
+export type UserSessionRole = "visitor" | "member" | "admin" | "super_admin";
 
 export type UserSessionTokenPayload = {
   userId: number;
@@ -77,7 +77,14 @@ async function verify(token: string, secret: string): Promise<UserSessionTokenPa
   }
 
   if (!Number.isInteger(parsed.userId) || parsed.userId < 1) return null;
-  if (parsed.role !== "visitor" && parsed.role !== "member" && parsed.role !== "admin") return null;
+  if (
+    parsed.role !== "visitor" &&
+    parsed.role !== "member" &&
+    parsed.role !== "admin" &&
+    parsed.role !== "super_admin"
+  ) {
+    return null;
+  }
   if (!Number.isInteger(parsed.exp) || Date.now() > parsed.exp) return null;
 
   return parsed;

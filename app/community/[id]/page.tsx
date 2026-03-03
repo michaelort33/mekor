@@ -58,7 +58,7 @@ export default async function CommunityProfilePage({ params }: PageProps) {
     .where(
       and(
         eq(users.id, userId),
-        inArray(users.role, ["member", "admin"]),
+        inArray(users.role, ["member", "admin", "super_admin"]),
         inArray(users.profileVisibility, ["public", "anonymous"]),
       ),
     )

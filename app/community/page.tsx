@@ -44,7 +44,9 @@ export default async function CommunityDirectoryPage() {
       profileVisibility: users.profileVisibility,
     })
     .from(users)
-    .where(and(inArray(users.role, ["member", "admin"]), inArray(users.profileVisibility, ["public", "anonymous"])))
+    .where(
+      and(inArray(users.role, ["member", "admin", "super_admin"]), inArray(users.profileVisibility, ["public", "anonymous"])),
+    )
     .orderBy(asc(users.displayName));
 
   return (

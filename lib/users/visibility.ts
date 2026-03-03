@@ -4,7 +4,7 @@ export type UserRole = typeof users.$inferSelect.role;
 export type ProfileVisibility = typeof users.$inferSelect.profileVisibility;
 
 export function isDirectoryEligibleRole(role: UserRole) {
-  return role === "member" || role === "admin";
+  return role === "member" || role === "admin" || role === "super_admin";
 }
 
 export function isVisibleToMembers(visibility: ProfileVisibility) {

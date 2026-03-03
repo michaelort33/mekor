@@ -7,7 +7,7 @@ import { hashPassword } from "@/lib/auth/password";
 import { createUserSession } from "@/lib/auth/session";
 import { normalizeUserEmail, signupPayloadSchema } from "@/lib/users/validation";
 
-type UserRole = "visitor" | "member" | "admin";
+type UserRole = "visitor" | "member" | "admin" | "super_admin";
 
 type SignupDependencies = {
   assertSessionConfigured: () => void;

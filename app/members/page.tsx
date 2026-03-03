@@ -30,7 +30,7 @@ export default async function MembersPage() {
     .from(users)
     .where(
       and(
-        inArray(users.role, ["member", "admin"]),
+        inArray(users.role, ["member", "admin", "super_admin"]),
         inArray(users.profileVisibility, ["members", "public", "anonymous"]),
       ),
     )

@@ -14,7 +14,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const templateStatusEnum = pgEnum("template_status", ["draft", "ready", "sent", "archived"]);
-export const userRoleEnum = pgEnum("user_role", ["visitor", "member", "admin"]);
+export const userRoleEnum = pgEnum("user_role", ["visitor", "member", "admin", "super_admin"]);
 export const profileVisibilityEnum = pgEnum("profile_visibility", ["private", "members", "public", "anonymous"]);
 export const duesFrequencyEnum = pgEnum("dues_frequency", ["annual", "monthly", "custom"]);
 export const duesInvoiceStatusEnum = pgEnum("dues_invoice_status", ["open", "paid", "void", "overdue"]);

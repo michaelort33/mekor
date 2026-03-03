@@ -16,7 +16,7 @@ type ProfileResponse = {
     city: string;
     avatarUrl: string;
     profileVisibility: "private" | "members" | "public" | "anonymous";
-    role: "visitor" | "member" | "admin";
+    role: "visitor" | "member" | "admin" | "super_admin";
   };
 };
 
@@ -31,7 +31,7 @@ export default function AccountProfilePage() {
   const [avatarPrompt, setAvatarPrompt] = useState("");
   const [form, setForm] = useState({
     email: "",
-    role: "visitor" as "visitor" | "member" | "admin",
+    role: "visitor" as "visitor" | "member" | "admin" | "super_admin",
     displayName: "",
     bio: "",
     city: "",

@@ -43,7 +43,7 @@ export default async function MemberProfilePage({ params }: PageProps) {
     .where(
       and(
         eq(users.id, userId),
-        inArray(users.role, ["member", "admin"]),
+        inArray(users.role, ["member", "admin", "super_admin"]),
         inArray(users.profileVisibility, ["members", "public", "anonymous"]),
       ),
     )

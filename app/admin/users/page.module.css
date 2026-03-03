@@ -135,3 +135,9 @@
   color: #a11d2d;
   font-weight: 600;
 }
+
+.meta {
+  margin: 0;
+  color: #42586e;
+  font-size: 0.9rem;
+}
