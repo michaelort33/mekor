@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { AskOrganizerForm } from "@/components/events/ask-organizer-form";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import type { EventTemplateData } from "@/lib/templates/template-data";
 
@@ -79,6 +80,8 @@ export function EventTemplate({ data }: EventTemplateProps) {
             </a>
           ) : null}
         </div>
+
+        <AskOrganizerForm sourcePath={data.path} eventTitle={data.title} />
       </article>
     </main>
   );
