@@ -1,0 +1,125 @@
+.page {
+  background:
+    radial-gradient(940px 430px at 8% -14%, rgba(179, 206, 232, 0.28) 0%, rgba(179, 206, 232, 0) 72%),
+    radial-gradient(900px 420px at 92% -16%, rgba(248, 229, 195, 0.3) 0%, rgba(248, 229, 195, 0) 72%),
+    #f9f7f2;
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.bannerCard {
+  overflow: hidden;
+  padding: 0;
+}
+
+.bannerImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.contactGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.contactCard {
+  border: 1px solid #d6e1ec;
+  border-radius: 14px;
+  background: linear-gradient(152deg, #f8fbff 0%, #edf4fc 100%);
+  padding: 12px;
+  display: grid;
+  gap: 5px;
+}
+
+.contactCard h3 {
+  margin: 0;
+  color: #1f4268;
+  font-size: 0.96rem;
+}
+
+.contactCard p {
+  margin: 0;
+  color: #4e6278;
+  line-height: 1.56;
+}
+
+.contactCard a {
+  color: #1f4f81;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mapShell {
+  border: 1px solid #d5e1ed;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #eef4fb;
+}
+
+.mapFrame {
+  width: 100%;
+  min-height: 360px;
+  border: 0;
+  display: block;
+}
+
+.whatsAppGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.groupCard {
+  text-decoration: none;
+  border: 1px solid #d3deea;
+  border-radius: 14px;
+  background: linear-gradient(152deg, #f8fbff 0%, #edf4fc 100%);
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.groupCard:hover {
+  border-color: #9ebcdc;
+  background: #eaf2fb;
+}
+
+.groupIcon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.groupBody {
+  display: grid;
+  gap: 5px;
+}
+
+.groupBody h3 {
+  margin: 0;
+  color: #1f4268;
+  font-size: 0.92rem;
+}
+
+.groupBody p {
+  margin: 0;
+  color: #4f6278;
+  line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+  .stack {
+    gap: 14px;
+  }
+
+  .mapFrame {
+    min-height: 300px;
+  }
+}

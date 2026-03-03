@@ -22,6 +22,8 @@ let routeCache: {
 
 let contentIndexCache: ContentIndexRecord[] | null = null;
 let contentIndexByPathCache: Map<string, ContentIndexRecord> | null = null;
+let documentByFileCache: Map<string, PageDocument | null> | null = null;
+let documentsByTypeCache: Map<string, PageDocument[]> | null = null;
 type SearchIndexItem = {
   path: string;
   type: string;
@@ -132,6 +134,8 @@ export async function loadContentIndex() {
     [],
   );
   contentIndexByPathCache = new Map();
+  documentByFileCache = new Map();
+  documentsByTypeCache = new Map();
   for (const entry of contentIndexCache) {
     for (const variant of getPathVariants(entry.path)) {
       if (!contentIndexByPathCache.has(variant)) {
@@ -141,6 +145,22 @@ export async function loadContentIndex() {
   }
 
   return contentIndexCache;
+}
+
+async function readDocumentForIndexItem(item: ContentIndexRecord) {
+  if (!documentByFileCache) {
+    documentByFileCache = new Map();
+  }
+
+  const cached = documentByFileCache.get(item.file);
+  if (cached !== undefined) {
+    return cached;
+  }
+
+  const fullPath = path.join(CONTENT_DIR, item.file);
+  const document = await readJsonFile<PageDocument | null>(fullPath, null);
+  documentByFileCache.set(item.file, document);
+  return document;
 }
 
 export async function getDocumentByPath(pathValue: string) {
@@ -157,20 +177,24 @@ export async function getDocumentByPath(pathValue: string) {
     return null;
   }
 
-  const fullPath = path.join(CONTENT_DIR, item.file);
-  return readJsonFile<PageDocument | null>(fullPath, null);
+  return readDocumentForIndexItem(item);
 }
 
 export async function listDocumentsByType(type: string) {
   const index = await loadContentIndex();
-  const items = index.filter((entry) => entry.type === type);
+  if (!documentsByTypeCache) {
+    documentsByTypeCache = new Map();
+  }
 
-  return Promise.all(
-    items.map(async (item) => {
-      const fullPath = path.join(CONTENT_DIR, item.file);
-      return readJsonFile<PageDocument | null>(fullPath, null);
-    }),
-  ).then((records) => records.filter((record): record is PageDocument => Boolean(record)));
+  if (documentsByTypeCache.has(type)) {
+    return documentsByTypeCache.get(type) ?? [];
+  }
+
+  const items = index.filter((entry) => entry.type === type);
+  const records = await Promise.all(items.map((item) => readDocumentForIndexItem(item)));
+  const documents = records.filter((record): record is PageDocument => Boolean(record));
+  documentsByTypeCache.set(type, documents);
+  return documents;
 }
 
 export async function loadSearchIndex() {

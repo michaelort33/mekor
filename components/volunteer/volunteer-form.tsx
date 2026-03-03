@@ -3,9 +3,10 @@
 import { type FormEvent, useState } from "react";
 
 const VOLUNTEER_OPPORTUNITY_OPTIONS = [
+  "Kiddush Preparation",
   "Torah and Haftorah Reading",
   "Meal Train and Shabbat Hospitality",
-  "Eruv Checking and Mashgichim",
+  "Eruv Checking",
   "Volunteer Mashgiach",
   "General Volunteer Opportunity",
 ];
@@ -17,6 +18,7 @@ type VolunteerFormValues = {
   phone: string;
   opportunity: string;
   availabilityDate: string;
+  additionalNote: string;
 };
 
 export function buildVolunteerPayload(values: VolunteerFormValues, sourcePath: string) {
@@ -29,6 +31,9 @@ export function buildVolunteerPayload(values: VolunteerFormValues, sourcePath: s
       values.availabilityDate
         ? `Availability Date: ${values.availabilityDate}`
         : "Availability Date: N/A",
+      values.additionalNote
+        ? `Additional Note: ${values.additionalNote}`
+        : "Additional Note: N/A",
       `First Name: ${values.firstName}`,
       `Last Name: ${values.lastName}`,
     ].join("\n"),
@@ -59,6 +64,7 @@ export function VolunteerForm() {
     const phone = String(formData.get("phone") ?? "").trim();
     const opportunity = String(formData.get("opportunity") ?? "").trim();
     const availabilityDate = String(formData.get("availabilityDate") ?? "").trim();
+    const additionalNote = String(formData.get("additionalNote") ?? "").trim();
 
     if (!firstName || !lastName || !email || !opportunity) {
       return;
@@ -72,6 +78,7 @@ export function VolunteerForm() {
         phone,
         opportunity,
         availabilityDate,
+        additionalNote,
       },
       window.location.pathname,
     );
@@ -139,6 +146,11 @@ export function VolunteerForm() {
               </option>
             ))}
           </select>
+        </label>
+
+        <label className="volunteer-form__field volunteer-form__field--wide">
+          <span>Additional Note</span>
+          <textarea name="additionalNote" rows={4} placeholder="Optional: yahrzeit date, preferred role, or scheduling notes" />
         </label>
       </div>
 

@@ -357,23 +357,25 @@ export async function refreshKosherDirectoryLastUpdatedIfStale(
 }
 
 export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
-  const extracted = await loadExtractedKosherPlaces();
-  const extractedManaged = extracted.map((row) =>
-    toManagedKosherPlace({
-      ...row,
-      sourceCapturedAt: row.capturedAt ? new Date(row.capturedAt) : null,
-    }),
-  );
-  const extractedFiltered = filterKosherPlaces(extractedManaged, filters);
+  const loadExtractedManaged = async () => {
+    const extracted = await loadExtractedKosherPlaces();
+    return extracted.map((row) =>
+      toManagedKosherPlace({
+        ...row,
+        sourceCapturedAt: row.capturedAt ? new Date(row.capturedAt) : null,
+      }),
+    );
+  };
 
   if (!process.env.DATABASE_URL || process.env.KOSHER_DIRECTORY_USE_DB !== "1") {
+    const extractedManaged = await loadExtractedManaged();
+    const extractedFiltered = filterKosherPlaces(extractedManaged, filters);
     return validateManagedKosherPlacesContract(
       extractedFiltered,
       "getManagedKosherPlaces: extracted mirror fallback",
     );
   }
 
-  let managed: ManagedKosherPlace[];
   try {
     const rows = await getDb()
       .select({
@@ -397,21 +399,26 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
       .from(kosherPlaces)
       .orderBy(asc(kosherPlaces.neighborhood), asc(kosherPlaces.title));
 
-    managed = rows.map((row) =>
-      toManagedKosherPlace({
-        ...row,
-        neighborhood: toKosherNeighborhood(row.neighborhood),
-        neighborhoodLabel:
-          row.neighborhoodLabel || KOSHER_NEIGHBORHOOD_LABELS[toKosherNeighborhood(row.neighborhood)],
-      }),
-    );
-    if (managed.length === 0) {
-      managed = extractedManaged;
+    if (rows.length > 0) {
+      const managed = rows.map((row) =>
+        toManagedKosherPlace({
+          ...row,
+          neighborhood: toKosherNeighborhood(row.neighborhood),
+          neighborhoodLabel:
+            row.neighborhoodLabel || KOSHER_NEIGHBORHOOD_LABELS[toKosherNeighborhood(row.neighborhood)],
+        }),
+      );
+      const filtered = filterKosherPlaces(managed, filters);
+      return validateManagedKosherPlacesContract(filtered, "getManagedKosherPlaces: final output");
     }
   } catch {
-    managed = extractedManaged;
+    // If DB reads fail, fall back to extracted content.
   }
 
-  const filtered = filterKosherPlaces(managed, filters);
-  return validateManagedKosherPlacesContract(filtered, "getManagedKosherPlaces: final output");
+  const extractedManaged = await loadExtractedManaged();
+  const fallbackFiltered = filterKosherPlaces(extractedManaged, filters);
+  return validateManagedKosherPlacesContract(
+    fallbackFiltered,
+    "getManagedKosherPlaces: extracted mirror fallback",
+  );
 }

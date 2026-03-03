@@ -1,0 +1,50 @@
+.page {
+  background:
+    radial-gradient(940px 420px at 8% -14%, rgba(179, 206, 232, 0.28) 0%, rgba(179, 206, 232, 0) 72%),
+    radial-gradient(900px 420px at 92% -16%, rgba(248, 229, 195, 0.3) 0%, rgba(248, 229, 195, 0) 72%),
+    #f9f7f2;
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.bannerCard {
+  overflow: hidden;
+  padding: 0;
+}
+
+.bannerImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.bodyText {
+  margin: 0;
+  color: #4c6176;
+  line-height: 1.66;
+}
+
+.marriageList {
+  margin: 0;
+  padding-left: 1.22rem;
+  display: grid;
+  gap: 7px;
+  color: #45586e;
+  line-height: 1.62;
+}
+
+.footnote {
+  margin: 0;
+  color: #5a6f86;
+  line-height: 1.58;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 760px) {
+  .stack {
+    gap: 14px;
+  }
+}

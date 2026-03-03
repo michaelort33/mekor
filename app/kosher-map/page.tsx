@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   description: "Explore kosher restaurants and markets across Philadelphia neighborhoods.",
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
+export const revalidate = 3600;
 
 const NEIGHBORHOOD_LINKS = [
   { href: "/center-city", label: "All Neighborhoods" },

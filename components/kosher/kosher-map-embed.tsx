@@ -101,9 +101,13 @@ export function KosherMapEmbed() {
           />
           <div className="kosher-map-embed__fallback-links">
             <Link href="/center-city">Center City &amp; Vicinity</Link>
-            <Link href="/main-line-manyunk">Main Line / Manyunk</Link>
-            <Link href="/old-yorkroad-northeast">Old York Road / Northeast</Link>
-            <Link href="/cherry-hill">Cherry Hill</Link>
+            <Link href="/center-city?neighborhood=main-line-manyunk#kosher-directory">
+              Main Line / Manyunk
+            </Link>
+            <Link href="/center-city?neighborhood=old-yorkroad-northeast#kosher-directory">
+              Old York Road / Northeast
+            </Link>
+            <Link href="/center-city?neighborhood=cherry-hill#kosher-directory">Cherry Hill</Link>
           </div>
         </div>
       ) : null}

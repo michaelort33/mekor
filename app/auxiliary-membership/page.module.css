@@ -1,0 +1,63 @@
+.content {
+  display: grid;
+  gap: 16px;
+}
+
+.copy,
+.note {
+  margin: 0;
+  color: #445262;
+  line-height: 1.64;
+}
+
+.note {
+  margin-top: 6px;
+  color: #54647a;
+}
+
+.rateGrid {
+  margin-top: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.rateCard {
+  border-radius: 14px;
+  border: 1px solid #dae4ef;
+  background: linear-gradient(148deg, #f8fbff 0%, #edf4fc 100%);
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.rateTitle {
+  margin: 0;
+  color: #1f3f64;
+  font-weight: 700;
+}
+
+.rateAmount {
+  margin: 0;
+  color: #2f5178;
+  font-size: 1.48rem;
+  line-height: 1.06;
+}
+
+.steps {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 8px;
+  color: #445262;
+  line-height: 1.62;
+}
+
+.illustration {
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
+  border-radius: 14px;
+  border: 1px solid #d8e3ef;
+  box-shadow: 0 14px 30px rgba(22, 37, 55, 0.13);
+}

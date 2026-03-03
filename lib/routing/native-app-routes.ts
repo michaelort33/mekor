@@ -1,7 +1,9 @@
 import { normalizePath } from "@/lib/mirror/url";
 
 export const NATIVE_APP_ROUTE_PATHS = [
+  "/",
   "/about-us",
+  "/auxiliary-membership",
   "/center-city",
   "/center-city-beit-midrash",
   "/cherry-hill",
@@ -14,12 +16,16 @@ export const NATIVE_APP_ROUTE_PATHS = [
   "/general-5",
   "/in-the-news",
   "/israel",
+  "/kiddush",
   "/kosher-map",
   "/main-line-manyunk",
   "/mekor-bulletin-board",
+  "/mekorcouples",
+  "/membership",
   "/old-kosher-restaurants",
   "/old-yorkroad-northeast",
   "/our-communities",
+  "/our-leadership",
   "/our-rabbi",
   "/philly-jewish-community",
   "/search",

@@ -60,9 +60,12 @@ export const SITE_MENU: NavItem[] = [
     href: "/center-city",
     children: [
       { label: "Center City & Vicinity", href: "/center-city" },
-      { label: "Main Line/Manyunk", href: "/main-line-manyunk" },
-      { label: "Old York Road/Northeast", href: "/old-yorkroad-northeast" },
-      { label: "Cherry Hill", href: "/cherry-hill" },
+      { label: "Main Line/Manyunk", href: "/center-city?neighborhood=main-line-manyunk#kosher-directory" },
+      {
+        label: "Old York Road/Northeast",
+        href: "/center-city?neighborhood=old-yorkroad-northeast#kosher-directory",
+      },
+      { label: "Cherry Hill", href: "/center-city?neighborhood=cherry-hill#kosher-directory" },
     ],
   },
   {

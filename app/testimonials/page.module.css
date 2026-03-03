@@ -1,0 +1,59 @@
+.page {
+  background:
+    radial-gradient(940px 420px at 8% -14%, rgba(179, 206, 232, 0.28) 0%, rgba(179, 206, 232, 0) 72%),
+    radial-gradient(890px 410px at 92% -16%, rgba(248, 228, 193, 0.3) 0%, rgba(248, 228, 193, 0) 72%),
+    #f9f7f2;
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.bannerCard {
+  overflow: hidden;
+  padding: 0;
+}
+
+.bannerImage {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.quoteGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.quoteCard {
+  border: 1px solid #d7e2ec;
+  border-radius: 14px;
+  background: linear-gradient(152deg, #f8fbff 0%, #edf4fc 100%);
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.quoteText {
+  margin: 0;
+  color: #2c4059;
+  line-height: 1.62;
+  font-style: italic;
+}
+
+.quoteBy {
+  margin: 0;
+  color: #5a6f85;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .stack {
+    gap: 14px;
+  }
+}

@@ -1639,23 +1639,35 @@ body.native-nav--mobile-open {
 }
 
 .kosher-places__highlights li span,
-.kosher-places__highlights li a {
+.kosher-places__highlights li a,
+.kosher-places__highlights li .kosher-places__highlight-button {
   display: block;
   padding: 8px 10px;
 }
 
-.kosher-places__highlights li a {
+.kosher-places__highlights li a,
+.kosher-places__highlights li .kosher-places__highlight-button {
   color: inherit;
   text-decoration: none;
   font-weight: 600;
   cursor: pointer;
 }
 
-.kosher-places__highlights li a:hover {
+.kosher-places__highlights li .kosher-places__highlight-button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  font: inherit;
+}
+
+.kosher-places__highlights li a:hover,
+.kosher-places__highlights li .kosher-places__highlight-button:hover {
   background: rgba(220, 233, 248, 0.92);
 }
 
-.kosher-places__highlights li a:focus-visible {
+.kosher-places__highlights li a:focus-visible,
+.kosher-places__highlights li .kosher-places__highlight-button:focus-visible {
   outline: 2px solid #7a9ec2;
   outline-offset: 1px;
 }
@@ -1767,12 +1779,34 @@ body.native-nav--mobile-open {
   gap: 2px;
 }
 
+.kosher-directory__section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
 .kosher-directory__section-title {
   margin: 0;
   color: var(--native-page-heading);
   font-size: 1rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.kosher-directory__section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid #c9d6e6;
+  background: #edf3fa;
+  color: #365071;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0 8px;
 }
 
 .kosher-directory__tabs {
@@ -1921,6 +1955,29 @@ body.native-nav--mobile-open {
   font-weight: 600;
   font-size: 0.85rem;
   text-decoration: underline;
+}
+
+.kosher-directory__more {
+  justify-self: start;
+  margin-top: 8px;
+  border: 1px solid #adc3da;
+  background: #edf4fb;
+  color: #24496f;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.kosher-directory__more:hover {
+  background: #dbe9f7;
+}
+
+.kosher-directory__more:focus-visible {
+  outline: 2px solid var(--native-focus-ring);
+  outline-offset: 1px;
 }
 
 .in-news-page {
@@ -2207,7 +2264,7 @@ body.native-nav--mobile-open {
   grid-column: 1 / -1;
 }
 
-.volunteer-form__field :is(input, select) {
+.volunteer-form__field :is(input, select, textarea) {
   width: 100%;
   min-height: 40px;
   border: 1px solid #d9d1c1;
@@ -2218,7 +2275,13 @@ body.native-nav--mobile-open {
   font-size: 0.9rem;
 }
 
-.volunteer-form__field :is(input, select):focus-visible,
+.volunteer-form__field textarea {
+  min-height: 104px;
+  padding: 10px 11px;
+  resize: vertical;
+}
+
+.volunteer-form__field :is(input, select, textarea):focus-visible,
 .volunteer-form__actions button:focus-visible {
   outline: 2px solid #204d79;
   outline-offset: 1px;
@@ -3010,7 +3073,6 @@ body.native-nav--mobile-open {
   .mirror-root[data-path="/davening"] :where([id*="__item"], .wixui-rich-text, .wixui-rich-text__text),
   .mirror-root[data-path="/general-5"] :where([id*="__item"], .wixui-rich-text, .wixui-rich-text__text),
   .mirror-root[data-path="/in-the-news"] :where([id*="__item"], .wixui-rich-text, .wixui-rich-text__text),
-  .mirror-root[data-path="/mekor-bulletin-board"] :where([id*="__item"], .wixui-rich-text, .wixui-rich-text__text),
   .mirror-root[data-path="/old-kosher-restaurants"] :where([id*="__item"], .wixui-rich-text, .wixui-rich-text__text),
   .mirror-root[data-path="/our-communities"] :where([id*="__item"], .wixui-rich-text, .wixui-rich-text__text),
   .mirror-root[data-path="/team-4"] :where([id*="__item"], .wixui-rich-text, .wixui-rich-text__text) {
@@ -3026,7 +3088,6 @@ body.native-nav--mobile-open {
   .mirror-root[data-path="/davening"] .wixui-rich-text__text,
   .mirror-root[data-path="/general-5"] .wixui-rich-text__text,
   .mirror-root[data-path="/in-the-news"] .wixui-rich-text__text,
-  .mirror-root[data-path="/mekor-bulletin-board"] .wixui-rich-text__text,
   .mirror-root[data-path="/old-kosher-restaurants"] .wixui-rich-text__text,
   .mirror-root[data-path="/our-communities"] .wixui-rich-text__text,
   .mirror-root[data-path="/team-4"] .wixui-rich-text__text {
@@ -3546,10 +3607,6 @@ body.native-nav--mobile-open {
   margin-top: 24px !important;
 }
 
-.mirror-root[data-path="/mekor-bulletin-board"] [data-mesh-id="comp-m619lg9jinlineContent-gridContainer"] > #comp-m619v9sp {
-  margin-top: 20px !important;
-}
-
 .mirror-root[data-path="/donations"] [data-mesh-id="comp-m5l6fbzqinlineContent-gridContainer"] > #comp-m5l6fc05 {
   margin-top: 24px !important;
 }
@@ -3620,6 +3677,13 @@ body.native-nav--mobile-open {
   height: auto;
   object-fit: scale-down;
   object-position: center top;
+}
+
+.template-card__hero-image--event {
+  width: 100%;
+  height: min(56vw, 460px);
+  object-fit: cover;
+  object-position: center 28%;
 }
 
 .template-card__hero--post {
@@ -3724,6 +3788,29 @@ body.native-nav--mobile-open {
 .template-card__source {
   margin-top: 20px;
   font-size: 14px;
+}
+
+.template-card__source--actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.template-card__source--actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #afc6dc;
+  background: #eef5fc;
+  color: #244d75;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.template-card__source--actions a:hover {
+  background: #e1edf9;
 }
 
 .template-archive-grid {

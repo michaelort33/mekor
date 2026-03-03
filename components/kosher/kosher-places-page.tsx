@@ -1,5 +1,6 @@
 import { NativeShell } from "@/components/navigation/native-shell";
 import { KosherDirectory } from "@/components/kosher/kosher-directory";
+import { KosherHighlightFilters } from "@/components/kosher/kosher-highlight-filters";
 import type { KosherNeighborhood } from "@/lib/kosher/extract";
 import {
   type KosherDirectoryFreshnessKey,
@@ -42,6 +43,29 @@ function formatLastUpdatedDate(value: string | null) {
   }).format(parsed);
 }
 
+function newestSourceCapturedAt(places: { sourceCapturedAt: string | null }[]) {
+  let newest: string | null = null;
+  let newestTimestamp = 0;
+
+  for (const place of places) {
+    if (!place.sourceCapturedAt) {
+      continue;
+    }
+
+    const timestamp = Date.parse(place.sourceCapturedAt);
+    if (Number.isNaN(timestamp)) {
+      continue;
+    }
+
+    if (!newest || timestamp > newestTimestamp) {
+      newest = place.sourceCapturedAt;
+      newestTimestamp = timestamp;
+    }
+  }
+
+  return newest;
+}
+
 export async function KosherPlacesPage({
   currentPath,
   heading,
@@ -55,11 +79,12 @@ export async function KosherPlacesPage({
   const places = await getManagedKosherPlaces();
   const showcasePlaces =
     defaultNeighborhood === "all"
-      ? places.slice(0, 6)
-      : places.filter((place) => place.neighborhood === defaultNeighborhood).slice(0, 6);
-  const lastUpdatedDate = formatLastUpdatedDate(
-    lastUpdatedKey ? await getKosherDirectoryLastUpdated(lastUpdatedKey) : null,
-  );
+      ? places.slice(0, 4)
+      : places.filter((place) => place.neighborhood === defaultNeighborhood).slice(0, 4);
+  const derivedLastUpdated = newestSourceCapturedAt(places);
+  const rawLastUpdated =
+    derivedLastUpdated ?? (lastUpdatedKey ? await getKosherDirectoryLastUpdated(lastUpdatedKey) : null);
+  const lastUpdatedDate = formatLastUpdatedDate(rawLastUpdated);
 
   return (
     <NativeShell
@@ -73,19 +98,7 @@ export async function KosherPlacesPage({
         <p>{description}</p>
         {lastUpdatedDate ? <p className="kosher-places__last-updated">Last updated: {lastUpdatedDate}</p> : null}
         {highlights.length > 0 ? (
-          <ul className="kosher-places__highlights" aria-label="Dining highlights">
-            {highlights.map((highlight) => (
-              <li key={`${highlight.label}|${highlight.tag ?? "none"}`}>
-                {highlight.tag ? (
-                  <a href={`${currentPath}?tag=${encodeURIComponent(highlight.tag)}#kosher-directory`}>
-                    {highlight.label}
-                  </a>
-                ) : (
-                  <span>{highlight.label}</span>
-                )}
-              </li>
-            ))}
-          </ul>
+          <KosherHighlightFilters currentPath={currentPath} highlights={highlights} />
         ) : null}
         {showcasePlaces.length > 0 ? (
           <div className="kosher-places__showcase" aria-label="Featured kosher food spots">

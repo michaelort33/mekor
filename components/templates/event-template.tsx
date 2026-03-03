@@ -9,6 +9,10 @@ type EventTemplateProps = {
 };
 
 export function EventTemplate({ data }: EventTemplateProps) {
+  const mapsHref = data.location
+    ? `https://maps.google.com/?q=${encodeURIComponent(data.location)}`
+    : null;
+
   return (
     <main className="template-page template-page--event" data-native-nav="true">
       <SiteNavigation currentPath={data.path} />
@@ -28,6 +32,7 @@ export function EventTemplate({ data }: EventTemplateProps) {
               width={1200}
               height={675}
               sizes="(max-width: 920px) 100vw, 920px"
+              className="template-card__hero-image template-card__hero-image--event"
               unoptimized
             />
           </div>
@@ -66,9 +71,14 @@ export function EventTemplate({ data }: EventTemplateProps) {
           ))}
         </section>
 
-        <p className="template-card__source">
+        <div className="template-card__source template-card__source--actions">
           <Link href={data.seeOtherEventsHref}>See other events</Link>
-        </p>
+          {mapsHref ? (
+            <a href={mapsHref} target="_blank" rel="noreferrer noopener">
+              Open location in maps
+            </a>
+          ) : null}
+        </div>
       </article>
     </main>
   );

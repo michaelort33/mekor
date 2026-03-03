@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import {
+  KOSHER_SET_FILTER_EVENT,
+  type KosherSetFilterDetail,
+} from "@/components/kosher/kosher-filter-events";
 import type { KosherNeighborhood } from "@/lib/kosher/extract";
 import type { ManagedKosherPlace } from "@/lib/kosher/store";
 
@@ -13,6 +17,8 @@ type KosherDirectoryProps = {
 };
 
 const KOSHER_FALLBACK_IMAGE_SRC = "/images/kosher/fallback-food.svg";
+const INITIAL_GROUP_CARD_COUNT = 3;
+const INITIAL_FILTERED_CARD_COUNT = 10;
 
 const NEIGHBORHOOD_OPTIONS: Array<{ value: KosherNeighborhood | "all"; label: string }> = [
   { value: "all", label: "All Neighborhoods" },
@@ -57,15 +63,36 @@ function normalizeWebsiteLabel(website: string) {
   }
 }
 
+function resolveNeighborhoodFromUrl(
+  requestedNeighborhood: string,
+  fallbackNeighborhood: KosherNeighborhood | "all",
+) {
+  const normalized = normalize(requestedNeighborhood);
+  if (!normalized) {
+    return fallbackNeighborhood;
+  }
+
+  const matchedNeighborhood = NEIGHBORHOOD_OPTIONS.find(
+    (option) => normalize(option.value) === normalized,
+  );
+  return matchedNeighborhood?.value ?? fallbackNeighborhood;
+}
+
+function resolveTagFromUrl(requestedTag: string, tagOptions: string[]) {
+  const normalized = normalize(requestedTag);
+  if (!normalized || normalized === "all") {
+    return "all";
+  }
+
+  const matchedTag = tagOptions.find((tag) => normalize(tag) === normalized);
+  return matchedTag ?? "all";
+}
+
 export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherDirectoryProps) {
   const searchParams = useSearchParams();
   const urlTag = searchParams.get("tag") ?? "";
   const urlNeighborhood = searchParams.get("neighborhood") ?? "";
   const [search, setSearch] = useState("");
-  const [selectedNeighborhood, setSelectedNeighborhood] =
-    useState<KosherNeighborhood | "all">(defaultNeighborhood);
-  const [selectedTag, setSelectedTag] = useState("all");
-  const selectedTagValue = normalize(selectedTag);
 
   const tagOptions = useMemo(() => {
     const tags = new Set<string>();
@@ -78,36 +105,61 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
     return ["all", ...[...tags].sort((a, b) => a.localeCompare(b))];
   }, [places]);
 
-  useEffect(() => {
-    const requestedTag = normalize(urlTag);
-    if (!requestedTag) {
-      return;
-    }
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState<KosherNeighborhood | "all">(() =>
+    resolveNeighborhoodFromUrl(urlNeighborhood, defaultNeighborhood),
+  );
+  const [selectedTag, setSelectedTag] = useState(() => resolveTagFromUrl(urlTag, tagOptions));
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
+  const [showAllFiltered, setShowAllFiltered] = useState(false);
+  const selectedTagValue = normalize(selectedTag);
 
-    if (requestedTag === "all") {
-      setSelectedTag("all");
-      return;
-    }
-
-    const matchedTag = tagOptions.find((tag) => normalize(tag) === requestedTag);
-    if (matchedTag) {
-      setSelectedTag(matchedTag);
-    }
-  }, [tagOptions, urlTag]);
+  const urlSelectedTag = useMemo(() => resolveTagFromUrl(urlTag, tagOptions), [urlTag, tagOptions]);
+  const urlSelectedNeighborhood = useMemo(
+    () => resolveNeighborhoodFromUrl(urlNeighborhood, defaultNeighborhood),
+    [defaultNeighborhood, urlNeighborhood],
+  );
 
   useEffect(() => {
-    const requestedNeighborhood = normalize(urlNeighborhood);
-    if (!requestedNeighborhood) {
+    if (selectedTag === urlSelectedTag) {
       return;
     }
 
-    const matchedNeighborhood = NEIGHBORHOOD_OPTIONS.find(
-      (option) => normalize(option.value) === requestedNeighborhood,
-    );
-    if (matchedNeighborhood) {
-      setSelectedNeighborhood(matchedNeighborhood.value);
+    setExpandedGroups({});
+    setShowAllFiltered(false);
+    setSelectedTag(urlSelectedTag);
+  }, [selectedTag, urlSelectedTag]);
+
+  useEffect(() => {
+    if (selectedNeighborhood === urlSelectedNeighborhood) {
+      return;
     }
-  }, [urlNeighborhood]);
+
+    setExpandedGroups({});
+    setShowAllFiltered(false);
+    setSelectedNeighborhood(urlSelectedNeighborhood);
+  }, [selectedNeighborhood, urlSelectedNeighborhood]);
+
+  useEffect(() => {
+    const onExternalFilter = (event: Event) => {
+      const detail = (event as CustomEvent<KosherSetFilterDetail>).detail ?? {};
+      const requestedTag = typeof detail.tag === "string" ? detail.tag : "";
+      const requestedNeighborhood = typeof detail.neighborhood === "string" ? detail.neighborhood : "";
+      const nextTag = resolveTagFromUrl(requestedTag, tagOptions);
+      const nextNeighborhood = resolveNeighborhoodFromUrl(requestedNeighborhood, defaultNeighborhood);
+
+      setExpandedGroups({});
+      setShowAllFiltered(false);
+      setSelectedTag(nextTag);
+      if (requestedNeighborhood) {
+        setSelectedNeighborhood(nextNeighborhood);
+      }
+    };
+
+    window.addEventListener(KOSHER_SET_FILTER_EVENT, onExternalFilter);
+    return () => {
+      window.removeEventListener(KOSHER_SET_FILTER_EVENT, onExternalFilter);
+    };
+  }, [defaultNeighborhood, tagOptions]);
 
   const filteredPlaces = useMemo(() => {
     const searchValue = normalize(search);
@@ -164,8 +216,14 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
   }, [filteredPlaces]);
 
   function selectCategoryTag(tag: string) {
+    setExpandedGroups({});
+    setShowAllFiltered(false);
     setSelectedTag((current) => (normalize(current) === normalize(tag) ? "all" : tag));
   }
+
+  const visibleFilteredPlaces = showAllFiltered
+    ? filteredPlaces
+    : filteredPlaces.slice(0, INITIAL_FILTERED_CARD_COUNT);
 
   function renderPlaceCard(place: ManagedKosherPlace) {
     return (
@@ -233,7 +291,11 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
           <input
             type="search"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setExpandedGroups({});
+              setShowAllFiltered(false);
+              setSearch(event.target.value);
+            }}
             placeholder="Search name, address, tag, supervision"
           />
         </label>
@@ -242,7 +304,11 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
           <span>Location</span>
           <select
             value={selectedNeighborhood}
-            onChange={(event) => setSelectedNeighborhood(event.target.value as KosherNeighborhood | "all")}
+            onChange={(event) => {
+              setExpandedGroups({});
+              setShowAllFiltered(false);
+              setSelectedNeighborhood(event.target.value as KosherNeighborhood | "all");
+            }}
           >
             {NEIGHBORHOOD_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -254,7 +320,14 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
 
         <label className="kosher-directory__control">
           <span>Category</span>
-          <select value={selectedTag} onChange={(event) => setSelectedTag(event.target.value)}>
+          <select
+            value={selectedTag}
+            onChange={(event) => {
+              setExpandedGroups({});
+              setShowAllFiltered(false);
+              setSelectedTag(event.target.value);
+            }}
+          >
             {tagOptions.map((tag) => (
               <option key={tag} value={tag}>
                 {tag === "all" ? "All Categories" : tag}
@@ -270,7 +343,11 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
           role="tab"
           className={`kosher-directory__tab${selectedTagValue === "all" ? " is-active" : ""}`}
           aria-selected={selectedTagValue === "all"}
-          onClick={() => setSelectedTag("all")}
+          onClick={() => {
+            setExpandedGroups({});
+            setShowAllFiltered(false);
+            setSelectedTag("all");
+          }}
         >
           All
         </button>
@@ -283,7 +360,11 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
               role="tab"
               className={`kosher-directory__tab${isActive ? " is-active" : ""}`}
               aria-selected={isActive}
-              onClick={() => setSelectedTag(tag)}
+              onClick={() => {
+                setExpandedGroups({});
+                setShowAllFiltered(false);
+                setSelectedTag(tag);
+              }}
             >
               {tag}
             </button>
@@ -303,19 +384,59 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
         <>
           {selectedNeighborhood === "all" ? (
             <div className="kosher-directory__sections">
-              {groupedPlaces.map((group) => (
-                <section
-                  key={`group-${group.neighborhood}`}
-                  className="kosher-directory__section"
-                  aria-label={group.label}
-                >
-                  <h3 className="kosher-directory__section-title">{group.label}</h3>
-                  <div className="kosher-directory__grid">{group.places.map((place) => renderPlaceCard(place))}</div>
-                </section>
-              ))}
+              {groupedPlaces.map((group) => {
+                const expanded = expandedGroups[group.neighborhood] ?? false;
+                const visibleGroupPlaces = expanded
+                  ? group.places
+                  : group.places.slice(0, INITIAL_GROUP_CARD_COUNT);
+                const hiddenCount = group.places.length - visibleGroupPlaces.length;
+
+                return (
+                  <section
+                    key={`group-${group.neighborhood}`}
+                    className="kosher-directory__section"
+                    aria-label={group.label}
+                  >
+                    <div className="kosher-directory__section-head">
+                      <h3 className="kosher-directory__section-title">{group.label}</h3>
+                      <span className="kosher-directory__section-count">{group.places.length}</span>
+                    </div>
+                    <div className="kosher-directory__grid">
+                      {visibleGroupPlaces.map((place) => renderPlaceCard(place))}
+                    </div>
+                    {hiddenCount > 0 ? (
+                      <button
+                        type="button"
+                        className="kosher-directory__more"
+                        onClick={() =>
+                          setExpandedGroups((current) => ({
+                            ...current,
+                            [group.neighborhood]: true,
+                          }))
+                        }
+                      >
+                        Show {hiddenCount} more in {group.label}
+                      </button>
+                    ) : null}
+                  </section>
+                );
+              })}
             </div>
           ) : (
-            <div className="kosher-directory__grid">{filteredPlaces.map((place) => renderPlaceCard(place))}</div>
+            <>
+              <div className="kosher-directory__grid">
+                {visibleFilteredPlaces.map((place) => renderPlaceCard(place))}
+              </div>
+              {!showAllFiltered && filteredPlaces.length > visibleFilteredPlaces.length ? (
+                <button
+                  type="button"
+                  className="kosher-directory__more"
+                  onClick={() => setShowAllFiltered(true)}
+                >
+                  Show {filteredPlaces.length - visibleFilteredPlaces.length} more places
+                </button>
+              ) : null}
+            </>
           )}
         </>
       )}

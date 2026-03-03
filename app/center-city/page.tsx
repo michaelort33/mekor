@@ -7,7 +7,8 @@ export const metadata: Metadata = {
   description: "Search and filter kosher restaurants, bakeries, cafes, and shops in Center City and nearby.",
 };
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
+export const revalidate = 3600;
 
 export default async function CenterCityKosherPage() {
   return (

@@ -63,6 +63,10 @@ export type ExtractedKosherPlace = {
   sourceJson: Record<string, unknown>;
 };
 
+const EXTRACT_CACHE_TTL_MS = process.env.NODE_ENV === "development" ? 5_000 : 60 * 60 * 1_000;
+let extractedKosherPlacesCache: { rows: ExtractedKosherPlace[]; cachedAt: number } | null = null;
+let extractedKosherPlacesPromise: Promise<ExtractedKosherPlace[]> | null = null;
+
 function normalizeWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
 }
@@ -487,25 +491,47 @@ function toDedupKey(row: ExtractedKosherPlace) {
 }
 
 export async function loadExtractedKosherPlaces() {
-  const docs = await listDocumentsByType("post");
-  const extracted = docs
-    .map((document) => extractKosherPlace(document))
-    .filter((row): row is ExtractedKosherPlace => Boolean(row));
-
-  const deduped = new Map<string, ExtractedKosherPlace>();
-  for (const row of extracted) {
-    const key = toDedupKey(row);
-    const existing = deduped.get(key);
-
-    if (!existing) {
-      deduped.set(key, row);
-      continue;
-    }
-
-    if (existing.capturedAt < row.capturedAt) {
-      deduped.set(key, row);
-    }
+  const now = Date.now();
+  if (extractedKosherPlacesCache && now - extractedKosherPlacesCache.cachedAt < EXTRACT_CACHE_TTL_MS) {
+    return extractedKosherPlacesCache.rows;
   }
 
-  return [...deduped.values()].sort((a, b) => a.title.localeCompare(b.title));
+  if (extractedKosherPlacesPromise) {
+    return extractedKosherPlacesPromise;
+  }
+
+  extractedKosherPlacesPromise = (async () => {
+    const docs = await listDocumentsByType("post");
+    const extracted = docs
+      .map((document) => extractKosherPlace(document))
+      .filter((row): row is ExtractedKosherPlace => Boolean(row));
+
+    const deduped = new Map<string, ExtractedKosherPlace>();
+    for (const row of extracted) {
+      const key = toDedupKey(row);
+      const existing = deduped.get(key);
+
+      if (!existing) {
+        deduped.set(key, row);
+        continue;
+      }
+
+      if (existing.capturedAt < row.capturedAt) {
+        deduped.set(key, row);
+      }
+    }
+
+    const rows = [...deduped.values()].sort((a, b) => a.title.localeCompare(b.title));
+    extractedKosherPlacesCache = {
+      rows,
+      cachedAt: Date.now(),
+    };
+    return rows;
+  })();
+
+  try {
+    return await extractedKosherPlacesPromise;
+  } finally {
+    extractedKosherPlacesPromise = null;
+  }
 }

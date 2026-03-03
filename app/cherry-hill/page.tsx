@@ -1,30 +1,34 @@
-import type { Metadata } from "next";
+import { permanentRedirect } from "next/navigation";
 
-import { KosherPlacesPage } from "@/components/kosher/kosher-places-page";
-
-export const metadata: Metadata = {
-  title: "Kosher Places Directory | Mekor Habracha",
-  description: "Browse kosher restaurants, bakeries, cafes, and shops grouped by location across the region.",
+type LegacyKosherPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export const dynamic = "force-dynamic";
+function buildRedirectUrl(searchParams: Record<string, string | string[] | undefined>) {
+  const params = new URLSearchParams();
+  params.set("neighborhood", "cherry-hill");
 
-export default async function CherryHillKosherPage() {
-  return (
-    <KosherPlacesPage
-      currentPath="/cherry-hill"
-      heading="Kosher Places: Philadelphia Area"
-      kicker="Kosher Dining Directory"
-      description="Browse all kosher places grouped by location, then use the location dropdown to filter to one neighborhood whenever you want."
-      highlights={[
-        { label: "Restaurant favorites across all neighborhoods", tag: "restaurants" },
-        { label: "Bakery and dessert spots", tag: "bakery" },
-        { label: "Cafe picks and family-friendly options", tag: "cafe" },
-        { label: "Community-verified supervision and map links", tag: "all" },
-      ]}
-      designTone="food"
-      defaultNeighborhood="all"
-      lastUpdatedKey="center-city"
-    />
-  );
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (!value || key === "neighborhood") {
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item) {
+          params.append(key, item);
+        }
+      }
+      continue;
+    }
+
+    params.set(key, value);
+  }
+
+  const query = params.toString();
+  return query ? `/center-city?${query}#kosher-directory` : "/center-city#kosher-directory";
+}
+
+export default async function CherryHillKosherPage({ searchParams }: LegacyKosherPageProps) {
+  permanentRedirect(buildRedirectUrl(await searchParams));
 }

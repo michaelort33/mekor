@@ -1,0 +1,84 @@
+.page {
+  background:
+    radial-gradient(940px 420px at 10% -14%, rgba(179, 206, 232, 0.28) 0%, rgba(179, 206, 232, 0) 72%),
+    radial-gradient(920px 430px at 90% -16%, rgba(245, 228, 195, 0.3) 0%, rgba(245, 228, 195, 0) 72%),
+    #f9f7f2;
+}
+
+.stack {
+  display: grid;
+  gap: 16px;
+}
+
+.memberGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.memberCard {
+  border: 1px solid #d7e2ec;
+  border-radius: 14px;
+  background: linear-gradient(152deg, #f8fbff 0%, #edf4fc 100%);
+  overflow: hidden;
+  display: grid;
+}
+
+.memberPhoto {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  object-position: center 18%;
+  border-bottom: 1px solid #d9e5ef;
+}
+
+.memberPlaceholder {
+  width: 100%;
+  height: 220px;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #305173;
+  background: linear-gradient(155deg, #dbe9f7 0%, #c9dcee 100%);
+  border-bottom: 1px solid #d9e5ef;
+}
+
+.memberBody {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+}
+
+.memberBody h3 {
+  margin: 0;
+  color: #1f4268;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.memberRole {
+  margin: 0;
+  color: #2a5a89;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.memberBody p {
+  margin: 0;
+  color: #4d6076;
+  line-height: 1.62;
+}
+
+@media (max-width: 760px) {
+  .stack {
+    gap: 14px;
+  }
+
+  .memberPhoto,
+  .memberPlaceholder {
+    height: 200px;
+  }
+}
