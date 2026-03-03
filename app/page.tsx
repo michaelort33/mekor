@@ -70,14 +70,9 @@ export default function HomePage() {
             }}
             paragraphs={[
               "Join us for Megillah readings, tefillot, and our festive Purim celebration.",
-              "Support Mekor while buying wine and Judaica. If you use the links below when ordering, Mekor earns 5% back.",
             ]}
             links={[
               { label: "Event Details", href: "/events-1/purim-at-mekor" },
-              { label: "Kosherwine.com", href: "http://kosherwine.com/" },
-              { label: "Judaica.com", href: "http://judaica.com/" },
-              { label: "Wine: tinyurl.com/mekorwine", href: "https://tinyurl.com/mekorwine" },
-              { label: "Judaica: tinyurl.com/mekorjudaica", href: "https://tinyurl.com/mekorjudaica" },
             ]}
           />
         </SectionCard>
@@ -97,6 +92,33 @@ export default function HomePage() {
           />
         </SectionCard>
       </div>
+
+      <SectionCard tone="blue" className={styles.supportCard}>
+        <div className={styles.supportContent}>
+          <div className={styles.supportText}>
+            <h2 className={styles.supportHeading}>Support Mekor while buying wine and Judaica!</h2>
+            <p className={styles.supportDescription}>
+              Use the Mekor-specific links below when ordering from Kosherwine.com and Judaica.com, and Mekor will earn <strong>5% back</strong> on every purchase.
+            </p>
+          </div>
+          <div className={styles.supportButtons}>
+            <a href="https://tinyurl.com/mekorwine" target="_blank" rel="noreferrer noopener" className={styles.supportButton}>
+              <span className={styles.supportButtonIcon}>🍷</span>
+              <span className={styles.supportButtonBody}>
+                <span className={styles.supportButtonLabel}>Shop Wine</span>
+                <span className={styles.supportButtonUrl}>tinyurl.com/mekorwine</span>
+              </span>
+            </a>
+            <a href="https://tinyurl.com/mekorjudaica" target="_blank" rel="noreferrer noopener" className={styles.supportButton}>
+              <span className={styles.supportButtonIcon}>✡️</span>
+              <span className={styles.supportButtonBody}>
+                <span className={styles.supportButtonLabel}>Shop Judaica</span>
+                <span className={styles.supportButtonUrl}>tinyurl.com/mekorjudaica</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </SectionCard>
 
       <SectionCard title="Don't miss our upcoming events:">
         <div className={styles.eventsGrid}>

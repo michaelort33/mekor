@@ -219,6 +219,33 @@ export default async function DonationsPage() {
         />
       </SectionCard>
 
+      <SectionCard tone="blue" className={styles.affiliateCard}>
+        <div className={styles.affiliateContent}>
+          <div className={styles.affiliateText}>
+            <h2 className={styles.affiliateHeading}>Support Mekor while buying wine and Judaica!</h2>
+            <p className={styles.affiliateDescription}>
+              Use the Mekor-specific links below when ordering from Kosherwine.com and Judaica.com, and Mekor will earn <strong>5% back</strong> on every purchase. It costs you nothing extra.
+            </p>
+          </div>
+          <div className={styles.affiliateButtons}>
+            <a href="https://tinyurl.com/mekorwine" target="_blank" rel="noreferrer noopener" className={styles.affiliateButton}>
+              <span className={styles.affiliateButtonIcon}>🍷</span>
+              <span className={styles.affiliateButtonBody}>
+                <span className={styles.affiliateButtonLabel}>Shop Wine</span>
+                <span className={styles.affiliateButtonUrl}>tinyurl.com/mekorwine</span>
+              </span>
+            </a>
+            <a href="https://tinyurl.com/mekorjudaica" target="_blank" rel="noreferrer noopener" className={styles.affiliateButton}>
+              <span className={styles.affiliateButtonIcon}>✡️</span>
+              <span className={styles.affiliateButtonBody}>
+                <span className={styles.affiliateButtonLabel}>Shop Judaica</span>
+                <span className={styles.affiliateButtonUrl}>tinyurl.com/mekorjudaica</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </SectionCard>
+
       <SectionCard title="Donate by Card (Embedded Stripe Iframe)" className={styles.stripeCard}>
         <p className={styles.copyText}>
           Use the embedded Stripe donation form below for Credit, ACH, and Apple Pay.
