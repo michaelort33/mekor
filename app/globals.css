@@ -1958,21 +1958,25 @@ body.native-nav--mobile-open {
 }
 
 .kosher-directory__more {
-  justify-self: start;
-  margin-top: 8px;
-  border: 1px solid #adc3da;
-  background: #edf4fb;
-  color: #24496f;
-  border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 0.82rem;
+  justify-self: stretch;
+  margin-top: 10px;
+  border: 2px solid #2d5d89;
+  background: linear-gradient(180deg, #f0f6fc 0%, #e3eef8 100%);
+  color: #1e4a73;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 0.92rem;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
+  text-align: center;
+  letter-spacing: 0.01em;
+  transition: background 150ms ease, box-shadow 150ms ease;
 }
 
 .kosher-directory__more:hover {
-  background: #dbe9f7;
+  background: linear-gradient(180deg, #e3eef8 0%, #d4e4f4 100%);
+  box-shadow: 0 4px 12px rgba(30, 74, 115, 0.15);
 }
 
 .kosher-directory__more:focus-visible {

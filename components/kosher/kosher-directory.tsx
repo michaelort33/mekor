@@ -17,8 +17,8 @@ type KosherDirectoryProps = {
 };
 
 const KOSHER_FALLBACK_IMAGE_SRC = "/images/kosher/fallback-food.svg";
-const INITIAL_GROUP_CARD_COUNT = 3;
-const INITIAL_FILTERED_CARD_COUNT = 10;
+const INITIAL_GROUP_CARD_COUNT = 4;
+const INITIAL_FILTERED_CARD_COUNT = 12;
 
 const NEIGHBORHOOD_OPTIONS: Array<{ value: KosherNeighborhood | "all"; label: string }> = [
   { value: "all", label: "All" },
@@ -414,7 +414,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                           }))
                         }
                       >
-                        Show {hiddenCount} more in {group.label}
+                        ↓ Show {hiddenCount} more restaurants in {group.label}
                       </button>
                     ) : null}
                   </section>
@@ -432,7 +432,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                   className="kosher-directory__more"
                   onClick={() => setShowAllFiltered(true)}
                 >
-                  Show {filteredPlaces.length - visibleFilteredPlaces.length} more places
+                  ↓ Show {filteredPlaces.length - visibleFilteredPlaces.length} more restaurants
                 </button>
               ) : null}
             </>
