@@ -43,6 +43,13 @@
       "when": 1772571600000,
       "tag": "0005_mvp_member_ops",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772572538861,
+      "tag": "0005_member_profiles",
+      "breakpoints": true
     }
   ]
 }

@@ -50,6 +50,25 @@
   transition: filter 120ms ease, transform 120ms ease;
 }
 
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border-radius: 10px;
+  border: 1px solid #c0c8d4;
+  background: #f0f2f5;
+  color: #4a5a6a;
+  text-decoration: none;
+  padding: 0 16px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.secondaryButton:hover {
+  filter: brightness(0.97);
+}
+
 .createButton:hover {
   filter: brightness(1.08);
   transform: translateY(-1px);
