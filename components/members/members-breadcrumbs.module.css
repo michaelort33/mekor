@@ -52,9 +52,19 @@
   background: #eef4fb;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 @media (max-width: 700px) {
   .wrap {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .actions {
+    width: 100%;
   }
 }

@@ -50,6 +50,10 @@ export default function LoginPage() {
       <form className={styles.card} onSubmit={handleSubmit}>
         <h1>Log in</h1>
         <p className={styles.subtitle}>Log in to view members and manage your profile.</p>
+        <div className={styles.quickLinks}>
+          <Link href="/">← Back to Site Home</Link>
+          <Link href="/members">Members Area</Link>
+        </div>
 
         <label className={styles.field}>
           <span>Email</span>

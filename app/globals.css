@@ -497,6 +497,12 @@ a {
   background: #fff;
 }
 
+.native-nav__cta--signout {
+  border-color: #b7c3cf;
+  color: #44596e !important;
+  background: #fff;
+}
+
 .native-nav__cta:hover,
 .native-nav__cta:focus-visible {
   background: #f3f8fd;
