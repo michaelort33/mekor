@@ -4,6 +4,7 @@ import Link from "next/link";
 import { NativeShell } from "@/components/navigation/native-shell";
 import { getNativeSearchIndex } from "@/lib/native-content/content-loader";
 import { validateSearchIndexContract } from "@/lib/native/contracts";
+import { isProfileSearchVisible } from "@/lib/profile-visibility/policy";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 type SearchProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
+const PUBLIC_AUDIENCE = "public" as const;
 
 function normalizeQuery(raw: string) {
   return raw.toLowerCase().replace(/[^a-z0-9\s]/g, " ").trim();
@@ -38,12 +40,15 @@ export default async function SearchPage({ searchParams }: SearchProps) {
     await getNativeSearchIndex(),
     "Search page: getNativeSearchIndex",
   );
+  const visibleRecords = records.filter(
+    (record) => record.type !== "profile" || isProfileSearchVisible(record.path, PUBLIC_AUDIENCE),
+  );
   const queryTerms = query.split(/\s+/).filter(Boolean);
 
   const results =
     queryTerms.length === 0
       ? []
-      : records
+      : visibleRecords
           .map((record) => {
             const score = queryTerms.reduce((acc, term) => {
               if (record.terms.includes(term)) {
