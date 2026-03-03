@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { KosherPlacesPage } from "@/components/kosher/kosher-places-page";
 
 export const metadata: Metadata = {
-  title: "Center City Kosher Places | Mekor Habracha",
-  description: "Search and filter kosher restaurants, bakeries, cafes, and shops in Center City and nearby.",
+  title: "Kosher Restaurants | Mekor Habracha",
+  description: "Search and filter kosher restaurants, bakeries, cafes, and shops across the Philadelphia area.",
 };
 
 export const dynamic = "force-static";
@@ -14,9 +14,9 @@ export default async function CenterCityKosherPage() {
   return (
     <KosherPlacesPage
       currentPath="/center-city"
-      heading="Kosher Places: Philadelphia Area"
-      kicker="Kosher Dining Directory"
-      description="Browse all kosher places grouped by location, then use the location dropdown to filter to one neighborhood whenever you want."
+      heading="Kosher Restaurants"
+      kicker="Philadelphia Area"
+      description="Find kosher dining across all neighborhoods. Filter by location, category, or search by name."
       highlights={[
         { label: "Restaurant favorites across all neighborhoods", tag: "restaurants" },
         { label: "Bakery and dessert spots", tag: "bakery" },

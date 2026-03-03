@@ -1729,42 +1729,43 @@ body.native-nav--mobile-open {
   box-shadow: 0 12px 26px rgba(25, 44, 65, 0.08);
 }
 
-.kosher-directory__controls {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+.kosher-directory__search-row {
+  margin-bottom: 14px;
 }
 
-.kosher-directory__control {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  color: var(--native-page-copy);
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.kosher-directory__control input,
-.kosher-directory__control select {
+.kosher-directory__search {
   width: 100%;
-  min-height: 40px;
+  min-height: 44px;
   border: 1px solid var(--native-nav-border);
-  border-radius: 10px;
-  padding: 0 11px;
-  background: var(--native-nav-surface-muted);
+  border-radius: 12px;
+  padding: 0 14px;
+  background: var(--native-nav-surface-muted, #fcfbf7);
   color: var(--native-nav-text);
   font-size: 0.9rem;
 }
 
-.kosher-directory__control input:focus-visible,
-.kosher-directory__control select:focus-visible {
-  outline: 2px solid var(--native-focus-ring);
+.kosher-directory__search:focus-visible {
+  outline: 2px solid var(--native-focus-ring, #204d79);
   outline-offset: 1px;
 }
 
+.kosher-directory__filter-group {
+  margin-bottom: 10px;
+}
+
+.kosher-directory__filter-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--native-page-copy, #4f5b6d);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 .kosher-directory__count {
-  margin: 14px 0 0;
-  color: var(--native-nav-muted);
+  margin: 4px 0 0;
+  color: var(--native-nav-muted, #5e6672);
   font-size: 0.84rem;
 }
 
@@ -1810,10 +1811,9 @@ body.native-nav--mobile-open {
 }
 
 .kosher-directory__tabs {
-  margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .kosher-directory__tab {
@@ -2863,10 +2863,6 @@ body.native-nav--mobile-open {
 }
 
 @media (max-width: 900px) {
-  .kosher-directory__controls {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .kosher-directory {
     border-radius: 16px;
     padding: 14px;

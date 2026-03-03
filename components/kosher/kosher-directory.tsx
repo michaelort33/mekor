@@ -21,13 +21,21 @@ const INITIAL_GROUP_CARD_COUNT = 3;
 const INITIAL_FILTERED_CARD_COUNT = 10;
 
 const NEIGHBORHOOD_OPTIONS: Array<{ value: KosherNeighborhood | "all"; label: string }> = [
-  { value: "all", label: "All Neighborhoods" },
-  { value: "center-city", label: "Center City & Vicinity" },
-  { value: "main-line-manyunk", label: "Main Line / Manyunk" },
-  { value: "old-yorkroad-northeast", label: "Old York Road / Northeast" },
+  { value: "all", label: "All" },
+  { value: "center-city", label: "Center City" },
+  { value: "main-line-manyunk", label: "Main Line" },
+  { value: "old-yorkroad-northeast", label: "Old York Rd / NE" },
   { value: "cherry-hill", label: "Cherry Hill" },
-  { value: "unknown", label: "Other" },
 ];
+
+const NEIGHBORHOOD_FULL_LABELS: Record<string, string> = {
+  all: "All Neighborhoods",
+  "center-city": "Center City & Vicinity",
+  "main-line-manyunk": "Main Line / Manyunk",
+  "old-yorkroad-northeast": "Old York Road / Northeast",
+  "cherry-hill": "Cherry Hill",
+  unknown: "Other",
+};
 
 function normalize(value: string) {
   return value.trim().toLowerCase();
@@ -209,11 +217,17 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
       .filter((option) => option.value !== "all")
       .map((option) => ({
         neighborhood: option.value as KosherNeighborhood,
-        label: option.label,
+        label: NEIGHBORHOOD_FULL_LABELS[option.value] ?? option.label,
         places: byNeighborhood.get(option.value as KosherNeighborhood) ?? [],
       }))
       .filter((group) => group.places.length > 0);
   }, [filteredPlaces]);
+
+  function selectNeighborhood(value: KosherNeighborhood | "all") {
+    setExpandedGroups({});
+    setShowAllFiltered(false);
+    setSelectedNeighborhood(value);
+  }
 
   function selectCategoryTag(tag: string) {
     setExpandedGroups({});
@@ -261,6 +275,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
         </div>
 
         <h3>{place.title}</h3>
+        {place.phone ? <p className="kosher-directory__phone">{formatPhone(place.phone)}</p> : null}
         {place.summary ? <p className="kosher-directory__summary">{place.summary}</p> : null}
         {place.address ? <p>{place.address}</p> : null}
         {place.supervision ? <p>{place.supervision}</p> : null}
@@ -285,91 +300,77 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
 
   return (
     <section id="kosher-directory" className="kosher-directory" aria-label="Kosher places directory">
-      <div className="kosher-directory__controls">
-        <label className="kosher-directory__control">
-          <span>Search</span>
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => {
-              setExpandedGroups({});
-              setShowAllFiltered(false);
-              setSearch(event.target.value);
-            }}
-            placeholder="Search name, address, tag, supervision"
-          />
-        </label>
-
-        <label className="kosher-directory__control">
-          <span>Location</span>
-          <select
-            value={selectedNeighborhood}
-            onChange={(event) => {
-              setExpandedGroups({});
-              setShowAllFiltered(false);
-              setSelectedNeighborhood(event.target.value as KosherNeighborhood | "all");
-            }}
-          >
-            {NEIGHBORHOOD_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="kosher-directory__control">
-          <span>Category</span>
-          <select
-            value={selectedTag}
-            onChange={(event) => {
-              setExpandedGroups({});
-              setShowAllFiltered(false);
-              setSelectedTag(event.target.value);
-            }}
-          >
-            {tagOptions.map((tag) => (
-              <option key={tag} value={tag}>
-                {tag === "all" ? "All Categories" : tag}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      <div className="kosher-directory__tabs" role="tablist" aria-label="Category quick filters">
-        <button
-          type="button"
-          role="tab"
-          className={`kosher-directory__tab${selectedTagValue === "all" ? " is-active" : ""}`}
-          aria-selected={selectedTagValue === "all"}
-          onClick={() => {
+      <div className="kosher-directory__search-row">
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => {
             setExpandedGroups({});
             setShowAllFiltered(false);
-            setSelectedTag("all");
+            setSearch(event.target.value);
           }}
-        >
-          All
-        </button>
-        {quickTagOptions.map((tag) => {
-          const isActive = selectedTagValue !== "all" && normalize(tag) === selectedTagValue;
-          return (
-            <button
-              key={tag}
-              type="button"
-              role="tab"
-              className={`kosher-directory__tab${isActive ? " is-active" : ""}`}
-              aria-selected={isActive}
-              onClick={() => {
-                setExpandedGroups({});
-                setShowAllFiltered(false);
-                setSelectedTag(tag);
-              }}
-            >
-              {tag}
-            </button>
-          );
-        })}
+          placeholder="Search restaurants, bakeries, cafes..."
+          className="kosher-directory__search"
+        />
+      </div>
+
+      <div className="kosher-directory__filter-group">
+        <span className="kosher-directory__filter-label">Neighborhood</span>
+        <div className="kosher-directory__tabs" role="tablist" aria-label="Neighborhood filter">
+          {NEIGHBORHOOD_OPTIONS.map((option) => {
+            const isActive = selectedNeighborhood === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="tab"
+                className={`kosher-directory__tab${isActive ? " is-active" : ""}`}
+                aria-selected={isActive}
+                onClick={() => selectNeighborhood(option.value)}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="kosher-directory__filter-group">
+        <span className="kosher-directory__filter-label">Category</span>
+        <div className="kosher-directory__tabs" role="tablist" aria-label="Category filter">
+          <button
+            type="button"
+            role="tab"
+            className={`kosher-directory__tab${selectedTagValue === "all" ? " is-active" : ""}`}
+            aria-selected={selectedTagValue === "all"}
+            onClick={() => {
+              setExpandedGroups({});
+              setShowAllFiltered(false);
+              setSelectedTag("all");
+            }}
+          >
+            All
+          </button>
+          {quickTagOptions.map((tag) => {
+            const isActive = selectedTagValue !== "all" && normalize(tag) === selectedTagValue;
+            return (
+              <button
+                key={tag}
+                type="button"
+                role="tab"
+                className={`kosher-directory__tab${isActive ? " is-active" : ""}`}
+                aria-selected={isActive}
+                onClick={() => {
+                  setExpandedGroups({});
+                  setShowAllFiltered(false);
+                  setSelectedTag(tag);
+                }}
+              >
+                {tag}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <p className="kosher-directory__count">
