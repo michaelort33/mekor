@@ -125,6 +125,18 @@ export async function executeSignup(
 }
 
 export async function POST(request: Request) {
-  const result = await executeSignup(await request.json(), createSignupDependencies());
-  return NextResponse.json(result.body, { status: result.status });
+  try {
+    const result = await executeSignup(await request.json(), createSignupDependencies());
+    return NextResponse.json(result.body, { status: result.status });
+  } catch (error) {
+    const message = error instanceof Error ? error.message.toLowerCase() : "";
+    if (message.includes("relation") && message.includes("does not exist")) {
+      return NextResponse.json(
+        { error: "Database schema is not initialized. Run the latest database migration." },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({ error: "Unable to sign up right now" }, { status: 500 });
+  }
 }

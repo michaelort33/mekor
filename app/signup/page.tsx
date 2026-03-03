@@ -58,6 +58,7 @@ export default function SignupPage() {
             required
             minLength={2}
             maxLength={120}
+            autoComplete="name"
           />
         </label>
 
@@ -69,6 +70,7 @@ export default function SignupPage() {
             onChange={(event) => update("email", event.target.value)}
             required
             maxLength={255}
+            autoComplete="email"
           />
         </label>
 
@@ -80,6 +82,7 @@ export default function SignupPage() {
             onChange={(event) => update("password", event.target.value)}
             required
             minLength={8}
+            autoComplete="new-password"
           />
         </label>
 
@@ -91,6 +94,7 @@ export default function SignupPage() {
             onChange={(event) => update("confirmPassword", event.target.value)}
             required
             minLength={8}
+            autoComplete="new-password"
           />
         </label>
 
