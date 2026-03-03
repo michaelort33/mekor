@@ -10,6 +10,10 @@ function resolveNextPath(value: string | null) {
   if (!value) return "/account/profile";
   if (!value.startsWith("/")) return "/account/profile";
   if (value.startsWith("//")) return "/account/profile";
+  if (value === "/login" || value.startsWith("/login?")) return "/account/profile";
+  if (value === "/signup" || value.startsWith("/signup?")) return "/account/profile";
+  if (value === "/logout" || value.startsWith("/logout?")) return "/account/profile";
+  if (value.startsWith("/api/")) return "/account/profile";
   return value;
 }
 
@@ -28,21 +32,28 @@ export default function LoginPage() {
     setError("");
     setSubmitting(true);
 
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setError(data.error || "Login failed");
+      const data = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) {
+        setError(data.error || "Login failed");
+        setSubmitting(false);
+        return;
+      }
+
+      setSubmitting(false);
+      router.replace(nextPath);
+      router.refresh();
+    } catch {
+      setError("Login failed");
       setSubmitting(false);
       return;
     }
-
-    router.push(nextPath);
-    router.refresh();
   }
 
   return (
