@@ -3,6 +3,14 @@
     {
       "path": "/api/cron/kosher-last-updated",
       "schedule": "0 0 */14 * *"
+    },
+    {
+      "path": "/api/cron/dues-reminders",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/event-reminders",
+      "schedule": "0 9 * * *"
     }
   ]
 }

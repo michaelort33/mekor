@@ -6,11 +6,6 @@
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
   margin-bottom: 24px;
 }
 
@@ -28,13 +23,6 @@
 
 .backLink:hover {
   text-decoration: underline;
-}
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
 }
 
 .layout {

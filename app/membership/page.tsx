@@ -145,9 +145,6 @@ export default async function MembershipPage() {
           <a href="https://fs3.formsite.com/PrCyQq/kjkfhhvneh/index" target="_blank" rel="noreferrer noopener" className={styles.actionButton}>
             Use membership form
           </a>
-          <Link href="/membership/renew" className={styles.actionButton}>
-            Renew with household link
-          </Link>
           <a href="mailto:mekorhabracha@gmail.com?subject=Membership%20Question" className={styles.actionButton}>
             Email us
           </a>

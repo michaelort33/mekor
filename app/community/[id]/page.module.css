@@ -1,0 +1,57 @@
+.page {
+  width: min(820px, 100% - 2rem);
+  margin: 2rem auto 3rem;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+  padding: 1.25rem;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.avatar,
+.avatarPlaceholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+}
+
+.avatar {
+  object-fit: cover;
+}
+
+.avatarPlaceholder {
+  background: #111827;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.city {
+  margin: 0.3rem 0 0;
+  color: #6b7280;
+}
+
+.bio {
+  margin: 1rem 0;
+  color: #1f2937;
+}
+
+.backLink {
+  color: #2563eb;
+}

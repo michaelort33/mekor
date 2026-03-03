@@ -171,6 +171,7 @@ export default function HomePage() {
                 <a href="https://www.amazon.com/Rabbi-Eliezer-Hirsch/e/B0876V66RG%3Fref=dbs_a_mng_rwt_scns_share">
                   Books
                 </a>
+                <Link href="/our-rabbi#rabbi-eliezer-hirsch">Full profile</Link>
               </div>
             </div>
           </article>
@@ -189,7 +190,7 @@ export default function HomePage() {
               <div className={styles.rabbiLinks}>
                 <a href="https://www.facebook.com/StevenJGotlib/">Facebook</a>
                 <a href="https://www.linkedin.com/in/steven-j-gotlib/">LinkedIn</a>
-                <Link href="/our-rabbi">Read more</Link>
+                <Link href="/our-rabbi#rabbi-steven-gotlib">Full profile</Link>
               </div>
             </div>
           </article>

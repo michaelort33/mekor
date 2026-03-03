@@ -230,6 +230,11 @@ export function EventsCalendar({ events }: EventsCalendarProps) {
             <Link href={event.path} className="events-hub__event-link">
               View event
             </Link>
+            {!event.isClosed ? (
+              <Link href={`${event.path}#signup`} className="events-hub__event-link">
+                Sign up
+              </Link>
+            ) : null}
           </article>
         ))}
       </div>

@@ -29,6 +29,14 @@ export const SITE_MENU: NavItem[] = [
     href: "/membership",
   },
   {
+    label: "Members Area",
+    href: "/members",
+  },
+  {
+    label: "Community Directory",
+    href: "/community",
+  },
+  {
     label: "Events",
     href: "/events",
   },
@@ -67,7 +75,6 @@ export const SITE_MENU: NavItem[] = [
       { label: "Center City Beit Midrash", href: "/center-city-beit-midrash" },
       { label: "Davening", href: "/davening" },
       { label: "Kosher Map", href: "/kosher-map" },
-      { label: "Member Directory", href: "/members" },
       { label: "Volunteer", href: "/team-4" },
       { label: "Mekor Bulletin Board", href: "/mekor-bulletin-board" },
       { label: "Israel", href: "/israel" },

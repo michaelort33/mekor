@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
+import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
 import { BadRequestTemplate } from "@/components/templates/bad-request-template";
 import { EventTemplate } from "@/components/templates/event-template";
+import { getDb } from "@/db/client";
+import { events } from "@/db/schema";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
 import { buildEventTemplateData } from "@/lib/templates/template-data";
 import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
 
 export const dynamicParams = true;
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{
@@ -53,7 +56,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function EventTemplatePage({ params }: PageProps) {
   const { slug } = await params;
-  const route = await resolveTemplateRoute(toPath(slug));
+  const path = toPath(slug);
+  const route = await resolveTemplateRoute(path);
 
   if (route.status === "bad-request") {
     return <BadRequestTemplate />;
@@ -63,5 +67,11 @@ export default async function EventTemplatePage({ params }: PageProps) {
     notFound();
   }
 
-  return <EventTemplate data={buildEventTemplateData(route.document)} />;
+  let eventId: number | null = null;
+  if (process.env.DATABASE_URL) {
+    const [eventRow] = await getDb().select({ id: events.id }).from(events).where(eq(events.path, path)).limit(1);
+    eventId = eventRow?.id ?? null;
+  }
+
+  return <EventTemplate data={buildEventTemplateData(route.document, { eventId })} />;
 }

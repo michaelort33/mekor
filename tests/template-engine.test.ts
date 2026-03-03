@@ -79,6 +79,7 @@ test("article template parser returns structured post and news data", async () =
   assert.ok(postData.title.length > 0);
   assert.ok(newsData.title.length > 0);
   assert.ok(postData.facts.length > 0, "expected structured post facts");
+  assert.ok(postData.assets.length > 0, "expected post certificate assets");
   assert.ok(newsData.body.length > 0, "expected parsed news body");
 });
 

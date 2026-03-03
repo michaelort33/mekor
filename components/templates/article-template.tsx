@@ -73,6 +73,25 @@ export function ArticleTemplate({ data }: ArticleTemplateProps) {
           </dl>
         ) : null}
 
+        {data.assets.length > 0 ? (
+          <section className="template-chip-list" aria-label="Certificates">
+            <h2>Certificates</h2>
+            <div>
+              {data.assets.map((asset) => (
+                <a
+                  key={asset.href}
+                  href={asset.href}
+                  className="template-chip"
+                  target={isExternalHref(asset.href) ? "_blank" : undefined}
+                  rel={isExternalHref(asset.href) ? "noreferrer noopener" : undefined}
+                >
+                  {asset.label}
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <section className="template-content" aria-label="Article content">
           {data.body.map((line) => (
             <p key={line}>{line}</p>

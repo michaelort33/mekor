@@ -1,16 +1,15 @@
 "use client";
 
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type FormEvent, useState } from "react";
 
-const COMMITTEE_OPTIONS = [
-  "Hospitality",
-  "Kiddush",
-  "Learning",
-  "Youth Programming",
-  "Eruv",
-  "Security",
-  "Community Care",
-] as const;
+const VOLUNTEER_OPPORTUNITY_OPTIONS = [
+  "Kiddush Preparation",
+  "Torah and Haftorah Reading",
+  "Meal Train and Shabbat Hospitality",
+  "Eruv Checking",
+  "Volunteer Mashgiach",
+  "General Volunteer Opportunity",
+];
 
 type VolunteerFormValues = {
   firstName: string;
@@ -20,16 +19,6 @@ type VolunteerFormValues = {
   opportunity: string;
   availabilityDate: string;
   additionalNote: string;
-};
-
-type VolunteerSlot = {
-  id: number;
-  opportunityName: string;
-  label: string;
-  startAt: string;
-  endAt: string | null;
-  remaining: number;
-  signupOpen: boolean;
 };
 
 export function buildVolunteerPayload(values: VolunteerFormValues, sourcePath: string) {
@@ -57,40 +46,8 @@ export function buildVolunteerPayload(values: VolunteerFormValues, sourcePath: s
 }
 
 export function VolunteerForm() {
-  const [slots, setSlots] = useState<VolunteerSlot[]>([]);
-  const [loadingSlots, setLoadingSlots] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function loadSlots() {
-      const response = await fetch("/api/volunteer/slots");
-      if (!response.ok) {
-        if (mounted) {
-          setErrorMessage("Volunteer slot scheduling is unavailable right now. Please email the volunteer team.");
-          setLoadingSlots(false);
-        }
-        return;
-      }
-
-      const data = await response.json().catch(() => ({}));
-      if (mounted) {
-        setSlots(Array.isArray(data.slots) ? data.slots : []);
-        setLoadingSlots(false);
-      }
-    }
-
-    loadSlots();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const openSlots = useMemo(() => slots.filter((slot) => slot.signupOpen), [slots]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -105,45 +62,48 @@ export function VolunteerForm() {
     const lastName = String(formData.get("lastName") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
     const phone = String(formData.get("phone") ?? "").trim();
-    const slotId = Number.parseInt(String(formData.get("slotId") ?? "0"), 10);
+    const opportunity = String(formData.get("opportunity") ?? "").trim();
+    const availabilityDate = String(formData.get("availabilityDate") ?? "").trim();
     const additionalNote = String(formData.get("additionalNote") ?? "").trim();
-    const committeeInterests = COMMITTEE_OPTIONS.filter((committee) => Boolean(formData.get(`committee_${committee}`)));
 
-    if (!firstName || !lastName || !email || !slotId) {
+    if (!firstName || !lastName || !email || !opportunity) {
       return;
     }
 
-    const payload = {
-      slotId,
-      name: `${firstName} ${lastName}`.trim(),
-      email,
-      phone,
-      note: additionalNote,
-      committeeInterests,
-    };
+    const payload = buildVolunteerPayload(
+      {
+        firstName,
+        lastName,
+        email,
+        phone,
+        opportunity,
+        availabilityDate,
+        additionalNote,
+      },
+      window.location.pathname,
+    );
 
     setIsSubmitting(true);
     setIsSuccess(false);
-    setErrorMessage("");
 
-    const response = await fetch("/api/volunteer/slot-signups", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const response = await fetch("/api/forms/volunteer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      setErrorMessage(data.error ?? "Unable to submit your signup right now.");
+      if (!response.ok) {
+        return;
+      }
+
+      form.reset();
+      setIsSuccess(true);
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-
-    form.reset();
-    setIsSuccess(true);
-    setIsSubmitting(false);
   };
 
   return (
@@ -169,45 +129,34 @@ export function VolunteerForm() {
           <input name="phone" type="tel" autoComplete="tel" />
         </label>
 
+        <label className="volunteer-form__field">
+          <span>Availability Date</span>
+          <input name="availabilityDate" type="date" />
+        </label>
+
         <label className="volunteer-form__field volunteer-form__field--wide">
-          <span>Volunteer Slot</span>
-          <select name="slotId" required defaultValue="" disabled={loadingSlots || openSlots.length === 0}>
+          <span>Volunteer Opportunity</span>
+          <select name="opportunity" required defaultValue="">
             <option value="" disabled>
-              {loadingSlots ? "Loading slots..." : "Choose an available slot"}
+              Choose an option
             </option>
-            {openSlots.map((slot) => (
-              <option key={slot.id} value={slot.id}>
-                {slot.opportunityName}: {slot.label} ({new Date(slot.startAt).toLocaleString("en-US")}) · {Math.max(slot.remaining, 0)} left
+            {VOLUNTEER_OPPORTUNITY_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
               </option>
             ))}
           </select>
         </label>
 
-        <fieldset className="volunteer-form__field volunteer-form__field--wide">
-          <legend>Committee Interests (optional)</legend>
-          <div className="volunteer-form__checks">
-            {COMMITTEE_OPTIONS.map((committee) => (
-              <label key={committee}>
-                <input type="checkbox" name={`committee_${committee}`} />
-                {committee}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
         <label className="volunteer-form__field volunteer-form__field--wide">
           <span>Additional Note</span>
-          <textarea
-            name="additionalNote"
-            rows={4}
-            placeholder="Optional: scheduling constraints, role preferences, or experience"
-          />
+          <textarea name="additionalNote" rows={4} placeholder="Optional: yahrzeit date, preferred role, or scheduling notes" />
         </label>
       </div>
 
       <div className="volunteer-form__actions">
-        <button type="submit" disabled={isSubmitting || loadingSlots} aria-disabled={isSubmitting ? "true" : "false"}>
-          {isSubmitting ? "Submitting..." : "Submit"}
+        <button type="submit" disabled={isSubmitting} aria-disabled={isSubmitting ? "true" : "false"}>
+          Submit
         </button>
         <p
           className="volunteer-form__success"
@@ -217,7 +166,6 @@ export function VolunteerForm() {
         >
           Thanks for submitting!
         </p>
-        {errorMessage ? <p className="volunteer-form__error" aria-live="polite">{errorMessage}</p> : null}
       </div>
     </form>
   );

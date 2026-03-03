@@ -7,11 +7,9 @@ import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
 import { buildProfileTemplateData } from "@/lib/templates/template-data";
 import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
-import { canViewProfile } from "@/lib/profile-visibility/policy";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
-const PUBLIC_AUDIENCE = "public" as const;
 
 type PageProps = {
   params: Promise<{
@@ -40,10 +38,6 @@ export async function generateStaticParams() {
       continue;
     }
 
-    if (!canViewProfile(item.path, PUBLIC_AUDIENCE)) {
-      continue;
-    }
-
     const parts = item.path.slice("/profile/".length).split("/").filter(Boolean);
     if (parts.length === 0) {
       continue;
@@ -62,10 +56,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return buildDocumentMetadata(null);
   }
 
-  if (!canViewProfile(route.document.path, PUBLIC_AUDIENCE)) {
-    return buildDocumentMetadata(null);
-  }
-
   return buildDocumentMetadata(route.document);
 }
 
@@ -78,10 +68,6 @@ export default async function ProfileTemplatePage({ params }: PageProps) {
   }
 
   if (route.status !== "ok" || route.document.type !== "profile") {
-    notFound();
-  }
-
-  if (!canViewProfile(route.document.path, PUBLIC_AUDIENCE)) {
     notFound();
   }
 

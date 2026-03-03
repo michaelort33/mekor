@@ -31,6 +31,11 @@ export type TemplateFact = {
   href?: string;
 };
 
+export type TemplateAssetLink = {
+  href: string;
+  label: string;
+};
+
 export type ArticleTemplateData = {
   type: "post" | "news";
   path: string;
@@ -41,6 +46,7 @@ export type ArticleTemplateData = {
   heroImageHeight: number | null;
   metadata: string[];
   facts: TemplateFact[];
+  assets: TemplateAssetLink[];
   body: string[];
   categories: TemplateLink[];
   tags: TemplateLink[];
@@ -49,7 +55,7 @@ export type ArticleTemplateData = {
 
 export type EventTemplateData = {
   path: string;
-  slug: string;
+  eventId: number | null;
   title: string;
   subtitle: string;
   heroImage: string | null;
@@ -246,6 +252,29 @@ function sourceUrlLabel(sourceUrl: string) {
     return new URL(sourceUrl).hostname.replace(/^www\./i, "");
   } catch {
     return sourceUrl;
+  }
+}
+
+function isPdfLink(value: string) {
+  return /\.pdf(?:$|[?#])/i.test(value);
+}
+
+function filenameLabelFromHref(href: string) {
+  const source = toRelativePathIfInternal(href) || href;
+  const fallback = "Certificate PDF";
+  if (!source) {
+    return fallback;
+  }
+
+  try {
+    const pathValue = source.startsWith("/") ? source : new URL(source).pathname;
+    const rawName = decodeURIComponent(pathValue.split("/").filter(Boolean).at(-1) ?? "");
+    const withoutExtension = rawName.replace(/\.pdf$/i, "");
+    const withoutHashPrefix = withoutExtension.replace(/^[a-f0-9]{40}-/i, "");
+    const cleaned = cleanText(withoutHashPrefix.replace(/[_-]+/g, " "));
+    return cleaned || fallback;
+  } catch {
+    return fallback;
   }
 }
 
@@ -499,6 +528,70 @@ export function buildArticleTemplateData(document: NativePageDocument): ArticleT
 
     const metadata = [updatedLine].filter(Boolean);
     const subtitle = document.description || "Community update from Mekor Habracha.";
+    const assetCandidates = root
+      .find("a[href]")
+      .toArray()
+      .map((node) => ({
+        href: cleanText($(node).attr("href") ?? ""),
+        label: cleanText($(node).text()),
+      }))
+      .filter((item) => item.href && isPdfLink(item.href));
+
+    for (const link of document.links ?? []) {
+      const href = cleanText(link);
+      if (!href || !isPdfLink(href)) {
+        continue;
+      }
+
+      assetCandidates.push({
+        href,
+        label: "",
+      });
+    }
+
+    const assetsByHref = new Map<string, TemplateAssetLink>();
+    for (const candidate of assetCandidates) {
+      const normalizedHref = toRelativePathIfInternal(candidate.href) || candidate.href;
+      if (!normalizedHref) {
+        continue;
+      }
+
+      const label = candidate.label || filenameLabelFromHref(normalizedHref);
+      const existing = assetsByHref.get(normalizedHref);
+      if (!existing) {
+        assetsByHref.set(normalizedHref, {
+          href: normalizedHref,
+          label,
+        });
+        continue;
+      }
+
+      if (!existing.label && label) {
+        assetsByHref.set(normalizedHref, {
+          href: normalizedHref,
+          label,
+        });
+      }
+    }
+
+    const assetLabelCounts = new Map<string, number>();
+    const assets = [...assetsByHref.values()].map((asset) => {
+      const baseLabel = asset.label || filenameLabelFromHref(asset.href);
+      const count = assetLabelCounts.get(baseLabel) ?? 0;
+      assetLabelCounts.set(baseLabel, count + 1);
+
+      if (count === 0) {
+        return {
+          href: asset.href,
+          label: baseLabel,
+        };
+      }
+
+      return {
+        href: asset.href,
+        label: `${baseLabel} (${count + 1})`,
+      };
+    });
 
     return {
       type: "post",
@@ -510,6 +603,7 @@ export function buildArticleTemplateData(document: NativePageDocument): ArticleT
       heroImageHeight,
       metadata,
       facts,
+      assets,
       body: contentLines.length > 0 ? contentLines : [cleanText(document.description)].filter(Boolean),
       categories: categoryLinks,
       tags: tagLinks,
@@ -546,6 +640,7 @@ export function buildArticleTemplateData(document: NativePageDocument): ArticleT
     heroImageWidth: null,
     heroImageHeight: null,
     metadata,
+    assets: [],
     facts:
       sourceUrl && !isInternalUrl(sourceUrl)
         ? [
@@ -563,7 +658,7 @@ export function buildArticleTemplateData(document: NativePageDocument): ArticleT
   };
 }
 
-export function buildEventTemplateData(document: NativePageDocument): EventTemplateData {
+export function buildEventTemplateData(document: NativePageDocument, options?: { eventId?: number | null }): EventTemplateData {
   const $ = load(document.bodyHtml || document.renderHtml || "");
 
   const title =
@@ -605,7 +700,7 @@ export function buildEventTemplateData(document: NativePageDocument): EventTempl
 
   return {
     path: document.path,
-    slug: document.path.startsWith("/events-1/") ? document.path.slice("/events-1/".length) : "",
+    eventId: options?.eventId ?? null,
     title: pathTitleOrFallback(document.path, title),
     subtitle: cleanText(document.description) || "Event details and schedule.",
     heroImage: eventImage,

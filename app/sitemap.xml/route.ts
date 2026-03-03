@@ -8,7 +8,6 @@ const sections = [
   "event-pages-sitemap.xml",
   "dynamic-news-sitemap.xml",
   "pages-sitemap.xml",
-  "member-profiles-sitemap.xml",
 ];
 
 export async function GET() {

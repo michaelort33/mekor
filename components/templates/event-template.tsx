@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { AskOrganizerForm } from "@/components/events/ask-organizer-form";
-import { EventRsvpForm } from "@/components/events/event-rsvp-form";
+import { EventSignupPanel } from "@/components/events/event-signup-panel";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import type { EventTemplateData } from "@/lib/templates/template-data";
 
@@ -73,11 +72,7 @@ export function EventTemplate({ data }: EventTemplateProps) {
           ))}
         </section>
 
-        {!data.isClosed && data.slug ? (
-          <section className="template-content" aria-label="RSVP">
-            <EventRsvpForm eventSlug={data.slug} eventPath={data.path} />
-          </section>
-        ) : null}
+        <EventSignupPanel eventId={data.eventId} isClosed={data.isClosed} />
 
         <div className="template-card__source template-card__source--actions">
           <Link href={data.seeOtherEventsHref}>See other events</Link>
@@ -87,8 +82,6 @@ export function EventTemplate({ data }: EventTemplateProps) {
             </a>
           ) : null}
         </div>
-
-        <AskOrganizerForm sourcePath={data.path} eventTitle={data.title} />
       </article>
     </main>
   );

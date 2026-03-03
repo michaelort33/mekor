@@ -4,7 +4,6 @@ import { desc } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { newsletterTemplates } from "@/db/schema";
 import { AdminLogoutButton } from "@/components/admin/logout-button";
-import { AdminTabs } from "@/components/admin/admin-tabs";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -32,12 +31,17 @@ export default async function AdminTemplatesPage() {
         <div className={styles.headerRow}>
           <h1 className={styles.heading}>Newsletter Templates</h1>
           <div className={styles.headerActions}>
-            <AdminTabs current="templates" />
+            <Link href="/admin/dues" className={styles.actionLink}>
+              Dues Admin
+            </Link>
+            <Link href="/admin/events" className={styles.actionLink}>
+              Events Admin
+            </Link>
+            <Link href="/admin/users" className={styles.actionLink}>
+              Manage Users
+            </Link>
             <Link href="/admin/templates/new" className={styles.createButton}>
               + New Template
-            </Link>
-            <Link href="/admin/member-profiles" className={styles.secondaryButton}>
-              Member Profiles
             </Link>
             <AdminLogoutButton />
           </div>

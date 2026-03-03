@@ -1,0 +1,85 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(180deg, #f6f8fb 0%, #edf3f8 100%);
+}
+
+.card {
+  width: min(440px, 100%);
+  display: grid;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #d7e1ec;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 24px rgba(28, 48, 70, 0.08);
+}
+
+.card h1 {
+  margin: 0;
+  color: #1b2f45;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: #4f6174;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field span {
+  font-weight: 600;
+  color: #2c4258;
+}
+
+.field input {
+  min-height: 42px;
+  border-radius: 10px;
+  border: 1px solid #c8d6e4;
+  padding: 0 12px;
+  font-size: 0.95rem;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #2f6ea9;
+  box-shadow: 0 0 0 3px rgba(47, 110, 169, 0.15);
+}
+
+.error {
+  margin: 0;
+  color: #a11d2d;
+  font-weight: 600;
+}
+
+.button {
+  min-height: 44px;
+  border: 1px solid #295f92;
+  border-radius: 10px;
+  background: linear-gradient(160deg, #3f80c4 0%, #28557e 100%);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.footer {
+  margin: 0;
+  color: #4f6174;
+}
+
+.footer a {
+  color: #245c8f;
+  font-weight: 600;
+}

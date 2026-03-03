@@ -1,69 +1,76 @@
-import type { Metadata } from "next";
 import Link from "next/link";
+import { and, asc, inArray } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
-import { NativeShell } from "@/components/navigation/native-shell";
-import { getPublicViewerContext } from "@/lib/members/viewer";
-import { listPublicMemberProfiles } from "@/lib/members/store";
+import { getDb } from "@/db/client";
+import { users } from "@/db/schema";
+import { getUserSession } from "@/lib/auth/session";
+import { isAnonymousVisibility } from "@/lib/users/visibility";
 import styles from "./page.module.css";
-
-export const metadata: Metadata = {
-  title: "Member Directory | Mekor Habracha",
-  description: "Browse community member profiles and connect with neighbors.",
-  robots: "noindex, nofollow",
-};
 
 export const dynamic = "force-dynamic";
 
-export default async function MembersDirectoryPage() {
-  const viewer = await getPublicViewerContext();
-  const profiles = await listPublicMemberProfiles(viewer);
+export default async function MembersPage() {
+  const session = await getUserSession();
+  if (!session) {
+    redirect("/login?next=/members");
+  }
+
+  const members = await getDb()
+    .select({
+      id: users.id,
+      displayName: users.displayName,
+      bio: users.bio,
+      city: users.city,
+      avatarUrl: users.avatarUrl,
+      role: users.role,
+      profileVisibility: users.profileVisibility,
+    })
+    .from(users)
+    .where(
+      and(
+        inArray(users.role, ["member", "admin"]),
+        inArray(users.profileVisibility, ["members", "public", "anonymous"]),
+      ),
+    )
+    .orderBy(asc(users.displayName));
 
   return (
-    <NativeShell currentPath="/members" className={styles.shell} contentClassName={styles.content}>
+    <main className={styles.page}>
       <header className={styles.header}>
-        <h1>Member Directory</h1>
-        <p>Public and community-shared profiles appear here.</p>
+        <h1>Members Area</h1>
+        <p>Browse community members who chose to be visible.</p>
       </header>
 
-      {profiles.length === 0 ? (
+      {members.length === 0 ? (
         <section className={styles.empty}>
-          <p>No member profiles are available right now.</p>
+          <p>No visible members yet.</p>
+          <Link href="/account/profile">Update your profile visibility</Link>
         </section>
       ) : (
-        <section className={styles.grid} aria-label="Member profile directory">
-          {profiles.map((profile) => (
-            <article key={profile.slug} className={styles.card}>
-              <div className={styles.avatar} aria-hidden="true">
-                {profile.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={profile.avatarUrl} alt="" />
-                ) : (
-                  profile.displayName.slice(0, 1)
-                )}
-              </div>
-              <h2>{profile.displayName}</h2>
-              {profile.city ? <p className={styles.meta}>{profile.city}</p> : null}
-              {profile.bio ? <p className={styles.bio}>{profile.bio}</p> : null}
-              {profile.interests.length > 0 ? (
-                <ul className={styles.interests}>
-                  {profile.interests.map((interest) => (
-                    <li key={interest}>{interest}</li>
-                  ))}
-                </ul>
-              ) : null}
-              {!profile.isAnonymous && (profile.email || profile.phone) ? (
-                <div className={styles.contact}>
-                  {profile.email ? <p>Email: {profile.email}</p> : null}
-                  {profile.phone ? <p>Phone: {profile.phone}</p> : null}
+        <section className={styles.grid}>
+          {members.map((member) => (
+            <article key={member.id} className={styles.card}>
+              {member.avatarUrl && !isAnonymousVisibility(member.profileVisibility) ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={member.avatarUrl} alt={`${member.displayName} avatar`} className={styles.avatar} />
+              ) : (
+                <div className={styles.avatarPlaceholder} aria-hidden="true">
+                  {(isAnonymousVisibility(member.profileVisibility) ? "C" : member.displayName).charAt(0).toUpperCase()}
                 </div>
-              ) : null}
-              <Link href={`/members/${profile.slug}`} className={styles.link}>
-                View profile
-              </Link>
+              )}
+
+              <div className={styles.body}>
+                {!isAnonymousVisibility(member.profileVisibility) ? <p className={styles.role}>{member.role}</p> : null}
+                <h2>{isAnonymousVisibility(member.profileVisibility) ? "Community Member" : member.displayName}</h2>
+                {member.city ? <p className={styles.city}>{member.city}</p> : null}
+                {member.bio ? <p className={styles.bio}>{member.bio}</p> : null}
+                <Link href={`/members/${member.id}`}>View profile</Link>
+              </div>
             </article>
           ))}
         </section>
       )}
-    </NativeShell>
+    </main>
   );
 }

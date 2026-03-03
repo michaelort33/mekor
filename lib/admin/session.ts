@@ -1,10 +1,15 @@
 import { cookies } from "next/headers";
+import { timingSafeEqual } from "node:crypto";
 
 const SESSION_COOKIE = "mekor_admin_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
 function getSecret() {
-  const secret = process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || "dev-fallback-secret";
+  const secret = process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD;
+  if (!secret) {
+    throw new Error("ADMIN_SESSION_SECRET or ADMIN_PASSWORD is required");
+  }
+
   return new TextEncoder().encode(secret.padEnd(32, "0").slice(0, 32));
 }
 
@@ -63,5 +68,9 @@ export async function getAdminSession(): Promise<boolean> {
 export function verifyAdminPassword(password: string): boolean {
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminPassword) return false;
-  return password === adminPassword;
+
+  const expected = Buffer.from(adminPassword);
+  const provided = Buffer.from(password);
+  if (expected.length !== provided.length) return false;
+  return timingSafeEqual(expected, provided);
 }

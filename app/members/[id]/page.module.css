@@ -1,0 +1,78 @@
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 20px 56px;
+}
+
+.card {
+  border: 1px solid #d8e2ed;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid #d2dbe6;
+}
+
+.avatarPlaceholder {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  border: 1px solid #d2dbe6;
+  background: #edf3fa;
+  color: #274863;
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.role {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #58748f;
+}
+
+.header h1 {
+  margin: 0;
+  color: #1f354c;
+  font-size: 1.8rem;
+}
+
+.city {
+  margin: 6px 0 0;
+  color: #4e6277;
+}
+
+.bio {
+  margin: 0;
+  color: #385068;
+  line-height: 1.65;
+}
+
+.backLink {
+  color: #245c8f;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}

@@ -23,7 +23,7 @@ export default function AdminLoginPage() {
     });
 
     if (response.ok) {
-      router.push("/admin/operations");
+      router.push("/admin/templates");
       router.refresh();
     } else {
       setError("Invalid password. Please try again.");

@@ -38,12 +38,13 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "resend": "^6.5.2",
+    "stripe": "^20.4.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/pngjs": "^6.0.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pngjs": "^6.0.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^17.3.1",

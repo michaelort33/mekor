@@ -7,6 +7,10 @@
   gap: 16px;
 }
 
+.anchorSection {
+  scroll-margin-top: 108px;
+}
+
 .heroGraphic {
   background:
     radial-gradient(40% 62% at 14% 10%, rgba(157, 194, 228, 0.44) 0%, rgba(157, 194, 228, 0) 100%),
