@@ -22,28 +22,68 @@ const ONLINE_METHODS = [
     label: "Credit / ACH / Apple Pay",
     detail: "Secure Stripe checkout",
     href: STRIPE_DONATION_URL,
+    brand: "stripe" as const,
   },
   {
     label: "Venmo",
     detail: "@Mekor-Habracha",
     href: "https://www.venmo.com/u/Mekor-Habracha",
+    brand: "venmo" as const,
   },
   {
     label: "PayPal Giving Fund",
     detail: "Tax-efficient PayPal channel",
     href: "https://www.paypal.com/donate/?hosted_button_id=KUJ7EXBZP4MHC",
+    brand: "paypal" as const,
   },
   {
     label: "PayPal Checkout",
     detail: "One-time checkout flow",
     href: "https://www.paypal.com/ncp/payment/C5ZNZELMHX2A4",
+    brand: "paypal" as const,
   },
   {
     label: "Zelle",
     detail: "mekorhabracha@gmail.com",
     href: "mailto:mekorhabracha@gmail.com",
+    brand: "zelle" as const,
   },
 ] as const;
+
+function PaymentIcon({ brand }: { brand: string }) {
+  if (brand === "stripe") {
+    return (
+      <svg viewBox="0 0 24 24" className={styles.methodIcon} aria-hidden="true">
+        <path d="M13.98 11.37c0-1.07-.52-1.91-2.32-1.91a8.1 8.1 0 0 0-2.54.48l-.4-2.46a10.5 10.5 0 0 1 3.32-.55c3.54 0 4.68 1.82 4.68 4.38v6.64h-2.68l-.18-1.05c-.78.84-1.84 1.23-3.04 1.23-2.04 0-3.32-1.24-3.32-3.04 0-2.18 1.72-3.14 4.68-3.14h1.8v-.58Zm0 2.44h-1.4c-1.48 0-2.04.42-2.04 1.16 0 .6.42 1.02 1.22 1.02 1 0 2.02-.56 2.22-1.6v-.58Z" />
+      </svg>
+    );
+  }
+  if (brand === "venmo") {
+    return (
+      <svg viewBox="0 0 24 24" className={styles.methodIcon} aria-hidden="true">
+        <path d="M19.1 4c.5.82.73 1.67.73 2.74 0 3.42-2.92 7.85-5.29 10.96H9.42L7.5 4.63l4-.38.99 7.97c.92-1.5 2.06-3.86 2.06-5.48 0-1.01-.18-1.7-.43-2.25L19.1 4Z" />
+      </svg>
+    );
+  }
+  if (brand === "paypal") {
+    return (
+      <svg viewBox="0 0 24 24" className={styles.methodIcon} aria-hidden="true">
+        <path d="M7.02 21.28 7.54 18h-.9l-1.5 9.5h.9l.58-3.72h.02c.32-.56.86-1 1.56-1 1.04 0 1.5.7 1.5 1.72 0 .18-.02.38-.06.56l-.62 3.94h.9l.62-3.96c.04-.2.06-.42.06-.64 0-1.44-.82-2.32-2.12-2.32-.84 0-1.44.34-1.86.9l-.1-.1.5-3.6Zm6.16-1.46c-2.02 0-3.14 1.82-3.14 3.76 0 1.38.82 2.42 2.3 2.42 1.16 0 2-.52 2.56-1.06l-.44-.62c-.48.42-1.14.86-2.02.86-1.02 0-1.56-.68-1.56-1.66h4.32c.06-.24.1-.52.1-.82 0-1.56-.86-2.88-2.12-2.88Zm-1.04 1.56c.9 0 1.42.64 1.42 1.48h-3.5c.18-1.02.98-1.48 2.08-1.48Z"
+          transform="translate(-2 -13)" />
+        <path d="M18.42 4.57c-.62-.7-1.74-1.07-3.22-1.07H10.7a.64.64 0 0 0-.63.54L8.23 15.3a.38.38 0 0 0 .38.44h2.76l.7-4.4-.02.14a.64.64 0 0 1 .63-.54h1.31c2.57 0 4.58-1.04 5.17-4.06.02-.09.03-.18.04-.26.18-1.12 0-1.88-.58-2.57l-.2-.48Z" />
+      </svg>
+    );
+  }
+  if (brand === "zelle") {
+    return (
+      <svg viewBox="0 0 24 24" className={styles.methodIcon} aria-hidden="true">
+        <path d="M13.56 7.44h4.58v1.64l-5.96 7.84h6.12v1.64H6.4V17l6-7.92H6.84V7.44h6.72Z" />
+        <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 18.4a8.4 8.4 0 1 1 0-16.8 8.4 8.4 0 0 1 0 16.8Z" fillOpacity="0.3" />
+      </svg>
+    );
+  }
+  return null;
+}
 
 const DONATION_OPPORTUNITIES = [
   "Kiddush (Shabbat & Yom Tov) and Third Meal sponsorship ($295 members / $360 non-members)",
@@ -108,10 +148,15 @@ export default async function DonationsPage() {
               href={method.href}
               target={method.href.startsWith("http") ? "_blank" : undefined}
               rel={method.href.startsWith("http") ? "noreferrer noopener" : undefined}
-              className={styles.methodCard}
+              className={`${styles.methodCard} ${styles[`method--${method.brand}`] ?? ""}`}
             >
-              <span className={styles.methodTitle}>{method.label}</span>
-              <span className={styles.methodDetail}>{method.detail}</span>
+              <span className={styles.methodIconWrap}>
+                <PaymentIcon brand={method.brand} />
+              </span>
+              <span className={styles.methodBody}>
+                <span className={styles.methodTitle}>{method.label}</span>
+                <span className={styles.methodDetail}>{method.detail}</span>
+              </span>
             </a>
           ))}
         </div>
