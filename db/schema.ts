@@ -11,6 +11,12 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const templateStatusEnum = pgEnum("template_status", ["draft", "ready", "sent", "archived"]);
+export const profileVisibilityEnum = pgEnum("profile_visibility", [
+  "private",
+  "members_only",
+  "public",
+  "anonymous",
+]);
 
 export const formSubmissions = pgTable("form_submissions", {
   id: serial("id").primaryKey(),
@@ -113,6 +119,21 @@ export const inTheNews = pgTable("in_the_news", {
   sourceCapturedAt: timestamp("source_captured_at"),
   sourceType: varchar("source_type", { length: 40 }).notNull().default("mirror"),
   sourceJson: json("source_json").$type<Record<string, unknown>>().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const memberProfiles = pgTable("member_profiles", {
+  id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 140 }).notNull().unique(),
+  fullName: varchar("full_name", { length: 120 }).notNull(),
+  avatarUrl: text("avatar_url").notNull().default(""),
+  bio: text("bio").notNull().default(""),
+  interests: json("interests").$type<string[]>().notNull().default([]),
+  city: varchar("city", { length: 120 }).notNull().default(""),
+  email: varchar("email", { length: 255 }).notNull().default(""),
+  phone: varchar("phone", { length: 60 }).notNull().default(""),
+  visibility: profileVisibilityEnum("visibility").notNull().default("private"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

@@ -34,6 +34,9 @@ export default async function AdminTemplatesPage() {
             <Link href="/admin/templates/new" className={styles.createButton}>
               + New Template
             </Link>
+            <Link href="/admin/member-profiles" className={styles.secondaryButton}>
+              Member Profiles
+            </Link>
             <AdminLogoutButton />
           </div>
         </div>

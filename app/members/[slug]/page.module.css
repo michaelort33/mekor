@@ -1,0 +1,106 @@
+.shell {
+  background: #f5f8fc;
+}
+
+.content {
+  width: min(880px, 100%);
+}
+
+.card {
+  border: 1px solid #d8e2ee;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 42, 65, 0.07);
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background: linear-gradient(140deg, #2f6ea6, #244f76);
+  color: #ffffff;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-size: 1.25rem;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.header h1 {
+  margin: 0;
+  color: #1a2a3a;
+  font-size: clamp(1.65rem, 3.1vw, 2.1rem);
+}
+
+.city {
+  margin: 4px 0 0;
+  color: #5a6a7a;
+}
+
+.bio {
+  margin: 0;
+  color: #2f4256;
+  line-height: 1.6;
+}
+
+.card h2 {
+  margin: 0 0 10px;
+  color: #1f3850;
+  font-size: 1.02rem;
+}
+
+.interests {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.interests li {
+  border-radius: 999px;
+  border: 1px solid #c7d8eb;
+  background: #f1f7fd;
+  color: #224e76;
+  font-size: 0.78rem;
+  padding: 5px 11px;
+}
+
+.contact p {
+  margin: 0;
+  color: #35506a;
+}
+
+.backLink {
+  width: fit-content;
+  color: #205f95;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 680px) {
+  .card {
+    padding: 18px;
+  }
+}
