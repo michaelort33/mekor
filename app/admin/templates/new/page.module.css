@@ -1,0 +1,158 @@
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #1a2a3a;
+}
+
+.backLink {
+  color: #2d6ea8;
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 640px);
+  gap: 24px;
+  align-items: start;
+}
+
+.formColumn {
+  display: grid;
+  gap: 20px;
+}
+
+.fieldset {
+  border: 1px solid #dde4ef;
+  border-radius: 12px;
+  padding: 18px;
+  background: #ffffff;
+  margin: 0;
+}
+
+.fieldset legend {
+  font-weight: 700;
+  color: #2b4a6a;
+  font-size: 0.92rem;
+  padding: 0 6px;
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.field span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4a5a6a;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid #cdd5e0;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 0.9rem;
+  color: #1a2a3a;
+  background: #f8fafc;
+}
+
+.field input:focus,
+.field select:focus,
+.htmlEditor:focus {
+  outline: 2px solid #2d6ea8;
+  outline-offset: 1px;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.htmlEditor {
+  width: 100%;
+  min-height: 400px;
+  border: 1px solid #cdd5e0;
+  border-radius: 8px;
+  padding: 12px;
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #1a2a3a;
+  background: #f8fafc;
+  resize: vertical;
+  margin-top: 12px;
+}
+
+.saveButton {
+  min-height: 46px;
+  border-radius: 10px;
+  border: 1px solid #2d6ea8;
+  background: linear-gradient(160deg, #3a7ec7 0%, #2d6396 100%);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+.saveButton:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.previewColumn {
+  position: sticky;
+  top: 20px;
+}
+
+.previewTitle {
+  margin: 0 0 12px;
+  color: #2b4a6a;
+  font-size: 0.92rem;
+}
+
+.previewFrame {
+  border: 1px solid #dde4ef;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 4px 14px rgba(20, 40, 60, 0.06);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .previewColumn {
+    position: static;
+  }
+}

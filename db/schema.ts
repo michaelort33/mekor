@@ -2,12 +2,15 @@ import {
   boolean,
   integer,
   json,
+  pgEnum,
   pgTable,
   serial,
   text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+
+export const templateStatusEnum = pgEnum("template_status", ["draft", "ready", "sent", "archived"]);
 
 export const formSubmissions = pgTable("form_submissions", {
   id: serial("id").primaryKey(),
@@ -75,6 +78,21 @@ export const pageFreshness = pgTable("page_freshness", {
   id: serial("id").primaryKey(),
   key: varchar("key", { length: 120 }).notNull().unique(),
   lastUpdatedAt: timestamp("last_updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const newsletterTemplates = pgTable("newsletter_templates", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  subject: varchar("subject", { length: 255 }).notNull().default(""),
+  parshaName: varchar("parsha_name", { length: 120 }).notNull().default(""),
+  shabbatDate: varchar("shabbat_date", { length: 120 }).notNull().default(""),
+  hebrewDate: varchar("hebrew_date", { length: 120 }).notNull().default(""),
+  candleLighting: varchar("candle_lighting", { length: 60 }).notNull().default(""),
+  bodyHtml: text("body_html").notNull().default(""),
+  status: templateStatusEnum("status").notNull().default("draft"),
+  sentAt: timestamp("sent_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
