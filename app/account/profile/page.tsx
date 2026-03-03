@@ -23,8 +23,11 @@ export default function AccountProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [generatingAvatar, setGeneratingAvatar] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [avatarPrompt, setAvatarPrompt] = useState("");
   const [form, setForm] = useState({
     email: "",
     role: "visitor" as "visitor" | "member" | "admin",
@@ -64,6 +67,61 @@ export default function AccountProfilePage() {
 
   function update(field: "displayName" | "bio" | "city" | "avatarUrl", value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleAvatarUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    setError("");
+    setNotice("");
+    setUploadingAvatar(true);
+
+    const data = new FormData();
+    data.append("file", file);
+
+    const response = await fetch("/api/account/avatar/upload", {
+      method: "POST",
+      body: data,
+    });
+
+    const body = (await response.json().catch(() => ({}))) as { error?: string; avatarUrl?: string };
+    if (!response.ok || !body.avatarUrl) {
+      setError(body.error || "Unable to upload avatar");
+      setUploadingAvatar(false);
+      return;
+    }
+
+    update("avatarUrl", body.avatarUrl);
+    setNotice("Avatar uploaded");
+    setUploadingAvatar(false);
+    router.refresh();
+  }
+
+  async function generateAvatar() {
+    setError("");
+    setNotice("");
+    setGeneratingAvatar(true);
+
+    const response = await fetch("/api/account/avatar/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: avatarPrompt }),
+    });
+
+    const body = (await response.json().catch(() => ({}))) as { error?: string; avatarUrl?: string };
+    if (!response.ok || !body.avatarUrl) {
+      setError(body.error || "Unable to generate avatar");
+      setGeneratingAvatar(false);
+      return;
+    }
+
+    update("avatarUrl", body.avatarUrl);
+    setNotice("Avatar generated");
+    setGeneratingAvatar(false);
+    router.refresh();
   }
 
   async function saveProfile(event: React.FormEvent<HTMLFormElement>) {
@@ -162,16 +220,44 @@ export default function AccountProfilePage() {
           />
         </label>
 
-        <label className={styles.field}>
-          <span>Avatar URL (optional)</span>
-          <input
-            type="url"
-            value={form.avatarUrl}
-            onChange={(event) => update("avatarUrl", event.target.value)}
-            maxLength={2048}
-            placeholder="https://..."
-          />
-        </label>
+        <section className={styles.avatarSection}>
+          <h2>Avatar</h2>
+          <p className={styles.avatarHint}>Upload a photo or generate a cartoon/anime avatar from a short description.</p>
+
+          <div className={styles.avatarPreview}>
+            {form.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={form.avatarUrl} alt="Your avatar preview" />
+            ) : (
+              <div className={styles.avatarPlaceholder}>{form.displayName.charAt(0).toUpperCase() || "M"}</div>
+            )}
+          </div>
+
+          <label className={styles.field}>
+            <span>Upload image (PNG, JPG, WEBP, max 5MB)</span>
+            <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleAvatarUpload} disabled={uploadingAvatar || generatingAvatar} />
+          </label>
+
+          <label className={styles.field}>
+            <span>Generate with AI</span>
+            <input
+              type="text"
+              value={avatarPrompt}
+              onChange={(event) => setAvatarPrompt(event.target.value)}
+              maxLength={180}
+              placeholder="Example: friendly person with glasses and blue hoodie"
+            />
+          </label>
+
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={generateAvatar}
+            disabled={generatingAvatar || uploadingAvatar || avatarPrompt.trim().length < 3}
+          >
+            {generatingAvatar ? "Generating avatar..." : "Generate avatar"}
+          </button>
+        </section>
 
         <label className={styles.field}>
           <span>Directory visibility</span>
