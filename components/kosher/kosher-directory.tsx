@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   KOSHER_SET_FILTER_EVENT,
@@ -120,32 +120,30 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [showAllFiltered, setShowAllFiltered] = useState(false);
   const selectedTagValue = normalize(selectedTag);
+  const mountedRef = useRef(false);
 
-  const urlSelectedTag = useMemo(() => resolveTagFromUrl(urlTag, tagOptions), [urlTag, tagOptions]);
-  const urlSelectedNeighborhood = useMemo(
-    () => resolveNeighborhoodFromUrl(urlNeighborhood, defaultNeighborhood),
-    [defaultNeighborhood, urlNeighborhood],
-  );
+  const updateUrl = useCallback((neighborhood: string, tag: string) => {
+    const url = new URL(window.location.href);
+    if (!neighborhood || neighborhood === "all") {
+      url.searchParams.delete("neighborhood");
+    } else {
+      url.searchParams.set("neighborhood", neighborhood);
+    }
+    if (!tag || tag === "all") {
+      url.searchParams.delete("tag");
+    } else {
+      url.searchParams.set("tag", tag);
+    }
+    window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+  }, []);
 
   useEffect(() => {
-    if (selectedTag === urlSelectedTag) {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
       return;
     }
-
-    setExpandedGroups({});
-    setShowAllFiltered(false);
-    setSelectedTag(urlSelectedTag);
-  }, [selectedTag, urlSelectedTag]);
-
-  useEffect(() => {
-    if (selectedNeighborhood === urlSelectedNeighborhood) {
-      return;
-    }
-
-    setExpandedGroups({});
-    setShowAllFiltered(false);
-    setSelectedNeighborhood(urlSelectedNeighborhood);
-  }, [selectedNeighborhood, urlSelectedNeighborhood]);
+    updateUrl(selectedNeighborhood, selectedTag);
+  }, [selectedNeighborhood, selectedTag, updateUrl]);
 
   useEffect(() => {
     const onExternalFilter = (event: Event) => {
