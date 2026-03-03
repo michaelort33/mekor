@@ -42,14 +42,6 @@ export const SITE_MENU: NavItem[] = [
     href: "/events",
   },
   {
-    label: "Donate",
-    href: "/donations",
-  },
-  {
-    label: "Kiddush",
-    href: "/kiddush",
-  },
-  {
     label: "Who We Are",
     href: "/about-us",
     children: [
@@ -61,26 +53,34 @@ export const SITE_MENU: NavItem[] = [
       { label: "In The News", href: "/in-the-news" },
       { label: "Our Community", href: "/our-communities" },
       { label: "From The Rabbi's Desk", href: "/from-the-rabbi-s-desk" },
-      { label: "Philly Jewish Community", href: "/philly-jewish-community" },
     ],
   },
   {
-    label: "Kosher Restaurants",
+    label: "Kosher",
     href: "/center-city",
+    children: [
+      { label: "Center City", href: "/center-city" },
+      { label: "Main Line & Manayunk", href: "/main-line-manyunk" },
+      { label: "Cherry Hill", href: "/cherry-hill" },
+      { label: "Old York Road / Northeast", href: "/old-yorkroad-northeast" },
+      { label: "Kosher Map", href: "/kosher-map" },
+    ],
   },
   {
     label: "More",
-    href: "/our-communities",
+    href: "/donations",
     children: [
+      { label: "Support Mekor", href: "/donations" },
+      { label: "Kiddush", href: "/kiddush" },
+      { label: "Davening", href: "/davening" },
       { label: "Auxiliary & Alumni Membership", href: "/auxiliary-membership" },
       { label: "Center City Beit Midrash", href: "/center-city-beit-midrash" },
-      { label: "Davening", href: "/davening" },
-      { label: "Kosher Map", href: "/kosher-map" },
       { label: "Volunteer", href: "/team-4" },
       { label: "Mekor Bulletin Board", href: "/mekor-bulletin-board" },
       { label: "Israel", href: "/israel" },
       { label: "Testimonials", href: "/testimonials" },
       { label: "Mekor Couples", href: "/mekorcouples" },
+      { label: "Philly Jewish Community", href: "/philly-jewish-community" },
     ],
   },
 ];

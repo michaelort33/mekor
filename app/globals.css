@@ -250,10 +250,10 @@ a {
 .native-nav__container {
   max-width: 1380px;
   margin: 0 auto;
-  padding: 10px 20px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .native-nav__brand {
@@ -288,20 +288,15 @@ a {
 
 .native-nav__desktop-list {
   margin: 0;
-  overflow-x: auto;
+  overflow: visible;
   overflow-y: visible;
   padding: 0;
   list-style: none;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   flex-wrap: nowrap;
-  gap: 4px;
-  scrollbar-width: none;
-}
-
-.native-nav__desktop-list::-webkit-scrollbar {
-  display: none;
+  gap: 2px;
 }
 
 .native-nav__desktop-item {
@@ -316,14 +311,14 @@ a {
 .native-nav__desktop-link {
   display: inline-flex;
   align-items: center;
-  height: 40px;
+  height: 36px;
   border-radius: 999px;
-  padding: 0 12px;
+  padding: 0 10px;
   color: var(--native-nav-text);
   text-decoration: none;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.015em;
+  letter-spacing: 0.01em;
   transition: background-color 130ms ease, color 130ms ease;
 }
 
@@ -444,7 +439,7 @@ a {
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
 }
 
 .native-nav__cta-wrap {
@@ -454,80 +449,61 @@ a {
 .native-nav__cta-list {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .native-nav__cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  height: 39px;
-  border-radius: 999px;
-  padding: 0 14px 0 15px;
-  border: 1px solid transparent;
-  color: #fff !important;
+  height: 36px;
+  border-radius: 10px;
+  padding: 0 12px;
+  border: 1px solid var(--native-nav-border);
+  color: var(--native-nav-text) !important;
+  background: var(--native-nav-surface);
   text-decoration: none;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
-  transition: filter 130ms ease, transform 130ms ease, box-shadow 130ms ease;
+  letter-spacing: 0.01em;
+  transition: background-color 130ms ease, color 130ms ease, border-color 130ms ease;
 }
 
 .native-nav__cta-label {
   line-height: 1;
 }
 
-.native-nav__cta-icon {
-  width: 16px;
-  height: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.native-nav__cta-icon svg {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
-}
-
 .native-nav__cta--join {
-  border-color: #129b42;
-  background: linear-gradient(180deg, #26d366 0%, #10a744 100%);
-  color: #f7fff9 !important;
-  box-shadow: 0 2px 10px rgba(16, 167, 68, 0.3);
-}
-
-.native-nav__cta--join .native-nav__cta-icon {
-  color: #ffffff;
+  border-color: #4a6c8f;
+  color: #2a4663 !important;
+  background: #fff;
 }
 
 .native-nav__cta--support {
-  border-color: #2d658f;
-  background: linear-gradient(180deg, #3f7eb0 0%, #2b6593 100%);
+  border-color: #2d5f8c;
+  background: #2f628f;
   color: #ffffff !important;
-  box-shadow: 0 2px 10px rgba(31, 87, 129, 0.22);
 }
 
 .native-nav__cta--signin {
-  border-color: #2f4d6f;
-  background: linear-gradient(180deg, #4b7094 0%, #375b7f 100%);
-  color: #ffffff !important;
+  border-color: #8ea2b7;
+  color: #29435e !important;
+  background: #fff;
 }
 
 .native-nav__cta--members {
-  border-color: #1e6f4e;
-  background: linear-gradient(180deg, #24a46d 0%, #1d8759 100%);
-  color: #ffffff !important;
+  border-color: #5f7f9e;
+  color: #28435e !important;
+  background: #fff;
 }
 
 .native-nav__cta:hover,
 .native-nav__cta:focus-visible {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-  box-shadow: 0 5px 14px rgba(20, 33, 50, 0.22);
-  outline: none;
+  background: #f3f8fd;
+  border-color: #6588ac;
+  color: #1f3f5e !important;
+  outline: 2px solid var(--native-focus-ring);
+  outline-offset: 2px;
 }
 
 .native-nav__mobile-toggle {
@@ -716,7 +692,7 @@ body.native-nav--mobile-open {
   overflow: hidden;
 }
 
-@media (max-width: 1220px) {
+@media (max-width: 1320px) {
   .native-nav__container {
     padding: 12px 14px;
     gap: 10px;
