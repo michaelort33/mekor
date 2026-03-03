@@ -35,9 +35,11 @@ export function MembersBreadcrumbs({ items }: MembersBreadcrumbsProps) {
         <Link href="/" className={styles.home}>
           Site Home
         </Link>
-        <Link href="/logout" className={styles.home}>
-          Sign out
-        </Link>
+        <form action="/logout" method="post">
+          <button type="submit" className={styles.home}>
+            Sign out
+          </button>
+        </form>
       </div>
     </nav>
   );

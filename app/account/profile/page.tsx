@@ -156,7 +156,8 @@ export default function AccountProfilePage() {
   }
 
   async function logout() {
-    window.location.assign("/logout");
+    await fetch("/api/auth/logout", { method: "POST" });
+    window.location.assign("/");
   }
 
   if (loading) {

@@ -23,6 +23,23 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   return (
     <div className="native-nav__cta-list">
       {links.map((link) => {
+        if (link.variant === "signout") {
+          return (
+            <button
+              key={link.label}
+              type="button"
+              className={`native-nav__cta native-nav__cta--${link.variant}`}
+              aria-label={link.label}
+              onClick={async () => {
+                await fetch("/api/auth/logout", { method: "POST" });
+                window.location.assign("/");
+              }}
+            >
+              <span className="native-nav__cta-label">{link.label}</span>
+            </button>
+          );
+        }
+
         const external = /^https?:\/\//i.test(link.href);
         return (
           <a

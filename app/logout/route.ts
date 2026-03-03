@@ -8,7 +8,6 @@ function redirectHome(request: Request) {
 }
 
 export async function GET(request: Request) {
-  await destroyUserSession();
   return redirectHome(request);
 }
 
