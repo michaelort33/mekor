@@ -30,6 +30,8 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
   const activePath = normalizePath(pathname ?? currentPath);
   const [openDesktopByPath, setOpenDesktopByPath] = useState<Record<string, string | null>>({});
   const [mobileOpenByPath, setMobileOpenByPath] = useState<Record<string, boolean>>({});
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const mobileTriggerRef = useRef<HTMLButtonElement | null>(null);
   const previousMobileOpenRef = useRef(false);
   const openDesktopGroupId = openDesktopByPath[activePath] ?? null;
@@ -63,6 +65,35 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
     previousMobileOpenRef.current = mobileOpen;
   }, [mobileOpen]);
 
+  useEffect(() => {
+    let active = true;
+
+    async function checkSession() {
+      try {
+        const response = await fetch("/api/account/profile", { cache: "no-store" });
+        if (!active) {
+          return;
+        }
+
+        setIsSignedIn(response.ok);
+      } catch {
+        if (active) {
+          setIsSignedIn(false);
+        }
+      } finally {
+        if (active) {
+          setIsCheckingAuth(false);
+        }
+      }
+    }
+
+    void checkSession();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <>
       <header className="native-nav" data-native-nav-root="true">
@@ -78,7 +109,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
 
           <div className="native-nav__actions">
             <div className="native-nav__cta-wrap">
-              <NavCta />
+              <NavCta isSignedIn={isSignedIn} isCheckingAuth={isCheckingAuth} />
             </div>
             <button
               ref={mobileTriggerRef}
@@ -105,6 +136,8 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
           onClose={() => setMobileOpen(false)}
           drawerId="native-mobile-drawer"
           titleId="native-mobile-drawer-title"
+          isSignedIn={isSignedIn}
+          isCheckingAuth={isCheckingAuth}
         />
       </div>
     </>

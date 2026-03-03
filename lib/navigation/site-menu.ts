@@ -31,10 +31,11 @@ export const SITE_MENU: NavItem[] = [
   {
     label: "Members Area",
     href: "/members",
-  },
-  {
-    label: "Community Directory",
-    href: "/community",
+    children: [
+      { label: "Members directory", href: "/members" },
+      { label: "Community directory", href: "/community" },
+      { label: "Your profile", href: "/account/profile" },
+    ],
   },
   {
     label: "Events",

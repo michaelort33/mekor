@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { and, eq, inArray } from "drizzle-orm";
-import { notFound } from "next/navigation";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
@@ -18,7 +17,17 @@ export const dynamic = "force-dynamic";
 
 export default async function CommunityProfilePage({ params }: PageProps) {
   if (!isFeatureEnabled("FEATURE_PUBLIC_DIRECTORY")) {
-    notFound();
+    return (
+      <main className={styles.page}>
+        <header className={styles.header}>
+          <h1>Community Directory</h1>
+          <p>Public directory is temporarily unavailable. Sign in to access the Members Directory.</p>
+        </header>
+        <section className={styles.empty}>
+          <Link href="/members">Go to Members Directory</Link>
+        </section>
+      </main>
+    );
   }
 
   const { id } = await params;

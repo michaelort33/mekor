@@ -288,32 +288,37 @@ a {
 
 .native-nav__desktop-list {
   margin: 0;
-  overflow: visible;
+  overflow-x: auto;
+  overflow-y: visible;
   padding: 0;
   list-style: none;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
-  gap: 2px;
+  gap: 4px;
+  scrollbar-width: none;
+}
+
+.native-nav__desktop-list::-webkit-scrollbar {
+  display: none;
 }
 
 .native-nav__desktop-item {
   position: relative;
-  flex-shrink: 0;
+  flex: 0 0 auto;
 }
 
 .native-nav__desktop-item--group {
-  padding-bottom: 8px;
-  margin-bottom: -8px;
+  position: relative;
 }
 
 .native-nav__desktop-link {
   display: inline-flex;
   align-items: center;
-  height: 42px;
+  height: 40px;
   border-radius: 999px;
-  padding: 0 10px;
+  padding: 0 12px;
   color: var(--native-nav-text);
   text-decoration: none;
   font-size: 0.85rem;
@@ -339,6 +344,7 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  padding-right: 4px;
 }
 
 .native-nav__desktop-chevron {
@@ -502,6 +508,18 @@ a {
   background: linear-gradient(180deg, #3f7eb0 0%, #2b6593 100%);
   color: #ffffff !important;
   box-shadow: 0 2px 10px rgba(31, 87, 129, 0.22);
+}
+
+.native-nav__cta--signin {
+  border-color: #2f4d6f;
+  background: linear-gradient(180deg, #4b7094 0%, #375b7f 100%);
+  color: #ffffff !important;
+}
+
+.native-nav__cta--members {
+  border-color: #1e6f4e;
+  background: linear-gradient(180deg, #24a46d 0%, #1d8759 100%);
+  color: #ffffff !important;
 }
 
 .native-nav__cta:hover,

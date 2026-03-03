@@ -15,6 +15,8 @@ type MobileDrawerProps = {
   onClose: () => void;
   drawerId: string;
   titleId: string;
+  isSignedIn: boolean;
+  isCheckingAuth: boolean;
 };
 
 function normalizePath(path: string) {
@@ -52,7 +54,16 @@ function getFocusableElements(root: HTMLElement) {
   ).filter((element) => !element.hasAttribute("hidden"));
 }
 
-export function MobileDrawer({ items, currentPath, isOpen, onClose, drawerId, titleId }: MobileDrawerProps) {
+export function MobileDrawer({
+  items,
+  currentPath,
+  isOpen,
+  onClose,
+  drawerId,
+  titleId,
+  isSignedIn,
+  isCheckingAuth,
+}: MobileDrawerProps) {
   const initialExpanded = useMemo(() => {
     const expanded = new Set<string>();
 
@@ -234,7 +245,7 @@ export function MobileDrawer({ items, currentPath, isOpen, onClose, drawerId, ti
       </nav>
 
       <div className="native-nav__mobile-footer">
-        <NavCta />
+        <NavCta isSignedIn={isSignedIn} isCheckingAuth={isCheckingAuth} />
       </div>
     </div>
   );
