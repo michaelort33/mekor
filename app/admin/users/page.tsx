@@ -107,6 +107,9 @@ export default function AdminUsersPage() {
           <p>Promote visitors and control profile visibility. Only super admins can manage admin-level roles.</p>
         </div>
         <div className={styles.actions}>
+          <Link href="/admin/settings" className={styles.backLink}>
+            Settings
+          </Link>
           <Link href="/admin/dues" className={styles.backLink}>
             Dues admin
           </Link>

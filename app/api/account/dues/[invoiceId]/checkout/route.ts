@@ -13,7 +13,7 @@ type Params = {
 };
 
 export async function POST(request: Request, { params }: Params) {
-  if (!isFeatureEnabled("FEATURE_DUES")) {
+  if (!(await isFeatureEnabled("FEATURE_DUES"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 

@@ -7,7 +7,7 @@ import { getUserSession } from "@/lib/auth/session";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
 
 export async function GET() {
-  if (!isFeatureEnabled("FEATURE_DUES")) {
+  if (!(await isFeatureEnabled("FEATURE_DUES"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 

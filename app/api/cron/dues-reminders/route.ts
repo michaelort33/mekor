@@ -25,7 +25,7 @@ function formatMoney(cents: number, currency: string) {
 }
 
 export async function GET(request: NextRequest) {
-  if (!isFeatureEnabled("FEATURE_DUES")) {
+  if (!(await isFeatureEnabled("FEATURE_DUES"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 

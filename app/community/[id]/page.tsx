@@ -18,7 +18,7 @@ type PageProps = {
 export const dynamic = "force-dynamic";
 
 export default async function CommunityProfilePage({ params }: PageProps) {
-  if (!isFeatureEnabled("FEATURE_PUBLIC_DIRECTORY")) {
+  if (!(await isFeatureEnabled("FEATURE_PUBLIC_DIRECTORY"))) {
     return (
       <main className={styles.page}>
         <MembersBreadcrumbs

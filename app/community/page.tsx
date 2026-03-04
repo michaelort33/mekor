@@ -11,7 +11,7 @@ import styles from "./page.module.css";
 export const dynamic = "force-dynamic";
 
 export default async function CommunityDirectoryPage() {
-  const hasPublicDirectory = isFeatureEnabled("FEATURE_PUBLIC_DIRECTORY");
+  const hasPublicDirectory = await isFeatureEnabled("FEATURE_PUBLIC_DIRECTORY");
 
   if (!hasPublicDirectory) {
     return (
