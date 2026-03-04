@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { getDb } from "@/db/client";
 import { duesSchedules, users } from "@/db/schema";
-import { getAdminSession } from "@/lib/admin/session";
+import { requireAdminActor } from "@/lib/admin/actor";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
 
 const createSchema = z.object({
@@ -21,22 +21,13 @@ const updateSchema = createSchema.partial().extend({
   id: z.number().int().min(1),
 });
 
-async function requireAdmin() {
-  const hasSession = await getAdminSession();
-  if (!hasSession) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  return null;
-}
-
 export async function GET(request: Request) {
   if (!(await isFeatureEnabled("FEATURE_DUES"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  const unauthorized = await requireAdmin();
-  if (unauthorized) return unauthorized;
+  const adminResult = await requireAdminActor();
+  if ("error" in adminResult) return adminResult.error;
 
   const url = new URL(request.url);
   const userId = Number(url.searchParams.get("userId") || "0");
@@ -68,8 +59,8 @@ export async function POST(request: Request) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  const unauthorized = await requireAdmin();
-  if (unauthorized) return unauthorized;
+  const adminResult2 = await requireAdminActor();
+  if ("error" in adminResult2) return adminResult2.error;
 
   const parsed = createSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) {
@@ -98,8 +89,8 @@ export async function PUT(request: Request) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  const unauthorized = await requireAdmin();
-  if (unauthorized) return unauthorized;
+  const adminResult3 = await requireAdminActor();
+  if ("error" in adminResult3) return adminResult3.error;
 
   const parsed = updateSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) {
