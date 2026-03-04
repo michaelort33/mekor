@@ -1,5 +1,6 @@
 export const ADMIN_SESSION_COOKIE = "mekor_admin_session";
 export const USER_SESSION_COOKIE = "mekor_user_session";
+export type EdgeUserRole = "visitor" | "member" | "admin" | "super_admin";
 
 function toArrayBuffer(bytes: Uint8Array) {
   const buffer = new ArrayBuffer(bytes.byteLength);
@@ -72,4 +73,21 @@ export async function hasValidUserSession(token: string) {
   if (typeof exp !== "number" || Date.now() > exp) return false;
 
   return true;
+}
+
+export async function getValidUserSessionRole(token: string): Promise<EdgeUserRole | null> {
+  const secret = getSecret(process.env.USER_SESSION_SECRET);
+  if (!secret) return null;
+
+  const parsed = await verifyToken(token, secret);
+  if (!parsed) return null;
+
+  const userId = parsed.userId;
+  const role = parsed.role;
+  const exp = parsed.exp;
+  if (!Number.isInteger(userId) || Number(userId) < 1) return null;
+  if (role !== "visitor" && role !== "member" && role !== "admin" && role !== "super_admin") return null;
+  if (typeof exp !== "number" || Date.now() > exp) return null;
+
+  return role;
 }

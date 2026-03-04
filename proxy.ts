@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getEdgeProtectionType, isAdminLoginPath, isApiPath } from "@/lib/auth/edge-route-policy";
-import { ADMIN_SESSION_COOKIE, USER_SESSION_COOKIE, hasValidAdminSession, hasValidUserSession } from "@/lib/auth/edge-session";
+import { USER_SESSION_COOKIE, getValidUserSessionRole, hasValidUserSession } from "@/lib/auth/edge-session";
 import statusOverrides from "@/mirror-data/routes/status-overrides.json";
 
 const STATUS_MAP = new Map<string, number>(
@@ -25,12 +25,10 @@ function unauthorizedResponse(
 ) {
   const response = options.isApi
     ? NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    : options.type === "admin"
-      ? NextResponse.redirect(new URL("/admin/login", request.url))
-      : NextResponse.redirect(buildUserLoginRedirect(request));
+    : NextResponse.redirect(buildUserLoginRedirect(request));
 
   if (options.clearCookie) {
-    response.cookies.delete(options.type === "admin" ? ADMIN_SESSION_COOKIE : USER_SESSION_COOKIE);
+    response.cookies.delete(USER_SESSION_COOKIE);
   }
 
   return response;
@@ -69,7 +67,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.next();
     }
 
-    const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+    const token = request.cookies.get(USER_SESSION_COOKIE)?.value;
     if (!token) {
       return unauthorizedResponse(request, {
         type: "admin",
@@ -77,12 +75,18 @@ export async function proxy(request: NextRequest) {
       });
     }
 
-    const valid = await hasValidAdminSession(token);
-    if (!valid) {
+    const role = await getValidUserSessionRole(token);
+    if (!role) {
       return unauthorizedResponse(request, {
         type: "admin",
         isApi: isApiPath(pathname),
         clearCookie: true,
+      });
+    }
+    if (role !== "admin" && role !== "super_admin") {
+      return unauthorizedResponse(request, {
+        type: "admin",
+        isApi: isApiPath(pathname),
       });
     }
 

@@ -87,7 +87,7 @@ export default function AdminDuesPage() {
     ]);
 
     if (schedulesResponse.status === 401 || invoicesResponse.status === 401 || usersResponse.status === 401) {
-      router.push("/admin/login");
+      router.push("/login?next=/admin/dues");
       return;
     }
 

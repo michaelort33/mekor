@@ -55,7 +55,7 @@ export default function AdminUsersPage() {
 
     const response = await fetch(`/api/admin/users?${params.toString()}`);
     if (response.status === 401) {
-      router.push("/admin/login");
+      router.push("/login?next=/admin/users");
       return;
     }
 

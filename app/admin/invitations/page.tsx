@@ -52,7 +52,7 @@ export default function AdminInvitationsPage() {
 
     const response = await fetch(`/api/admin/invitations?${params.toString()}`);
     if (response.status === 401) {
-      router.push("/admin/login");
+      router.push("/login?next=/admin/invitations");
       return;
     }
     const payload = (await response.json().catch(() => ({}))) as {

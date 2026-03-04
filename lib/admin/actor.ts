@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 
 import { getDb } from "@/db/client";
 import { adminAuditLog, users } from "@/db/schema";
-import { getAdminSession } from "@/lib/admin/session";
 import { getUserSession } from "@/lib/auth/session";
 
 export type AdminActor = {
@@ -39,16 +38,9 @@ async function maybeBootstrapSuperAdmin(actor: AdminActor): Promise<AdminActor> 
 }
 
 export async function requireAdminActor() {
-  const hasAdminSession = await getAdminSession();
-  if (!hasAdminSession) {
-    return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) } as const;
-  }
-
   const userSession = await getUserSession();
   if (!userSession) {
-    return {
-      error: NextResponse.json({ error: "Admin identity required. Sign in with a user account first." }, { status: 403 }),
-    } as const;
+    return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) } as const;
   }
 
   const [actorFromDb] = await getDb()

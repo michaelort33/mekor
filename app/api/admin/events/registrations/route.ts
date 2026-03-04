@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { getDb } from "@/db/client";
 import { eventRegistrations, eventTicketTiers, events, users } from "@/db/schema";
-import { getAdminSession } from "@/lib/admin/session";
+import { requireAdminActor } from "@/lib/admin/actor";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
 import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 
@@ -15,11 +15,8 @@ const registrationsCursorSchema = z.object({
 });
 
 async function requireAdmin() {
-  const hasSession = await getAdminSession();
-  if (!hasSession) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+  const result = await requireAdminActor();
+  if ("error" in result) return result.error;
   return null;
 }
 

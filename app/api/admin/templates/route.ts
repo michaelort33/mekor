@@ -3,14 +3,11 @@ import { desc, eq } from "drizzle-orm";
 
 import { getDb } from "@/db/client";
 import { newsletterTemplates } from "@/db/schema";
-import { getAdminSession } from "@/lib/admin/session";
+import { requireAdminActor } from "@/lib/admin/actor";
 
 async function requireAdmin() {
-  const hasSession = await getAdminSession();
-  if (!hasSession) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+  const result = await requireAdminActor();
+  if ("error" in result) return result.error;
   return null;
 }
 

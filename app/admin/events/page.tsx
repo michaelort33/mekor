@@ -59,7 +59,7 @@ export default function AdminEventsPage() {
     ]);
 
     if (registrationsResponse.status === 401 || settingsResponse.status === 401) {
-      router.push("/admin/login");
+      router.push("/login?next=/admin/events");
       return;
     }
 

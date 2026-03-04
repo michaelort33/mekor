@@ -28,7 +28,7 @@ export default function AdminSettingsPage() {
 
     const response = await fetch("/api/admin/settings");
     if (response.status === 401) {
-      router.push("/admin/login");
+      router.push("/login?next=/admin/settings");
       return;
     }
 
