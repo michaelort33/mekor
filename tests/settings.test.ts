@@ -6,7 +6,7 @@ import { getDb } from "@/db/client";
 import { systemSettings } from "@/db/schema";
 import { isFeatureEnabled, clearSettingsCache } from "@/lib/config/features";
 
-describe("System Settings", () => {
+describe("System Settings", { skip: !process.env.DATABASE_URL }, () => {
   it("should have feature flags seeded in database", async () => {
     const db = getDb();
     const settings = await db.select().from(systemSettings);
