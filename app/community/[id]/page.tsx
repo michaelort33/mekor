@@ -92,11 +92,11 @@ export default async function CommunityProfilePage({ params }: PageProps) {
           )}
           <div>
             <h1>{anonymous ? "Community Member" : member.displayName}</h1>
-            {member.city ? <p className={styles.city}>{member.city}</p> : null}
+            {!anonymous && member.city ? <p className={styles.city}>{member.city}</p> : null}
           </div>
         </header>
 
-        {member.bio ? <p className={styles.bio}>{member.bio}</p> : <p className={styles.bio}>No bio provided.</p>}
+        {!anonymous && member.bio ? <p className={styles.bio}>{member.bio}</p> : anonymous ? null : <p className={styles.bio}>No bio provided.</p>}
 
         <Link href="/community" className={styles.backLink}>
           ← Back to directory
