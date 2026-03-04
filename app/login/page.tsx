@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import styles from "./page.module.css";
@@ -18,7 +18,6 @@ function resolveNextPath(value: string | null) {
 }
 
 export default function LoginPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const nextPath = useMemo(() => resolveNextPath(searchParams.get("next")), [searchParams]);
 
@@ -46,9 +45,7 @@ export default function LoginPage() {
         return;
       }
 
-      setSubmitting(false);
-      router.replace(nextPath);
-      router.refresh();
+      window.location.assign(nextPath);
     } catch {
       setError("Login failed");
       setSubmitting(false);
@@ -74,6 +71,7 @@ export default function LoginPage() {
             onChange={(event) => setEmail(event.target.value)}
             required
             maxLength={255}
+            autoComplete="email"
           />
         </label>
 
@@ -85,6 +83,7 @@ export default function LoginPage() {
             onChange={(event) => setPassword(event.target.value)}
             required
             minLength={8}
+            autoComplete="current-password"
           />
         </label>
 
