@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
 import styles from "./page.module.css";
@@ -52,6 +53,7 @@ function toMoney(cents: number, currency: string) {
 }
 
 export default function AccountDuesPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [checkoutLoadingId, setCheckoutLoadingId] = useState<number | null>(null);
@@ -66,6 +68,10 @@ export default function AccountDuesPage() {
   useEffect(() => {
     async function load() {
       const response = await fetch("/api/account/dues");
+      if (response.status === 401) {
+        router.replace("/login?next=/account/dues");
+        return;
+      }
       const payload = (await response.json().catch(() => ({}))) as DuesResponse & { error?: string };
 
       if (!response.ok) {
@@ -82,7 +88,7 @@ export default function AccountDuesPage() {
       setError("Unable to load dues");
       setLoading(false);
     });
-  }, []);
+  }, [router]);
 
   async function payInvoice(invoiceId: number) {
     setCheckoutLoadingId(invoiceId);

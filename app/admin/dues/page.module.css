@@ -34,6 +34,38 @@
   padding: 1rem;
 }
 
+.scheduleHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.7rem;
+}
+
+.scheduleHeader h2 {
+  margin: 0;
+}
+
+.scheduleHeader button {
+  min-height: 36px;
+  border: 1px solid #2f6ea9;
+  border-radius: 8px;
+  background: #f4f8ff;
+  color: #21507b;
+  font-weight: 700;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.notice {
+  margin: 0 0 0.75rem;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+}
+
 .list {
   list-style: none;
   margin: 0;
@@ -127,5 +159,10 @@
 
   .formGrid {
     grid-template-columns: 1fr;
+  }
+
+  .scheduleHeader {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

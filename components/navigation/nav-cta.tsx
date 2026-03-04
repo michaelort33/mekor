@@ -9,7 +9,7 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   const authAction = isCheckingAuth
     ? { label: "Checking…", href: "/login?next=%2Fmembers", variant: "signin" as const }
     : isSignedIn
-      ? { label: "Account", href: "/account/profile", variant: "members" as const }
+      ? { label: "Account", href: "/account", variant: "members" as const }
       : { label: "Sign In", href: "/login?next=%2Fmembers", variant: "signin" as const };
   const signOutAction = { label: "Sign Out", href: "/logout", variant: "signout" as const };
 

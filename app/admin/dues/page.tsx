@@ -44,6 +44,14 @@ type PageInfo = {
   limit: number;
 };
 
+type ScheduleRunResult = {
+  createdInvoices: number;
+  deduped: number;
+  notificationsSent: number;
+  notificationsFailed: number;
+  advancedSchedules: number;
+};
+
 function formatMoney(cents: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -66,7 +74,18 @@ export default function AdminDuesPage() {
     amountCents: "",
     dueDate: "",
   });
+  const [scheduleForm, setScheduleForm] = useState({
+    userId: "",
+    frequency: "monthly" as "annual" | "monthly" | "custom",
+    amountCents: "",
+    nextDueDate: "",
+    notes: "",
+    active: true,
+  });
   const [savingInvoice, setSavingInvoice] = useState(false);
+  const [savingSchedule, setSavingSchedule] = useState(false);
+  const [runningSchedules, setRunningSchedules] = useState(false);
+  const [runNotice, setRunNotice] = useState("");
 
   async function load(options?: { reset?: boolean; schedulesCursor?: string | null; invoicesCursor?: string | null }) {
     setLoading(true);
@@ -187,6 +206,73 @@ export default function AdminDuesPage() {
     await load({ reset: true });
   }
 
+  async function createSchedule(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setRunNotice("");
+
+    const userId = Number.parseInt(scheduleForm.userId, 10);
+    const amountCents = Number.parseInt(scheduleForm.amountCents, 10);
+    if (!Number.isInteger(userId) || userId < 1 || !Number.isInteger(amountCents) || amountCents < 1) {
+      setError("Choose a user and enter a valid schedule amount in cents.");
+      return;
+    }
+    if (!scheduleForm.nextDueDate) {
+      setError("Schedule next due date is required.");
+      return;
+    }
+
+    setSavingSchedule(true);
+    const response = await fetch("/api/admin/dues/schedules", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        frequency: scheduleForm.frequency,
+        amountCents,
+        currency: "usd",
+        nextDueDate: scheduleForm.nextDueDate,
+        active: scheduleForm.active,
+        notes: scheduleForm.notes,
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    if (!response.ok) {
+      setError(payload.error || "Unable to create schedule");
+      setSavingSchedule(false);
+      return;
+    }
+
+    setScheduleForm((prev) => ({
+      ...prev,
+      amountCents: "",
+      nextDueDate: "",
+      notes: "",
+    }));
+    setSavingSchedule(false);
+    await load({ reset: true });
+  }
+
+  async function runScheduleInvoicing() {
+    setError("");
+    setRunNotice("");
+    setRunningSchedules(true);
+
+    const response = await fetch("/api/admin/dues/schedules/generate", { method: "POST" });
+    const payload = (await response.json().catch(() => ({}))) as ScheduleRunResult & { error?: string };
+    if (!response.ok) {
+      setError(payload.error || "Unable to run schedule invoicing");
+      setRunningSchedules(false);
+      return;
+    }
+
+    setRunNotice(
+      `Created ${payload.createdInvoices} invoice(s), advanced ${payload.advancedSchedules} schedule(s), sent ${payload.notificationsSent} notification(s).`,
+    );
+    setRunningSchedules(false);
+    await load({ reset: true });
+  }
+
   useEffect(() => {
     load({ reset: true }).catch(() => {
       setError("Unable to load dues admin data");
@@ -287,7 +373,89 @@ export default function AdminDuesPage() {
           </section>
 
           <section className={styles.card}>
-            <h2>Schedules</h2>
+            <h2>Add schedule</h2>
+            <form className={styles.formGrid} onSubmit={createSchedule}>
+              <label>
+                User
+                <select
+                  value={scheduleForm.userId}
+                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, userId: event.target.value }))}
+                  required
+                >
+                  <option value="">Select user</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={String(user.id)}>
+                      {user.displayName} ({user.email})
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Frequency
+                <select
+                  value={scheduleForm.frequency}
+                  onChange={(event) =>
+                    setScheduleForm((prev) => ({
+                      ...prev,
+                      frequency: event.target.value as "annual" | "monthly" | "custom",
+                    }))
+                  }
+                >
+                  <option value="monthly">monthly</option>
+                  <option value="annual">annual</option>
+                  <option value="custom">custom</option>
+                </select>
+              </label>
+              <label>
+                Amount (cents)
+                <input
+                  type="number"
+                  min={1}
+                  value={scheduleForm.amountCents}
+                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, amountCents: event.target.value }))}
+                  required
+                />
+              </label>
+              <label>
+                Next due date
+                <input
+                  type="date"
+                  value={scheduleForm.nextDueDate}
+                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, nextDueDate: event.target.value }))}
+                  required
+                />
+              </label>
+              <label>
+                Notes
+                <input
+                  value={scheduleForm.notes}
+                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, notes: event.target.value }))}
+                />
+              </label>
+              <label>
+                Active
+                <select
+                  value={scheduleForm.active ? "true" : "false"}
+                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, active: event.target.value === "true" }))}
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+              </label>
+              <button type="submit" disabled={savingSchedule}>
+                {savingSchedule ? "Saving..." : "Create schedule"}
+              </button>
+            </form>
+          </section>
+
+          <section className={styles.card}>
+            <div className={styles.scheduleHeader}>
+              <h2>Schedules</h2>
+              <button type="button" onClick={runScheduleInvoicing} disabled={runningSchedules}>
+                {runningSchedules ? "Running..." : "Generate invoices from schedules"}
+              </button>
+            </div>
+            {runNotice ? <p className={styles.notice}>{runNotice}</p> : null}
             {schedules.length === 0 ? (
               <p>No schedules created.</p>
             ) : (

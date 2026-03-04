@@ -32,6 +32,8 @@ export const SITE_MENU: NavItem[] = [
     label: "Members Area",
     href: "/members",
     children: [
+      { label: "Dashboard", href: "/account" },
+      { label: "Dues & payments", href: "/account/dues" },
       { label: "Members directory", href: "/members" },
       { label: "Community directory", href: "/community" },
       { label: "Your profile", href: "/account/profile" },
