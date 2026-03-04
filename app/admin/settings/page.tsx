@@ -99,6 +99,9 @@ export default function AdminSettingsPage() {
           <Link href="/admin/dues" className={styles.backLink}>
             Dues admin
           </Link>
+          <Link href="/admin/messages" className={styles.backLink}>
+            Message logs
+          </Link>
           <Link href="/admin/events" className={styles.backLink}>
             Events admin
           </Link>

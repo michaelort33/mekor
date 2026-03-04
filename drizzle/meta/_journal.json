@@ -78,6 +78,13 @@
       "when": 1772637059502,
       "tag": "0010_wealthy_blonde_phantom",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1772664910722,
+      "tag": "0011_big_paladin",
+      "breakpoints": true
     }
   ]
 }

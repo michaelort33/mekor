@@ -131,6 +131,7 @@ export default function AdminInvitationsPage() {
           <Link href="/admin/users">Users admin</Link>
           <Link href="/admin/dues">Dues admin</Link>
           <Link href="/admin/events">Events admin</Link>
+          <Link href="/admin/messages">Message logs</Link>
           <Link href="/admin/settings">Settings</Link>
         </div>
       </header>

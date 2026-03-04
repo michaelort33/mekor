@@ -87,7 +87,7 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 820px;
+  min-width: 1200px;
   background: #ffffff;
 }
 
@@ -112,6 +112,18 @@
   border: 1px solid #c8d6e4;
   border-radius: 7px;
   padding: 0 8px;
+}
+
+.table td input[type="date"] {
+  min-height: 34px;
+  border: 1px solid #c8d6e4;
+  border-radius: 7px;
+  padding: 0 8px;
+}
+
+.table td input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
 }
 
 .table td button {

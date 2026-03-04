@@ -29,6 +29,8 @@ export const duesNotificationTypeEnum = pgEnum("dues_notification_type", [
   "overdue_weekly",
 ]);
 export const duesNotificationDeliveryStatusEnum = pgEnum("dues_notification_delivery_status", ["sent", "failed"]);
+export const automatedMessageTypeEnum = pgEnum("automated_message_type", ["membership_renewal_reminder"]);
+export const automatedMessageDeliveryStatusEnum = pgEnum("automated_message_delivery_status", ["sent", "failed"]);
 export const eventRegistrationStatusEnum = pgEnum("event_registration_status", [
   "registered",
   "waitlisted",
@@ -155,6 +157,9 @@ export const users = pgTable(
     avatarUrl: text("avatar_url").notNull().default(""),
     role: userRoleEnum("role").notNull().default("visitor"),
     profileVisibility: profileVisibilityEnum("profile_visibility").notNull().default("private"),
+    membershipStartDate: date("membership_start_date"),
+    membershipRenewalDate: date("membership_renewal_date"),
+    autoMessagesEnabled: boolean("auto_messages_enabled").notNull().default(true),
     lastLoginAt: timestamp("last_login_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -166,6 +171,7 @@ export const users = pgTable(
       table.displayName,
     ),
     createdAtIdIdx: index("users_created_at_id_idx").on(table.createdAt, table.id),
+    renewalAutoMessagesIdx: index("users_renewal_auto_messages_idx").on(table.membershipRenewalDate, table.autoMessagesEnabled),
   }),
 );
 
@@ -274,6 +280,36 @@ export const duesNotificationLog = pgTable(
   (table) => ({
     invoiceTypeIdx: index("dues_notification_log_invoice_type_idx").on(table.invoiceId, table.notificationType),
     paymentTypeIdx: index("dues_notification_log_payment_type_idx").on(table.paymentId, table.notificationType),
+  }),
+);
+
+export const automatedMessageLog = pgTable(
+  "automated_message_log",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    messageType: automatedMessageTypeEnum("message_type").notNull(),
+    membershipRenewalDate: date("membership_renewal_date").notNull(),
+    recipientEmail: varchar("recipient_email", { length: 255 }).notNull(),
+    subject: varchar("subject", { length: 255 }).notNull(),
+    body: text("body").notNull(),
+    provider: varchar("provider", { length: 40 }).notNull().default("sendgrid"),
+    providerMessageId: varchar("provider_message_id", { length: 255 }).notNull().default(""),
+    deliveryStatus: automatedMessageDeliveryStatusEnum("delivery_status").notNull(),
+    errorMessage: text("error_message").notNull().default(""),
+    sentAt: timestamp("sent_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    userTypeRenewalUniqueIdx: uniqueIndex("automated_message_log_user_type_renewal_unique_idx").on(
+      table.userId,
+      table.messageType,
+      table.membershipRenewalDate,
+    ),
+    createdAtIdIdx: index("automated_message_log_created_at_id_idx").on(table.createdAt, table.id),
   }),
 );
 

@@ -131,6 +131,7 @@ export default function AdminEventsPage() {
         <div className={styles.links}>
           <Link href="/admin/settings">Settings</Link>
           <Link href="/admin/dues">Dues admin</Link>
+          <Link href="/admin/messages">Message logs</Link>
           <Link href="/admin/users">Users admin</Link>
           <Link href="/admin/templates">Templates</Link>
         </div>

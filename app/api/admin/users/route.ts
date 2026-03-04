@@ -18,6 +18,9 @@ const updateUserPayloadSchema = z.object({
   id: z.number().int().min(1),
   role: roleSchema,
   profileVisibility: z.enum(["private", "members", "public", "anonymous"]),
+  membershipStartDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  membershipRenewalDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+  autoMessagesEnabled: z.boolean().optional(),
 });
 
 const usersCursorSchema = z.object({
@@ -65,6 +68,9 @@ export async function GET(request: Request) {
       displayName: users.displayName,
       role: users.role,
       profileVisibility: users.profileVisibility,
+      membershipStartDate: users.membershipStartDate,
+      membershipRenewalDate: users.membershipRenewalDate,
+      autoMessagesEnabled: users.autoMessagesEnabled,
       stripeCustomerId: stripeCustomers.stripeCustomerId,
       createdAt: users.createdAt,
       lastLoginAt: users.lastLoginAt,
@@ -132,6 +138,9 @@ export async function PUT(request: Request) {
     .select({
       id: users.id,
       role: users.role,
+      membershipStartDate: users.membershipStartDate,
+      membershipRenewalDate: users.membershipRenewalDate,
+      autoMessagesEnabled: users.autoMessagesEnabled,
     })
     .from(users)
     .where(eq(users.id, parsed.data.id))
@@ -155,6 +164,18 @@ export async function PUT(request: Request) {
     .set({
       role: parsed.data.role,
       profileVisibility: parsed.data.profileVisibility,
+      membershipStartDate:
+        parsed.data.membershipStartDate === undefined
+          ? targetUser.membershipStartDate
+          : parsed.data.membershipStartDate,
+      membershipRenewalDate:
+        parsed.data.membershipRenewalDate === undefined
+          ? targetUser.membershipRenewalDate
+          : parsed.data.membershipRenewalDate,
+      autoMessagesEnabled:
+        parsed.data.autoMessagesEnabled === undefined
+          ? targetUser.autoMessagesEnabled
+          : parsed.data.autoMessagesEnabled,
       updatedAt: new Date(),
     })
     .where(eq(users.id, parsed.data.id))
@@ -164,6 +185,9 @@ export async function PUT(request: Request) {
       displayName: users.displayName,
       role: users.role,
       profileVisibility: users.profileVisibility,
+      membershipStartDate: users.membershipStartDate,
+      membershipRenewalDate: users.membershipRenewalDate,
+      autoMessagesEnabled: users.autoMessagesEnabled,
       createdAt: users.createdAt,
       lastLoginAt: users.lastLoginAt,
     });
@@ -180,6 +204,9 @@ export async function PUT(request: Request) {
     payload: {
       role: updated.role,
       profileVisibility: updated.profileVisibility,
+      membershipStartDate: updated.membershipStartDate,
+      membershipRenewalDate: updated.membershipRenewalDate,
+      autoMessagesEnabled: updated.autoMessagesEnabled,
     },
   });
 

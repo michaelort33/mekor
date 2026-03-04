@@ -206,6 +206,7 @@ export default function AdminDuesPage() {
           <Link href="/admin/settings">Settings</Link>
           <Link href="/admin/invitations">Invitations</Link>
           <Link href="/admin/events">Events admin</Link>
+          <Link href="/admin/messages">Message logs</Link>
           <Link href="/admin/users">Users admin</Link>
           <Link href="/admin/templates">Templates</Link>
         </div>

@@ -12,6 +12,9 @@ type AdminUser = {
   displayName: string;
   role: "visitor" | "member" | "admin" | "super_admin";
   profileVisibility: "private" | "members" | "public" | "anonymous";
+  membershipStartDate: string | null;
+  membershipRenewalDate: string | null;
+  autoMessagesEnabled: boolean;
   stripeCustomerId: string | null;
   outstandingBalanceCents: number;
   createdAt: string;
@@ -98,6 +101,9 @@ export default function AdminUsersPage() {
         id: user.id,
         role: user.role,
         profileVisibility: user.profileVisibility,
+        membershipStartDate: user.membershipStartDate,
+        membershipRenewalDate: user.membershipRenewalDate,
+        autoMessagesEnabled: user.autoMessagesEnabled,
       }),
     });
 
@@ -123,7 +129,7 @@ export default function AdminUsersPage() {
       <header className={styles.header}>
         <div>
           <h1>Manage Users</h1>
-          <p>Promote visitors and control profile visibility. Only super admins can manage admin-level roles.</p>
+          <p>Manage roles, profile visibility, membership dates, and automated reminder opt-in settings.</p>
         </div>
         <div className={styles.actions}>
           <Link href="/admin/settings" className={styles.backLink}>
@@ -140,6 +146,9 @@ export default function AdminUsersPage() {
           </Link>
           <Link href="/admin/invitations" className={styles.backLink}>
             Invitations
+          </Link>
+          <Link href="/admin/messages" className={styles.backLink}>
+            Message logs
           </Link>
         </div>
       </header>
@@ -182,6 +191,9 @@ export default function AdminUsersPage() {
                   <th>Email</th>
                   <th>Role</th>
                   <th>Visibility</th>
+                  <th>Start date</th>
+                  <th>Renewal date</th>
+                  <th>Auto messages</th>
                   <th>Stripe customer</th>
                   <th>Outstanding</th>
                   <th>Last login</th>
@@ -229,6 +241,33 @@ export default function AdminUsersPage() {
                           </option>
                         ))}
                       </select>
+                    </td>
+                    <td>
+                      <input
+                        type="date"
+                        value={user.membershipStartDate ?? ""}
+                        onChange={(event) =>
+                          updateLocalUser(user.id, { membershipStartDate: event.target.value || null })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="date"
+                        value={user.membershipRenewalDate ?? ""}
+                        onChange={(event) =>
+                          updateLocalUser(user.id, { membershipRenewalDate: event.target.value || null })
+                        }
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={user.autoMessagesEnabled}
+                        onChange={(event) =>
+                          updateLocalUser(user.id, { autoMessagesEnabled: event.target.checked })
+                        }
+                      />
                     </td>
                     <td>{user.stripeCustomerId ?? "Unlinked"}</td>
                     <td>
