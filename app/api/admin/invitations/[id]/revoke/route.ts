@@ -19,11 +19,12 @@ export async function POST(_: Request, context: RouteContext) {
     return NextResponse.json({ error: "Invalid invitation id" }, { status: 400 });
   }
 
+  const now = new Date();
   const [revoked] = await getDb()
     .update(userInvitations)
     .set({
-      revokedAt: new Date(),
-      updatedAt: new Date(),
+      revokedAt: now,
+      updatedAt: now,
     })
     .where(and(eq(userInvitations.id, invitationId), isNull(userInvitations.acceptedAt), isNull(userInvitations.revokedAt)))
     .returning({

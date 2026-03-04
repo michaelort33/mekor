@@ -94,8 +94,6 @@ export async function POST(request: Request) {
       [user] = await tx
         .update(users)
         .set({
-          displayName: parsed.data.displayName.trim(),
-          passwordHash,
           role: invitation.role,
           lastLoginAt: now,
           updatedAt: now,

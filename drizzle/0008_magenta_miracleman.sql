@@ -1,4 +1,4 @@
-ALTER TYPE "public"."user_role" ADD VALUE 'super_admin';--> statement-breakpoint
+ALTER TYPE "public"."user_role" ADD VALUE IF NOT EXISTS 'super_admin';--> statement-breakpoint
 CREATE TABLE "system_settings" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"key" varchar(120) NOT NULL,

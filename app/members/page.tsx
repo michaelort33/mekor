@@ -66,8 +66,8 @@ export default async function MembersPage() {
               <div className={styles.body}>
                 {!isAnonymousVisibility(member.profileVisibility) ? <p className={styles.role}>{member.role}</p> : null}
                 <h2>{isAnonymousVisibility(member.profileVisibility) ? "Community Member" : member.displayName}</h2>
-                {member.city ? <p className={styles.city}>{member.city}</p> : null}
-                {member.bio ? <p className={styles.bio}>{member.bio}</p> : null}
+                {!isAnonymousVisibility(member.profileVisibility) && member.city ? <p className={styles.city}>{member.city}</p> : null}
+                {!isAnonymousVisibility(member.profileVisibility) && member.bio ? <p className={styles.bio}>{member.bio}</p> : null}
                 <Link href={`/members/${member.id}`}>View profile</Link>
               </div>
             </article>

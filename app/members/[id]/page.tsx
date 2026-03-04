@@ -76,11 +76,11 @@ export default async function MemberProfilePage({ params }: PageProps) {
           <div>
             {!isAnonymousVisibility(member.profileVisibility) ? <p className={styles.role}>{member.role}</p> : null}
             <h1>{isAnonymousVisibility(member.profileVisibility) ? "Community Member" : member.displayName}</h1>
-            {member.city ? <p className={styles.city}>{member.city}</p> : null}
+            {!isAnonymousVisibility(member.profileVisibility) && member.city ? <p className={styles.city}>{member.city}</p> : null}
           </div>
         </header>
 
-        {member.bio ? <p className={styles.bio}>{member.bio}</p> : <p className={styles.bio}>No bio provided.</p>}
+        {!isAnonymousVisibility(member.profileVisibility) && member.bio ? <p className={styles.bio}>{member.bio}</p> : isAnonymousVisibility(member.profileVisibility) ? null : <p className={styles.bio}>No bio provided.</p>}
 
         <Link href="/members" className={styles.backLink}>
           ← Back to members

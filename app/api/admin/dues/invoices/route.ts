@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { getDb } from "@/db/client";
 import { duesInvoices, users } from "@/db/schema";
-import { getAdminSession } from "@/lib/admin/session";
+import { requireAdminActor } from "@/lib/admin/actor";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
 
 const DUES_INVOICE_STATUSES = ["open", "paid", "void", "overdue"] as const;
@@ -17,22 +17,13 @@ const updateSchema = z.object({
   status: z.enum(["open", "paid", "void", "overdue"]),
 });
 
-async function requireAdmin() {
-  const hasSession = await getAdminSession();
-  if (!hasSession) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  return null;
-}
-
 export async function GET(request: Request) {
   if (!(await isFeatureEnabled("FEATURE_DUES"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  const unauthorized = await requireAdmin();
-  if (unauthorized) return unauthorized;
+  const adminResult = await requireAdminActor();
+  if ("error" in adminResult) return adminResult.error;
 
   const url = new URL(request.url);
   const userId = Number(url.searchParams.get("userId") || "0");
@@ -74,13 +65,32 @@ export async function PUT(request: Request) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  const unauthorized = await requireAdmin();
-  if (unauthorized) return unauthorized;
+  const adminResult2 = await requireAdminActor();
+  if ("error" in adminResult2) return adminResult2.error;
 
   const parsed = updateSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid payload", issues: parsed.error.flatten() }, { status: 400 });
   }
+
+  const now = new Date();
+
+  const [current] = await getDb()
+    .select({ status: duesInvoices.status, paidAt: duesInvoices.paidAt })
+    .from(duesInvoices)
+    .where(eq(duesInvoices.id, parsed.data.id))
+    .limit(1);
+
+  if (!current) {
+    return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+  }
+
+  const paidAt =
+    parsed.data.status === "paid"
+      ? current.status === "paid" && current.paidAt
+        ? current.paidAt
+        : now
+      : null;
 
   const [updated] = await getDb()
     .update(duesInvoices)
@@ -89,8 +99,8 @@ export async function PUT(request: Request) {
       amountCents: parsed.data.amountCents,
       dueDate: parsed.data.dueDate,
       status: parsed.data.status,
-      paidAt: parsed.data.status === "paid" ? new Date() : null,
-      updatedAt: new Date(),
+      paidAt,
+      updatedAt: now,
     })
     .where(eq(duesInvoices.id, parsed.data.id))
     .returning();
