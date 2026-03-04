@@ -31,6 +31,13 @@ type Invoice = {
   status: "open" | "paid" | "void" | "overdue";
 };
 
+type UserBalance = {
+  id: number;
+  email: string;
+  displayName: string;
+  outstandingBalanceCents: number;
+};
+
 function formatMoney(cents: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -44,17 +51,26 @@ export default function AdminDuesPage() {
   const [error, setError] = useState("");
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [users, setUsers] = useState<UserBalance[]>([]);
+  const [invoiceForm, setInvoiceForm] = useState({
+    userId: "",
+    label: "Membership dues",
+    amountCents: "",
+    dueDate: "",
+  });
+  const [savingInvoice, setSavingInvoice] = useState(false);
 
   async function load() {
     setLoading(true);
     setError("");
 
-    const [schedulesResponse, invoicesResponse] = await Promise.all([
+    const [schedulesResponse, invoicesResponse, usersResponse] = await Promise.all([
       fetch("/api/admin/dues/schedules"),
       fetch("/api/admin/dues/invoices"),
+      fetch("/api/admin/users"),
     ]);
 
-    if (schedulesResponse.status === 401 || invoicesResponse.status === 401) {
+    if (schedulesResponse.status === 401 || invoicesResponse.status === 401 || usersResponse.status === 401) {
       router.push("/admin/login");
       return;
     }
@@ -67,15 +83,20 @@ export default function AdminDuesPage() {
       invoices?: Invoice[];
       error?: string;
     };
+    const usersPayload = (await usersResponse.json().catch(() => ({}))) as {
+      users?: UserBalance[];
+      error?: string;
+    };
 
-    if (!schedulesResponse.ok || !invoicesResponse.ok) {
-      setError(schedulesPayload.error || invoicesPayload.error || "Unable to load dues admin data");
+    if (!schedulesResponse.ok || !invoicesResponse.ok || !usersResponse.ok) {
+      setError(schedulesPayload.error || invoicesPayload.error || usersPayload.error || "Unable to load dues admin data");
       setLoading(false);
       return;
     }
 
     setSchedules(schedulesPayload.schedules ?? []);
     setInvoices(invoicesPayload.invoices ?? []);
+    setUsers(usersPayload.users ?? []);
     setLoading(false);
   }
 
@@ -92,6 +113,49 @@ export default function AdminDuesPage() {
       return;
     }
 
+    await load();
+  }
+
+  async function createInvoice(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+
+    const userId = Number.parseInt(invoiceForm.userId, 10);
+    const amountCents = Number.parseInt(invoiceForm.amountCents, 10);
+    if (!Number.isInteger(userId) || userId < 1 || !Number.isInteger(amountCents) || amountCents < 1) {
+      setError("Choose a user and enter a valid amount in cents.");
+      return;
+    }
+    if (!invoiceForm.dueDate) {
+      setError("Due date is required.");
+      return;
+    }
+
+    setSavingInvoice(true);
+    const response = await fetch(`/api/admin/users/${userId}/dues-balance`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        createInvoice: {
+          label: invoiceForm.label,
+          amountCents,
+          dueDate: invoiceForm.dueDate,
+          currency: "usd",
+        },
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    if (!response.ok) {
+      setError(payload.error || "Unable to create invoice");
+      setSavingInvoice(false);
+      return;
+    }
+    setInvoiceForm((prev) => ({
+      ...prev,
+      amountCents: "",
+      dueDate: "",
+    }));
+    setSavingInvoice(false);
     await load();
   }
 
@@ -112,6 +176,7 @@ export default function AdminDuesPage() {
         </div>
         <div className={styles.links}>
           <Link href="/admin/settings">Settings</Link>
+          <Link href="/admin/invitations">Invitations</Link>
           <Link href="/admin/events">Events admin</Link>
           <Link href="/admin/users">Users admin</Link>
           <Link href="/admin/templates">Templates</Link>
@@ -124,6 +189,74 @@ export default function AdminDuesPage() {
 
       {!loading ? (
         <>
+          <section className={styles.card}>
+            <h2>User balance summary</h2>
+            {users.length === 0 ? (
+              <p>No users found.</p>
+            ) : (
+              <ul className={styles.list}>
+                {users.map((user) => (
+                  <li key={user.id} className={styles.listItem}>
+                    <strong>{user.displayName}</strong>
+                    <p>{user.email}</p>
+                    <p>{formatMoney(user.outstandingBalanceCents, "usd")} outstanding</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className={styles.card}>
+            <h2>Add invoice</h2>
+            <form className={styles.formGrid} onSubmit={createInvoice}>
+              <label>
+                User
+                <select
+                  value={invoiceForm.userId}
+                  onChange={(event) => setInvoiceForm((prev) => ({ ...prev, userId: event.target.value }))}
+                  required
+                >
+                  <option value="">Select user</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={String(user.id)}>
+                      {user.displayName} ({user.email})
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Label
+                <input
+                  value={invoiceForm.label}
+                  onChange={(event) => setInvoiceForm((prev) => ({ ...prev, label: event.target.value }))}
+                  required
+                />
+              </label>
+              <label>
+                Amount (cents)
+                <input
+                  type="number"
+                  min={1}
+                  value={invoiceForm.amountCents}
+                  onChange={(event) => setInvoiceForm((prev) => ({ ...prev, amountCents: event.target.value }))}
+                  required
+                />
+              </label>
+              <label>
+                Due date
+                <input
+                  type="date"
+                  value={invoiceForm.dueDate}
+                  onChange={(event) => setInvoiceForm((prev) => ({ ...prev, dueDate: event.target.value }))}
+                  required
+                />
+              </label>
+              <button type="submit" disabled={savingInvoice}>
+                {savingInvoice ? "Saving..." : "Create invoice"}
+              </button>
+            </form>
+          </section>
+
           <section className={styles.card}>
             <h2>Schedules</h2>
             {schedules.length === 0 ? (

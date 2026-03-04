@@ -12,6 +12,8 @@ type AdminUser = {
   displayName: string;
   role: "visitor" | "member" | "admin" | "super_admin";
   profileVisibility: "private" | "members" | "public" | "anonymous";
+  stripeCustomerId: string | null;
+  outstandingBalanceCents: number;
   createdAt: string;
   lastLoginAt: string | null;
 };
@@ -119,6 +121,9 @@ export default function AdminUsersPage() {
           <Link href="/admin/templates" className={styles.backLink}>
             Templates
           </Link>
+          <Link href="/admin/invitations" className={styles.backLink}>
+            Invitations
+          </Link>
         </div>
       </header>
 
@@ -159,6 +164,8 @@ export default function AdminUsersPage() {
                 <th>Email</th>
                 <th>Role</th>
                 <th>Visibility</th>
+                <th>Stripe customer</th>
+                <th>Outstanding</th>
                 <th>Last login</th>
                 <th />
               </tr>
@@ -204,6 +211,13 @@ export default function AdminUsersPage() {
                         </option>
                       ))}
                     </select>
+                  </td>
+                  <td>{user.stripeCustomerId ?? "Unlinked"}</td>
+                  <td>
+                    {(user.outstandingBalanceCents / 100).toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
                   </td>
                   <td>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</td>
                   <td>

@@ -376,3 +376,44 @@ export const systemSettings = pgTable("system_settings", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const userInvitations = pgTable(
+  "user_invitations",
+  {
+    id: serial("id").primaryKey(),
+    email: varchar("email", { length: 255 }).notNull(),
+    role: userRoleEnum("role").notNull().default("visitor"),
+    invitedByUserId: integer("invited_by_user_id")
+      .notNull()
+      .references(() => users.id),
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    acceptedAt: timestamp("accepted_at"),
+    revokedAt: timestamp("revoked_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    tokenHashUniqueIdx: uniqueIndex("user_invitations_token_hash_unique_idx").on(table.tokenHash),
+    emailStateIdx: index("user_invitations_email_accepted_revoked_idx").on(table.email, table.acceptedAt, table.revokedAt),
+    expiresAtIdx: index("user_invitations_expires_at_idx").on(table.expiresAt),
+  }),
+);
+
+export const adminAuditLog = pgTable(
+  "admin_audit_log",
+  {
+    id: serial("id").primaryKey(),
+    actorUserId: integer("actor_user_id")
+      .notNull()
+      .references(() => users.id),
+    action: varchar("action", { length: 120 }).notNull(),
+    targetType: varchar("target_type", { length: 80 }).notNull(),
+    targetId: varchar("target_id", { length: 120 }).notNull(),
+    payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    actorActionIdx: index("admin_audit_log_actor_action_idx").on(table.actorUserId, table.action),
+  }),
+);

@@ -1,11 +1,10 @@
-import { and, asc, eq, ilike, or } from "drizzle-orm";
+import { and, asc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getDb } from "@/db/client";
-import { users } from "@/db/schema";
-import { getAdminSession } from "@/lib/admin/session";
-import { getUserSession } from "@/lib/auth/session";
+import { duesInvoices, stripeCustomers, users } from "@/db/schema";
+import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 
 const USER_ROLES = ["visitor", "member", "admin", "super_admin"] as const;
 const roleSchema = z.enum(USER_ROLES);
@@ -20,70 +19,10 @@ const updateUserPayloadSchema = z.object({
   profileVisibility: z.enum(["private", "members", "public", "anonymous"]),
 });
 
-async function requireAdmin() {
-  const hasSession = await getAdminSession();
-  if (!hasSession) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const userSession = await getUserSession();
-  if (!userSession) {
-    return NextResponse.json(
-      { error: "Admin identity required. Sign in with a user account first." },
-      { status: 403 },
-    );
-  }
-
-  const [actorFromDb] = await getDb()
-    .select({
-      id: users.id,
-      email: users.email,
-      role: users.role,
-    })
-    .from(users)
-    .where(eq(users.id, userSession.userId))
-    .limit(1);
-
-  if (!actorFromDb) {
-    return NextResponse.json({ error: "Admin user not found" }, { status: 403 });
-  }
-
-  const bootstrapEmail = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
-  let actor = actorFromDb;
-  if (bootstrapEmail && actorFromDb.email.toLowerCase() === bootstrapEmail && actorFromDb.role !== "super_admin") {
-    const [upgraded] = await getDb()
-      .update(users)
-      .set({
-        role: "super_admin",
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, actorFromDb.id))
-      .returning({
-        id: users.id,
-        email: users.email,
-        role: users.role,
-      });
-    if (upgraded) {
-      actor = upgraded;
-    }
-  }
-
-  if (!isAdminLevelRole(actor.role)) {
-    return NextResponse.json(
-      { error: "Only admin or super admin user accounts can manage users." },
-      { status: 403 },
-    );
-  }
-
-  return actor;
-}
-
 export async function GET(request: Request) {
-  const actorOrResponse = await requireAdmin();
-  if (actorOrResponse instanceof NextResponse) {
-    return actorOrResponse;
-  }
-  const actor = actorOrResponse;
+  const adminResult = await requireAdminActor();
+  if ("error" in adminResult) return adminResult.error;
+  const actor = adminResult.actor;
 
   const { searchParams } = new URL(request.url);
   const q = searchParams.get("q")?.trim() ?? "";
@@ -108,26 +47,45 @@ export async function GET(request: Request) {
       displayName: users.displayName,
       role: users.role,
       profileVisibility: users.profileVisibility,
+      stripeCustomerId: stripeCustomers.stripeCustomerId,
       createdAt: users.createdAt,
       lastLoginAt: users.lastLoginAt,
     })
     .from(users)
+    .leftJoin(stripeCustomers, eq(stripeCustomers.userId, users.id))
     .where(whereClause)
     .orderBy(asc(users.displayName));
 
+  const userIds = rows.map((row) => row.id);
+  const outstandingRows =
+    userIds.length === 0
+      ? []
+      : await getDb()
+          .select({
+            userId: duesInvoices.userId,
+            outstandingBalanceCents: sql<number>`COALESCE(SUM(${duesInvoices.amountCents}), 0)`,
+          })
+          .from(duesInvoices)
+          .where(and(inArray(duesInvoices.userId, userIds), inArray(duesInvoices.status, ["open", "overdue"])))
+          .groupBy(duesInvoices.userId);
+
+  const outstandingByUserId = new Map(outstandingRows.map((row) => [row.userId, Number(row.outstandingBalanceCents)]));
+  const usersWithFinance = rows.map((row) => ({
+    ...row,
+    outstandingBalanceCents: outstandingByUserId.get(row.id) ?? 0,
+  }));
+
   return NextResponse.json({
-    users: rows,
+    users: usersWithFinance,
     actorRole: actor.role,
     canManageAdminRoles: actor.role === "super_admin",
   });
 }
 
 export async function PUT(request: Request) {
-  const actorOrResponse = await requireAdmin();
-  if (actorOrResponse instanceof NextResponse) {
-    return actorOrResponse;
-  }
-  const actor = actorOrResponse;
+  const adminResult = await requireAdminActor();
+  if ("error" in adminResult) return adminResult.error;
+  const actor = adminResult.actor;
 
   const body = await request.json();
   const parsed = updateUserPayloadSchema.safeParse(body);
@@ -184,6 +142,17 @@ export async function PUT(request: Request) {
   if (!updated) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
+
+  await writeAdminAuditLog({
+    actorUserId: actor.id,
+    action: "user.role_visibility.updated",
+    targetType: "user",
+    targetId: String(updated.id),
+    payload: {
+      role: updated.role,
+      profileVisibility: updated.profileVisibility,
+    },
+  });
 
   return NextResponse.json({ user: updated });
 }

@@ -3,9 +3,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getDb } from "@/db/client";
-import { systemSettings, users } from "@/db/schema";
-import { getAdminSession } from "@/lib/admin/session";
-import { getUserSession } from "@/lib/auth/session";
+import { systemSettings } from "@/db/schema";
+import { requireSuperAdminActor } from "@/lib/admin/actor";
 import { clearSettingsCache } from "@/lib/config/features";
 
 const updateSchema = z.object({
@@ -13,34 +12,9 @@ const updateSchema = z.object({
   value: z.string(),
 });
 
-async function requireSuperAdmin() {
-  const hasAdminSession = await getAdminSession();
-  if (!hasAdminSession) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const userSession = await getUserSession();
-  if (!userSession) {
-    return NextResponse.json({ error: "User session required" }, { status: 403 });
-  }
-
-  const db = getDb();
-  const [user] = await db
-    .select({ role: users.role })
-    .from(users)
-    .where(eq(users.id, userSession.userId))
-    .limit(1);
-
-  if (!user || user.role !== "super_admin") {
-    return NextResponse.json({ error: "Forbidden - Super admin access required" }, { status: 403 });
-  }
-
-  return null;
-}
-
 export async function GET() {
-  const forbidden = await requireSuperAdmin();
-  if (forbidden) return forbidden;
+  const result = await requireSuperAdminActor();
+  if ("error" in result) return result.error;
 
   const db = getDb();
   const settings = await db.select().from(systemSettings).orderBy(asc(systemSettings.key));
@@ -49,8 +23,8 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const forbidden = await requireSuperAdmin();
-  if (forbidden) return forbidden;
+  const result = await requireSuperAdminActor();
+  if ("error" in result) return result.error;
 
   const parsed = updateSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) {

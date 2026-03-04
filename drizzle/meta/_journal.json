@@ -64,6 +64,13 @@
       "when": 1772612184958,
       "tag": "0008_magenta_miracleman",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772626777671,
+      "tag": "0009_dry_magdalene",
+      "breakpoints": true
     }
   ]
 }
