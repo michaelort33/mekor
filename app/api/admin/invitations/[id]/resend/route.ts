@@ -42,32 +42,34 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const now = new Date();
-  await getDb()
-    .update(userInvitations)
-    .set({
-      revokedAt: now,
-      updatedAt: now,
-    })
-    .where(and(eq(userInvitations.id, invitationId), isNull(userInvitations.acceptedAt), isNull(userInvitations.revokedAt)));
-
   const token = generateInvitationToken();
   const tokenHash = hashInvitationToken(token);
   const expiresAt = invitationExpiryFromNow();
 
-  const [created] = await getDb()
-    .insert(userInvitations)
-    .values({
-      email: existing.email,
-      role: existing.role,
-      invitedByUserId: actor.id,
-      tokenHash,
-      expiresAt,
-      updatedAt: now,
-    })
-    .returning({
-      id: userInvitations.id,
-      expiresAt: userInvitations.expiresAt,
-    });
+  const [created] = await getDb().transaction(async (tx) => {
+    await tx
+      .update(userInvitations)
+      .set({
+        revokedAt: now,
+        updatedAt: now,
+      })
+      .where(and(eq(userInvitations.id, invitationId), isNull(userInvitations.acceptedAt), isNull(userInvitations.revokedAt)));
+
+    return tx
+      .insert(userInvitations)
+      .values({
+        email: existing.email,
+        role: existing.role,
+        invitedByUserId: actor.id,
+        tokenHash,
+        expiresAt,
+        updatedAt: now,
+      })
+      .returning({
+        id: userInvitations.id,
+        expiresAt: userInvitations.expiresAt,
+      });
+  });
 
   const origin = new URL(request.url).origin;
   const acceptUrl = `${origin}/invite/accept?token=${encodeURIComponent(token)}`;
