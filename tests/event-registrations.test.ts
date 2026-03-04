@@ -7,14 +7,15 @@ import {
   pickNextWaitlistedRegistration,
 } from "../lib/events/registrations";
 
-test("countActiveEventSpots counts only registered statuses", () => {
+test("countActiveEventSpots counts registered and payment_pending statuses", () => {
   const count = countActiveEventSpots([
     { id: 1, status: "registered", registeredAt: new Date("2026-03-03T10:00:00.000Z") },
     { id: 2, status: "waitlisted", registeredAt: new Date("2026-03-03T10:01:00.000Z") },
     { id: 3, status: "payment_pending", registeredAt: new Date("2026-03-03T10:02:00.000Z") },
+    { id: 4, status: "cancelled", registeredAt: new Date("2026-03-03T10:03:00.000Z") },
   ]);
 
-  assert.equal(count, 1);
+  assert.equal(count, 2);
 });
 
 test("pickNextWaitlistedRegistration picks earliest waitlisted registration", () => {
