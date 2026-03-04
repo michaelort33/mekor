@@ -6,6 +6,7 @@ import { getDb } from "@/db/client";
 import { duesInvoices, users } from "@/db/schema";
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
+import { sendDuesNotification } from "@/lib/dues/notifications";
 
 const adjustmentSchema = z.object({
   adjustmentCents: z.number().int().refine((value) => value !== 0, "adjustmentCents cannot be zero"),
@@ -139,6 +140,22 @@ export async function PUT(request: Request, context: RouteContext) {
       currency: invoice.currency,
     },
   });
+
+  if (invoice.amountCents > 0) {
+    await sendDuesNotification({
+      referenceKey: `invoice:${invoice.id}:invoice_created`,
+      userId: targetUser.id,
+      userEmail: targetUser.email,
+      displayName: targetUser.displayName,
+      notificationType: "invoice_created",
+      invoiceId: invoice.id,
+      paymentId: null,
+      invoiceLabel: invoice.label,
+      amountCents: invoice.amountCents,
+      currency: invoice.currency,
+      dueDate: invoice.dueDate,
+    });
+  }
 
   return NextResponse.json({ invoice });
 }

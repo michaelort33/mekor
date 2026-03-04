@@ -1,10 +1,11 @@
-import { and, asc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, lt, or, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getDb } from "@/db/client";
 import { duesInvoices, stripeCustomers, users } from "@/db/schema";
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
+import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 
 const USER_ROLES = ["visitor", "member", "admin", "super_admin"] as const;
 const roleSchema = z.enum(USER_ROLES);
@@ -19,6 +20,11 @@ const updateUserPayloadSchema = z.object({
   profileVisibility: z.enum(["private", "members", "public", "anonymous"]),
 });
 
+const usersCursorSchema = z.object({
+  createdAt: z.string().datetime(),
+  id: z.number().int().min(1),
+});
+
 export async function GET(request: Request) {
   const adminResult = await requireAdminActor();
   if ("error" in adminResult) return adminResult.error;
@@ -27,6 +33,12 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get("q")?.trim() ?? "";
   const role = searchParams.get("role")?.trim() ?? "";
+  const limit = parsePageLimit(searchParams.get("limit"));
+  const parsedCursor = decodeCursor(searchParams.get("cursor"), usersCursorSchema);
+  if (parsedCursor.error) {
+    return NextResponse.json({ error: parsedCursor.error }, { status: 400 });
+  }
+  const cursor = parsedCursor.value;
 
   const whereClause = and(
     q
@@ -37,6 +49,12 @@ export async function GET(request: Request) {
       : undefined,
     role && USER_ROLES.includes(role as (typeof USER_ROLES)[number])
       ? eq(users.role, role as (typeof USER_ROLES)[number])
+      : undefined,
+    cursor
+      ? or(
+          lt(users.createdAt, new Date(cursor.createdAt)),
+          and(eq(users.createdAt, new Date(cursor.createdAt)), lt(users.id, cursor.id)),
+        )
       : undefined,
   );
 
@@ -54,9 +72,19 @@ export async function GET(request: Request) {
     .from(users)
     .leftJoin(stripeCustomers, eq(stripeCustomers.userId, users.id))
     .where(whereClause)
-    .orderBy(asc(users.displayName));
+    .orderBy(desc(users.createdAt), desc(users.id))
+    .limit(limit + 1);
 
-  const userIds = rows.map((row) => row.id);
+  const { items: pageRows, pageInfo } = toPaginatedResult(
+    rows,
+    limit,
+    (row) => ({
+      createdAt: row.createdAt.toISOString(),
+      id: row.id,
+    }),
+  );
+
+  const userIds = pageRows.map((row) => row.id);
   const outstandingRows =
     userIds.length === 0
       ? []
@@ -70,13 +98,14 @@ export async function GET(request: Request) {
           .groupBy(duesInvoices.userId);
 
   const outstandingByUserId = new Map(outstandingRows.map((row) => [row.userId, Number(row.outstandingBalanceCents)]));
-  const usersWithFinance = rows.map((row) => ({
+  const usersWithFinance = pageRows.map((row) => ({
     ...row,
     outstandingBalanceCents: outstandingByUserId.get(row.id) ?? 0,
   }));
 
   return NextResponse.json({
-    users: usersWithFinance,
+    items: usersWithFinance,
+    pageInfo,
     actorRole: actor.role,
     canManageAdminRoles: actor.role === "super_admin",
   });

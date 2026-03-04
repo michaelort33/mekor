@@ -135,6 +135,22 @@
   font-weight: 600;
 }
 
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.loadMoreWrap button {
+  border: 1px solid #2f6ea9;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 700;
+  color: #fff;
+  background: #245f9f;
+  cursor: pointer;
+}
+
 @media (max-width: 760px) {
   .actions {
     justify-content: flex-start;

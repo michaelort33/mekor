@@ -1,10 +1,11 @@
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 
 import { getDb } from "@/db/client";
-import { duesInvoices, duesPayments, eventRegistrations } from "@/db/schema";
-import { pickNextWaitlistedRegistration } from "@/lib/events/registrations";
+import { duesInvoices, duesPayments, eventRegistrations, users } from "@/db/schema";
+import { sendDuesNotification } from "@/lib/dues/notifications";
+import { promoteWaitlistForEvent } from "@/lib/events/waitlist";
 import { getStripeClient, getStripeWebhookSecret } from "@/lib/stripe/client";
 
 function getMetadata(value: Stripe.Checkout.Session | Stripe.PaymentIntent) {
@@ -17,6 +18,24 @@ async function handleDuesCheckoutCompleted(session: Stripe.Checkout.Session) {
   if (!Number.isInteger(invoiceId) || invoiceId < 1) return;
 
   const db = getDb();
+  const [invoice] = await db
+    .select({
+      id: duesInvoices.id,
+      userId: duesInvoices.userId,
+      label: duesInvoices.label,
+      amountCents: duesInvoices.amountCents,
+      currency: duesInvoices.currency,
+      dueDate: duesInvoices.dueDate,
+      status: duesInvoices.status,
+      userEmail: users.email,
+      userDisplayName: users.displayName,
+    })
+    .from(duesInvoices)
+    .innerJoin(users, eq(users.id, duesInvoices.userId))
+    .where(eq(duesInvoices.id, invoiceId))
+    .limit(1);
+  if (!invoice) return;
+
   const paymentIntentId =
     typeof session.payment_intent === "string"
       ? session.payment_intent
@@ -31,10 +50,10 @@ async function handleDuesCheckoutCompleted(session: Stripe.Checkout.Session) {
       stripePaymentIntentId: paymentIntentId,
       updatedAt: new Date(),
     })
-    .where(eq(duesInvoices.id, invoiceId));
+    .where(and(eq(duesInvoices.id, invoiceId), inArray(duesInvoices.status, ["open", "overdue"])));
 
   const [latestPayment] = await db
-    .select({ id: duesPayments.id })
+    .select({ id: duesPayments.id, status: duesPayments.status })
     .from(duesPayments)
     .where(and(eq(duesPayments.invoiceId, invoiceId), eq(duesPayments.stripeCheckoutSessionId, session.id)))
     .orderBy(desc(duesPayments.createdAt))
@@ -51,30 +70,20 @@ async function handleDuesCheckoutCompleted(session: Stripe.Checkout.Session) {
       })
       .where(eq(duesPayments.id, latestPayment.id));
   }
-}
 
-async function promoteNextWaitlisted(eventId: number) {
-  const db = getDb();
-  const waitlisted = await db
-    .select({
-      id: eventRegistrations.id,
-      status: eventRegistrations.status,
-      registeredAt: eventRegistrations.registeredAt,
-    })
-    .from(eventRegistrations)
-    .where(and(eq(eventRegistrations.eventId, eventId), eq(eventRegistrations.status, "waitlisted")))
-    .orderBy(asc(eventRegistrations.registeredAt));
-
-  const next = pickNextWaitlistedRegistration(waitlisted);
-  if (!next) return;
-
-  await db
-    .update(eventRegistrations)
-    .set({
-      status: "registered",
-      updatedAt: new Date(),
-    })
-    .where(eq(eventRegistrations.id, next.id));
+  await sendDuesNotification({
+    referenceKey: `invoice:${invoice.id}:payment_succeeded`,
+    userId: invoice.userId,
+    userEmail: invoice.userEmail,
+    displayName: invoice.userDisplayName,
+    notificationType: "payment_succeeded",
+    invoiceId: invoice.id,
+    paymentId: latestPayment?.id ?? null,
+    invoiceLabel: invoice.label,
+    amountCents: invoice.amountCents,
+    currency: invoice.currency,
+    dueDate: invoice.dueDate,
+  });
 }
 
 async function handleEventCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -104,16 +113,17 @@ async function handleEventCheckoutExpired(session: Stripe.Checkout.Session) {
   const eventId = Number(metadata.eventId);
   if (!Number.isInteger(registrationId) || registrationId < 1) return;
 
-  await getDb()
+  const [cancelled] = await getDb()
     .update(eventRegistrations)
     .set({
       status: "cancelled",
       updatedAt: new Date(),
     })
-    .where(eq(eventRegistrations.id, registrationId));
+    .where(and(eq(eventRegistrations.id, registrationId), eq(eventRegistrations.status, "payment_pending")))
+    .returning({ id: eventRegistrations.id });
 
-  if (Number.isInteger(eventId) && eventId > 0) {
-    await promoteNextWaitlisted(eventId);
+  if (cancelled && Number.isInteger(eventId) && eventId > 0) {
+    await promoteWaitlistForEvent(eventId);
   }
 }
 
@@ -123,6 +133,23 @@ async function handleDuesCheckoutExpired(session: Stripe.Checkout.Session) {
   if (!Number.isInteger(invoiceId) || invoiceId < 1) return;
 
   const db = getDb();
+  const [invoice] = await db
+    .select({
+      id: duesInvoices.id,
+      userId: duesInvoices.userId,
+      label: duesInvoices.label,
+      amountCents: duesInvoices.amountCents,
+      currency: duesInvoices.currency,
+      dueDate: duesInvoices.dueDate,
+      userEmail: users.email,
+      userDisplayName: users.displayName,
+    })
+    .from(duesInvoices)
+    .innerJoin(users, eq(users.id, duesInvoices.userId))
+    .where(eq(duesInvoices.id, invoiceId))
+    .limit(1);
+  if (!invoice) return;
+
   const [latestPayment] = await db
     .select({ id: duesPayments.id })
     .from(duesPayments)
@@ -140,6 +167,20 @@ async function handleDuesCheckoutExpired(session: Stripe.Checkout.Session) {
       updatedAt: new Date(),
     })
     .where(eq(duesPayments.id, latestPayment.id));
+
+  await sendDuesNotification({
+    referenceKey: `payment:${latestPayment.id}:payment_failed`,
+    userId: invoice.userId,
+    userEmail: invoice.userEmail,
+    displayName: invoice.userDisplayName,
+    notificationType: "payment_failed",
+    invoiceId: invoice.id,
+    paymentId: latestPayment.id,
+    invoiceLabel: invoice.label,
+    amountCents: invoice.amountCents,
+    currency: invoice.currency,
+    dueDate: invoice.dueDate,
+  });
 }
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
@@ -150,8 +191,19 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
 
   const db = getDb();
   const [latestPayment] = await db
-    .select({ id: duesPayments.id })
+    .select({
+      id: duesPayments.id,
+      userId: duesPayments.userId,
+      invoiceLabel: duesInvoices.label,
+      amountCents: duesInvoices.amountCents,
+      currency: duesInvoices.currency,
+      dueDate: duesInvoices.dueDate,
+      userEmail: users.email,
+      userDisplayName: users.displayName,
+    })
     .from(duesPayments)
+    .innerJoin(duesInvoices, eq(duesInvoices.id, duesPayments.invoiceId))
+    .innerJoin(users, eq(users.id, duesPayments.userId))
     .where(eq(duesPayments.invoiceId, invoiceId))
     .orderBy(desc(duesPayments.createdAt))
     .limit(1);
@@ -166,6 +218,20 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
         updatedAt: new Date(),
       })
       .where(eq(duesPayments.id, latestPayment.id));
+
+    await sendDuesNotification({
+      referenceKey: `payment:${latestPayment.id}:payment_failed`,
+      userId: latestPayment.userId,
+      userEmail: latestPayment.userEmail,
+      displayName: latestPayment.userDisplayName,
+      notificationType: "payment_failed",
+      invoiceId,
+      paymentId: latestPayment.id,
+      invoiceLabel: latestPayment.invoiceLabel,
+      amountCents: latestPayment.amountCents,
+      currency: latestPayment.currency,
+      dueDate: latestPayment.dueDate,
+    });
   }
 }
 

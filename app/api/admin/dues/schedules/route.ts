@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { and, desc, eq, lt, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -6,6 +6,7 @@ import { getDb } from "@/db/client";
 import { duesSchedules, users } from "@/db/schema";
 import { requireAdminActor } from "@/lib/admin/actor";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
+import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 
 const createSchema = z.object({
   userId: z.number().int().min(1),
@@ -21,6 +22,11 @@ const updateSchema = createSchema.partial().extend({
   id: z.number().int().min(1),
 });
 
+const schedulesCursorSchema = z.object({
+  updatedAt: z.string().datetime(),
+  id: z.number().int().min(1),
+});
+
 export async function GET(request: Request) {
   if (!(await isFeatureEnabled("FEATURE_DUES"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
@@ -31,6 +37,12 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const userId = Number(url.searchParams.get("userId") || "0");
+  const limit = parsePageLimit(url.searchParams.get("limit"));
+  const parsedCursor = decodeCursor(url.searchParams.get("cursor"), schedulesCursorSchema);
+  if (parsedCursor.error) {
+    return NextResponse.json({ error: parsedCursor.error }, { status: 400 });
+  }
+  const cursor = parsedCursor.value;
 
   const rows = await getDb()
     .select({
@@ -48,10 +60,26 @@ export async function GET(request: Request) {
     })
     .from(duesSchedules)
     .innerJoin(users, eq(users.id, duesSchedules.userId))
-    .where(Number.isInteger(userId) && userId > 0 ? eq(duesSchedules.userId, userId) : undefined)
-    .orderBy(asc(users.displayName), asc(duesSchedules.nextDueDate));
+    .where(
+      and(
+        Number.isInteger(userId) && userId > 0 ? eq(duesSchedules.userId, userId) : undefined,
+        cursor
+          ? or(
+              lt(duesSchedules.updatedAt, new Date(cursor.updatedAt)),
+              and(eq(duesSchedules.updatedAt, new Date(cursor.updatedAt)), lt(duesSchedules.id, cursor.id)),
+            )
+          : undefined,
+      ),
+    )
+    .orderBy(desc(duesSchedules.updatedAt), desc(duesSchedules.id))
+    .limit(limit + 1);
 
-  return NextResponse.json({ schedules: rows });
+  const { items, pageInfo } = toPaginatedResult(rows, limit, (row) => ({
+    updatedAt: row.updatedAt.toISOString(),
+    id: row.id,
+  }));
+
+  return NextResponse.json({ items, pageInfo });
 }
 
 export async function POST(request: Request) {

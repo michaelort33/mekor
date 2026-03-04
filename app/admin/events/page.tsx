@@ -29,19 +29,32 @@ type SignupSetting = {
   organizerEmail: string;
 };
 
+type PageInfo = {
+  nextCursor: string | null;
+  hasNextPage: boolean;
+  limit: number;
+};
+
 export default function AdminEventsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [settings, setSettings] = useState<SignupSetting[]>([]);
+  const [registrationsPageInfo, setRegistrationsPageInfo] = useState<PageInfo | null>(null);
 
-  async function load() {
+  async function load(options?: { reset?: boolean; registrationsCursor?: string | null }) {
     setLoading(true);
     setError("");
 
+    const registrationsParams = new URLSearchParams();
+    registrationsParams.set("limit", "25");
+    if (options?.registrationsCursor) {
+      registrationsParams.set("cursor", options.registrationsCursor);
+    }
+
     const [registrationsResponse, settingsResponse] = await Promise.all([
-      fetch("/api/admin/events/registrations"),
+      fetch(`/api/admin/events/registrations?${registrationsParams.toString()}`),
       fetch("/api/admin/events/signup-settings"),
     ]);
 
@@ -51,7 +64,8 @@ export default function AdminEventsPage() {
     }
 
     const registrationsPayload = (await registrationsResponse.json().catch(() => ({}))) as {
-      registrations?: Registration[];
+      items?: Registration[];
+      pageInfo?: PageInfo;
       error?: string;
     };
     const settingsPayload = (await settingsResponse.json().catch(() => ({}))) as {
@@ -65,7 +79,12 @@ export default function AdminEventsPage() {
       return;
     }
 
-    setRegistrations(registrationsPayload.registrations ?? []);
+    setRegistrations((prev) =>
+      options?.reset || !options?.registrationsCursor
+        ? registrationsPayload.items ?? []
+        : [...prev, ...(registrationsPayload.items ?? [])],
+    );
+    setRegistrationsPageInfo(registrationsPayload.pageInfo ?? null);
     setSettings(settingsPayload.settings ?? []);
     setLoading(false);
   }
@@ -91,11 +110,11 @@ export default function AdminEventsPage() {
       return;
     }
 
-    await load();
+    await load({ reset: true });
   }
 
   useEffect(() => {
-    load().catch(() => {
+    load({ reset: true }).catch(() => {
       setError("Unable to load event admin data");
       setLoading(false);
     });
@@ -151,22 +170,31 @@ export default function AdminEventsPage() {
             {registrations.length === 0 ? (
               <p>No registrations yet.</p>
             ) : (
-              <ul className={styles.list}>
-                {registrations.map((registration) => (
-                  <li key={registration.id} className={styles.listItem}>
-                    <div>
-                      <strong>{registration.eventTitle}</strong>
-                      <p>
-                        {registration.userDisplayName} ({registration.userEmail})
-                      </p>
-                      <p>
-                        {registration.status}
-                        {registration.ticketTierName ? ` · ${registration.ticketTierName}` : ""}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <ul className={styles.list}>
+                  {registrations.map((registration) => (
+                    <li key={registration.id} className={styles.listItem}>
+                      <div>
+                        <strong>{registration.eventTitle}</strong>
+                        <p>
+                          {registration.userDisplayName} ({registration.userEmail})
+                        </p>
+                        <p>
+                          {registration.status}
+                          {registration.ticketTierName ? ` · ${registration.ticketTierName}` : ""}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                {registrationsPageInfo?.hasNextPage && registrationsPageInfo.nextCursor ? (
+                  <div className={styles.loadMoreWrap}>
+                    <button type="button" onClick={() => load({ registrationsCursor: registrationsPageInfo.nextCursor })}>
+                      Load more
+                    </button>
+                  </div>
+                ) : null}
+              </>
             )}
           </section>
         </>

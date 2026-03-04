@@ -141,3 +141,19 @@
   color: #42586e;
   font-size: 0.9rem;
 }
+
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.loadMoreWrap button {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid #295f92;
+  border-radius: 8px;
+  background: #356da2;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}

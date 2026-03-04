@@ -18,6 +18,12 @@ type Invitation = {
   status: "active" | "accepted" | "expired" | "revoked";
 };
 
+type PageInfo = {
+  nextCursor: string | null;
+  hasNextPage: boolean;
+  limit: number;
+};
+
 const ROLE_OPTIONS: Invitation["role"][] = ["visitor", "member", "admin", "super_admin"];
 
 export default function AdminInvitationsPage() {
@@ -29,29 +35,43 @@ export default function AdminInvitationsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
 
-  async function loadInvitations() {
-    setLoading(true);
-    setError("");
+  async function loadInvitations(options?: { reset?: boolean; cursor?: string | null }) {
+    if (options?.reset) {
+      setLoading(true);
+      setError("");
+      setInvitations([]);
+      setPageInfo(null);
+    }
+
     const params = new URLSearchParams();
     if (statusFilter) params.set("status", statusFilter);
+    params.set("limit", "25");
+    if (options?.cursor) params.set("cursor", options.cursor);
+
     const response = await fetch(`/api/admin/invitations?${params.toString()}`);
     if (response.status === 401) {
       router.push("/admin/login");
       return;
     }
-    const payload = (await response.json().catch(() => ({}))) as { invitations?: Invitation[]; error?: string };
+    const payload = (await response.json().catch(() => ({}))) as {
+      items?: Invitation[];
+      pageInfo?: PageInfo;
+      error?: string;
+    };
     if (!response.ok) {
       setError(payload.error || "Unable to load invitations");
       setLoading(false);
       return;
     }
-    setInvitations(payload.invitations ?? []);
+    setInvitations((prev) => (options?.reset ? payload.items ?? [] : [...prev, ...(payload.items ?? [])]));
+    setPageInfo(payload.pageInfo ?? null);
     setLoading(false);
   }
 
   useEffect(() => {
-    loadInvitations().catch(() => {
+    loadInvitations({ reset: true }).catch(() => {
       setError("Unable to load invitations");
       setLoading(false);
     });
@@ -75,7 +95,7 @@ export default function AdminInvitationsPage() {
     }
     setEmail("");
     setSubmitting(false);
-    await loadInvitations();
+    await loadInvitations({ reset: true });
   }
 
   async function onRevoke(id: number) {
@@ -86,7 +106,7 @@ export default function AdminInvitationsPage() {
       setError(payload.error || "Unable to revoke invitation");
       return;
     }
-    await loadInvitations();
+    await loadInvitations({ reset: true });
   }
 
   async function onResend(id: number) {
@@ -97,7 +117,7 @@ export default function AdminInvitationsPage() {
       setError(payload.error || "Unable to resend invitation");
       return;
     }
-    await loadInvitations();
+    await loadInvitations({ reset: true });
   }
 
   return (
@@ -162,43 +182,52 @@ export default function AdminInvitationsPage() {
         ) : invitations.length === 0 ? (
           <p>No invitations found.</p>
         ) : (
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Expires</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {invitations.map((invitation) => (
-                <tr key={invitation.id}>
-                  <td>{invitation.email}</td>
-                  <td>{invitation.role}</td>
-                  <td>{invitation.status}</td>
-                  <td>{new Date(invitation.expiresAt).toLocaleString()}</td>
-                  <td className={styles.actions}>
-                    <button
-                      type="button"
-                      onClick={() => onResend(invitation.id)}
-                      disabled={invitation.status === "accepted"}
-                    >
-                      Resend
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onRevoke(invitation.id)}
-                      disabled={invitation.status !== "active"}
-                    >
-                      Revoke
-                    </button>
-                  </td>
+          <>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Expires</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {invitations.map((invitation) => (
+                  <tr key={invitation.id}>
+                    <td>{invitation.email}</td>
+                    <td>{invitation.role}</td>
+                    <td>{invitation.status}</td>
+                    <td>{new Date(invitation.expiresAt).toLocaleString()}</td>
+                    <td className={styles.actions}>
+                      <button
+                        type="button"
+                        onClick={() => onResend(invitation.id)}
+                        disabled={invitation.status === "accepted"}
+                      >
+                        Resend
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onRevoke(invitation.id)}
+                        disabled={invitation.status !== "active"}
+                      >
+                        Revoke
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {pageInfo?.hasNextPage && pageInfo.nextCursor ? (
+              <div className={styles.loadMoreWrap}>
+                <button type="button" onClick={() => loadInvitations({ cursor: pageInfo.nextCursor })}>
+                  Load more
+                </button>
+              </div>
+            ) : null}
+          </>
         )}
       </section>
     </main>

@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db/client";
 import { duesInvoices, duesReminderLog, users } from "@/db/schema";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
+import { reminderTypeToDuesNotificationType, sendDuesNotification } from "@/lib/dues/notifications";
 import { dueReminderTypeForDate } from "@/lib/dues/reminders";
-import { sendDuesReminderEmail } from "@/lib/events/email";
 
 function isAuthorized(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
@@ -15,13 +15,6 @@ function isAuthorized(request: NextRequest) {
 
   const authorization = request.headers.get("authorization");
   return authorization === `Bearer ${secret}`;
-}
-
-function formatMoney(cents: number, currency: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
 }
 
 export async function GET(request: NextRequest) {
@@ -81,13 +74,24 @@ export async function GET(request: NextRequest) {
       continue;
     }
 
-    await sendDuesReminderEmail({
-      toEmail: row.email,
+    const notificationType = reminderTypeToDuesNotificationType(reminderType);
+    const notificationResult = await sendDuesNotification({
+      referenceKey: `invoice:${row.invoiceId}:reminder:${reminderType}`,
+      userId: row.userId,
+      userEmail: row.email,
       displayName: row.displayName,
+      notificationType,
+      invoiceId: row.invoiceId,
+      paymentId: null,
       invoiceLabel: row.label,
-      amountText: formatMoney(row.amountCents, row.currency),
+      amountCents: row.amountCents,
+      currency: row.currency,
       dueDate: row.dueDate,
     });
+
+    if (!notificationResult.sent) {
+      continue;
+    }
 
     await db.insert(duesReminderLog).values({
       invoiceId: row.invoiceId,

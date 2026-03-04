@@ -24,6 +24,7 @@
 .links {
   display: flex;
   gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
 .card {
@@ -62,6 +63,23 @@
   color: #b91c1c;
   border-radius: 8px;
   padding: 0.5rem 0.7rem;
+}
+
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.loadMoreWrap button {
+  min-height: 36px;
+  border: 1px solid #2f6ea9;
+  border-radius: 8px;
+  background: #2f6ea9;
+  color: #fff;
+  font-weight: 700;
+  padding: 0 12px;
+  cursor: pointer;
 }
 
 @media (max-width: 780px) {

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, desc, eq, lt, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -6,6 +6,7 @@ import { getDb } from "@/db/client";
 import { duesInvoices, users } from "@/db/schema";
 import { requireAdminActor } from "@/lib/admin/actor";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
+import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 
 const DUES_INVOICE_STATUSES = ["open", "paid", "void", "overdue"] as const;
 
@@ -15,6 +16,11 @@ const updateSchema = z.object({
   amountCents: z.number().int().min(1).optional(),
   dueDate: z.string().trim().min(1).optional(),
   status: z.enum(["open", "paid", "void", "overdue"]),
+});
+
+const invoiceCursorSchema = z.object({
+  dueDate: z.string(),
+  id: z.number().int().min(1),
 });
 
 export async function GET(request: Request) {
@@ -28,6 +34,13 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const userId = Number(url.searchParams.get("userId") || "0");
   const status = url.searchParams.get("status")?.trim();
+  const limit = parsePageLimit(url.searchParams.get("limit"));
+  const parsedCursor = decodeCursor(url.searchParams.get("cursor"), invoiceCursorSchema);
+  if (parsedCursor.error) {
+    return NextResponse.json({ error: parsedCursor.error }, { status: 400 });
+  }
+  const cursor = parsedCursor.value;
+
   if (status && !DUES_INVOICE_STATUSES.includes(status as (typeof DUES_INVOICE_STATUSES)[number])) {
     return NextResponse.json({ error: "Invalid status filter" }, { status: 400 });
   }
@@ -35,9 +48,15 @@ export async function GET(request: Request) {
   const whereClause = and(
     Number.isInteger(userId) && userId > 0 ? eq(duesInvoices.userId, userId) : undefined,
     status ? eq(duesInvoices.status, status as "open" | "paid" | "void" | "overdue") : undefined,
+    cursor
+      ? or(
+          lt(duesInvoices.dueDate, cursor.dueDate),
+          and(eq(duesInvoices.dueDate, cursor.dueDate), lt(duesInvoices.id, cursor.id)),
+        )
+      : undefined,
   );
 
-  const invoices = await getDb()
+  const rows = await getDb()
     .select({
       id: duesInvoices.id,
       userId: duesInvoices.userId,
@@ -55,9 +74,15 @@ export async function GET(request: Request) {
     .from(duesInvoices)
     .innerJoin(users, eq(users.id, duesInvoices.userId))
     .where(whereClause)
-    .orderBy(desc(duesInvoices.dueDate), asc(users.displayName));
+    .orderBy(desc(duesInvoices.dueDate), desc(duesInvoices.id))
+    .limit(limit + 1);
 
-  return NextResponse.json({ invoices });
+  const { items, pageInfo } = toPaginatedResult(rows, limit, (row) => ({
+    dueDate: row.dueDate,
+    id: row.id,
+  }));
+
+  return NextResponse.json({ items, pageInfo });
 }
 
 export async function PUT(request: Request) {

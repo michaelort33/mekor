@@ -98,6 +98,23 @@
   cursor: pointer;
 }
 
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.loadMoreWrap button {
+  min-height: 36px;
+  border: 1px solid #2f6ea9;
+  border-radius: 8px;
+  background: #2f6ea9;
+  color: #fff;
+  font-weight: 700;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
 @media (max-width: 780px) {
   .header {
     flex-direction: column;

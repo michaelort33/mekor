@@ -1,4 +1,4 @@
-import { and, asc, gt, ilike, isNotNull, isNull, lt } from "drizzle-orm";
+import { and, desc, eq, gt, ilike, isNotNull, isNull, lt, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -7,6 +7,7 @@ import { getDb } from "@/db/client";
 import { userInvitations } from "@/db/schema";
 import { sendInvitationEmail } from "@/lib/invitations/email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
+import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
 const USER_ROLES = ["visitor", "member", "admin", "super_admin"] as const;
@@ -16,6 +17,10 @@ const createInvitationSchema = z.object({
 });
 
 const invitationStatusSchema = z.enum(["active", "accepted", "expired", "revoked"]);
+const invitationsCursorSchema = z.object({
+  createdAt: z.string().datetime(),
+  id: z.number().int().min(1),
+});
 
 export async function GET(request: Request) {
   const result = await requireSuperAdminActor();
@@ -24,6 +29,13 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const statusRaw = url.searchParams.get("status");
   const emailRaw = url.searchParams.get("email")?.trim() ?? "";
+  const limit = parsePageLimit(url.searchParams.get("limit"));
+  const parsedCursor = decodeCursor(url.searchParams.get("cursor"), invitationsCursorSchema);
+  if (parsedCursor.error) {
+    return NextResponse.json({ error: parsedCursor.error }, { status: 400 });
+  }
+  const cursor = parsedCursor.value;
+
   const status = invitationStatusSchema.safeParse(statusRaw).success
     ? (statusRaw as z.infer<typeof invitationStatusSchema>)
     : null;
@@ -39,6 +51,12 @@ export async function GET(request: Request) {
           : status === "active"
             ? and(isNull(userInvitations.acceptedAt), isNull(userInvitations.revokedAt), gt(userInvitations.expiresAt, new Date()))
             : undefined,
+    cursor
+      ? or(
+          lt(userInvitations.createdAt, new Date(cursor.createdAt)),
+          and(eq(userInvitations.createdAt, new Date(cursor.createdAt)), lt(userInvitations.id, cursor.id)),
+        )
+      : undefined,
   );
 
   const rows = await getDb()
@@ -54,10 +72,11 @@ export async function GET(request: Request) {
     })
     .from(userInvitations)
     .where(whereClause)
-    .orderBy(asc(userInvitations.createdAt));
+    .orderBy(desc(userInvitations.createdAt), desc(userInvitations.id))
+    .limit(limit + 1);
 
   const now = Date.now();
-  const invitations = rows.map((row) => {
+  const mappedRows = rows.map((row) => {
     const derivedStatus = row.acceptedAt
       ? "accepted"
       : row.revokedAt
@@ -71,7 +90,12 @@ export async function GET(request: Request) {
     };
   });
 
-  return NextResponse.json({ invitations });
+  const { items, pageInfo } = toPaginatedResult(mappedRows, limit, (row) => ({
+    createdAt: row.createdAt.toISOString(),
+    id: row.id,
+  }));
+
+  return NextResponse.json({ items, pageInfo });
 }
 
 export async function POST(request: Request) {

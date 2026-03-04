@@ -210,7 +210,7 @@ export async function POST(request: Request, { params }: Params) {
             .update(eventRegistrations)
             .set({
               status: "waitlisted",
-              ticketTierId: null,
+              ticketTierId: selectedTier?.id ?? null,
               paymentDueAt: null,
               stripeCheckoutSessionId: null,
               stripePaymentIntentId: null,
@@ -228,6 +228,7 @@ export async function POST(request: Request, { params }: Params) {
             .values({
               eventId: numericEventId,
               userId: session.userId,
+              ticketTierId: selectedTier?.id,
               status: "waitlisted",
             })
             .returning({

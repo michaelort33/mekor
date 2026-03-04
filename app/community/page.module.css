@@ -74,3 +74,19 @@
   margin: 0.45rem 0;
   color: #1f2937;
 }
+
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.loadMoreButton {
+  border: 1px solid #2f689d;
+  border-radius: 999px;
+  padding: 9px 16px;
+  text-decoration: none;
+  font-weight: 700;
+  color: #1f4f79;
+  background: #f6fbff;
+}

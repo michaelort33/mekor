@@ -1,12 +1,18 @@
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, desc, eq, lt, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { getDb } from "@/db/client";
 import { eventRegistrations, eventTicketTiers, events, users } from "@/db/schema";
 import { getAdminSession } from "@/lib/admin/session";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
+import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 
 const REGISTRATION_STATUSES = ["registered", "waitlisted", "cancelled", "payment_pending"] as const;
+const registrationsCursorSchema = z.object({
+  registeredAt: z.string().datetime(),
+  id: z.number().int().min(1),
+});
 
 async function requireAdmin() {
   const hasSession = await getAdminSession();
@@ -28,6 +34,13 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const eventId = Number(url.searchParams.get("eventId") || "0");
   const status = url.searchParams.get("status")?.trim();
+  const limit = parsePageLimit(url.searchParams.get("limit"));
+  const parsedCursor = decodeCursor(url.searchParams.get("cursor"), registrationsCursorSchema);
+  if (parsedCursor.error) {
+    return NextResponse.json({ error: parsedCursor.error }, { status: 400 });
+  }
+  const cursor = parsedCursor.value;
+
   if (status && !REGISTRATION_STATUSES.includes(status as (typeof REGISTRATION_STATUSES)[number])) {
     return NextResponse.json({ error: "Invalid status filter" }, { status: 400 });
   }
@@ -35,6 +48,12 @@ export async function GET(request: Request) {
   const whereClause = and(
     Number.isInteger(eventId) && eventId > 0 ? eq(eventRegistrations.eventId, eventId) : undefined,
     status ? eq(eventRegistrations.status, status as typeof eventRegistrations.$inferSelect.status) : undefined,
+    cursor
+      ? or(
+          lt(eventRegistrations.registeredAt, new Date(cursor.registeredAt)),
+          and(eq(eventRegistrations.registeredAt, new Date(cursor.registeredAt)), lt(eventRegistrations.id, cursor.id)),
+        )
+      : undefined,
   );
 
   const rows = await getDb()
@@ -58,7 +77,13 @@ export async function GET(request: Request) {
     .innerJoin(users, eq(users.id, eventRegistrations.userId))
     .leftJoin(eventTicketTiers, eq(eventTicketTiers.id, eventRegistrations.ticketTierId))
     .where(whereClause)
-    .orderBy(desc(eventRegistrations.registeredAt), asc(events.title));
+    .orderBy(desc(eventRegistrations.registeredAt), desc(eventRegistrations.id))
+    .limit(limit + 1);
 
-  return NextResponse.json({ registrations: rows });
+  const { items, pageInfo } = toPaginatedResult(rows, limit, (row) => ({
+    registeredAt: row.registeredAt.toISOString(),
+    id: row.id,
+  }));
+
+  return NextResponse.json({ items, pageInfo });
 }

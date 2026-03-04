@@ -1,11 +1,11 @@
-import { and, asc, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { getDb } from "@/db/client";
 import { eventRegistrations } from "@/db/schema";
 import { getUserSession } from "@/lib/auth/session";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
-import { pickNextWaitlistedRegistration } from "@/lib/events/registrations";
+import { promoteWaitlistForEvent } from "@/lib/events/waitlist";
 
 type Params = {
   params: Promise<{ eventId: string }>;
@@ -57,29 +57,9 @@ export async function POST(_: Request, { params }: Params) {
 
   let promotedRegistrationId: number | null = null;
 
-  if (registration.status === "registered") {
-    const waitlisted = await db
-      .select({
-        id: eventRegistrations.id,
-        status: eventRegistrations.status,
-        registeredAt: eventRegistrations.registeredAt,
-      })
-      .from(eventRegistrations)
-      .where(and(eq(eventRegistrations.eventId, numericEventId), eq(eventRegistrations.status, "waitlisted")))
-      .orderBy(asc(eventRegistrations.registeredAt));
-
-    const next = pickNextWaitlistedRegistration(waitlisted);
-    if (next) {
-      await db
-        .update(eventRegistrations)
-        .set({
-          status: "registered",
-          updatedAt: new Date(),
-        })
-        .where(eq(eventRegistrations.id, next.id));
-
-      promotedRegistrationId = next.id;
-    }
+  if (registration.status === "registered" || registration.status === "payment_pending") {
+    const promoted = await promoteWaitlistForEvent(numericEventId);
+    promotedRegistrationId = promoted?.registrationId ?? null;
   }
 
   return NextResponse.json({ ok: true, promotedRegistrationId });

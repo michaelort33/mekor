@@ -38,6 +38,12 @@ type UserBalance = {
   outstandingBalanceCents: number;
 };
 
+type PageInfo = {
+  nextCursor: string | null;
+  hasNextPage: boolean;
+  limit: number;
+};
+
 function formatMoney(cents: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -52,6 +58,8 @@ export default function AdminDuesPage() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [users, setUsers] = useState<UserBalance[]>([]);
+  const [schedulesPageInfo, setSchedulesPageInfo] = useState<PageInfo | null>(null);
+  const [invoicesPageInfo, setInvoicesPageInfo] = useState<PageInfo | null>(null);
   const [invoiceForm, setInvoiceForm] = useState({
     userId: "",
     label: "Membership dues",
@@ -60,14 +68,22 @@ export default function AdminDuesPage() {
   });
   const [savingInvoice, setSavingInvoice] = useState(false);
 
-  async function load() {
+  async function load(options?: { reset?: boolean; schedulesCursor?: string | null; invoicesCursor?: string | null }) {
     setLoading(true);
     setError("");
 
+    const schedulesParams = new URLSearchParams();
+    schedulesParams.set("limit", "25");
+    if (options?.schedulesCursor) schedulesParams.set("cursor", options.schedulesCursor);
+
+    const invoicesParams = new URLSearchParams();
+    invoicesParams.set("limit", "25");
+    if (options?.invoicesCursor) invoicesParams.set("cursor", options.invoicesCursor);
+
     const [schedulesResponse, invoicesResponse, usersResponse] = await Promise.all([
-      fetch("/api/admin/dues/schedules"),
-      fetch("/api/admin/dues/invoices"),
-      fetch("/api/admin/users"),
+      fetch(`/api/admin/dues/schedules?${schedulesParams.toString()}`),
+      fetch(`/api/admin/dues/invoices?${invoicesParams.toString()}`),
+      fetch("/api/admin/users?limit=100"),
     ]);
 
     if (schedulesResponse.status === 401 || invoicesResponse.status === 401 || usersResponse.status === 401) {
@@ -76,15 +92,17 @@ export default function AdminDuesPage() {
     }
 
     const schedulesPayload = (await schedulesResponse.json().catch(() => ({}))) as {
-      schedules?: Schedule[];
+      items?: Schedule[];
+      pageInfo?: PageInfo;
       error?: string;
     };
     const invoicesPayload = (await invoicesResponse.json().catch(() => ({}))) as {
-      invoices?: Invoice[];
+      items?: Invoice[];
+      pageInfo?: PageInfo;
       error?: string;
     };
     const usersPayload = (await usersResponse.json().catch(() => ({}))) as {
-      users?: UserBalance[];
+      items?: UserBalance[];
       error?: string;
     };
 
@@ -94,9 +112,19 @@ export default function AdminDuesPage() {
       return;
     }
 
-    setSchedules(schedulesPayload.schedules ?? []);
-    setInvoices(invoicesPayload.invoices ?? []);
-    setUsers(usersPayload.users ?? []);
+    setSchedules((prev) => {
+      if (options?.schedulesCursor) return [...prev, ...(schedulesPayload.items ?? [])];
+      if (options?.invoicesCursor && !options?.reset) return prev;
+      return schedulesPayload.items ?? [];
+    });
+    setInvoices((prev) => {
+      if (options?.invoicesCursor) return [...prev, ...(invoicesPayload.items ?? [])];
+      if (options?.schedulesCursor && !options?.reset) return prev;
+      return invoicesPayload.items ?? [];
+    });
+    setUsers(usersPayload.items ?? []);
+    setSchedulesPageInfo(schedulesPayload.pageInfo ?? null);
+    setInvoicesPageInfo(invoicesPayload.pageInfo ?? null);
     setLoading(false);
   }
 
@@ -113,7 +141,7 @@ export default function AdminDuesPage() {
       return;
     }
 
-    await load();
+    await load({ reset: true });
   }
 
   async function createInvoice(event: React.FormEvent<HTMLFormElement>) {
@@ -156,11 +184,11 @@ export default function AdminDuesPage() {
       dueDate: "",
     }));
     setSavingInvoice(false);
-    await load();
+    await load({ reset: true });
   }
 
   useEffect(() => {
-    load().catch(() => {
+    load({ reset: true }).catch(() => {
       setError("Unable to load dues admin data");
       setLoading(false);
     });
@@ -262,17 +290,26 @@ export default function AdminDuesPage() {
             {schedules.length === 0 ? (
               <p>No schedules created.</p>
             ) : (
-              <ul className={styles.list}>
-                {schedules.map((schedule) => (
-                  <li key={schedule.id} className={styles.listItem}>
-                    <strong>{schedule.userDisplayName}</strong>
-                    <p>
-                      {schedule.frequency} · {formatMoney(schedule.amountCents, schedule.currency)} · due {schedule.nextDueDate}
-                    </p>
-                    <p>{schedule.active ? "active" : "inactive"}</p>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <ul className={styles.list}>
+                  {schedules.map((schedule) => (
+                    <li key={schedule.id} className={styles.listItem}>
+                      <strong>{schedule.userDisplayName}</strong>
+                      <p>
+                        {schedule.frequency} · {formatMoney(schedule.amountCents, schedule.currency)} · due {schedule.nextDueDate}
+                      </p>
+                      <p>{schedule.active ? "active" : "inactive"}</p>
+                    </li>
+                  ))}
+                </ul>
+                {schedulesPageInfo?.hasNextPage && schedulesPageInfo.nextCursor ? (
+                  <div className={styles.loadMoreWrap}>
+                    <button type="button" onClick={() => load({ schedulesCursor: schedulesPageInfo.nextCursor })}>
+                      Load more schedules
+                    </button>
+                  </div>
+                ) : null}
+              </>
             )}
           </section>
 
@@ -281,30 +318,39 @@ export default function AdminDuesPage() {
             {invoices.length === 0 ? (
               <p>No invoices found.</p>
             ) : (
-              <ul className={styles.list}>
-                {invoices.map((invoice) => (
-                  <li key={invoice.id} className={styles.listItem}>
-                    <div>
-                      <strong>
-                        {invoice.userDisplayName} · {invoice.label}
-                      </strong>
-                      <p>
-                        {formatMoney(invoice.amountCents, invoice.currency)} · due {invoice.dueDate}
-                      </p>
-                      <p>Status: {invoice.status}</p>
-                    </div>
-                    <select
-                      value={invoice.status}
-                      onChange={(event) => updateInvoiceStatus(invoice.id, event.target.value as Invoice["status"])}
-                    >
-                      <option value="open">open</option>
-                      <option value="overdue">overdue</option>
-                      <option value="paid">paid</option>
-                      <option value="void">void</option>
-                    </select>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <ul className={styles.list}>
+                  {invoices.map((invoice) => (
+                    <li key={invoice.id} className={styles.listItem}>
+                      <div>
+                        <strong>
+                          {invoice.userDisplayName} · {invoice.label}
+                        </strong>
+                        <p>
+                          {formatMoney(invoice.amountCents, invoice.currency)} · due {invoice.dueDate}
+                        </p>
+                        <p>Status: {invoice.status}</p>
+                      </div>
+                      <select
+                        value={invoice.status}
+                        onChange={(event) => updateInvoiceStatus(invoice.id, event.target.value as Invoice["status"])}
+                      >
+                        <option value="open">open</option>
+                        <option value="overdue">overdue</option>
+                        <option value="paid">paid</option>
+                        <option value="void">void</option>
+                      </select>
+                    </li>
+                  ))}
+                </ul>
+                {invoicesPageInfo?.hasNextPage && invoicesPageInfo.nextCursor ? (
+                  <div className={styles.loadMoreWrap}>
+                    <button type="button" onClick={() => load({ invoicesCursor: invoicesPageInfo.nextCursor })}>
+                      Load more invoices
+                    </button>
+                  </div>
+                ) : null}
+              </>
             )}
           </section>
         </>

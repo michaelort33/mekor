@@ -76,3 +76,55 @@ export async function sendDuesReminderEmail(input: {
     ].join("\n"),
   });
 }
+
+export async function sendEventWaitlistPromotedEmail(input: {
+  toEmail: string;
+  displayName: string;
+  eventTitle: string;
+  eventPath: string;
+  paymentRequired: boolean;
+  paymentDueAt: string | null;
+}) {
+  const resend = new Resend(getResendApiKey());
+  const paymentLine = input.paymentRequired
+    ? `Please complete payment by ${input.paymentDueAt ?? "the listed due time"} to confirm your spot.`
+    : "Your registration is now confirmed.";
+
+  await resend.emails.send({
+    from: getFormNotifyFrom(),
+    to: [input.toEmail],
+    subject: `[Mekor Event] Waitlist update for ${input.eventTitle}`,
+    text: [
+      `Hi ${input.displayName},`,
+      "",
+      `A spot opened up for ${input.eventTitle}.`,
+      paymentLine,
+      `Event page: ${input.eventPath}`,
+      "",
+      "Mekor Habracha",
+    ].join("\n"),
+  });
+}
+
+export async function sendEventPaymentWindowExpiredEmail(input: {
+  toEmail: string;
+  displayName: string;
+  eventTitle: string;
+  eventPath: string;
+}) {
+  const resend = new Resend(getResendApiKey());
+
+  await resend.emails.send({
+    from: getFormNotifyFrom(),
+    to: [input.toEmail],
+    subject: `[Mekor Event] Payment window expired for ${input.eventTitle}`,
+    text: [
+      `Hi ${input.displayName},`,
+      "",
+      `Your payment window for ${input.eventTitle} expired and your pending registration was cancelled.`,
+      `You can register again from: ${input.eventPath}`,
+      "",
+      "Mekor Habracha",
+    ].join("\n"),
+  });
+}

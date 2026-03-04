@@ -18,6 +18,12 @@ type AdminUser = {
   lastLoginAt: string | null;
 };
 
+type PageInfo = {
+  nextCursor: string | null;
+  hasNextPage: boolean;
+  limit: number;
+};
+
 const ROLE_OPTIONS: AdminUser["role"][] = ["visitor", "member", "admin", "super_admin"];
 const VISIBILITY_OPTIONS: AdminUser["profileVisibility"][] = ["private", "members", "public", "anonymous"];
 
@@ -31,14 +37,21 @@ export default function AdminUsersPage() {
   const [savingId, setSavingId] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
 
-  async function loadUsers() {
+  async function loadUsers(options?: { reset?: boolean; cursor?: string | null }) {
     setError("");
-    setLoading(true);
+    if (options?.reset) {
+      setLoading(true);
+      setUsers([]);
+      setPageInfo(null);
+    }
 
     const params = new URLSearchParams();
     if (q.trim()) params.set("q", q.trim());
     if (roleFilter) params.set("role", roleFilter);
+    params.set("limit", "25");
+    if (options?.cursor) params.set("cursor", options.cursor);
 
     const response = await fetch(`/api/admin/users?${params.toString()}`);
     if (response.status === 401) {
@@ -47,10 +60,11 @@ export default function AdminUsersPage() {
     }
 
     const data = (await response.json().catch(() => ({}))) as {
-      users?: AdminUser[];
+      items?: AdminUser[];
       error?: string;
       actorRole?: AdminUser["role"];
       canManageAdminRoles?: boolean;
+      pageInfo?: PageInfo;
     };
     if (!response.ok) {
       setError(data.error || "Unable to load users");
@@ -58,14 +72,15 @@ export default function AdminUsersPage() {
       return;
     }
 
-    setUsers(data.users ?? []);
+    setUsers((prev) => (options?.reset ? data.items ?? [] : [...prev, ...(data.items ?? [])]));
+    setPageInfo(data.pageInfo ?? null);
     setActorRole(data.actorRole ?? null);
     setCanManageAdminRoles(Boolean(data.canManageAdminRoles));
     setLoading(false);
   }
 
   useEffect(() => {
-    loadUsers().catch(() => {
+    loadUsers({ reset: true }).catch(() => {
       setError("Unable to load users");
       setLoading(false);
     });
@@ -93,7 +108,9 @@ export default function AdminUsersPage() {
       return;
     }
 
-    setUsers((prev) => prev.map((item) => (item.id === user.id ? data.user ?? item : item)));
+    setUsers((prev) =>
+      prev.map((item) => (item.id === user.id ? { ...item, ...(data.user ?? {}) } : item)),
+    );
     setSavingId(null);
   }
 
@@ -145,7 +162,7 @@ export default function AdminUsersPage() {
           </select>
         </label>
 
-        <button type="button" onClick={() => loadUsers()}>
+        <button type="button" onClick={() => loadUsers({ reset: true })}>
           Apply
         </button>
       </section>
@@ -156,87 +173,96 @@ export default function AdminUsersPage() {
       {loading ? (
         <p>Loading users...</p>
       ) : (
-        <section className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Visibility</th>
-                <th>Stripe customer</th>
-                <th>Outstanding</th>
-                <th>Last login</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.displayName}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    <select
-                      value={user.role}
-                      disabled={!canManageAdminRoles && (user.role === "admin" || user.role === "super_admin")}
-                      onChange={(event) =>
-                        updateLocalUser(user.id, { role: event.target.value as AdminUser["role"] })
-                      }
-                    >
-                      {(canManageAdminRoles
-                        ? ROLE_OPTIONS
-                        : [
-                            "visitor" as const,
-                            "member" as const,
-                            ...(user.role === "admin" || user.role === "super_admin" ? [user.role] : []),
-                          ]).map((role) => (
-                        <option key={role} value={role}>
-                          {role}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <select
-                      value={user.profileVisibility}
-                      onChange={(event) =>
-                        updateLocalUser(user.id, {
-                          profileVisibility: event.target.value as AdminUser["profileVisibility"],
-                        })
-                      }
-                    >
-                      {VISIBILITY_OPTIONS.map((visibility) => (
-                        <option key={visibility} value={visibility}>
-                          {visibility}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>{user.stripeCustomerId ?? "Unlinked"}</td>
-                  <td>
-                    {(user.outstandingBalanceCents / 100).toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    })}
-                  </td>
-                  <td>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</td>
-                  <td>
-                    <button
-                      type="button"
-                      onClick={() => saveUser(user)}
-                      disabled={
-                        savingId === user.id ||
-                        (!canManageAdminRoles && (user.role === "admin" || user.role === "super_admin"))
-                      }
-                    >
-                      {savingId === user.id ? "Saving..." : "Save"}
-                    </button>
-                  </td>
+        <>
+          <section className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Visibility</th>
+                  <th>Stripe customer</th>
+                  <th>Outstanding</th>
+                  <th>Last login</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.displayName}</td>
+                    <td>{user.email}</td>
+                    <td>
+                      <select
+                        value={user.role}
+                        disabled={!canManageAdminRoles && (user.role === "admin" || user.role === "super_admin")}
+                        onChange={(event) =>
+                          updateLocalUser(user.id, { role: event.target.value as AdminUser["role"] })
+                        }
+                      >
+                        {(canManageAdminRoles
+                          ? ROLE_OPTIONS
+                          : [
+                              "visitor" as const,
+                              "member" as const,
+                              ...(user.role === "admin" || user.role === "super_admin" ? [user.role] : []),
+                            ]).map((role) => (
+                          <option key={role} value={role}>
+                            {role}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>
+                      <select
+                        value={user.profileVisibility}
+                        onChange={(event) =>
+                          updateLocalUser(user.id, {
+                            profileVisibility: event.target.value as AdminUser["profileVisibility"],
+                          })
+                        }
+                      >
+                        {VISIBILITY_OPTIONS.map((visibility) => (
+                          <option key={visibility} value={visibility}>
+                            {visibility}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td>{user.stripeCustomerId ?? "Unlinked"}</td>
+                    <td>
+                      {(user.outstandingBalanceCents / 100).toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </td>
+                    <td>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</td>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => saveUser(user)}
+                        disabled={
+                          savingId === user.id ||
+                          (!canManageAdminRoles && (user.role === "admin" || user.role === "super_admin"))
+                        }
+                      >
+                        {savingId === user.id ? "Saving..." : "Save"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+          {pageInfo?.hasNextPage && pageInfo.nextCursor ? (
+            <div className={styles.loadMoreWrap}>
+              <button type="button" onClick={() => loadUsers({ cursor: pageInfo.nextCursor })}>
+                Load more
+              </button>
+            </div>
+          ) : null}
+        </>
       )}
     </main>
   );

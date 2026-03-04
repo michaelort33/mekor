@@ -19,6 +19,16 @@ export const profileVisibilityEnum = pgEnum("profile_visibility", ["private", "m
 export const duesFrequencyEnum = pgEnum("dues_frequency", ["annual", "monthly", "custom"]);
 export const duesInvoiceStatusEnum = pgEnum("dues_invoice_status", ["open", "paid", "void", "overdue"]);
 export const paymentStatusEnum = pgEnum("payment_status", ["pending", "succeeded", "failed", "refunded"]);
+export const duesNotificationTypeEnum = pgEnum("dues_notification_type", [
+  "invoice_created",
+  "payment_succeeded",
+  "payment_failed",
+  "overdue_d30",
+  "overdue_d7",
+  "overdue_d1",
+  "overdue_weekly",
+]);
+export const duesNotificationDeliveryStatusEnum = pgEnum("dues_notification_delivery_status", ["sent", "failed"]);
 export const eventRegistrationStatusEnum = pgEnum("event_registration_status", [
   "registered",
   "waitlisted",
@@ -155,6 +165,7 @@ export const users = pgTable(
       table.profileVisibility,
       table.displayName,
     ),
+    createdAtIdIdx: index("users_created_at_id_idx").on(table.createdAt, table.id),
   }),
 );
 
@@ -187,6 +198,7 @@ export const duesSchedules = pgTable(
   },
   (table) => ({
     userDueDateIdx: index("dues_schedules_user_due_date_idx").on(table.userId, table.nextDueDate),
+    updatedAtIdIdx: index("dues_schedules_updated_at_id_idx").on(table.updatedAt, table.id),
   }),
 );
 
@@ -212,6 +224,7 @@ export const duesInvoices = pgTable(
   },
   (table) => ({
     userStatusDueDateIdx: index("dues_invoices_user_status_due_date_idx").on(table.userId, table.status, table.dueDate),
+    dueDateIdIdx: index("dues_invoices_due_date_id_idx").on(table.dueDate, table.id),
   }),
 );
 
@@ -237,6 +250,30 @@ export const duesPayments = pgTable(
   },
   (table) => ({
     invoiceStatusIdx: index("dues_payments_invoice_status_idx").on(table.invoiceId, table.status),
+  }),
+);
+
+export const duesNotificationLog = pgTable(
+  "dues_notification_log",
+  {
+    id: serial("id").primaryKey(),
+    referenceKey: varchar("reference_key", { length: 255 }).notNull().unique(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    invoiceId: integer("invoice_id").references(() => duesInvoices.id),
+    paymentId: integer("payment_id").references(() => duesPayments.id),
+    notificationType: duesNotificationTypeEnum("notification_type").notNull(),
+    provider: varchar("provider", { length: 40 }).notNull().default("sendgrid"),
+    providerMessageId: varchar("provider_message_id", { length: 255 }).notNull().default(""),
+    deliveryStatus: duesNotificationDeliveryStatusEnum("delivery_status").notNull(),
+    errorMessage: text("error_message").notNull().default(""),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    invoiceTypeIdx: index("dues_notification_log_invoice_type_idx").on(table.invoiceId, table.notificationType),
+    paymentTypeIdx: index("dues_notification_log_payment_type_idx").on(table.paymentId, table.notificationType),
   }),
 );
 
@@ -309,6 +346,7 @@ export const eventRegistrations = pgTable(
       table.status,
       table.registeredAt,
     ),
+    registeredAtIdIdx: index("event_registrations_registered_at_id_idx").on(table.registeredAt, table.id),
   }),
 );
 
@@ -397,6 +435,7 @@ export const userInvitations = pgTable(
     tokenHashUniqueIdx: uniqueIndex("user_invitations_token_hash_unique_idx").on(table.tokenHash),
     emailStateIdx: index("user_invitations_email_accepted_revoked_idx").on(table.email, table.acceptedAt, table.revokedAt),
     expiresAtIdx: index("user_invitations_expires_at_idx").on(table.expiresAt),
+    createdAtIdIdx: index("user_invitations_created_at_id_idx").on(table.createdAt, table.id),
   }),
 );
 
