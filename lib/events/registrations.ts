@@ -7,7 +7,7 @@ export type EventRegistrationLite = {
 };
 
 export function countActiveEventSpots(registrations: EventRegistrationLite[]) {
-  return registrations.filter((registration) => registration.status === "registered").length;
+  return registrations.filter((r) => r.status === "registered" || r.status === "payment_pending").length;
 }
 
 export function pickNextWaitlistedRegistration(registrations: EventRegistrationLite[]) {

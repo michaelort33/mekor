@@ -162,69 +162,6 @@ export async function POST(request: Request, { params }: Params) {
   }
 
   const db = getDb();
-  const existing = await db
-    .select({
-      id: eventRegistrations.id,
-      status: eventRegistrations.status,
-    })
-    .from(eventRegistrations)
-    .where(and(eq(eventRegistrations.eventId, numericEventId), eq(eventRegistrations.userId, session.userId)))
-    .limit(1);
-
-  if (existing.length > 0 && existing[0]?.status !== "cancelled") {
-    return NextResponse.json({ error: "Already registered" }, { status: 409 });
-  }
-  const cancelledRegistrationId = existing[0]?.status === "cancelled" ? existing[0].id : null;
-
-  const registrations = await db
-    .select({
-      id: eventRegistrations.id,
-      status: eventRegistrations.status,
-      registeredAt: eventRegistrations.registeredAt,
-    })
-    .from(eventRegistrations)
-    .where(eq(eventRegistrations.eventId, numericEventId));
-
-  const activeSpots = countActiveEventSpots(registrations);
-  const isFull = typeof context.settings.capacity === "number" && activeSpots >= context.settings.capacity;
-
-  if (isFull) {
-    if (!context.settings.waitlistEnabled) {
-      return NextResponse.json({ error: "Event is full" }, { status: 409 });
-    }
-
-    const [waitlisted] = cancelledRegistrationId
-      ? await db
-          .update(eventRegistrations)
-          .set({
-            status: "waitlisted",
-            ticketTierId: null,
-            paymentDueAt: null,
-            stripeCheckoutSessionId: null,
-            stripePaymentIntentId: null,
-            receiptUrl: "",
-            registeredAt: new Date(),
-            updatedAt: new Date(),
-          })
-          .where(eq(eventRegistrations.id, cancelledRegistrationId))
-          .returning({
-            id: eventRegistrations.id,
-            status: eventRegistrations.status,
-          })
-      : await db
-          .insert(eventRegistrations)
-          .values({
-            eventId: numericEventId,
-            userId: session.userId,
-            status: "waitlisted",
-          })
-          .returning({
-            id: eventRegistrations.id,
-            status: eventRegistrations.status,
-          });
-
-    return NextResponse.json({ registration: waitlisted, checkoutRequired: false });
-  }
 
   const selectedTier = parsed.data.ticketTierId
     ? context.tiers.find((tier) => tier.id === parsed.data.ticketTierId && tier.active)
@@ -236,40 +173,109 @@ export async function POST(request: Request, { params }: Params) {
 
   const requiresPayment = context.settings.paymentRequired || Boolean(selectedTier && selectedTier.priceCents > 0);
 
-  const [registration] = cancelledRegistrationId
-    ? await db
-        .update(eventRegistrations)
-        .set({
-          ticketTierId: selectedTier?.id ?? null,
-          status: requiresPayment ? "payment_pending" : "registered",
-          paymentDueAt: requiresPayment ? new Date(Date.now() + 30 * 60 * 1000) : null,
-          stripeCheckoutSessionId: null,
-          stripePaymentIntentId: null,
-          receiptUrl: "",
-          registeredAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .where(eq(eventRegistrations.id, cancelledRegistrationId))
-        .returning({
-          id: eventRegistrations.id,
-          status: eventRegistrations.status,
-        })
-    : await db
-        .insert(eventRegistrations)
-        .values({
-          eventId: numericEventId,
-          userId: session.userId,
-          ticketTierId: selectedTier?.id,
-          status: requiresPayment ? "payment_pending" : "registered",
-          paymentDueAt: requiresPayment ? new Date(Date.now() + 30 * 60 * 1000) : null,
-        })
-        .returning({
-          id: eventRegistrations.id,
-          status: eventRegistrations.status,
-        });
+  const result = await db.transaction(async (tx) => {
+    const existing = await tx
+      .select({
+        id: eventRegistrations.id,
+        status: eventRegistrations.status,
+      })
+      .from(eventRegistrations)
+      .where(and(eq(eventRegistrations.eventId, numericEventId), eq(eventRegistrations.userId, session.userId)))
+      .limit(1);
 
-  return NextResponse.json({
-    registration,
-    checkoutRequired: requiresPayment,
+    if (existing.length > 0 && existing[0]?.status !== "cancelled") {
+      return { error: "Already registered", status: 409 as const };
+    }
+    const cancelledRegistrationId = existing[0]?.status === "cancelled" ? existing[0].id : null;
+
+    const registrations = await tx
+      .select({
+        id: eventRegistrations.id,
+        status: eventRegistrations.status,
+        registeredAt: eventRegistrations.registeredAt,
+      })
+      .from(eventRegistrations)
+      .where(eq(eventRegistrations.eventId, numericEventId));
+
+    const activeSpots = countActiveEventSpots(registrations);
+    const isFull = typeof context.settings!.capacity === "number" && activeSpots >= context.settings!.capacity;
+
+    if (isFull) {
+      if (!context.settings!.waitlistEnabled) {
+        return { error: "Event is full", status: 409 as const };
+      }
+
+      const [waitlisted] = cancelledRegistrationId
+        ? await tx
+            .update(eventRegistrations)
+            .set({
+              status: "waitlisted",
+              ticketTierId: null,
+              paymentDueAt: null,
+              stripeCheckoutSessionId: null,
+              stripePaymentIntentId: null,
+              receiptUrl: "",
+              registeredAt: new Date(),
+              updatedAt: new Date(),
+            })
+            .where(eq(eventRegistrations.id, cancelledRegistrationId))
+            .returning({
+              id: eventRegistrations.id,
+              status: eventRegistrations.status,
+            })
+        : await tx
+            .insert(eventRegistrations)
+            .values({
+              eventId: numericEventId,
+              userId: session.userId,
+              status: "waitlisted",
+            })
+            .returning({
+              id: eventRegistrations.id,
+              status: eventRegistrations.status,
+            });
+
+      return { registration: waitlisted, checkoutRequired: false };
+    }
+
+    const [registration] = cancelledRegistrationId
+      ? await tx
+          .update(eventRegistrations)
+          .set({
+            ticketTierId: selectedTier?.id ?? null,
+            status: requiresPayment ? "payment_pending" : "registered",
+            paymentDueAt: requiresPayment ? new Date(Date.now() + 30 * 60 * 1000) : null,
+            stripeCheckoutSessionId: null,
+            stripePaymentIntentId: null,
+            receiptUrl: "",
+            registeredAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(eq(eventRegistrations.id, cancelledRegistrationId))
+          .returning({
+            id: eventRegistrations.id,
+            status: eventRegistrations.status,
+          })
+      : await tx
+          .insert(eventRegistrations)
+          .values({
+            eventId: numericEventId,
+            userId: session.userId,
+            ticketTierId: selectedTier?.id,
+            status: requiresPayment ? "payment_pending" : "registered",
+            paymentDueAt: requiresPayment ? new Date(Date.now() + 30 * 60 * 1000) : null,
+          })
+          .returning({
+            id: eventRegistrations.id,
+            status: eventRegistrations.status,
+          });
+
+    return { registration, checkoutRequired: requiresPayment };
   });
+
+  if ("error" in result) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
+  }
+
+  return NextResponse.json(result);
 }
