@@ -5,6 +5,7 @@ import { z } from "zod";
 import { getDb } from "@/db/client";
 import { systemSettings, users } from "@/db/schema";
 import { getAdminSession } from "@/lib/admin/session";
+import { getUserSession } from "@/lib/auth/session";
 import { clearSettingsCache } from "@/lib/config/features";
 
 const updateSchema = z.object({
@@ -13,13 +14,22 @@ const updateSchema = z.object({
 });
 
 async function requireSuperAdmin() {
-  const session = await getAdminSession();
-  if (!session) {
+  const hasAdminSession = await getAdminSession();
+  if (!hasAdminSession) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const userSession = await getUserSession();
+  if (!userSession) {
+    return NextResponse.json({ error: "User session required" }, { status: 403 });
+  }
+
   const db = getDb();
-  const [user] = await db.select({ role: users.role }).from(users).where(eq(users.email, session.email)).limit(1);
+  const [user] = await db
+    .select({ role: users.role })
+    .from(users)
+    .where(eq(users.id, userSession.userId))
+    .limit(1);
 
   if (!user || user.role !== "super_admin") {
     return NextResponse.json({ error: "Forbidden - Super admin access required" }, { status: 403 });
