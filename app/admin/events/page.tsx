@@ -110,6 +110,7 @@ export default function AdminEventsPage() {
           <p>Manage registrations and signup settings.</p>
         </div>
         <div className={styles.links}>
+          <Link href="/admin/settings">Settings</Link>
           <Link href="/admin/dues">Dues admin</Link>
           <Link href="/admin/users">Users admin</Link>
           <Link href="/admin/templates">Templates</Link>

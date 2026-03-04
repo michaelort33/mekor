@@ -9,7 +9,7 @@ import { getStripeClient } from "@/lib/stripe/client";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customers";
 
 export async function POST(request: Request) {
-  if (!isFeatureEnabled("FEATURE_DUES")) {
+  if (!(await isFeatureEnabled("FEATURE_DUES"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 

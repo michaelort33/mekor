@@ -111,6 +111,7 @@ export default function AdminDuesPage() {
           <p>Manage dues schedules and invoice states.</p>
         </div>
         <div className={styles.links}>
+          <Link href="/admin/settings">Settings</Link>
           <Link href="/admin/events">Events admin</Link>
           <Link href="/admin/users">Users admin</Link>
           <Link href="/admin/templates">Templates</Link>

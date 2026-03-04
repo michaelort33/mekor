@@ -36,7 +36,7 @@ async function requireAdmin() {
 }
 
 export async function GET(request: Request) {
-  if (!isFeatureEnabled("FEATURE_EVENT_SIGNUPS")) {
+  if (!(await isFeatureEnabled("FEATURE_EVENT_SIGNUPS"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_EVENT_SIGNUPS"), { status: 404 });
   }
 
@@ -99,7 +99,7 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  if (!isFeatureEnabled("FEATURE_EVENT_SIGNUPS")) {
+  if (!(await isFeatureEnabled("FEATURE_EVENT_SIGNUPS"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_EVENT_SIGNUPS"), { status: 404 });
   }
 

@@ -17,7 +17,7 @@ function isAuthorized(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  if (!isFeatureEnabled("FEATURE_EVENT_SIGNUPS")) {
+  if (!(await isFeatureEnabled("FEATURE_EVENT_SIGNUPS"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_EVENT_SIGNUPS"), { status: 404 });
   }
 

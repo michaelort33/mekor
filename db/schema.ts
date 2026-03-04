@@ -365,3 +365,14 @@ export const eventReminderLog = pgTable(
     ),
   }),
 );
+
+export const systemSettings = pgTable("system_settings", {
+  id: serial("id").primaryKey(),
+  key: varchar("key", { length: 120 }).notNull().unique(),
+  value: text("value").notNull(),
+  label: varchar("label", { length: 255 }).notNull(),
+  description: text("description").notNull().default(""),
+  settingType: varchar("setting_type", { length: 40 }).notNull().default("boolean"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
