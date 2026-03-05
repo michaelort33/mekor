@@ -16,6 +16,16 @@ const signupPayloadSchema = z.object({
   ticketTierId: z.number().int().min(1).optional(),
 });
 
+const DEFAULT_SIGNUP_SETTINGS = {
+  id: 0,
+  enabled: true,
+  capacity: null,
+  waitlistEnabled: false,
+  paymentRequired: false,
+  registrationDeadline: null,
+  organizerEmail: "",
+} as const;
+
 async function resolveEventContext(eventId: number) {
   const db = getDb();
   const [eventRow] = await db
@@ -51,7 +61,7 @@ async function resolveEventContext(eventId: number) {
   if (!settings) {
     return {
       eventRow,
-      settings: null,
+      settings: { ...DEFAULT_SIGNUP_SETTINGS },
       tiers: [],
     };
   }
@@ -156,7 +166,7 @@ export async function POST(request: Request, { params }: Params) {
   if (!context) {
     return NextResponse.json({ error: "Event not found" }, { status: 404 });
   }
-  if (!context.settings || !context.settings.enabled || context.eventRow.isClosed) {
+  if (!context.settings.enabled || context.eventRow.isClosed) {
     return NextResponse.json({ error: "Registration unavailable" }, { status: 400 });
   }
   if (context.settings.registrationDeadline && new Date(context.settings.registrationDeadline) < new Date()) {
@@ -200,10 +210,10 @@ export async function POST(request: Request, { params }: Params) {
       .where(eq(eventRegistrations.eventId, numericEventId));
 
     const activeSpots = countActiveEventSpots(registrations);
-    const isFull = typeof context.settings!.capacity === "number" && activeSpots >= context.settings!.capacity;
+    const isFull = typeof context.settings.capacity === "number" && activeSpots >= context.settings.capacity;
 
     if (isFull) {
-      if (!context.settings!.waitlistEnabled) {
+      if (!context.settings.waitlistEnabled) {
         return { error: "Event is full", status: 409 as const };
       }
 

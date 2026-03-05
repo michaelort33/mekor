@@ -43,10 +43,10 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const eventId = Number(url.searchParams.get("eventId") || "0");
 
-  const settingsRows = await getDb()
+  const rows = await getDb()
     .select({
       id: eventSignupSettings.id,
-      eventId: eventSignupSettings.eventId,
+      eventId: events.id,
       eventTitle: events.title,
       eventPath: events.path,
       enabled: eventSignupSettings.enabled,
@@ -57,12 +57,12 @@ export async function GET(request: Request) {
       organizerEmail: eventSignupSettings.organizerEmail,
       updatedAt: eventSignupSettings.updatedAt,
     })
-    .from(eventSignupSettings)
-    .innerJoin(events, eq(events.id, eventSignupSettings.eventId))
-    .where(Number.isInteger(eventId) && eventId > 0 ? eq(eventSignupSettings.eventId, eventId) : undefined)
+    .from(events)
+    .leftJoin(eventSignupSettings, eq(eventSignupSettings.eventId, events.id))
+    .where(Number.isInteger(eventId) && eventId > 0 ? eq(events.id, eventId) : undefined)
     .orderBy(asc(events.title));
 
-  const settingIds = settingsRows.map((row) => row.id);
+  const settingIds = rows.map((row) => row.id).filter((value): value is number => typeof value === "number");
   const tiers =
     settingIds.length === 0
       ? []
@@ -88,9 +88,19 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.json({
-    settings: settingsRows.map((row) => ({
-      ...row,
-      tiers: tiersBySetting.get(row.id) ?? [],
+    settings: rows.map((row) => ({
+      id: row.id,
+      eventId: row.eventId,
+      eventTitle: row.eventTitle,
+      eventPath: row.eventPath,
+      enabled: row.enabled ?? false,
+      capacity: row.capacity ?? null,
+      waitlistEnabled: row.waitlistEnabled ?? true,
+      paymentRequired: row.paymentRequired ?? false,
+      registrationDeadline: row.registrationDeadline ?? null,
+      organizerEmail: row.organizerEmail ?? "",
+      updatedAt: row.updatedAt ?? null,
+      tiers: row.id ? tiersBySetting.get(row.id) ?? [] : [],
     })),
   });
 }

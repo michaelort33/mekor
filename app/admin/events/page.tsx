@@ -18,9 +18,10 @@ type Registration = {
 };
 
 type SignupSetting = {
-  id: number;
+  id: number | null;
   eventId: number;
   eventTitle: string;
+  eventPath: string;
   enabled: boolean;
   capacity: number | null;
   waitlistEnabled: boolean;
@@ -150,13 +151,14 @@ export default function AdminEventsPage() {
             ) : (
               <ul className={styles.list}>
                 {settings.map((setting) => (
-                  <li key={setting.id} className={styles.listItem}>
+                  <li key={setting.eventId} className={styles.listItem}>
                     <div>
                       <strong>{setting.eventTitle}</strong>
                       <p>
                         {setting.enabled ? "enabled" : "disabled"} · capacity:{" "}
                         {setting.capacity === null ? "unlimited" : setting.capacity}
                       </p>
+                      <p>{setting.id ? "configured" : "not configured yet"}</p>
                     </div>
                     <button type="button" onClick={() => toggleEnabled(setting)}>
                       {setting.enabled ? "Disable" : "Enable"}
