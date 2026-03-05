@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { AdminShell } from "@/components/admin/admin-shell";
+import adminStyles from "@/components/admin/admin-shell.module.css";
 import styles from "./page.module.css";
 
 type PersonStatus = "lead" | "invited" | "visitor" | "member" | "admin" | "super_admin" | "inactive";
@@ -71,6 +73,54 @@ export default function AdminPeoplePage() {
   const [items, setItems] = useState<PersonRow[]>([]);
   const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
   const [leadForm, setLeadForm] = useState<CreateLeadForm>(initialLeadForm);
+
+  const stats = useMemo(() => {
+    const invitedCount = items.filter((person) => person.invitation?.invitationStatus === "active").length;
+    const duesCount = items.filter((person) => person.outstandingBalanceCents > 0).length;
+    const totalOutstanding = items.reduce((sum, person) => sum + person.outstandingBalanceCents, 0);
+
+    return [
+      { label: "Loaded people", value: String(items.length), hint: pageInfo?.hasNextPage ? "More available" : "Current result set" },
+      { label: "Active invites", value: String(invitedCount), hint: "Loaded rows with open invitations" },
+      {
+        label: "Open dues",
+        value: `${(totalOutstanding / 100).toLocaleString("en-US", { style: "currency", currency: "USD" })}`,
+        hint: `${duesCount} loaded record(s) with balance`,
+      },
+    ];
+  }, [items, pageInfo?.hasNextPage]);
+
+  function resetFilters() {
+    setQ("");
+    setStatus("");
+    setTag("");
+    setInvited("");
+    setDues("");
+    void fetch("/api/admin/people?limit=25")
+      .then(async (response) => {
+        if (response.status === 401) {
+          router.push("/login?next=/admin/people");
+          return;
+        }
+        const payload = (await response.json().catch(() => ({}))) as {
+          items?: PersonRow[];
+          pageInfo?: PageInfo;
+          error?: string;
+        };
+        if (!response.ok) {
+          setError(payload.error || "Unable to load people");
+          setLoading(false);
+          return;
+        }
+        setItems(payload.items ?? []);
+        setPageInfo(payload.pageInfo ?? null);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Unable to load people");
+        setLoading(false);
+      });
+  }
 
   async function loadPeople(options?: { reset?: boolean; cursor?: string | null }) {
     setError("");
@@ -161,20 +211,13 @@ export default function AdminPeoplePage() {
   }
 
   return (
-    <main className={`${styles.page} internal-page`}>
-      <header className={`${styles.header} internal-header`}>
-        <div>
-          <h1>People CRM</h1>
-          <p>Manage leads, invited users, and members in one directory.</p>
-        </div>
-        <div className={`${styles.links} internal-actions`}>
-          <Link href="/admin/users">Users</Link>
-          <Link href="/admin/invitations">Invitations</Link>
-          <Link href="/admin/messages">Messages</Link>
-          <Link href="/admin/dues">Dues</Link>
-        </div>
-      </header>
-
+    <AdminShell
+      currentPath="/admin/people"
+      title="People CRM"
+      description="Search leads, invited contacts, and members from one operational view."
+      stats={stats}
+      actions={<Link href="/admin/invitations" className={adminStyles.actionPill}>Open invitations</Link>}
+    >
       <section className={`${styles.card} internal-card`}>
         <h2>Create lead</h2>
         <form className={styles.createForm} onSubmit={createLead}>
@@ -223,30 +266,56 @@ export default function AdminPeoplePage() {
         </form>
       </section>
 
-      <section className={styles.filters}>
-        <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Search name, email, phone, notes" />
-        <select value={status} onChange={(event) => setStatus(event.target.value as "" | PersonStatus)}>
-          <option value="">All statuses</option>
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-        <input value={tag} onChange={(event) => setTag(event.target.value)} placeholder="Tag filter" />
-        <select value={invited} onChange={(event) => setInvited(event.target.value as "" | "yes" | "no")}>
-          <option value="">Invited: all</option>
-          <option value="yes">Invited only</option>
-          <option value="no">Not invited</option>
-        </select>
-        <select value={dues} onChange={(event) => setDues(event.target.value as "" | "open" | "overdue")}>
-          <option value="">Dues: all</option>
-          <option value="open">Open dues</option>
-          <option value="overdue">Overdue dues</option>
-        </select>
-        <button type="button" onClick={() => loadPeople({ reset: true })}>
-          Apply
-        </button>
+      <section className={adminStyles.toolbar}>
+        <div className={adminStyles.toolbarHeader}>
+          <p className={adminStyles.toolbarTitle}>Directory filters</p>
+          <p className={adminStyles.toolbarMeta}>Search by person, invitation state, tag, or dues status.</p>
+        </div>
+        <div className={adminStyles.toolbarFields}>
+          <label>
+            Search
+            <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Name, email, phone, notes" />
+          </label>
+          <label>
+            Status
+            <select value={status} onChange={(event) => setStatus(event.target.value as "" | PersonStatus)}>
+              <option value="">All statuses</option>
+              {STATUS_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Tag
+            <input value={tag} onChange={(event) => setTag(event.target.value)} placeholder="young-family, donor" />
+          </label>
+          <label>
+            Invitation
+            <select value={invited} onChange={(event) => setInvited(event.target.value as "" | "yes" | "no")}>
+              <option value="">All</option>
+              <option value="yes">Invited only</option>
+              <option value="no">Not invited</option>
+            </select>
+          </label>
+          <label>
+            Dues
+            <select value={dues} onChange={(event) => setDues(event.target.value as "" | "open" | "overdue")}>
+              <option value="">All</option>
+              <option value="open">Open dues</option>
+              <option value="overdue">Overdue dues</option>
+            </select>
+          </label>
+        </div>
+        <div className={adminStyles.toolbarActions}>
+          <button type="button" className={adminStyles.primaryButton} onClick={() => loadPeople({ reset: true })}>
+            Apply filters
+          </button>
+          <button type="button" className={adminStyles.secondaryButton} onClick={resetFilters}>
+            Clear filters
+          </button>
+        </div>
       </section>
 
       {error ? <p className={styles.error}>{error}</p> : null}
@@ -307,6 +376,6 @@ export default function AdminPeoplePage() {
           ) : null}
         </>
       )}
-    </main>
+    </AdminShell>
   );
 }

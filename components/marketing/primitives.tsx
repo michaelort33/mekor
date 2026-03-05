@@ -25,6 +25,7 @@ type HeroSectionProps = {
   actions?: CtaItem[];
   tone?: "light" | "dark";
   align?: "left" | "center";
+  variant?: "default" | "quiet";
   className?: string;
 };
 
@@ -103,6 +104,7 @@ export function HeroSection({
   actions,
   tone = "light",
   align = "left",
+  variant = "default",
   className,
 }: HeroSectionProps) {
   const lines = Array.isArray(description) ? description : description ? [description] : [];
@@ -113,6 +115,7 @@ export function HeroSection({
         styles.hero,
         tone === "dark" && styles.heroDark,
         align === "center" && styles.heroCenter,
+        variant === "quiet" && styles.heroQuiet,
         className,
       )}
     >

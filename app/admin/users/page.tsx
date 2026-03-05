@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { AdminShell } from "@/components/admin/admin-shell";
+import adminStyles from "@/components/admin/admin-shell.module.css";
 import styles from "./page.module.css";
 
 type AdminUser = {
@@ -41,6 +43,47 @@ export default function AdminUsersPage() {
   const [error, setError] = useState("");
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
+
+  const stats = useMemo(() => {
+    const adminCount = users.filter((user) => user.role === "admin" || user.role === "super_admin").length;
+    const withBalanceCount = users.filter((user) => user.outstandingBalanceCents > 0).length;
+    const totalOutstanding = users.reduce((sum, user) => sum + user.outstandingBalanceCents, 0);
+    return [
+      { label: "Loaded users", value: String(users.length), hint: pageInfo?.hasNextPage ? "More available" : "Current result set" },
+      { label: "Admins", value: String(adminCount), hint: actorRole ? `Signed in as ${actorRole}` : "Admin + super admin roles" },
+      {
+        label: "Outstanding dues",
+        value: `${(totalOutstanding / 100).toLocaleString("en-US", { style: "currency", currency: "USD" })}`,
+        hint: `${withBalanceCount} loaded user(s) with balance`,
+      },
+    ];
+  }, [actorRole, pageInfo?.hasNextPage, users]);
+
+  async function resetFilters() {
+    setQ("");
+    setRoleFilter("");
+    const response = await fetch("/api/admin/users?limit=25");
+    if (response.status === 401) {
+      router.push("/login?next=/admin/users");
+      return;
+    }
+    const data = (await response.json().catch(() => ({}))) as {
+      items?: AdminUser[];
+      error?: string;
+      actorRole?: AdminUser["role"];
+      canManageAdminRoles?: boolean;
+      pageInfo?: PageInfo;
+    };
+    if (!response.ok) {
+      setError(data.error || "Unable to load users");
+      return;
+    }
+    setUsers(data.items ?? []);
+    setPageInfo(data.pageInfo ?? null);
+    setActorRole(data.actorRole ?? null);
+    setCanManageAdminRoles(Boolean(data.canManageAdminRoles));
+    setLoading(false);
+  }
 
   async function loadUsers(options?: { reset?: boolean; cursor?: string | null }) {
     setError("");
@@ -125,58 +168,44 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className={`${styles.page} internal-page`}>
-      <header className={`${styles.header} internal-header`}>
-        <div>
-          <h1>Manage Users</h1>
-          <p>Manage roles, profile visibility, membership dates, and automated reminder opt-in settings.</p>
+    <AdminShell
+      currentPath="/admin/users"
+      title="Manage Users"
+      description="Roles, profile visibility, renewal dates, and automations in one user table."
+      stats={stats}
+      actions={<Link href="/admin/people" className={adminStyles.actionPill}>Open people CRM</Link>}
+    >
+
+      <section className={adminStyles.toolbar}>
+        <div className={adminStyles.toolbarHeader}>
+          <p className={adminStyles.toolbarTitle}>User filters</p>
+          <p className={adminStyles.toolbarMeta}>Find an account fast, then adjust role or visibility inline.</p>
         </div>
-        <div className={`${styles.actions} internal-actions`}>
-          <Link href="/admin/people" className={styles.backLink}>
-            People CRM
-          </Link>
-          <Link href="/admin/settings" className={styles.backLink}>
-            Settings
-          </Link>
-          <Link href="/admin/dues" className={styles.backLink}>
-            Dues admin
-          </Link>
-          <Link href="/admin/events" className={styles.backLink}>
-            Events admin
-          </Link>
-          <Link href="/admin/templates" className={styles.backLink}>
-            Templates
-          </Link>
-          <Link href="/admin/invitations" className={styles.backLink}>
-            Invitations
-          </Link>
-          <Link href="/admin/messages" className={styles.backLink}>
-            Message logs
-          </Link>
+        <div className={adminStyles.toolbarFields}>
+          <label>
+            Search
+            <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Email or display name" />
+          </label>
+          <label>
+            Role
+            <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value as "" | AdminUser["role"])}>
+              <option value="">All</option>
+              {(canManageAdminRoles ? ROLE_OPTIONS : ROLE_OPTIONS.filter((role) => role !== "super_admin")).map((role) => (
+                <option key={role} value={role}>
+                  {role}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
-      </header>
-
-      <section className={styles.filters}>
-        <label>
-          Search
-          <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Email or display name" />
-        </label>
-
-        <label>
-          Role
-          <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value as "" | AdminUser["role"])}>
-            <option value="">All</option>
-            {(canManageAdminRoles ? ROLE_OPTIONS : ROLE_OPTIONS.filter((role) => role !== "super_admin")).map((role) => (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <button type="button" onClick={() => loadUsers({ reset: true })}>
-          Apply
-        </button>
+        <div className={adminStyles.toolbarActions}>
+          <button type="button" className={adminStyles.primaryButton} onClick={() => loadUsers({ reset: true })}>
+            Apply filters
+          </button>
+          <button type="button" className={adminStyles.secondaryButton} onClick={() => void resetFilters()}>
+            Clear filters
+          </button>
+        </div>
       </section>
 
       {error ? <p className={styles.error}>{error}</p> : null}
@@ -306,6 +335,6 @@ export default function AdminUsersPage() {
           ) : null}
         </>
       )}
-    </main>
+    </AdminShell>
   );
 }

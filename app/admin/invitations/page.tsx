@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { AdminShell } from "@/components/admin/admin-shell";
+import adminStyles from "@/components/admin/admin-shell.module.css";
 import styles from "./page.module.css";
 
 type Invitation = {
@@ -30,12 +32,30 @@ export default function AdminInvitationsPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Invitation["role"]>("visitor");
+  const [emailFilter, setEmailFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<"" | Invitation["status"]>("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
+
+  const stats = useMemo(() => {
+    const counts = invitations.reduce(
+      (acc, invitation) => {
+        acc[invitation.status] += 1;
+        return acc;
+      },
+      { active: 0, accepted: 0, expired: 0, revoked: 0 },
+    );
+
+    return [
+      { label: "Loaded invites", value: String(invitations.length), hint: pageInfo?.hasNextPage ? "More available" : "Current result set" },
+      { label: "Active", value: String(counts.active), hint: "Open onboarding links" },
+      { label: "Accepted", value: String(counts.accepted), hint: "Completed invitations" },
+    ];
+  }, [invitations, pageInfo?.hasNextPage]);
 
   async function loadInvitations(options?: { reset?: boolean; cursor?: string | null }) {
     if (options?.reset) {
@@ -46,6 +66,7 @@ export default function AdminInvitationsPage() {
     }
 
     const params = new URLSearchParams();
+    if (emailFilter.trim()) params.set("email", emailFilter.trim());
     if (statusFilter) params.set("status", statusFilter);
     params.set("limit", "25");
     if (options?.cursor) params.set("cursor", options.cursor);
@@ -82,6 +103,7 @@ export default function AdminInvitationsPage() {
     event.preventDefault();
     setSubmitting(true);
     setError("");
+    setNotice("");
     const response = await fetch("/api/admin/invitations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -94,48 +116,67 @@ export default function AdminInvitationsPage() {
       return;
     }
     setEmail("");
+    setNotice("Invitation created.");
     setSubmitting(false);
     await loadInvitations({ reset: true });
   }
 
   async function onRevoke(id: number) {
     setError("");
+    setNotice("");
     const response = await fetch(`/api/admin/invitations/${id}/revoke`, { method: "POST" });
     const payload = (await response.json().catch(() => ({}))) as { error?: string };
     if (!response.ok) {
       setError(payload.error || "Unable to revoke invitation");
       return;
     }
+    setNotice("Invitation revoked.");
     await loadInvitations({ reset: true });
   }
 
   async function onResend(id: number) {
     setError("");
+    setNotice("");
     const response = await fetch(`/api/admin/invitations/${id}/resend`, { method: "POST" });
     const payload = (await response.json().catch(() => ({}))) as { error?: string };
     if (!response.ok) {
       setError(payload.error || "Unable to resend invitation");
       return;
     }
+    setNotice("Invitation resent.");
     await loadInvitations({ reset: true });
   }
 
+  async function resetFilters() {
+    setEmailFilter("");
+    setStatusFilter("");
+    const response = await fetch("/api/admin/invitations?limit=25");
+    if (response.status === 401) {
+      router.push("/login?next=/admin/invitations");
+      return;
+    }
+    const payload = (await response.json().catch(() => ({}))) as {
+      items?: Invitation[];
+      pageInfo?: PageInfo;
+      error?: string;
+    };
+    if (!response.ok) {
+      setError(payload.error || "Unable to load invitations");
+      return;
+    }
+    setInvitations(payload.items ?? []);
+    setPageInfo(payload.pageInfo ?? null);
+    setLoading(false);
+  }
+
   return (
-    <main className={`${styles.page} internal-page`}>
-      <header className={`${styles.header} internal-header`}>
-        <div>
-          <h1>Invitations</h1>
-          <p>Super admins can send onboarding links, preset roles, revoke, and resend invitations.</p>
-        </div>
-        <div className={`${styles.links} internal-actions`}>
-          <Link href="/admin/people">People CRM</Link>
-          <Link href="/admin/users">Users admin</Link>
-          <Link href="/admin/dues">Dues admin</Link>
-          <Link href="/admin/events">Events admin</Link>
-          <Link href="/admin/messages">Message logs</Link>
-          <Link href="/admin/settings">Settings</Link>
-        </div>
-      </header>
+    <AdminShell
+      currentPath="/admin/invitations"
+      title="Invitations"
+      description="Send onboarding links, assign preset roles, and track invite lifecycle without switching tools."
+      stats={stats}
+      actions={<Link href="/admin/people" className={adminStyles.actionPill}>Open people CRM</Link>}
+    >
 
       <section className={`${styles.card} internal-card`}>
         <h2>Create invitation</h2>
@@ -160,16 +201,23 @@ export default function AdminInvitationsPage() {
         </form>
       </section>
 
-      <section className={`${styles.card} internal-card`}>
-        <div className={styles.tableHeader}>
-          <h2>Invitations</h2>
+      <section className={adminStyles.toolbar}>
+        <div className={adminStyles.toolbarHeader}>
+          <p className={adminStyles.toolbarTitle}>Invitation filters</p>
+          <p className={adminStyles.toolbarMeta}>Search by invitee email or narrow by status.</p>
+        </div>
+        <div className={adminStyles.toolbarFields}>
+          <label>
+            Email
+            <input value={emailFilter} onChange={(event) => setEmailFilter(event.target.value)} placeholder="person@example.com" />
+          </label>
           <label>
             Status
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value as "" | Invitation["status"])}
             >
-              <option value="">all</option>
+              <option value="">All</option>
               <option value="active">active</option>
               <option value="accepted">accepted</option>
               <option value="expired">expired</option>
@@ -177,8 +225,24 @@ export default function AdminInvitationsPage() {
             </select>
           </label>
         </div>
+        <div className={adminStyles.toolbarActions}>
+          <button type="button" className={adminStyles.primaryButton} onClick={() => loadInvitations({ reset: true })}>
+            Apply filters
+          </button>
+          <button type="button" className={adminStyles.secondaryButton} onClick={() => void resetFilters()}>
+            Clear filters
+          </button>
+        </div>
+      </section>
+
+      <section className={`${styles.card} internal-card`}>
+        <div className={styles.tableHeader}>
+          <h2>Invitations</h2>
+          <p>{invitations.length} loaded</p>
+        </div>
 
         {error ? <p className={styles.error}>{error}</p> : null}
+        {notice ? <p className={adminStyles.notice}>{notice}</p> : null}
         {loading ? (
           <p>Loading invitations...</p>
         ) : invitations.length === 0 ? (
@@ -232,6 +296,6 @@ export default function AdminInvitationsPage() {
           </>
         )}
       </section>
-    </main>
+    </AdminShell>
   );
 }

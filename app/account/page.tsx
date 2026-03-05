@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
+import { MemberShell } from "@/components/members/member-shell";
+import memberShellStyles from "@/components/members/member-shell.module.css";
 import styles from "./page.module.css";
 
 type DashboardResponse = {
@@ -141,6 +142,28 @@ export default function AccountDashboardPage() {
     return dashboard.dues.recentPayments.reduce((sum, payment) => sum + payment.amountCents, 0);
   }, [dashboard]);
 
+  const shellStats = dashboard
+    ? [
+        {
+          label: "Open dues",
+          value: formatMoney(dashboard.summary.totalDueCents, "usd"),
+          hint: `${dashboard.summary.openInvoicesCount} invoice(s) due`,
+        },
+        {
+          label: "Upcoming events",
+          value: String(dashboard.summary.upcomingRegistrationsCount),
+          hint: "Registrations on your calendar",
+        },
+        {
+          label: "Profile visibility",
+          value: dashboard.summary.profileVisibility,
+          hint: dashboard.summary.lastLoginAt
+            ? `Last login ${new Date(dashboard.summary.lastLoginAt).toLocaleString()}`
+            : "No prior login recorded",
+        },
+      ]
+    : [];
+
   if (loading) {
     return <main className={styles.page}>Loading account dashboard...</main>;
   }
@@ -150,32 +173,25 @@ export default function AccountDashboardPage() {
   }
 
   return (
-    <main className={`${styles.page} internal-page`}>
-      <MembersBreadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Members Area", href: "/members" },
-          { label: "Dashboard" },
-        ]}
-        context="member"
-        activeSection="dashboard"
-      />
-
-      <header className={`${styles.header} internal-header`}>
-        <div>
-          <h1>Welcome, {dashboard.summary.displayName}</h1>
-          <p>Track dues, events, and community updates from one place.</p>
-        </div>
-        <div className={`${styles.quickLinks} internal-actions`}>
-          <Link href="/account/profile">Profile</Link>
-          <Link href="/account/dues">Dues</Link>
-          <Link href="/account/member-events">Host Events</Link>
-          <Link href="/account/family">Family</Link>
-          <Link href="/account/inbox">Inbox</Link>
-          <Link href="/members">Members Area</Link>
-          <Link href="/events">Events</Link>
-        </div>
-      </header>
+    <MemberShell
+      title={`Welcome, ${dashboard.summary.displayName}`}
+      description="Track dues, events, and community updates from one operational dashboard."
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: "Members Area", href: "/members" },
+        { label: "Dashboard" },
+      ]}
+      activeSection="dashboard"
+      stats={shellStats}
+      actions={
+        <>
+          <Link href="/account/profile" className={memberShellStyles.actionPill}>Profile</Link>
+          <Link href="/account/dues" className={memberShellStyles.actionPill}>Dues</Link>
+          <Link href="/account/member-events" className={memberShellStyles.actionPill}>Host events</Link>
+          <Link href="/account/inbox" className={memberShellStyles.actionPill}>Inbox</Link>
+        </>
+      }
+    >
 
       {error ? <p className={styles.error}>{error}</p> : null}
 
@@ -320,6 +336,6 @@ export default function AccountDashboardPage() {
           )}
         </article>
       </section>
-    </main>
+    </MemberShell>
   );
 }

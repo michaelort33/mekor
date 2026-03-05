@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
+import { MemberShell } from "@/components/members/member-shell";
+import memberShellStyles from "@/components/members/member-shell.module.css";
 import styles from "./page.module.css";
 
 type FamilyOverview = {
@@ -70,6 +71,7 @@ function isInvitee(invite: FamilyOverview["invites"][number], actor: FamilyOverv
 
 export default function AccountFamilyPage() {
   const router = useRouter();
+  const [inviteStatusFilter, setInviteStatusFilter] = useState<"" | FamilyOverview["invites"][number]["status"]>("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -196,29 +198,56 @@ export default function AccountFamilyPage() {
   }
 
   const pendingInvites = useMemo(() => overview?.invites.filter((invite) => invite.status === "pending") ?? [], [overview]);
+  const filteredInvites = useMemo(
+    () => overview?.invites.filter((invite) => (inviteStatusFilter ? invite.status === inviteStatusFilter : invite.status === "pending")) ?? [],
+    [inviteStatusFilter, overview],
+  );
+
+  const shellStats = overview
+    ? [
+        { label: "Household members", value: String(overview.members.length), hint: overview.family ? overview.family.familyName : "No active family yet" },
+        { label: "Pending invites", value: String(pendingInvites.length), hint: overview.canManageInvites ? "You can manage household access" : "Read-only access" },
+        { label: "Total invites", value: String(overview.invites.length), hint: "Invitation history" },
+      ]
+    : [];
 
   return (
-    <main className={`${styles.page} internal-page`}>
-      <MembersBreadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Members Area", href: "/members" },
-          { label: "Family" },
-        ]}
-        context="member"
-        activeSection="family"
-      />
+    <MemberShell
+      title="Family Management"
+      description="Invite household members and manage active family access."
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: "Members Area", href: "/members" },
+        { label: "Family" },
+      ]}
+      activeSection="family"
+      stats={shellStats}
+      actions={
+        <>
+          <Link href="/account/inbox" className={memberShellStyles.actionPill}>Open inbox</Link>
+          <Link href="/account" className={memberShellStyles.actionPill}>Account dashboard</Link>
+        </>
+      }
+    >
 
-      <header className={`${styles.header} internal-header`}>
-        <div>
-          <h1>Family Management</h1>
-          <p>Invite household members and manage active family access.</p>
+      <section className={memberShellStyles.toolbar}>
+        <div className={memberShellStyles.toolbarHeader}>
+          <p className={memberShellStyles.toolbarTitle}>Invite view</p>
+          <p className={memberShellStyles.toolbarMeta}>By default this shows pending invites. Switch status to inspect older invites.</p>
         </div>
-        <div className={`${styles.actions} internal-actions`}>
-          <Link href="/account/inbox">Open inbox</Link>
-          <Link href="/account">Account dashboard</Link>
+        <div className={memberShellStyles.toolbarFields}>
+          <label>
+            Invite status
+            <select value={inviteStatusFilter} onChange={(event) => setInviteStatusFilter(event.target.value as "" | FamilyOverview["invites"][number]["status"])}>
+              <option value="">pending</option>
+              <option value="accepted">accepted</option>
+              <option value="declined">declined</option>
+              <option value="expired">expired</option>
+              <option value="revoked">revoked</option>
+            </select>
+          </label>
         </div>
-      </header>
+      </section>
 
       {loading ? <p>Loading family information...</p> : null}
       {error ? <p className={styles.error}>{error}</p> : null}
@@ -312,12 +341,12 @@ export default function AccountFamilyPage() {
           </section>
 
           <section className={`${styles.card} internal-card`}>
-            <h2>Pending invites</h2>
-            {pendingInvites.length === 0 ? (
-              <p>No pending invites.</p>
+            <h2>{inviteStatusFilter ? `${inviteStatusFilter} invites` : "Pending invites"}</h2>
+            {filteredInvites.length === 0 ? (
+              <p>No invites in this view.</p>
             ) : (
               <ul className={styles.list}>
-                {pendingInvites.map((invite) => {
+                {filteredInvites.map((invite) => {
                   const label = `${invite.inviteeFirstName} ${invite.inviteeLastName}`.trim() || invite.inviteeEmail || "Pending invite";
                   const actorCanRespond = isInvitee(invite, overview.actor);
                   return (
@@ -375,6 +404,6 @@ export default function AccountFamilyPage() {
           </section>
         </>
       ) : null}
-    </main>
+    </MemberShell>
   );
 }

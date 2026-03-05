@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
+import { MemberShell } from "@/components/members/member-shell";
+import memberShellStyles from "@/components/members/member-shell.module.css";
 import styles from "./page.module.css";
 
 type ProfileResponse = {
@@ -186,24 +187,46 @@ export default function AccountProfilePage() {
     return <main className={`${styles.page} internal-page`}>Loading profile...</main>;
   }
 
+  const shellStats = [
+    { label: "Role", value: form.role, hint: "Account permission level" },
+    { label: "Visibility", value: form.profileVisibility, hint: "Who can see your profile" },
+    memberStats
+      ? {
+          label: "Hosted events",
+          value: String(memberStats.eventsHostedCount),
+          hint: `${memberStats.approvedAttendeesTotal} approved attendees total`,
+        }
+      : {
+          label: "Hosted events",
+          value: "0",
+          hint: "No member stats yet",
+        },
+  ];
+
   return (
-    <main className={`${styles.page} internal-page`}>
-      <MembersBreadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Members Area", href: "/members" },
-          { label: "Your Profile" },
-        ]}
-        context="member"
-        activeSection="profile"
-      />
+    <MemberShell
+      title="Your profile"
+      description="Edit your public details and choose who can see your profile."
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: "Members Area", href: "/members" },
+        { label: "Your Profile" },
+      ]}
+      activeSection="profile"
+      stats={shellStats}
+      actions={
+        <>
+          <Link href="/community" className={memberShellStyles.actionPill}>Community directory</Link>
+          <button type="button" className={memberShellStyles.secondaryButton} onClick={logout}>
+            Log out
+          </button>
+        </>
+      }
+    >
 
       <form className={`${styles.card} internal-card`} onSubmit={saveProfile}>
         <div className={`${styles.header} internal-header`}>
           <h1>Your profile</h1>
-          <button type="button" className={`${styles.secondaryButton} internal-pill-button`} onClick={logout}>
-            Log out
-          </button>
         </div>
 
         <p className={styles.subtitle}>
@@ -339,6 +362,6 @@ export default function AccountProfilePage() {
         {error ? <p className={styles.error}>{error}</p> : null}
         {notice ? <p className={styles.notice}>{notice}</p> : null}
       </form>
-    </main>
+    </MemberShell>
   );
 }

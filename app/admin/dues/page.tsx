@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { AdminShell } from "@/components/admin/admin-shell";
+import adminStyles from "@/components/admin/admin-shell.module.css";
 import styles from "./page.module.css";
 
 type Schedule = {
@@ -61,6 +63,8 @@ function formatMoney(cents: number, currency: string) {
 
 export default function AdminDuesPage() {
   const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [invoiceStatusFilter, setInvoiceStatusFilter] = useState<"" | Invoice["status"]>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -86,6 +90,38 @@ export default function AdminDuesPage() {
   const [savingSchedule, setSavingSchedule] = useState(false);
   const [runningSchedules, setRunningSchedules] = useState(false);
   const [runNotice, setRunNotice] = useState("");
+
+  const filteredUsers = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return users;
+    return users.filter((user) => [user.displayName, user.email].some((value) => value.toLowerCase().includes(term)));
+  }, [search, users]);
+
+  const filteredSchedules = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return schedules;
+    return schedules.filter((schedule) => [schedule.userDisplayName, schedule.userEmail, schedule.notes].some((value) => value.toLowerCase().includes(term)));
+  }, [schedules, search]);
+
+  const filteredInvoices = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return invoices.filter((invoice) => {
+      if (invoiceStatusFilter && invoice.status !== invoiceStatusFilter) return false;
+      if (!term) return true;
+      return [invoice.userDisplayName, invoice.userEmail, invoice.label].some((value) => value.toLowerCase().includes(term));
+    });
+  }, [invoiceStatusFilter, invoices, search]);
+
+  const stats = useMemo(() => {
+    const activeSchedules = schedules.filter((schedule) => schedule.active).length;
+    const openInvoices = invoices.filter((invoice) => invoice.status === "open" || invoice.status === "overdue");
+    const totalOutstanding = users.reduce((sum, user) => sum + user.outstandingBalanceCents, 0);
+    return [
+      { label: "Outstanding", value: formatMoney(totalOutstanding, "usd"), hint: `${openInvoices.length} open/overdue invoices loaded` },
+      { label: "Schedules", value: String(schedules.length), hint: `${activeSchedules} active` },
+      { label: "Visible rows", value: String(filteredUsers.length + filteredSchedules.length + filteredInvoices.length), hint: "Across summaries, schedules, and invoices" },
+    ];
+  }, [filteredInvoices.length, filteredSchedules.length, filteredUsers.length, invoices, schedules, users]);
 
   async function load(options?: { reset?: boolean; schedulesCursor?: string | null; invoicesCursor?: string | null }) {
     setLoading(true);
@@ -282,22 +318,44 @@ export default function AdminDuesPage() {
   }, [router]);
 
   return (
-    <main className={`${styles.page} internal-page`}>
-      <header className={`${styles.header} internal-header`}>
-        <div>
-          <h1>Dues Admin</h1>
-          <p>Manage dues schedules and invoice states.</p>
+    <AdminShell
+      currentPath="/admin/dues"
+      title="Dues Admin"
+      description="Manage balances, schedules, invoices, and manual billing tasks from one screen."
+      stats={stats}
+      actions={<Link href="/admin/users" className={adminStyles.actionPill}>Open users</Link>}
+    >
+
+      <section className={adminStyles.toolbar}>
+        <div className={adminStyles.toolbarHeader}>
+          <p className={adminStyles.toolbarTitle}>Dues filters</p>
+          <p className={adminStyles.toolbarMeta}>Search by user or label and isolate invoice states quickly.</p>
         </div>
-        <div className={`${styles.links} internal-actions`}>
-          <Link href="/admin/people">People CRM</Link>
-          <Link href="/admin/settings">Settings</Link>
-          <Link href="/admin/invitations">Invitations</Link>
-          <Link href="/admin/events">Events admin</Link>
-          <Link href="/admin/messages">Message logs</Link>
-          <Link href="/admin/users">Users admin</Link>
-          <Link href="/admin/templates">Templates</Link>
+        <div className={adminStyles.toolbarFields}>
+          <label>
+            Search
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="User, email, invoice label" />
+          </label>
+          <label>
+            Invoice status
+            <select value={invoiceStatusFilter} onChange={(event) => setInvoiceStatusFilter(event.target.value as "" | Invoice["status"])}>
+              <option value="">All</option>
+              <option value="open">open</option>
+              <option value="overdue">overdue</option>
+              <option value="paid">paid</option>
+              <option value="void">void</option>
+            </select>
+          </label>
         </div>
-      </header>
+        <div className={adminStyles.toolbarActions}>
+          <button type="button" className={adminStyles.secondaryButton} onClick={() => {
+            setSearch("");
+            setInvoiceStatusFilter("");
+          }}>
+            Clear filters
+          </button>
+        </div>
+      </section>
 
       {error ? <p className={styles.error}>{error}</p> : null}
 
@@ -307,11 +365,11 @@ export default function AdminDuesPage() {
         <>
           <section className={`${styles.card} internal-card`}>
             <h2>User balance summary</h2>
-            {users.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <p>No users found.</p>
             ) : (
               <ul className={styles.list}>
-                {users.map((user) => (
+                {filteredUsers.map((user) => (
                   <li key={user.id} className={styles.listItem}>
                     <strong>{user.displayName}</strong>
                     <p>{user.email}</p>
@@ -333,7 +391,7 @@ export default function AdminDuesPage() {
                   required
                 >
                   <option value="">Select user</option>
-                  {users.map((user) => (
+                  {filteredUsers.map((user) => (
                     <option key={user.id} value={String(user.id)}>
                       {user.displayName} ({user.email})
                     </option>
@@ -384,7 +442,7 @@ export default function AdminDuesPage() {
                   required
                 >
                   <option value="">Select user</option>
-                  {users.map((user) => (
+                  {filteredUsers.map((user) => (
                     <option key={user.id} value={String(user.id)}>
                       {user.displayName} ({user.email})
                     </option>
@@ -457,12 +515,12 @@ export default function AdminDuesPage() {
               </button>
             </div>
             {runNotice ? <p className={styles.notice}>{runNotice}</p> : null}
-            {schedules.length === 0 ? (
+            {filteredSchedules.length === 0 ? (
               <p>No schedules created.</p>
             ) : (
               <>
                 <ul className={styles.list}>
-                  {schedules.map((schedule) => (
+                  {filteredSchedules.map((schedule) => (
                     <li key={schedule.id} className={styles.listItem}>
                       <strong>{schedule.userDisplayName}</strong>
                       <p>
@@ -485,12 +543,12 @@ export default function AdminDuesPage() {
 
           <section className={`${styles.card} internal-card`}>
             <h2>Invoices</h2>
-            {invoices.length === 0 ? (
+            {filteredInvoices.length === 0 ? (
               <p>No invoices found.</p>
             ) : (
               <>
                 <ul className={styles.list}>
-                  {invoices.map((invoice) => (
+                  {filteredInvoices.map((invoice) => (
                     <li key={invoice.id} className={styles.listItem}>
                       <div>
                         <strong>
@@ -525,6 +583,6 @@ export default function AdminDuesPage() {
           </section>
         </>
       ) : null}
-    </main>
+    </AdminShell>
   );
 }

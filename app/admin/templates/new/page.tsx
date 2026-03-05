@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { AdminShell } from "@/components/admin/admin-shell";
+import adminStyles from "@/components/admin/admin-shell.module.css";
 import styles from "./page.module.css";
 
 const STARTER_HTML = `<div style="max-width:600px;margin:0 auto;font-family:Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;color:#1a2a3a;line-height:1.6;">
@@ -195,12 +197,17 @@ export default function NewTemplatePage() {
   }
 
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
-        <h1>New Newsletter Template</h1>
-        <Link href="/admin/templates" className={styles.backLink}>← Back to templates</Link>
-      </header>
-
+    <AdminShell
+      currentPath="/admin/templates"
+      title="New Newsletter Template"
+      description="Create a template, generate layout HTML, or use AI to draft the first version."
+      breadcrumbs={[
+        { href: "/admin", label: "Dashboard" },
+        { href: "/admin/templates", label: "Templates" },
+        { label: "New template" },
+      ]}
+      actions={<Link href="/admin/templates" className={adminStyles.actionPill}>Back to templates</Link>}
+    >
       <div className={styles.layout}>
         <div className={styles.formColumn}>
           <fieldset className={styles.fieldset}>
@@ -359,6 +366,6 @@ export default function NewTemplatePage() {
           </div>
         </div>
       </div>
-    </div>
+    </AdminShell>
   );
 }

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
+import { MemberShell } from "@/components/members/member-shell";
+import memberShellStyles from "@/components/members/member-shell.module.css";
 import styles from "./page.module.css";
 
 type Schedule = {
@@ -54,6 +55,8 @@ function toMoney(cents: number, currency: string) {
 
 export default function AccountDuesPage() {
   const router = useRouter();
+  const [invoiceStatusFilter, setInvoiceStatusFilter] = useState<"" | OpenInvoice["status"]>("");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState<"" | Payment["status"]>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [checkoutLoadingId, setCheckoutLoadingId] = useState<number | null>(null);
@@ -63,6 +66,16 @@ export default function AccountDuesPage() {
   const totalDueCents = useMemo(
     () => data.openInvoices.reduce((total, invoice) => total + invoice.amountCents, 0),
     [data.openInvoices],
+  );
+
+  const filteredInvoices = useMemo(
+    () => data.openInvoices.filter((invoice) => (invoiceStatusFilter ? invoice.status === invoiceStatusFilter : true)),
+    [data.openInvoices, invoiceStatusFilter],
+  );
+
+  const filteredPayments = useMemo(
+    () => data.payments.filter((payment) => (paymentStatusFilter ? payment.status === paymentStatusFilter : true)),
+    [data.payments, paymentStatusFilter],
   );
 
   useEffect(() => {
@@ -126,40 +139,75 @@ export default function AccountDuesPage() {
     return <main className={`${styles.page} internal-page`}>Loading dues...</main>;
   }
 
-  return (
-    <main className={`${styles.page} internal-page`}>
-      <MembersBreadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Members Area", href: "/members" },
-          { label: "Dues & Payments" },
-        ]}
-        context="member"
-        activeSection="dues"
-      />
+  const shellStats = [
+    { label: "Amount due", value: toMoney(totalDueCents, "usd"), hint: `${data.openInvoices.length} open invoice(s)` },
+    { label: "Schedules", value: String(data.schedules.length), hint: "Recurring dues rules" },
+    { label: "Payments", value: String(data.payments.length), hint: "Recorded payment history" },
+  ];
 
-      <header className={`${styles.header} internal-header`}>
-        <h1>Dues & Payments</h1>
-        <p>Review open dues, payment history, and saved payment methods.</p>
-      </header>
+  return (
+    <MemberShell
+      title="Dues & Payments"
+      description="Review open dues, payment history, and saved payment methods."
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: "Members Area", href: "/members" },
+        { label: "Dues & Payments" },
+      ]}
+      activeSection="dues"
+      stats={shellStats}
+      actions={<button type="button" className={memberShellStyles.secondaryButton} disabled={portalLoading} onClick={openPortal}>{portalLoading ? "Opening..." : "Manage payment methods"}</button>}
+    >
+
+      <section className={memberShellStyles.toolbar}>
+        <div className={memberShellStyles.toolbarHeader}>
+          <p className={memberShellStyles.toolbarTitle}>Payment filters</p>
+          <p className={memberShellStyles.toolbarMeta}>Narrow open invoices and payment history by status.</p>
+        </div>
+        <div className={memberShellStyles.toolbarFields}>
+          <label>
+            Invoice status
+            <select value={invoiceStatusFilter} onChange={(event) => setInvoiceStatusFilter(event.target.value as "" | OpenInvoice["status"])}>
+              <option value="">All</option>
+              <option value="open">open</option>
+              <option value="overdue">overdue</option>
+              <option value="paid">paid</option>
+              <option value="void">void</option>
+            </select>
+          </label>
+          <label>
+            Payment status
+            <select value={paymentStatusFilter} onChange={(event) => setPaymentStatusFilter(event.target.value as "" | Payment["status"])}>
+              <option value="">All</option>
+              <option value="pending">pending</option>
+              <option value="succeeded">succeeded</option>
+              <option value="failed">failed</option>
+              <option value="refunded">refunded</option>
+            </select>
+          </label>
+        </div>
+        <div className={memberShellStyles.toolbarActions}>
+          <button type="button" className={memberShellStyles.secondaryButton} onClick={() => { setInvoiceStatusFilter(""); setPaymentStatusFilter(""); }}>
+            Clear filters
+          </button>
+        </div>
+      </section>
 
       {error ? <p className={styles.error}>{error}</p> : null}
 
       <section className={`${styles.card} internal-card`}>
         <h2>Amount due</h2>
         <p className={styles.total}>{toMoney(totalDueCents, "usd")}</p>
-        <button type="button" className={styles.secondaryButton} disabled={portalLoading} onClick={openPortal}>
-          {portalLoading ? "Opening..." : "Manage payment methods"}
-        </button>
+        <p>{filteredInvoices.length} invoice(s) visible with current filters.</p>
       </section>
 
       <section className={`${styles.card} internal-card`}>
         <h2>Open invoices</h2>
-        {data.openInvoices.length === 0 ? (
+        {filteredInvoices.length === 0 ? (
           <p>No open invoices.</p>
         ) : (
           <ul className={styles.list}>
-            {data.openInvoices.map((invoice) => (
+            {filteredInvoices.map((invoice) => (
               <li key={invoice.id} className={styles.listItem}>
                 <div>
                   <strong>{invoice.label}</strong>
@@ -205,11 +253,11 @@ export default function AccountDuesPage() {
 
       <section className={`${styles.card} internal-card`}>
         <h2>Payment history</h2>
-        {data.payments.length === 0 ? (
+        {filteredPayments.length === 0 ? (
           <p>No payments yet.</p>
         ) : (
           <ul className={styles.list}>
-            {data.payments.map((payment) => (
+            {filteredPayments.map((payment) => (
               <li key={payment.id} className={styles.listItem}>
                 <div>
                   <strong>
@@ -233,6 +281,6 @@ export default function AccountDuesPage() {
       <Link href="/account/profile" className={styles.backLink}>
         ← Back to profile
       </Link>
-    </main>
+    </MemberShell>
   );
 }

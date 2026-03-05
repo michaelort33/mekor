@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { getDb } from "@/db/client";
 import { newsletterTemplates } from "@/db/schema";
+import { AdminShell } from "@/components/admin/admin-shell";
 import { EditTemplateForm } from "./template-form";
 import styles from "../../new/page.module.css";
 
@@ -25,15 +26,18 @@ export default async function EditTemplatePage({ params }: PageProps) {
 
   if (!process.env.DATABASE_URL) {
     return (
-      <div className={styles.page}>
-        <header className={styles.header}>
-          <h1>Edit Newsletter Template</h1>
-          <Link href="/admin/templates" className={styles.backLink}>
-            ← Back to templates
-          </Link>
-        </header>
+      <AdminShell
+        currentPath="/admin/templates"
+        title="Edit Newsletter Template"
+        description="Update content, regenerate layout, preview recipients, and send."
+        breadcrumbs={[
+          { href: "/admin", label: "Dashboard" },
+          { href: "/admin/templates", label: "Templates" },
+          { label: "Edit template" },
+        ]}
+      >
         <p>DATABASE_URL is not configured.</p>
-      </div>
+      </AdminShell>
     );
   }
 

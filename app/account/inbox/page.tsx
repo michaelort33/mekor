@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
+import { MemberShell } from "@/components/members/member-shell";
+import memberShellStyles from "@/components/members/member-shell.module.css";
 import styles from "./page.module.css";
 
 type InboxThread = {
@@ -117,6 +118,9 @@ function getThreadActionPayload(payload: Record<string, unknown>): ThreadActionP
 
 export default function AccountInboxPage() {
   const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [threadTypeFilter, setThreadTypeFilter] = useState<"" | InboxThread["threadType"]>("");
+  const [readFilter, setReadFilter] = useState<"all" | "unread">("all");
   const [loadingThreads, setLoadingThreads] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [threads, setThreads] = useState<InboxThread[]>([]);
@@ -276,38 +280,129 @@ export default function AccountInboxPage() {
     [threads, selectedThreadId],
   );
 
-  return (
-    <main className={`${styles.page} internal-page`}>
-      <MembersBreadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Members Area", href: "/members" },
-          { label: "Inbox" },
-        ]}
-        context="member"
-        activeSection="inbox"
-      />
+  const filteredThreads = useMemo(() => {
+    const query = search.trim().toLowerCase();
 
-      <header className={`${styles.header} internal-header`}>
-        <div>
-          <h1>Member Inbox</h1>
-          <p>Manage family invites, member event requests, and household chat.</p>
+    return threads.filter((thread) => {
+      if (threadTypeFilter && thread.threadType !== threadTypeFilter) return false;
+      if (readFilter === "unread" && !thread.unread) return false;
+      if (!query) return true;
+
+      const haystack = [thread.subject, thread.familyName, thread.latestMessage?.body ?? ""]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(query);
+    });
+  }, [readFilter, search, threadTypeFilter, threads]);
+
+  useEffect(() => {
+    if (filteredThreads.length === 0) {
+      setSelectedThreadId(null);
+      setMessages([]);
+      return;
+    }
+
+    if (!filteredThreads.some((thread) => thread.threadId === selectedThreadId)) {
+      setSelectedThreadId(filteredThreads[0].threadId);
+    }
+  }, [filteredThreads, selectedThreadId]);
+
+  const shellStats = [
+    {
+      label: "Visible threads",
+      value: String(filteredThreads.length),
+      hint: `${threads.length} total thread(s)`,
+    },
+    {
+      label: "Unread",
+      value: String(threads.filter((thread) => thread.unread).length),
+      hint: "Needs review",
+    },
+    {
+      label: "Family threads",
+      value: String(threads.filter((thread) => thread.threadType === "family_invite" || thread.threadType === "family_chat").length),
+      hint: "Invites and household chat",
+    },
+  ];
+
+  return (
+    <MemberShell
+      title="Member Inbox"
+      description="Manage family invites, member event requests, and household chat from one queue."
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: "Members Area", href: "/members" },
+        { label: "Inbox" },
+      ]}
+      activeSection="inbox"
+      stats={shellStats}
+      actions={
+        <>
+          <Link href="/account/family" className={memberShellStyles.actionPill}>Family</Link>
+          <Link href="/account/member-events" className={memberShellStyles.actionPill}>Hosted events</Link>
+          <Link href="/account" className={memberShellStyles.actionPill}>Dashboard</Link>
+        </>
+      }
+    >
+
+      <section className={memberShellStyles.toolbar}>
+        <div className={memberShellStyles.toolbarHeader}>
+          <p className={memberShellStyles.toolbarTitle}>Thread filters</p>
+          <p className={memberShellStyles.toolbarMeta}>Search subject lines and latest messages, or narrow to unread and thread type.</p>
         </div>
-        <div className={`${styles.headerLinks} internal-actions`}>
-          <Link href="/account/family">Family management</Link>
-          <Link href="/account">Account dashboard</Link>
+        <div className={memberShellStyles.toolbarFields}>
+          <label>
+            Search
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inbox threads" />
+          </label>
+          <label>
+            Thread type
+            <select
+              value={threadTypeFilter}
+              onChange={(event) => setThreadTypeFilter(event.target.value as "" | InboxThread["threadType"])}
+            >
+              <option value="">All</option>
+              <option value="family_invite">family invite</option>
+              <option value="family_chat">family chat</option>
+              <option value="direct">direct</option>
+              <option value="system">system</option>
+            </select>
+          </label>
+          <label>
+            Read state
+            <select value={readFilter} onChange={(event) => setReadFilter(event.target.value as "all" | "unread")}>
+              <option value="all">all</option>
+              <option value="unread">unread only</option>
+            </select>
+          </label>
         </div>
-      </header>
+        <div className={memberShellStyles.toolbarActions}>
+          <button
+            type="button"
+            className={memberShellStyles.secondaryButton}
+            onClick={() => {
+              setSearch("");
+              setThreadTypeFilter("");
+              setReadFilter("all");
+            }}
+          >
+            Clear filters
+          </button>
+        </div>
+      </section>
 
       {error ? <p className={styles.error}>{error}</p> : null}
 
       <section className={styles.layout}>
         <aside className={styles.sidebar}>
           <h2>Threads</h2>
+          <p className={styles.sidebarMeta}>{filteredThreads.length} visible</p>
           {loadingThreads ? <p>Loading threads...</p> : null}
           {!loadingThreads && threads.length === 0 ? <p>No inbox threads yet.</p> : null}
+          {!loadingThreads && threads.length > 0 && filteredThreads.length === 0 ? <p>No threads match the current filters.</p> : null}
           <ul className={styles.threadList}>
-            {threads.map((thread) => (
+            {filteredThreads.map((thread) => (
               <li key={thread.threadId}>
                 <button
                   type="button"
@@ -375,6 +470,7 @@ export default function AccountInboxPage() {
               );
             })}
             {selectedThread && messages.length === 0 && !loadingMessages ? <p>No messages in this thread yet.</p> : null}
+            {!selectedThread && !loadingMessages ? <p>Pick a visible thread from the left to review messages or take action.</p> : null}
           </div>
 
           {selectedThread ? (
@@ -392,6 +488,6 @@ export default function AccountInboxPage() {
           ) : null}
         </article>
       </section>
-    </main>
+    </MemberShell>
   );
 }

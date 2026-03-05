@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
+import { MemberShell } from "@/components/members/member-shell";
+import memberShellStyles from "@/components/members/member-shell.module.css";
 import styles from "./page.module.css";
 
 type HostedEvent = {
@@ -56,6 +57,9 @@ export default function AccountMemberEventsPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [items, setItems] = useState<HostedEvent[]>([]);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"" | HostedEvent["status"]>("");
+  const [joinModeFilter, setJoinModeFilter] = useState<"" | HostedEvent["joinMode"]>("");
   const [form, setForm] = useState<CreateEventForm>(initialForm);
 
   const fetchHostedEventsData = useCallback(async () => {
@@ -178,21 +182,101 @@ export default function AccountMemberEventsPage() {
     await loadHostedEvents();
   }
 
+  const filteredItems = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return items.filter((item) => {
+      if (statusFilter && item.status !== statusFilter) return false;
+      if (joinModeFilter && item.joinMode !== joinModeFilter) return false;
+      if (!query) return true;
+
+      return [item.title, item.description, item.location].join(" ").toLowerCase().includes(query);
+    });
+  }, [items, joinModeFilter, search, statusFilter]);
+
+  const shellStats = [
+    {
+      label: "Hosted events",
+      value: String(items.length),
+      hint: `${filteredItems.length} visible in current view`,
+    },
+    {
+      label: "Published",
+      value: String(items.filter((item) => item.status === "published").length),
+      hint: "Live to members",
+    },
+    {
+      label: "Open requests",
+      value: String(items.reduce((sum, item) => sum + item.counts.requested, 0)),
+      hint: "Pending host review",
+    },
+  ];
+
   return (
-    <main className={`${styles.page} internal-page`}>
-      <MembersBreadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Members Area", href: "/members" },
-          { label: "Host Events" },
-        ]}
-        context="member"
-        activeSection="host-events"
-      />
+    <MemberShell
+      title="Host a Member Event"
+      description="Create gatherings for the community and keep approvals, draft status, and logistics in one workflow."
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        { label: "Members Area", href: "/members" },
+        { label: "Host Events" },
+      ]}
+      activeSection="host-events"
+      stats={shellStats}
+      actions={
+        <>
+          <Link href="/events" className={memberShellStyles.actionPill}>Public events</Link>
+          <Link href="/account/inbox" className={memberShellStyles.actionPill}>Inbox</Link>
+          <Link href="/account" className={memberShellStyles.actionPill}>Dashboard</Link>
+        </>
+      }
+    >
+      <section className={memberShellStyles.toolbar}>
+        <div className={memberShellStyles.toolbarHeader}>
+          <p className={memberShellStyles.toolbarTitle}>Hosted event filters</p>
+          <p className={memberShellStyles.toolbarMeta}>Search by title or location, or narrow to a specific status and join mode.</p>
+        </div>
+        <div className={memberShellStyles.toolbarFields}>
+          <label>
+            Search
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search hosted events" />
+          </label>
+          <label>
+            Status
+            <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as "" | HostedEvent["status"])}>
+              <option value="">All</option>
+              <option value="draft">draft</option>
+              <option value="published">published</option>
+              <option value="cancelled">cancelled</option>
+              <option value="completed">completed</option>
+            </select>
+          </label>
+          <label>
+            Join mode
+            <select value={joinModeFilter} onChange={(event) => setJoinModeFilter(event.target.value as "" | HostedEvent["joinMode"])}>
+              <option value="">All</option>
+              <option value="open_join">open join</option>
+              <option value="request_to_join">request to join</option>
+            </select>
+          </label>
+        </div>
+        <div className={memberShellStyles.toolbarActions}>
+          <button
+            type="button"
+            className={memberShellStyles.secondaryButton}
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("");
+              setJoinModeFilter("");
+            }}
+          >
+            Clear filters
+          </button>
+        </div>
+      </section>
 
       <section className={`${styles.card} internal-card`}>
-        <h1>Host a Member Event</h1>
-        <p>Create gatherings for the community and manage join requests.</p>
+        <h1>Create a member event</h1>
+        <p>Use the fields below to publish a new gathering and start collecting registrations.</p>
 
         <form className={styles.form} onSubmit={createEvent}>
           <label>
@@ -307,11 +391,13 @@ export default function AccountMemberEventsPage() {
       </section>
 
       <section className={`${styles.card} internal-card`}>
-        <h2>Your Hosted Events</h2>
+        <h2>Your hosted events</h2>
+        <p>{filteredItems.length} event(s) visible with the current filters.</p>
         {loading ? <p>Loading events...</p> : null}
         {!loading && items.length === 0 ? <p>You have not hosted any events yet.</p> : null}
+        {!loading && items.length > 0 && filteredItems.length === 0 ? <p>No hosted events match the current filters.</p> : null}
         <ul className={styles.list}>
-          {items.map((event) => (
+          {filteredItems.map((event) => (
             <li key={event.id}>
               <div>
                 <strong>{event.title}</strong>
@@ -342,6 +428,6 @@ export default function AccountMemberEventsPage() {
 
       {error ? <p className={styles.error}>{error}</p> : null}
       {notice ? <p className={styles.notice}>{notice}</p> : null}
-    </main>
+    </MemberShell>
   );
 }

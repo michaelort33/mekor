@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { desc } from "drizzle-orm";
 
+import { AdminShell } from "@/components/admin/admin-shell";
+import adminStyles from "@/components/admin/admin-shell.module.css";
 import { getDb } from "@/db/client";
 import { newsletterTemplates } from "@/db/schema";
-import { AdminLogoutButton } from "@/components/admin/logout-button";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +16,14 @@ const STATUS_LABELS: Record<string, string> = {
   archived: "Archived",
 };
 
-export default async function AdminTemplatesPage() {
+type TemplatesPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminTemplatesPage({ searchParams }: TemplatesPageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const q = typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q.trim().toLowerCase() : "";
+  const statusFilter = typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status.trim().toLowerCase() : "";
   let templates: (typeof newsletterTemplates.$inferSelect)[] = [];
 
   if (process.env.DATABASE_URL) {
@@ -25,48 +33,64 @@ export default async function AdminTemplatesPage() {
       .orderBy(desc(newsletterTemplates.updatedAt));
   }
 
-  return (
-    <div className={styles.page}>
-      <header className={styles.header}>
-        <div className={styles.headerRow}>
-          <h1 className={styles.heading}>Newsletter Templates</h1>
-          <div className={styles.headerActions}>
-            <Link href="/admin/dues" className={styles.actionLink}>
-              Dues Admin
-            </Link>
-            <Link href="/admin/events" className={styles.actionLink}>
-              Events Admin
-            </Link>
-            <Link href="/admin/users" className={styles.actionLink}>
-              Manage Users
-            </Link>
-            <Link href="/admin/people" className={styles.actionLink}>
-              People CRM
-            </Link>
-            <Link href="/admin/messages" className={styles.actionLink}>
-              Message Logs
-            </Link>
-            <Link href="/admin/templates/new" className={styles.createButton}>
-              + New Template
-            </Link>
-            <AdminLogoutButton />
-          </div>
-        </div>
-        <p className={styles.subtitle}>
-          Create templates, generate HTML designs, target member groups, and send campaigns with SendGrid.
-        </p>
-      </header>
+  const filteredTemplates = templates.filter((template) => {
+    if (statusFilter && template.status !== statusFilter) return false;
+    if (!q) return true;
+    return [template.title, template.subject, template.parshaName ?? ""]
+      .some((value) => value.toLowerCase().includes(q));
+  });
 
-      {templates.length === 0 ? (
+  const stats = [
+    { label: "Templates", value: String(templates.length), hint: "Saved newsletter drafts and campaigns" },
+    { label: "Ready", value: String(templates.filter((template) => template.status === "ready").length), hint: "Ready to send" },
+    { label: "Visible", value: String(filteredTemplates.length), hint: q || statusFilter ? "Matches current filter" : "All templates" },
+  ];
+
+  return (
+    <AdminShell
+      currentPath="/admin/templates"
+      title="Newsletter Templates"
+      description="Create templates, generate HTML designs, target member groups, and send campaigns with SendGrid."
+      stats={stats}
+      actions={<Link href="/admin/templates/new" className={adminStyles.actionPill}>New template</Link>}
+    >
+      <form className={adminStyles.toolbar} method="GET">
+        <div className={adminStyles.toolbarHeader}>
+          <p className={adminStyles.toolbarTitle}>Template filters</p>
+          <p className={adminStyles.toolbarMeta}>Find the right draft or sent campaign by title, subject, or status.</p>
+        </div>
+        <div className={adminStyles.toolbarFields}>
+          <label>
+            Search
+            <input type="search" name="q" defaultValue={typeof resolvedSearchParams.q === "string" ? resolvedSearchParams.q : ""} placeholder="Parsha, subject, title" />
+          </label>
+          <label>
+            Status
+            <select name="status" defaultValue={typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status : ""}>
+              <option value="">All</option>
+              <option value="draft">draft</option>
+              <option value="ready">ready</option>
+              <option value="sent">sent</option>
+              <option value="archived">archived</option>
+            </select>
+          </label>
+        </div>
+        <div className={adminStyles.toolbarActions}>
+          <button type="submit" className={adminStyles.primaryButton}>Apply filters</button>
+          <Link href="/admin/templates" className={adminStyles.secondaryButton}>Clear filters</Link>
+        </div>
+      </form>
+
+      {filteredTemplates.length === 0 ? (
         <div className={styles.empty}>
-          <p>No templates yet.</p>
+          <p>{templates.length === 0 ? "No templates yet." : "No templates match the current filters."}</p>
           <Link href="/admin/templates/new" className={styles.createButton}>
-            Create your first template
+            {templates.length === 0 ? "Create your first template" : "Create a new template"}
           </Link>
         </div>
       ) : (
         <div className={styles.grid}>
-          {templates.map((template) => (
+          {filteredTemplates.map((template) => (
             <article key={template.id} className={styles.card}>
               <div className={styles.cardHeader}>
                 <span className={`${styles.badge} ${styles[`badge--${template.status}`] ?? ""}`}>
@@ -98,6 +122,6 @@ export default async function AdminTemplatesPage() {
           ))}
         </div>
       )}
-    </div>
+    </AdminShell>
   );
 }

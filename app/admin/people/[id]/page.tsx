@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import { AdminShell } from "@/components/admin/admin-shell";
+import adminStyles from "@/components/admin/admin-shell.module.css";
 import styles from "./page.module.css";
 
 type PersonStatus = "lead" | "invited" | "visitor" | "member" | "admin" | "super_admin" | "inactive";
@@ -237,21 +239,34 @@ export default function AdminPersonDetailPage() {
     return <main className={styles.page}>{error || "Person not found"}</main>;
   }
 
+  const personStats = [
+    { label: "Status", value: data.person.status, hint: data.person.role ? `User role: ${data.person.role}` : "No user account yet" },
+    { label: "Invitations", value: String(data.invitations.length), hint: data.invitations[0] ? `Latest: ${data.invitations[0].status}` : "No invites sent" },
+    {
+      label: "Outstanding dues",
+      value: `${(data.person.dues.outstandingBalanceCents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" })}`,
+      hint: `${data.person.dues.openCount} open invoice(s)`,
+    },
+  ];
+
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
-        <div>
-          <h1>{data.person.displayName}</h1>
-          <p>
-            Status: <strong>{data.person.status}</strong> {data.person.userId ? `· user #${data.person.userId}` : "· no user account"}
-          </p>
-        </div>
-        <div className={styles.links}>
-          <Link href="/admin/people">Back to people</Link>
-          <Link href="/admin/invitations">Invitations</Link>
-          <Link href="/admin/messages">Messages</Link>
-        </div>
-      </header>
+    <AdminShell
+      currentPath="/admin/people"
+      title={data.person.displayName}
+      description={`${data.person.email || "No email on file"} ${data.person.userId ? `· user #${data.person.userId}` : "· no user account"}`}
+      breadcrumbs={[
+        { href: "/admin", label: "Dashboard" },
+        { href: "/admin/people", label: "People" },
+        { label: data.person.displayName },
+      ]}
+      stats={personStats}
+      actions={
+        <>
+          <Link href="/admin/invitations" className={adminStyles.actionPill}>Invitations</Link>
+          <Link href="/admin/messages" className={adminStyles.actionPill}>Messages</Link>
+        </>
+      }
+    >
 
       {error ? <p className={styles.error}>{error}</p> : null}
       {notice ? <p className={styles.notice}>{notice}</p> : null}
@@ -464,6 +479,6 @@ export default function AdminPersonDetailPage() {
           ))}
         </ul>
       </section>
-    </main>
+    </AdminShell>
   );
 }

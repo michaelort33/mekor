@@ -60,6 +60,12 @@
   color: #223f5d;
 }
 
+.sidebarMeta {
+  margin: -4px 0 10px;
+  color: #6a7c8d;
+  font-size: 0.85rem;
+}
+
 .threadList {
   list-style: none;
   margin: 0;

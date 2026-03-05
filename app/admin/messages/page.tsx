@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { AdminShell } from "@/components/admin/admin-shell";
+import adminStyles from "@/components/admin/admin-shell.module.css";
 import styles from "./page.module.css";
 
 type LogItem = {
@@ -60,6 +62,16 @@ export default function AdminMessagesPage() {
   const [campaignSubject, setCampaignSubject] = useState("");
   const [campaignBody, setCampaignBody] = useState("");
   const availableSegments = segments.length > 0 ? segments : DEFAULT_SEGMENTS;
+
+  const stats = useMemo(() => {
+    const sent = logs.filter((log) => log.status === "sent").length;
+    const failed = logs.filter((log) => log.status === "failed").length;
+    return [
+      { label: "Loaded logs", value: String(logs.length), hint: pageInfo?.hasNextPage ? "More available" : "Current result set" },
+      { label: "Sent", value: String(sent), hint: "Successful deliveries in loaded rows" },
+      { label: "Failed", value: String(failed), hint: "Review provider or template issues" },
+    ];
+  }, [logs, pageInfo?.hasNextPage]);
 
   async function loadLogs(options?: { reset?: boolean; cursor?: string | null }) {
     setError("");
@@ -149,20 +161,39 @@ export default function AdminMessagesPage() {
     await loadLogs({ reset: true });
   }
 
+  async function resetFilters() {
+    setQ("");
+    setStatusFilter("");
+    setSourceFilter("");
+    const response = await fetch("/api/admin/messages?limit=25");
+    if (response.status === 401) {
+      router.push("/login?next=/admin/messages");
+      return;
+    }
+    const payload = (await response.json().catch(() => ({}))) as {
+      items?: LogItem[];
+      pageInfo?: PageInfo;
+      segments?: Segment[];
+      error?: string;
+    };
+    if (!response.ok) {
+      setError(payload.error || "Unable to load message logs");
+      return;
+    }
+    setLogs(payload.items ?? []);
+    setSegments(payload.segments ?? []);
+    setPageInfo(payload.pageInfo ?? null);
+    setLoading(false);
+  }
+
   return (
-    <main className={`${styles.page} internal-page`}>
-      <header className={`${styles.header} internal-header`}>
-        <div>
-          <h1>Unified Messages</h1>
-          <p>Campaigns, newsletters, dues reminders, and automated sends in one log.</p>
-        </div>
-        <div className={`${styles.links} internal-actions`}>
-          <Link href="/admin/people">People</Link>
-          <Link href="/admin/users">Users</Link>
-          <Link href="/admin/dues">Dues</Link>
-          <Link href="/admin/events">Events</Link>
-        </div>
-      </header>
+    <AdminShell
+      currentPath="/admin/messages"
+      title="Unified Messages"
+      description="Run quick outbound campaigns and review delivery history from one log."
+      stats={stats}
+      actions={<Link href="/admin/templates" className={adminStyles.actionPill}>Open templates</Link>}
+    >
 
       <section className={styles.compose}>
         <h2>Quick campaign</h2>
@@ -200,33 +231,44 @@ export default function AdminMessagesPage() {
         </div>
       </section>
 
-      <section className={styles.filters}>
-        <label>
-          Search
-          <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Name, email, subject" />
-        </label>
-        <label>
-          Source
-          <select value={sourceFilter} onChange={(event) => setSourceFilter(event.target.value as typeof sourceFilter)}>
-            <option value="">All</option>
-            <option value="manual">manual</option>
-            <option value="newsletter">newsletter</option>
-            <option value="automated">automated</option>
-            <option value="dues">dues</option>
-          </select>
-        </label>
-        <label>
-          Status
-          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}>
-            <option value="">All</option>
-            <option value="sent">sent</option>
-            <option value="failed">failed</option>
-            <option value="skipped">skipped</option>
-          </select>
-        </label>
-        <button type="button" onClick={() => loadLogs({ reset: true })}>
-          Apply
-        </button>
+      <section className={adminStyles.toolbar}>
+        <div className={adminStyles.toolbarHeader}>
+          <p className={adminStyles.toolbarTitle}>Log filters</p>
+          <p className={adminStyles.toolbarMeta}>Search recipients, filter by source, and isolate failures quickly.</p>
+        </div>
+        <div className={adminStyles.toolbarFields}>
+          <label>
+            Search
+            <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Name, email, subject" />
+          </label>
+          <label>
+            Source
+            <select value={sourceFilter} onChange={(event) => setSourceFilter(event.target.value as typeof sourceFilter)}>
+              <option value="">All</option>
+              <option value="manual">manual</option>
+              <option value="newsletter">newsletter</option>
+              <option value="automated">automated</option>
+              <option value="dues">dues</option>
+            </select>
+          </label>
+          <label>
+            Status
+            <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}>
+              <option value="">All</option>
+              <option value="sent">sent</option>
+              <option value="failed">failed</option>
+              <option value="skipped">skipped</option>
+            </select>
+          </label>
+        </div>
+        <div className={adminStyles.toolbarActions}>
+          <button type="button" className={adminStyles.primaryButton} onClick={() => loadLogs({ reset: true })}>
+            Apply filters
+          </button>
+          <button type="button" className={adminStyles.secondaryButton} onClick={() => void resetFilters()}>
+            Clear filters
+          </button>
+        </div>
       </section>
 
       {error ? <p className={styles.error}>{error}</p> : null}
@@ -284,6 +326,6 @@ export default function AdminMessagesPage() {
           ) : null}
         </>
       )}
-    </main>
+    </AdminShell>
   );
 }

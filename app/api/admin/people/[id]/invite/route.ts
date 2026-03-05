@@ -107,13 +107,30 @@ export async function POST(request: Request, context: RouteContext) {
 
   const origin = new URL(request.url).origin;
   const acceptUrl = `${origin}/invite/accept?token=${encodeURIComponent(token)}`;
-  await sendInvitationEmail({
-    toEmail: email,
-    inviterName: actor.email,
-    role: parsed.data.role,
-    acceptUrl,
-    expiresAt: invitation.expiresAt,
-  });
+  try {
+    await sendInvitationEmail({
+      toEmail: email,
+      inviterName: actor.email,
+      role: parsed.data.role,
+      acceptUrl,
+      expiresAt: invitation.expiresAt,
+    });
+  } catch (error) {
+    await getDb()
+      .update(userInvitations)
+      .set({
+        revokedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(userInvitations.id, invitation.id));
+
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unable to send invitation email",
+      },
+      { status: 502 },
+    );
+  }
 
   await writeAdminAuditLog({
     actorUserId: actor.id,

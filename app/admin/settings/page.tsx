@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { AdminShell } from "@/components/admin/admin-shell";
+import adminStyles from "@/components/admin/admin-shell.module.css";
 import styles from "./page.module.css";
 
 type Setting = {
@@ -17,10 +19,29 @@ type Setting = {
 
 export default function AdminSettingsPage() {
   const router = useRouter();
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [settings, setSettings] = useState<Setting[]>([]);
+
+  const filteredSettings = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    if (!term) return settings;
+    return settings.filter((setting) =>
+      [setting.label, setting.description, setting.key].some((value) => value.toLowerCase().includes(term)),
+    );
+  }, [search, settings]);
+
+  const stats = useMemo(() => {
+    const booleanCount = settings.filter((setting) => setting.settingType === "boolean");
+    const enabledCount = booleanCount.filter((setting) => setting.value === "true").length;
+    return [
+      { label: "Settings", value: String(settings.length), hint: "Total configurable keys" },
+      { label: "Boolean flags", value: String(booleanCount.length), hint: `${enabledCount} enabled` },
+      { label: "Visible", value: String(filteredSettings.length), hint: "Matches current search" },
+    ];
+  }, [filteredSettings.length, settings]);
 
   async function loadSettings() {
     setLoading(true);
@@ -86,30 +107,26 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <main className={`${styles.page} internal-page`}>
-      <header className={`${styles.header} internal-header`}>
-        <div>
-          <h1>System Settings</h1>
-          <p>Manage feature flags and system configuration. Super admin access only.</p>
+    <AdminShell
+      currentPath="/admin/settings"
+      title="System Settings"
+      description="Feature flags and system configuration. Super admin access only."
+      stats={stats}
+      actions={<Link href="/admin/users" className={adminStyles.actionPill}>Open users</Link>}
+    >
+
+      <section className={adminStyles.toolbar}>
+        <div className={adminStyles.toolbarHeader}>
+          <p className={adminStyles.toolbarTitle}>Find a setting</p>
+          <p className={adminStyles.toolbarMeta}>Search by label, description, or underlying key.</p>
         </div>
-        <div className={`${styles.actions} internal-actions`}>
-          <Link href="/admin/people" className={styles.backLink}>
-            People CRM
-          </Link>
-          <Link href="/admin/users" className={styles.backLink}>
-            User admin
-          </Link>
-          <Link href="/admin/dues" className={styles.backLink}>
-            Dues admin
-          </Link>
-          <Link href="/admin/messages" className={styles.backLink}>
-            Message logs
-          </Link>
-          <Link href="/admin/events" className={styles.backLink}>
-            Events admin
-          </Link>
+        <div className={adminStyles.toolbarFields}>
+          <label>
+            Search
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Feature flag, billing, public directory" />
+          </label>
         </div>
-      </header>
+      </section>
 
       {error ? <p className={styles.error}>{error}</p> : null}
 
@@ -117,7 +134,7 @@ export default function AdminSettingsPage() {
         <p>Loading settings...</p>
       ) : (
         <section className={styles.settingsList}>
-          {settings.map((setting) => (
+          {filteredSettings.map((setting) => (
             <div key={setting.key} className={styles.settingItem}>
               <div className={styles.settingInfo}>
                 <h3>{setting.label}</h3>
@@ -156,6 +173,6 @@ export default function AdminSettingsPage() {
           ))}
         </section>
       )}
-    </main>
+    </AdminShell>
   );
 }

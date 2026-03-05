@@ -1,36 +1,41 @@
 .page {
+  --page-ink: #1a2a39;
+  --page-muted: #576574;
+  --page-accent: #7d5d36;
+  --page-line: rgba(33, 49, 68, 0.12);
+  --page-surface: rgba(255, 252, 247, 0.94);
+  --page-surface-cool: rgba(246, 248, 251, 0.96);
   background:
-    radial-gradient(70% 60% at 0% 0%, rgba(195, 156, 92, 0.18) 0%, rgba(195, 156, 92, 0) 100%),
-    radial-gradient(65% 50% at 100% 4%, rgba(39, 84, 130, 0.2) 0%, rgba(39, 84, 130, 0) 100%),
-    linear-gradient(180deg, #f4efe7 0%, #eef2f7 42%, #f8f4ed 100%);
+    radial-gradient(60% 44% at 0% 0%, rgba(192, 158, 104, 0.12) 0%, rgba(192, 158, 104, 0) 100%),
+    linear-gradient(180deg, #f5efe6 0%, #f3f5f7 38%, #f7f2ea 100%);
 }
 
 .stack {
   display: grid;
-  gap: 26px;
+  gap: 22px;
   padding-bottom: 28px;
 }
 
 .hero {
-  box-shadow: 0 26px 70px rgba(18, 29, 44, 0.26);
+  border: 1px solid rgba(22, 35, 50, 0.14);
+  box-shadow: 0 18px 44px rgba(18, 29, 44, 0.16);
 }
 
 .signalGrid {
   position: relative;
   z-index: 2;
-  margin-top: -84px;
+  margin-top: -56px;
   display: grid;
-  gap: 16px;
+  gap: 14px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .signalCard {
-  border: 1px solid rgba(40, 67, 98, 0.12);
-  border-radius: 24px;
-  background: rgba(255, 252, 247, 0.88);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 18px 44px rgba(26, 39, 54, 0.12);
-  padding: 22px 22px 20px;
+  border: 1px solid var(--page-line);
+  border-radius: 22px;
+  background: var(--page-surface);
+  box-shadow: 0 10px 24px rgba(26, 39, 54, 0.08);
+  padding: 20px 20px 18px;
   display: grid;
   gap: 8px;
 }
@@ -38,72 +43,111 @@
 .signalEyebrow,
 .sectionEyebrow {
   margin: 0;
-  color: #8b6230;
-  font-size: 0.74rem;
+  color: var(--page-accent);
+  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
 .signalTitle {
   margin: 0;
-  color: #182a3e;
+  color: var(--page-ink);
   font-family: var(--native-font-heading);
-  font-size: clamp(1.45rem, 3vw, 2rem);
-  line-height: 0.98;
+  font-size: clamp(1.35rem, 2.6vw, 1.82rem);
+  line-height: 1.02;
 }
 
 .signalText {
   margin: 0;
-  color: #4b5b6d;
-  line-height: 1.65;
+  color: var(--page-muted);
+  line-height: 1.62;
 }
 
 .introCard {
   overflow: hidden;
+  border-color: rgba(30, 47, 67, 0.1);
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98) 0%, rgba(247, 249, 252, 0.98) 100%);
+  box-shadow: 0 14px 30px rgba(20, 32, 45, 0.08);
+}
+
+.featureGrid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+}
+
+.featureCard {
+  border-color: rgba(30, 47, 67, 0.1);
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.98) 0%, rgba(248, 250, 253, 0.98) 100%);
+  box-shadow: 0 12px 28px rgba(20, 32, 45, 0.07);
+}
+
+.featureStory {
+  align-items: center;
 }
 
 .introGrid {
   display: grid;
-  gap: 28px;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 32px;
+  grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
   align-items: center;
 }
 
-.introStatement {
-  display: grid;
-  gap: 12px;
-  align-self: stretch;
-  padding: 8px 0;
-}
-
-.introStatement h2 {
-  margin: 0;
-  color: #162b42;
-  font-family: var(--native-font-heading);
-  font-size: clamp(2.3rem, 5vw, 4.4rem);
-  line-height: 0.92;
-  max-width: 8ch;
-}
-
-.introBody {
+.introCopy {
   display: grid;
   gap: 14px;
-  padding: 24px 24px 24px 28px;
-  border-left: 1px solid rgba(34, 57, 84, 0.12);
+  align-self: stretch;
+  padding: 4px 0;
 }
 
-.introBody p,
-.pillarText,
+.introTitle {
+  margin: 0;
+  color: var(--page-ink);
+  font-family: var(--native-font-heading);
+  font-size: clamp(2rem, 4.2vw, 3.15rem);
+  line-height: 0.98;
+}
+
+.introText,
 .contactText,
 .supportText,
-.visitList div,
-.rhythmItem p,
 .rabbiBody p,
 .eventPlace {
   margin: 0;
-  color: #4c5b6b;
-  line-height: 1.7;
+  color: var(--page-muted);
+  line-height: 1.72;
+}
+
+.introMedia {
+  position: relative;
+  padding-left: 12px;
+}
+
+.introMedia::before {
+  content: "";
+  position: absolute;
+  inset: 18px 16px -18px 0;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(233, 223, 207, 0.52) 0%, rgba(231, 238, 245, 0.58) 100%);
+}
+
+.introVideo {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  border-radius: 22px;
+  border: 1px solid rgba(30, 49, 73, 0.1);
+  background: linear-gradient(180deg, #f4f6fb 0%, #eef2f7 100%);
+  box-shadow: 0 14px 30px rgba(24, 37, 52, 0.1);
+  aspect-ratio: 16 / 9;
+}
+
+.introVideo iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
 }
 
 .inlineLinks {
@@ -115,8 +159,7 @@
 .inlineLinks a,
 .textLink,
 .eventLink,
-.contactPanel a,
-.visitList a {
+.contactPanel a {
   color: #1e517d;
   font-weight: 700;
   text-decoration: none;
@@ -125,173 +168,79 @@
 .inlineLinks a:hover,
 .textLink:hover,
 .eventLink:hover,
-.contactPanel a:hover,
-.visitList a:hover {
+.contactPanel a:hover {
   text-decoration: underline;
 }
 
-.pillarGrid {
-  display: grid;
-  gap: 18px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.pillarCard {
-  min-height: 100%;
-  display: grid;
-  gap: 14px;
-  align-content: start;
-  background:
-    linear-gradient(180deg, rgba(255, 250, 243, 0.98) 0%, rgba(247, 250, 255, 0.98) 100%),
-    #ffffff;
-}
-
-.pillarTitle,
 .sectionTitle,
-.rhythmTitle,
-.visitTitle,
 .supportTitle {
   margin: 0;
-  color: #16293f;
+  color: var(--page-ink);
   font-family: var(--native-font-heading);
-  line-height: 1;
-}
-
-.pillarTitle {
-  font-size: clamp(1.8rem, 3.4vw, 2.5rem);
-}
-
-.storyGrid {
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
-}
-
-.rhythmCard {
-  position: relative;
-  overflow: hidden;
-}
-
-.rhythmTitle {
-  font-size: clamp(2rem, 4vw, 3rem);
-  color: #fff7ea;
-}
-
-.rhythmList {
-  display: grid;
-  gap: 14px;
-  margin-top: 22px;
-}
-
-.rhythmItem {
-  border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.08);
-  padding: 16px 18px;
-}
-
-.rhythmItem h3 {
-  margin: 0 0 8px;
-  color: #fff6ea;
-  font-size: 1rem;
-}
-
-.rhythmItem p {
-  color: rgba(231, 239, 248, 0.86);
-}
-
-.visitCard {
-  display: grid;
-  gap: 18px;
-}
-
-.visitTitle {
-  font-size: clamp(1.9rem, 4vw, 2.8rem);
-}
-
-.visitList {
-  display: grid;
-  gap: 12px;
-}
-
-.visitList div {
-  display: grid;
-  gap: 4px;
-  padding: 14px 0;
-  border-top: 1px solid rgba(28, 47, 71, 0.12);
-}
-
-.visitList div:first-child {
-  border-top: none;
-  padding-top: 0;
-}
-
-.visitList span {
-  color: #7b5a32;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.visitList strong {
-  color: #1b3149;
-  font-size: 1rem;
+  line-height: 1.02;
 }
 
 .supportCard {
   overflow: hidden;
+  border-color: rgba(34, 50, 69, 0.12);
+  background:
+    linear-gradient(140deg, rgba(239, 230, 216, 0.94) 0%, rgba(248, 244, 236, 0.98) 46%, rgba(238, 243, 249, 0.98) 100%);
+  box-shadow: 0 14px 30px rgba(20, 32, 45, 0.08);
 }
 
-.supportHeader {
+.supportContent {
   display: grid;
-  gap: 16px;
-  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
-  align-items: end;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, auto);
+  align-items: center;
+}
+
+.supportTextBlock {
+  display: grid;
+  gap: 10px;
 }
 
 .supportTitle {
-  font-size: clamp(2rem, 4vw, 3rem);
-  color: #fff8ed;
+  font-size: clamp(1.85rem, 3.4vw, 2.65rem);
 }
 
 .supportText {
-  color: rgba(227, 238, 251, 0.9);
+  color: #5b6774;
 }
 
-.supportGrid {
-  margin-top: 20px;
+.supportButtons {
   display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 260px;
 }
 
-.supportLink {
+.supportButton {
   display: grid;
   gap: 8px;
-  padding: 18px;
+  padding: 16px 18px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(33, 49, 68, 0.12);
+  background: rgba(255, 255, 255, 0.62);
   color: inherit;
   text-decoration: none;
   transition: transform 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }
 
-.supportLink:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 16px 32px rgba(10, 20, 34, 0.16);
+.supportButton:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 12px 22px rgba(10, 20, 34, 0.1);
 }
 
-.supportLinkTitle {
-  color: #ffffff;
-  font-size: 1.08rem;
+.supportButtonLabel {
+  color: var(--page-ink);
+  font-size: 1rem;
   font-weight: 800;
+  text-transform: capitalize;
 }
 
-.supportLinkNote {
-  color: rgba(222, 235, 250, 0.9);
+.supportButtonNote {
+  color: var(--page-muted);
   line-height: 1.6;
 }
 
@@ -299,6 +248,9 @@
 .rabbisCard,
 .contactCard {
   overflow: hidden;
+  border-color: rgba(30, 47, 67, 0.1);
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.98) 0%, rgba(247, 249, 252, 0.98) 100%);
+  box-shadow: 0 12px 28px rgba(20, 32, 45, 0.07);
 }
 
 .sectionHeader {
@@ -306,11 +258,11 @@
   justify-content: space-between;
   gap: 16px;
   align-items: end;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .sectionTitle {
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1.85rem, 3.6vw, 2.7rem);
 }
 
 .eventsGrid {
@@ -322,15 +274,15 @@
 .eventCard {
   display: grid;
   grid-template-columns: minmax(180px, 0.9fr) minmax(0, 1fr);
-  border: 1px solid rgba(31, 51, 74, 0.12);
-  border-radius: 24px;
+  border: 1px solid rgba(31, 51, 74, 0.1);
+  border-radius: 20px;
   overflow: hidden;
-  background: linear-gradient(180deg, #fffdf8 0%, #f4f8fd 100%);
-  box-shadow: 0 16px 36px rgba(25, 37, 52, 0.09);
+  background: linear-gradient(180deg, rgba(255, 253, 248, 0.98) 0%, rgba(245, 248, 252, 0.98) 100%);
+  box-shadow: 0 10px 24px rgba(25, 37, 52, 0.06);
 }
 
 .eventMedia {
-  background: linear-gradient(180deg, #f1f3f7 0%, #f8f7f4 100%);
+  background: linear-gradient(180deg, #f4f4f1 0%, #f7f8fb 100%);
 }
 
 .eventMedia img {
@@ -346,7 +298,7 @@
   display: grid;
   gap: 12px;
   align-content: start;
-  padding: 22px;
+  padding: 20px;
 }
 
 .eventDate {
@@ -375,13 +327,13 @@
   gap: 18px;
   grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1fr);
   padding: 12px;
-  border: 1px solid rgba(30, 50, 73, 0.12);
-  border-radius: 24px;
-  background: linear-gradient(180deg, #fffdf9 0%, #f4f8fd 100%);
+  border: 1px solid rgba(30, 50, 73, 0.1);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98) 0%, rgba(245, 248, 252, 0.98) 100%);
 }
 
 .rabbiPortrait {
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
   background: #e7edf4;
 }
@@ -404,7 +356,7 @@
 
 .rabbiRole {
   margin: 0;
-  color: #7b5a32;
+  color: var(--page-accent);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -413,13 +365,13 @@
 
 .rabbiBody h3 {
   margin: 0;
-  color: #15283c;
-  font-size: 1.5rem;
+  color: var(--page-ink);
+  font-size: 1.4rem;
 }
 
 .contactGrid {
   display: grid;
-  gap: 18px;
+  gap: 16px;
   grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
   align-items: center;
 }
@@ -427,26 +379,25 @@
 .contactPanel {
   display: grid;
   gap: 12px;
-  padding: 22px;
-  border-radius: 22px;
-  border: 1px solid rgba(27, 48, 72, 0.12);
-  background: linear-gradient(180deg, #fffdf8 0%, #f2f6fb 100%);
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(27, 48, 72, 0.1);
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98) 0%, rgba(242, 246, 251, 0.98) 100%);
 }
 
 .contactPanel p {
   margin: 0;
-  color: #4b5d70;
+  color: var(--page-muted);
   line-height: 1.6;
 }
 
 @media (max-width: 1100px) {
-  .pillarGrid,
   .signalGrid,
+  .featureGrid,
   .eventsGrid,
   .rabbisGrid,
-  .storyGrid,
   .contactGrid,
-  .supportHeader {
+  .supportContent {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -454,13 +405,12 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .introBody {
-    padding: 0;
-    border-left: none;
+  .introMedia {
+    padding-left: 0;
   }
 
-  .supportGrid {
-    grid-template-columns: minmax(0, 1fr);
+  .introMedia::before {
+    inset: 14px 0 -14px;
   }
 }
 
@@ -491,12 +441,10 @@
     padding: 18px;
   }
 
-  .introStatement h2,
+  .introTitle,
   .sectionTitle,
-  .rhythmTitle,
-  .visitTitle,
   .supportTitle,
-  .pillarTitle {
+  .signalTitle {
     line-height: 0.96;
   }
 }

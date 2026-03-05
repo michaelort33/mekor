@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { HeroSection, SectionCard } from "@/components/marketing/primitives";
+import { HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
@@ -11,55 +11,19 @@ export const dynamic = "force-static";
 
 const HOME_SIGNALS = [
   {
-    eyebrow: "City-centered",
-    title: "1500 Walnut Street",
-    text: "A modern Orthodox home base in the middle of Center City Philadelphia.",
+    eyebrow: "Welcome",
+    title: "A Welcoming Community",
+    text: "Mekor Habracha / Center City Synagogue is a vibrant, inclusive Modern Orthodox community located in the heart of Center City, Philadelphia.",
   },
   {
-    eyebrow: "Consistent rhythm",
-    title: "Shabbat and weekday minyanim",
-    text: "A steady schedule of tefillah, Torah, and community touchpoints throughout the week.",
+    eyebrow: "Visitors",
+    title: "Across the street or across the world",
+    text: "We offer a wide range of religious, educational, and social opportunities for a diverse and growing membership. Visitors are always warmly welcomed.",
   },
   {
-    eyebrow: "Open door",
-    title: "Visitors are truly welcome",
-    text: "Whether you are new in town or here for the weekend, Mekor is built for easy entry.",
-  },
-] as const;
-
-const COMMUNITY_PILLARS = [
-  {
-    title: "Daven",
-    description: "Join a serious, warm davening environment with a Center City crowd that shows up for each other.",
-    href: "/davening",
-    label: "View davening times",
-  },
-  {
-    title: "Learn",
-    description: "Classes, shiurim, podcasts, and Beit Midrash programming make Torah learning part of everyday life here.",
-    href: "/our-rabbi",
-    label: "Meet our rabbis",
-  },
-  {
-    title: "Belong",
-    description: "Shabbat meals, young-family life, holiday programming, and an active social fabric keep the room full.",
-    href: "/membership",
-    label: "Explore membership",
-  },
-] as const;
-
-const WEEKLY_RHYTHM = [
-  {
-    label: "Shabbat",
-    text: "Davening, kiddush, meals, and the kind of post-shul lingering that turns visitors into regulars.",
-  },
-  {
-    label: "Weekdays",
-    text: "Daily minyanim, classes, and easy drop-ins before work, after work, or on your lunch break.",
-  },
-  {
-    label: "Holidays",
-    text: "Mekor is at its best when the calendar gets full: singing, learning, shared tables, and full rooms.",
+    eyebrow: "Connect",
+    title: "Rabbi Hirsch and Rabbi Gotlib",
+    text: "Our rabbis, Rabbi Hirsch and Rabbi Gotlib, are always happy to connect.",
   },
 ] as const;
 
@@ -123,6 +87,8 @@ const SUPPORT_LINKS = [
   },
 ] as const;
 
+const INTRO_VIDEO_URL = "https://www.youtube.com/embed/aieR-a2z1RY";
+
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getNativeDocumentByPath("/");
   return buildDocumentMetadata(document);
@@ -132,13 +98,10 @@ export default function HomePage() {
   return (
     <MarketingPageShell currentPath="/" className={styles.page} contentClassName={styles.stack}>
       <HeroSection
-        eyebrow="Center City Philadelphia"
-        title="A serious, warm, and unmistakably local shul."
-        subtitle="Mekor Habracha"
-        description={[
-          "Daven with us, learn with us, or just walk in for Shabbat and introduce yourself.",
-          "Mekor brings together young professionals, families, longtime Philadelphians, and out-of-town visitors in one room.",
-        ]}
+        eyebrow="Welcome to"
+        title="Mekor Habracha"
+        subtitle="Center City Synagogue"
+        variant="quiet"
         image={{
           src: "https://static.wixstatic.com/media/11062b_8135b27108d04d2a97adc750a341fb79~mv2.jpeg",
           alt: "Mekor Habracha community gathering",
@@ -147,9 +110,9 @@ export default function HomePage() {
         }}
         tone="dark"
         actions={[
-          { label: "Plan a Visit", href: "/visit-us" },
-          { label: "Upcoming Events", href: "/events" },
-          { label: "Join the WhatsApp", href: "https://chat.whatsapp.com/G7JTiUN3aPN1V09lbBLC7G" },
+          { label: "Join Us", href: "https://chat.whatsapp.com/G7JTiUN3aPN1V09lbBLC7G" },
+          { label: "Events", href: "/events" },
+          { label: "Davening", href: "/davening" },
         ]}
         className={styles.hero}
       />
@@ -166,111 +129,99 @@ export default function HomePage() {
 
       <SectionCard className={styles.introCard}>
         <div className={styles.introGrid}>
-          <div className={styles.introStatement}>
-            <p className={styles.sectionEyebrow}>What makes Mekor different</p>
-            <h2>
-              Big-city Jewish life should feel immediate, thoughtful, and human.
-            </h2>
-          </div>
-          <div className={styles.introBody}>
-            <p>
-              Mekor Habracha / Center City Synagogue is a vibrant, inclusive modern Orthodox community in the heart of
-              Philadelphia. People come for tefillah, Torah, meals, friendship, and the feeling that there is always
-              another conversation waiting after davening.
+          <div className={styles.introCopy}>
+            <p className={styles.sectionEyebrow}>About Mekor</p>
+            <h2 className={styles.introTitle}>A Welcoming Community</h2>
+            <p className={styles.introText}>
+              Mekor Habracha / Center City Synagogue is a vibrant, inclusive Modern Orthodox community located in the heart of Center City, Philadelphia.
             </p>
-            <p>
-              Whether you are looking for a weekly shul, a Shabbat anchor, or your first stop in town, Mekor is built
-              to help you step in quickly and feel at home.
+            <p className={styles.introText}>
+              We offer a wide range of religious, educational, and social opportunities for a diverse and growing membership. Visitors, whether from across the street or across the world, are always warmly welcomed.
+            </p>
+            <p className={styles.introText}>
+              Our rabbis, Rabbi Hirsch and Rabbi Gotlib, are always happy to connect. You can reach them <Link href="/our-rabbi">here</Link>.
             </p>
             <div className={styles.inlineLinks}>
-              <Link href="/about-us">About Mekor</Link>
-              <Link href="/our-rabbi">Meet the rabbis</Link>
-              <Link href="/membership">Membership options</Link>
+              <Link href="/about-us">Read more about Mekor</Link>
+              <Link href="/our-rabbi">Meet our rabbis</Link>
+            </div>
+          </div>
+          <div className={styles.introMedia}>
+            <div className={styles.introVideo}>
+              <iframe
+                src={INTRO_VIDEO_URL}
+                title="Mekor Habracha - Center City Synagogue"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
             </div>
           </div>
         </div>
       </SectionCard>
 
-      <section className={styles.pillarGrid} aria-label="Community pillars">
-        {COMMUNITY_PILLARS.map((pillar) => (
-          <SectionCard key={pillar.title} className={styles.pillarCard}>
-            <p className={styles.sectionEyebrow}>{pillar.title}</p>
-            <h2 className={styles.pillarTitle}>{pillar.title}</h2>
-            <p className={styles.pillarText}>{pillar.description}</p>
-            <Link href={pillar.href} className={styles.textLink}>
-              {pillar.label}
-            </Link>
-          </SectionCard>
-        ))}
-      </section>
+      <div className={styles.featureGrid}>
+        <SectionCard className={styles.featureCard}>
+          <SplitMediaText
+            title="Purim at Mekor"
+            kicker="Featured Event"
+            className={styles.featureStory}
+            media={{
+              src: "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg",
+              alt: "Purim community celebration",
+            }}
+            paragraphs={[
+              "Join us for Megillah readings, tefillot, and our festive Purim celebration.",
+            ]}
+            links={[
+              { label: "Event Details", href: "/events-1/purim-at-mekor" },
+            ]}
+          />
+        </SectionCard>
 
-      <section className={styles.storyGrid}>
-        <SectionCard tone="dark" className={styles.rhythmCard}>
-          <p className={styles.sectionEyebrow}>The weekly rhythm</p>
-          <h2 className={styles.rhythmTitle}>There is always a next entry point.</h2>
-          <div className={styles.rhythmList}>
-            {WEEKLY_RHYTHM.map((item) => (
-              <article key={item.label} className={styles.rhythmItem}>
-                <h3>{item.label}</h3>
-                <p>{item.text}</p>
-              </article>
+        <SectionCard className={styles.featureCard}>
+          <SplitMediaText
+            title="Davening"
+            kicker="Shabbat and Weekday Services"
+            className={styles.featureStory}
+            reverse
+            media={{
+              src: "https://static.wixstatic.com/media/92f487_34e64b1fb2e94c56886578290ef2bcd0~mv2.jpeg",
+              alt: "Prayer service at Mekor",
+            }}
+            paragraphs={[
+              "Click below for our complete Shabbat and weekday davening schedules, including daily minyanim and classes.",
+            ]}
+            links={[{ label: "Learn More", href: "/davening" }]}
+          />
+        </SectionCard>
+      </div>
+
+      <SectionCard className={styles.supportCard}>
+        <div className={styles.supportContent}>
+          <div className={styles.supportTextBlock}>
+            <h2 className={styles.supportTitle}>Support Mekor while buying wine and Judaica!</h2>
+            <p className={styles.supportText}>
+              Use the Mekor-specific links below when ordering from Kosherwine.com and Judaica.com, and Mekor will earn <strong>5% back</strong> on every purchase.
+            </p>
+          </div>
+          <div className={styles.supportButtons}>
+            {SUPPORT_LINKS.map((link) => (
+              <a key={link.href} href={link.href} target="_blank" rel="noreferrer noopener" className={styles.supportButton}>
+                <span className={styles.supportButtonLabel}>{link.title}</span>
+                <span className={styles.supportButtonNote}>{link.note}</span>
+              </a>
             ))}
           </div>
-        </SectionCard>
-
-        <SectionCard className={styles.visitCard}>
-          <p className={styles.sectionEyebrow}>First time here?</p>
-          <h2 className={styles.visitTitle}>Start with the essentials.</h2>
-          <div className={styles.visitList}>
-            <div>
-              <span>Where</span>
-              <strong>1500 Walnut St, Suite 206</strong>
-            </div>
-            <div>
-              <span>Questions</span>
-              <a href="mailto:admin@mekorhabracha.org?subject=Planning%20a%20visit">admin@mekorhabracha.org</a>
-            </div>
-            <div>
-              <span>Need times?</span>
-              <Link href="/davening">See the davening schedule</Link>
-            </div>
-          </div>
-          <div className={styles.inlineLinks}>
-            <Link href="/visit-us">Visitor information</Link>
-            <Link href="/contact-us">Contact Mekor</Link>
-          </div>
-        </SectionCard>
-      </section>
-
-      <SectionCard tone="blue" className={styles.supportCard}>
-        <div className={styles.supportHeader}>
-          <div>
-            <p className={styles.sectionEyebrow}>Support the shul in ordinary life</p>
-            <h2 className={styles.supportTitle}>Buy what you already need and send 5% back to Mekor.</h2>
-          </div>
-          <p className={styles.supportText}>
-            Use Mekor&apos;s dedicated links when ordering wine or Judaica and the community benefits from every purchase.
-          </p>
-        </div>
-        <div className={styles.supportGrid}>
-          {SUPPORT_LINKS.map((link) => (
-            <a key={link.href} href={link.href} target="_blank" rel="noreferrer noopener" className={styles.supportLink}>
-              <span className={styles.supportLinkTitle}>{link.title}</span>
-              <span className={styles.supportLinkNote}>{link.note}</span>
-            </a>
-          ))}
         </div>
       </SectionCard>
 
       <SectionCard className={styles.eventsCard}>
         <div className={styles.sectionHeader}>
           <div>
-            <p className={styles.sectionEyebrow}>On the calendar</p>
-            <h2 className={styles.sectionTitle}>Upcoming events</h2>
+            <p className={styles.sectionEyebrow}>Upcoming</p>
+            <h2 className={styles.sectionTitle}>Don&apos;t miss our upcoming events:</h2>
           </div>
-          <Link href="/events" className={styles.textLink}>
-            See all events
-          </Link>
+          <Link href="/events" className={styles.textLink}>See all events</Link>
         </div>
         <div className={styles.eventsGrid}>
           {UPCOMING_EVENTS.map((event) => (
@@ -295,11 +246,9 @@ export default function HomePage() {
         <div className={styles.sectionHeader}>
           <div>
             <p className={styles.sectionEyebrow}>Leadership</p>
-            <h2 className={styles.sectionTitle}>The rabbis who shape Mekor</h2>
+            <h2 className={styles.sectionTitle}>Our Rabbis</h2>
           </div>
-          <Link href="/our-rabbi" className={styles.textLink}>
-            Full rabbi page
-          </Link>
+          <Link href="/our-rabbi" className={styles.textLink}>Meet our rabbis</Link>
         </div>
         <div className={styles.rabbisGrid}>
           {RABBI_PROFILES.map((rabbi) => (
@@ -333,11 +282,10 @@ export default function HomePage() {
       <SectionCard className={styles.contactCard}>
         <div className={styles.contactGrid}>
           <div>
-            <p className={styles.sectionEyebrow}>Reach out</p>
-            <h2 className={styles.sectionTitle}>Questions before you come?</h2>
+            <p className={styles.sectionEyebrow}>Contact</p>
+            <h2 className={styles.sectionTitle}>Get in Touch</h2>
             <p className={styles.contactText}>
-              Call, email, or stop by. Mekor is in the center of the city and easy to find if you&apos;re visiting for
-              Shabbat, moving to the neighborhood, or just looking for a place to start.
+              We&apos;d love to hear from you. Reach out by phone or email, or visit Mekor at 1500 Walnut St Suite 206 in Center City Philadelphia.
             </p>
           </div>
           <div className={styles.contactPanel}>

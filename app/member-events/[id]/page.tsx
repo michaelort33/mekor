@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
+import { MemberShell } from "@/components/members/member-shell";
+import memberShellStyles from "@/components/members/member-shell.module.css";
 import styles from "./page.module.css";
 
 type Attendee = {
@@ -64,6 +65,8 @@ export default function MemberEventDetailPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [comment, setComment] = useState("");
+  const [attendeeSearch, setAttendeeSearch] = useState("");
+  const [attendeeStatusFilter, setAttendeeStatusFilter] = useState<"" | Attendee["status"]>("");
   const [detail, setDetail] = useState<EventDetail | null>(null);
 
   const eventId = useMemo(() => {
@@ -221,33 +224,103 @@ export default function MemberEventDetailPage() {
 
   const requestedAttendees = detail.attendees.filter((attendee) => attendee.status === "requested");
   const approvedCount = detail.attendees.filter((attendee) => attendee.status === "approved").length;
+  const waitlistedCount = detail.attendees.filter((attendee) => attendee.status === "waitlisted").length;
+  const filteredAttendees = detail.attendees.filter((attendee) => {
+    if (attendeeStatusFilter && attendee.status !== attendeeStatusFilter) return false;
+    if (!attendeeSearch.trim()) return true;
+
+    return [attendee.displayName, attendee.city].join(" ").toLowerCase().includes(attendeeSearch.trim().toLowerCase());
+  });
+
+  const shellStats = [
+    {
+      label: "Approved",
+      value: detail.event.capacity ? `${approvedCount}/${detail.event.capacity}` : String(approvedCount),
+      hint: "Confirmed attendees",
+    },
+    {
+      label: "Pending requests",
+      value: String(requestedAttendees.length),
+      hint: detail.canManage ? "Requires host action" : "Awaiting host review",
+    },
+    {
+      label: "Comments",
+      value: String(detail.comments.length),
+      hint: `${waitlistedCount} waitlisted`,
+    },
+  ];
 
   return (
-    <main className={`${styles.page} internal-page`}>
-      <MembersBreadcrumbs
-        items={[
-          { label: "Home", href: "/" },
-          { label: "Events", href: "/events" },
-          { label: detail.event.title },
-        ]}
-        context="member"
-        activeSection="none"
-      />
+    <MemberShell
+      title={detail.event.title}
+      description={detail.event.description || "No description provided."}
+      breadcrumbs={
+        detail.canManage
+          ? [
+              { label: "Home", href: "/" },
+              { label: "Members Area", href: "/members" },
+              { label: "Host Events", href: "/account/member-events" },
+              { label: detail.event.title },
+            ]
+          : [
+              { label: "Home", href: "/" },
+              { label: "Events", href: "/events" },
+              { label: detail.event.title },
+            ]
+      }
+      activeSection={detail.canManage ? "host-events" : "none"}
+      stats={shellStats}
+      actions={
+        <>
+          <Link href="/events" className={memberShellStyles.actionPill}>Events</Link>
+          {detail.canManage ? (
+            <Link href="/account/member-events" className={memberShellStyles.actionPill}>Manage hosted events</Link>
+          ) : null}
+        </>
+      }
+    >
+      {detail.canManage ? (
+        <section className={memberShellStyles.toolbar}>
+          <div className={memberShellStyles.toolbarHeader}>
+            <p className={memberShellStyles.toolbarTitle}>Attendee filters</p>
+            <p className={memberShellStyles.toolbarMeta}>Search attendees by name or city, or isolate a specific attendance status.</p>
+          </div>
+          <div className={memberShellStyles.toolbarFields}>
+            <label>
+              Search attendees
+              <input value={attendeeSearch} onChange={(event) => setAttendeeSearch(event.target.value)} placeholder="Search name or city" />
+            </label>
+            <label>
+              Status
+              <select
+                value={attendeeStatusFilter}
+                onChange={(event) => setAttendeeStatusFilter(event.target.value as "" | Attendee["status"])}
+              >
+                <option value="">All</option>
+                <option value="requested">requested</option>
+                <option value="approved">approved</option>
+                <option value="waitlisted">waitlisted</option>
+                <option value="rejected">rejected</option>
+                <option value="cancelled">cancelled</option>
+              </select>
+            </label>
+          </div>
+          <div className={memberShellStyles.toolbarActions}>
+            <button
+              type="button"
+              className={memberShellStyles.secondaryButton}
+              onClick={() => {
+                setAttendeeSearch("");
+                setAttendeeStatusFilter("");
+              }}
+            >
+              Clear filters
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       <section className={`${styles.card} internal-card`}>
-        <header className={`${styles.header} internal-header`}>
-          <div>
-            <h1>{detail.event.title}</h1>
-            <p>{detail.event.description || "No description provided."}</p>
-          </div>
-          <div className={styles.headerActions}>
-            <Link href="/events">Back to events</Link>
-            {detail.canManage ? (
-              <Link href="/account/member-events">Manage all hosted events</Link>
-            ) : null}
-          </div>
-        </header>
-
         <div className={styles.meta}>
           <span>{new Date(detail.event.startsAt).toLocaleString()}</span>
           <span>{detail.event.location || "Location TBD"}</span>
@@ -258,11 +331,7 @@ export default function MemberEventDetailPage() {
 
         <p className={styles.host}>Hosted by {detail.event.hostDisplayName}</p>
         <p className={styles.counts}>
-          Approved attendees: {approvedCount}
-          {detail.event.capacity ? ` / ${detail.event.capacity}` : ""}
-        </p>
-        <p className={styles.counts}>
-          Host stats: {detail.hostStats.eventsHostedCount} hosted · {detail.hostStats.approvedAttendeesTotal} approved attendees total
+          Host stats: {detail.hostStats.eventsHostedCount} hosted · {detail.hostStats.approvedAttendeesTotal} approved attendees total · {detail.hostStats.upcomingHostedCount} upcoming
         </p>
 
         <div className={styles.actions}>
@@ -307,6 +376,32 @@ export default function MemberEventDetailPage() {
         </section>
       ) : null}
 
+      {detail.canManage ? (
+        <section className={`${styles.card} internal-card`}>
+          <h2>Attendee Directory</h2>
+          <p>{filteredAttendees.length} attendee(s) visible in this view.</p>
+          {filteredAttendees.length === 0 ? (
+            <p>No attendees match the current filters.</p>
+          ) : (
+            <ul className={styles.list}>
+              {filteredAttendees.map((attendee) => (
+                <li key={attendee.id}>
+                  <strong>{attendee.displayName}</strong>
+                  <p>
+                    {attendee.status} · {attendee.city || "City not provided"}
+                  </p>
+                  <small>
+                    {attendee.respondedAt
+                      ? `Updated ${new Date(attendee.respondedAt).toLocaleString()}`
+                      : `Requested ${new Date(attendee.requestedAt).toLocaleString()}`}
+                  </small>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ) : null}
+
       <section className={`${styles.card} internal-card`}>
         <h2>Comments</h2>
         <form className={styles.commentForm} onSubmit={submitComment}>
@@ -337,6 +432,6 @@ export default function MemberEventDetailPage() {
 
       {error ? <p className={styles.error}>{error}</p> : null}
       {notice ? <p className={styles.notice}>{notice}</p> : null}
-    </main>
+    </MemberShell>
   );
 }
