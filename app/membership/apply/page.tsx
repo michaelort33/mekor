@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { HeroSection, SectionCard } from "@/components/marketing/primitives";
+import { SectionCard } from "@/components/marketing/primitives";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { MembershipApplicationForm } from "./application-form";
 import styles from "./page.module.css";
@@ -14,26 +14,28 @@ export const metadata: Metadata = {
 export default function MembershipApplicationPage() {
   return (
     <MarketingPageShell currentPath="/membership" className={styles.page} contentClassName={styles.content}>
-      <HeroSection
-        eyebrow="Membership application"
-        title="Apply to join Mekor Habracha"
-        subtitle="A direct application reviewed by the Mekor team"
-        variant="quiet"
-        image={{
-          src: "https://static.wixstatic.com/media/11062b_6ef3ee78b5784e3586f8a9366c89f5ee~mv2.jpeg",
-          alt: "Mekor Habracha community gathering",
-          objectFit: "cover",
-          objectPosition: "50% 42%",
-        }}
-        description={[
-          "Use this form for new memberships and renewals. It keeps the existing application content, but now submissions stay inside Mekor and land directly in the admin panel for review.",
-          "After approval, you will receive a welcome email. If you do not already have a Mekor account, that email will include a secure setup link.",
-        ]}
-        actions={[
-          { label: "Back to membership details", href: "/membership" },
-          { label: "Email membership team", href: "mailto:mekorhabracha@gmail.com?subject=Membership%20Application" },
-        ]}
-      />
+      <SectionCard className={styles.headerCard}>
+        <div className={styles.headerGrid}>
+          <div>
+            <p className={styles.sectionEyebrow}>Membership application</p>
+            <h1 className={styles.pageTitle}>Apply to join Mekor Habracha</h1>
+            <p className={styles.bodyText}>
+              Use this form for new memberships and renewals. Your submission stays inside Mekor and goes straight to the admin review queue.
+            </p>
+            <p className={styles.bodyText}>
+              After approval, you will receive a welcome email. If you do not already have a Mekor account, that email will include a secure setup link.
+            </p>
+          </div>
+          <div className={styles.headerActions}>
+            <Link href="/membership" className={styles.secondaryAction}>
+              Back to membership details
+            </Link>
+            <a href="mailto:mekorhabracha@gmail.com?subject=Membership%20Application" className={styles.primaryAction}>
+              Email membership team
+            </a>
+          </div>
+        </div>
+      </SectionCard>
 
       <SectionCard className={styles.introCard}>
         <div className={styles.introGrid}>

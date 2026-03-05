@@ -394,6 +394,29 @@ export function MembershipApplicationForm() {
               <textarea name="notes" value={form.notes} onChange={onTextChange} rows={6} />
             </label>
           </section>
+
+          <section className={styles.submitCard}>
+            <div className={styles.cardHeader}>
+              <p className={styles.sectionEyebrow}>Final step</p>
+              <h2 className={styles.cardTitle}>Submit your membership application</h2>
+            </div>
+            <p className={styles.bodyText}>
+              When you submit, the application goes straight to Mekor&apos;s admin team for review. Approved applicants receive a welcome email with next steps.
+            </p>
+            {error ? <p className={styles.errorBanner}>{error}</p> : null}
+            {success ? (
+              <section className={styles.successCard}>
+                <p className={styles.sectionEyebrow}>Submitted</p>
+                <h2 className={styles.cardTitle}>Application received</h2>
+                <p className={styles.bodyText}>
+                  Your application ID is <strong>#{success.applicationId}</strong>. Mekor staff will review it and follow up by email.
+                </p>
+              </section>
+            ) : null}
+            <button type="submit" className={styles.submitButton} disabled={submitting}>
+              {submitting ? "Submitting..." : "Submit membership application"}
+            </button>
+          </section>
         </div>
 
         <aside className={styles.summaryColumn}>
@@ -443,21 +466,6 @@ export function MembershipApplicationForm() {
               <li>Approved applicants receive a welcome email with login or setup instructions.</li>
             </ol>
           </section>
-
-          {error ? <p className={styles.errorBanner}>{error}</p> : null}
-          {success ? (
-            <section className={styles.successCard}>
-              <p className={styles.sectionEyebrow}>Submitted</p>
-              <h2 className={styles.cardTitle}>Application received</h2>
-              <p className={styles.bodyText}>
-                Your application ID is <strong>#{success.applicationId}</strong>. Mekor staff will review it and follow up by email.
-              </p>
-            </section>
-          ) : null}
-
-          <button type="submit" className={styles.submitButton} disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit membership application"}
-          </button>
         </aside>
       </form>
     </section>
