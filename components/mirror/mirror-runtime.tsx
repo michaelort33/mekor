@@ -655,6 +655,7 @@ export function MirrorRuntime({
 
       menuItems.forEach((item) => {
         item.dataset.open = "false";
+        let closeTimer = 0;
 
         const trigger = item.querySelector<HTMLElement>(":scope > .mirror-native-submenu-trigger");
         const toggle = item.querySelector<HTMLButtonElement>(
@@ -669,6 +670,13 @@ export function MirrorRuntime({
           const isOpen = item.dataset.open === "true";
           closeAllSubmenus(navRoot);
           setSubmenuOpen(item, !isOpen);
+        };
+
+        const clearCloseTimer = () => {
+          if (closeTimer) {
+            window.clearTimeout(closeTimer);
+            closeTimer = 0;
+          }
         };
 
         addListener(trigger, "click", (event) => {
@@ -695,18 +703,28 @@ export function MirrorRuntime({
         });
 
         addListener(item, "mouseenter", () => {
+          clearCloseTimer();
           setSubmenuOpen(item, true);
         });
 
         addListener(item, "mouseleave", () => {
-          setSubmenuOpen(item, false);
+          clearCloseTimer();
+          closeTimer = window.setTimeout(() => {
+            setSubmenuOpen(item, false);
+            closeTimer = 0;
+          }, 140);
         });
 
         addListener(item, "focusout", (event) => {
           const nextTarget = event.relatedTarget;
           if (!(nextTarget instanceof Node) || !item.contains(nextTarget)) {
+            clearCloseTimer();
             setSubmenuOpen(item, false);
           }
+        });
+
+        cleanups.push(() => {
+          clearCloseTimer();
         });
       });
 

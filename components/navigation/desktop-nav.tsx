@@ -48,6 +48,22 @@ export function DesktopNav({
 }: DesktopNavProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const groupButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const closeTimerRef = useRef<number | null>(null);
+
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    clearCloseTimer();
+    closeTimerRef.current = window.setTimeout(() => {
+      setOpenGroupId(null);
+      closeTimerRef.current = null;
+    }, 140);
+  };
 
   const focusFirstSubmenuLink = (groupId: string) => {
     window.requestAnimationFrame(() => {
@@ -75,6 +91,7 @@ export function DesktopNav({
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
+      clearCloseTimer();
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -87,6 +104,7 @@ export function DesktopNav({
       onBlur={(event) => {
         const nextTarget = event.relatedTarget;
         if (!(nextTarget instanceof Node) || !rootRef.current?.contains(nextTarget)) {
+          clearCloseTimer();
           setOpenGroupId(null);
         }
       }}
@@ -119,15 +137,21 @@ export function DesktopNav({
             <li
               key={item.label}
               className={`native-nav__desktop-item native-nav__desktop-item--group${isOpen ? " is-open" : ""}`}
-              onMouseEnter={() => setOpenGroupId(groupId)}
-              onMouseLeave={() => setOpenGroupId(null)}
+              onMouseEnter={() => {
+                clearCloseTimer();
+                setOpenGroupId(groupId);
+              }}
+              onMouseLeave={scheduleClose}
             >
               <div className="native-nav__desktop-group-trigger">
                 <Link
                   href={item.href}
                   prefetch={false}
                   className={`native-nav__desktop-link${active ? " is-active" : ""}`}
-                  onFocus={() => setOpenGroupId(groupId)}
+                  onFocus={() => {
+                    clearCloseTimer();
+                    setOpenGroupId(groupId);
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === "ArrowDown") {
                       event.preventDefault();
@@ -150,7 +174,10 @@ export function DesktopNav({
                   aria-haspopup="true"
                   aria-label={`Toggle ${item.label} submenu`}
                   onClick={() => setOpenGroupId(isOpen ? null : groupId)}
-                  onFocus={() => setOpenGroupId(groupId)}
+                  onFocus={() => {
+                    clearCloseTimer();
+                    setOpenGroupId(groupId);
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
                       event.preventDefault();
