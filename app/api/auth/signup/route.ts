@@ -55,6 +55,7 @@ function createSignupDependencies(): SignupDependencies {
           email: input.email,
           passwordHash: input.passwordHash,
           displayName: input.displayName,
+          role: "member",
           createdAt: input.now,
           updatedAt: input.now,
         })
