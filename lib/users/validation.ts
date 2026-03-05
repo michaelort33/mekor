@@ -21,6 +21,21 @@ export const loginPayloadSchema = z.object({
   familyInviteToken: z.string().trim().min(24).max(2048).optional(),
 });
 
+export const passwordResetRequestPayloadSchema = z.object({
+  email: z.string().trim().email().max(255),
+});
+
+export const passwordResetCompletePayloadSchema = z
+  .object({
+    token: z.string().trim().min(24).max(2048),
+    password: z.string().min(USER_PASSWORD_MIN_LENGTH),
+    confirmPassword: z.string(),
+  })
+  .refine((value) => value.password === value.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  });
+
 export const profileUpdatePayloadSchema = z.object({
   displayName: z.string().trim().min(2).max(120),
   bio: z.string().trim().max(500),

@@ -5,6 +5,8 @@ import { hashPassword, verifyPassword } from "../lib/auth/password";
 import { signUserSessionToken, verifyUserSessionToken } from "../lib/auth/session";
 import {
   loginPayloadSchema,
+  passwordResetCompletePayloadSchema,
+  passwordResetRequestPayloadSchema,
   profileUpdatePayloadSchema,
   signupPayloadSchema,
 } from "../lib/users/validation";
@@ -86,6 +88,29 @@ test("auth payload schemas enforce expected validation rules", () => {
     loginPayloadSchema.safeParse({
       email: "not-an-email",
       password: "x",
+    }).success,
+    false,
+  );
+
+  assert.equal(
+    passwordResetRequestPayloadSchema.safeParse({
+      email: "alice@example.com",
+    }).success,
+    true,
+  );
+  assert.equal(
+    passwordResetCompletePayloadSchema.safeParse({
+      token: "a".repeat(32),
+      password: "new-password-123",
+      confirmPassword: "new-password-123",
+    }).success,
+    true,
+  );
+  assert.equal(
+    passwordResetCompletePayloadSchema.safeParse({
+      token: "a".repeat(32),
+      password: "new-password-123",
+      confirmPassword: "mismatch",
     }).success,
     false,
   );

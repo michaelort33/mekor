@@ -55,6 +55,24 @@
   color: #2c4258;
 }
 
+.fieldHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.secondaryLink {
+  color: #245c8f;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.secondaryLink:hover {
+  text-decoration: underline;
+}
+
 .field input {
   min-height: 42px;
   border-radius: 10px;
@@ -72,6 +90,12 @@
 .error {
   margin: 0;
   color: #a11d2d;
+  font-weight: 600;
+}
+
+.notice {
+  margin: 0;
+  color: #1c4f33;
   font-weight: 600;
 }
 

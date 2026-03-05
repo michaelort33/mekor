@@ -248,6 +248,25 @@ export const users = pgTable(
   }),
 );
 
+export const passwordResetTokens = pgTable(
+  "password_reset_tokens",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    usedAt: timestamp("used_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    tokenHashUniqueIdx: uniqueIndex("password_reset_tokens_token_hash_unique_idx").on(table.tokenHash),
+    userStateExpiresIdx: index("password_reset_tokens_user_used_expires_idx").on(table.userId, table.usedAt, table.expiresAt),
+    expiresAtIdx: index("password_reset_tokens_expires_at_idx").on(table.expiresAt),
+  }),
+);
+
 export const people = pgTable(
   "people",
   {

@@ -3,6 +3,8 @@ export type EdgeProtectionType = "none" | "user" | "admin";
 const PUBLIC_EXACT_PATHS = new Set([
   "/login",
   "/signup",
+  "/forgot-password",
+  "/reset-password",
   "/membership",
   "/invite/accept",
 ]);

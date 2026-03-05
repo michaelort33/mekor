@@ -134,6 +134,13 @@
       "when": 1772676769378,
       "tag": "0018_hesitant_proteus",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1772736302787,
+      "tag": "0019_stale_anthem",
+      "breakpoints": true
     }
   ]
 }

@@ -1,315 +1,502 @@
 .page {
   background:
-    radial-gradient(70% 55% at 0% 0%, rgba(246, 232, 210, 0.36) 0%, rgba(246, 232, 210, 0) 100%),
-    radial-gradient(80% 55% at 100% 0%, rgba(204, 223, 242, 0.28) 0%, rgba(204, 223, 242, 0) 100%),
-    linear-gradient(178deg, #f8f4ed 0%, #edf2f9 100%);
+    radial-gradient(70% 60% at 0% 0%, rgba(195, 156, 92, 0.18) 0%, rgba(195, 156, 92, 0) 100%),
+    radial-gradient(65% 50% at 100% 4%, rgba(39, 84, 130, 0.2) 0%, rgba(39, 84, 130, 0) 100%),
+    linear-gradient(180deg, #f4efe7 0%, #eef2f7 42%, #f8f4ed 100%);
 }
 
 .stack {
   display: grid;
-  gap: 22px;
+  gap: 26px;
+  padding-bottom: 28px;
 }
 
-.welcome {
+.hero {
+  box-shadow: 0 26px 70px rgba(18, 29, 44, 0.26);
+}
+
+.signalGrid {
+  position: relative;
+  z-index: 2;
+  margin-top: -84px;
   display: grid;
-  gap: 10px;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.welcomeTitle {
+.signalCard {
+  border: 1px solid rgba(40, 67, 98, 0.12);
+  border-radius: 24px;
+  background: rgba(255, 252, 247, 0.88);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 44px rgba(26, 39, 54, 0.12);
+  padding: 22px 22px 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.signalEyebrow,
+.sectionEyebrow {
   margin: 0;
-  color: #2b3a4f;
-  font-size: clamp(1.34rem, 2.9vw, 2.4rem);
-  line-height: 1.15;
-  letter-spacing: 0.04em;
-}
-
-.welcomeText {
-  margin: 0;
-  color: #46576c;
-  line-height: 1.65;
-}
-
-.featureGrid {
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-}
-
-.eventsGrid {
-  display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-
-.eventCard {
-  border: 1px solid #d4deea;
-  border-radius: 18px;
-  background: linear-gradient(170deg, #fefcf8 0%, #f7fbff 100%);
-  overflow: hidden;
-  display: grid;
-  box-shadow: 0 12px 26px rgba(24, 41, 60, 0.1);
-  transition: transform 130ms ease, box-shadow 130ms ease;
-}
-
-.eventCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 32px rgba(24, 41, 60, 0.14);
-}
-
-.eventCard img {
-  width: 100%;
-  height: 210px;
-  object-fit: contain;
-  object-position: center top;
-  background: #f6f8fb;
-  display: block;
-}
-
-.eventCardBody {
-  display: grid;
-  gap: 10px;
-  padding: 16px;
-}
-
-.eventCardBody h3 {
-  margin: 0;
-  color: #1e2f42;
-  font-size: 1.02rem;
-}
-
-.eventMeta {
-  margin: 0;
-  color: #5e6672;
-  font-size: 0.84rem;
-  line-height: 1.45;
-}
-
-.eventLink {
-  color: #204d79;
-  font-weight: 700;
-  text-decoration: underline;
-}
-
-.rabbisGrid {
-  display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.rabbiCard {
-  border: 1px solid #d4deea;
-  border-radius: 18px;
-  background: linear-gradient(170deg, #fefcf8 0%, #f7fbff 100%);
-  overflow: hidden;
-  display: grid;
-  box-shadow: 0 12px 26px rgba(24, 41, 60, 0.1);
-  transition: transform 130ms ease, box-shadow 130ms ease;
-}
-
-.rabbiCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 32px rgba(24, 41, 60, 0.14);
-}
-
-.rabbiCard img {
-  width: 100%;
-  height: 240px;
-  object-fit: contain;
-  object-position: center top;
-  background: #f6f8fb;
-  display: block;
-}
-
-.rabbiCardBody {
-  display: grid;
-  gap: 10px;
-  padding: 16px;
-}
-
-.rabbiRole {
-  margin: 0;
-  color: #4f5f75;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  font-weight: 700;
+  color: #8b6230;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-.rabbiCardBody h3 {
+.signalTitle {
   margin: 0;
-  color: #1e2f42;
-  font-size: 1.08rem;
+  color: #182a3e;
+  font-family: var(--native-font-heading);
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  line-height: 0.98;
 }
 
-.rabbiCardBody p {
+.signalText {
   margin: 0;
-  color: #4f5b69;
-  line-height: 1.55;
+  color: #4b5b6d;
+  line-height: 1.65;
 }
 
-.rabbiLinks {
+.introCard {
+  overflow: hidden;
+}
+
+.introGrid {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+}
+
+.introStatement {
+  display: grid;
+  gap: 12px;
+  align-self: stretch;
+  padding: 8px 0;
+}
+
+.introStatement h2 {
+  margin: 0;
+  color: #162b42;
+  font-family: var(--native-font-heading);
+  font-size: clamp(2.3rem, 5vw, 4.4rem);
+  line-height: 0.92;
+  max-width: 8ch;
+}
+
+.introBody {
+  display: grid;
+  gap: 14px;
+  padding: 24px 24px 24px 28px;
+  border-left: 1px solid rgba(34, 57, 84, 0.12);
+}
+
+.introBody p,
+.pillarText,
+.contactText,
+.supportText,
+.visitList div,
+.rhythmItem p,
+.rabbiBody p,
+.eventPlace {
+  margin: 0;
+  color: #4c5b6b;
+  line-height: 1.7;
+}
+
+.inlineLinks {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 12px;
+  gap: 10px 16px;
 }
 
-.rabbiLinks a {
-  color: #204d79;
+.inlineLinks a,
+.textLink,
+.eventLink,
+.contactPanel a,
+.visitList a {
+  color: #1e517d;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.inlineLinks a:hover,
+.textLink:hover,
+.eventLink:hover,
+.contactPanel a:hover,
+.visitList a:hover {
   text-decoration: underline;
-  font-size: 0.84rem;
-  font-weight: 600;
 }
 
-.touchGrid {
+.pillarGrid {
   display: grid;
   gap: 18px;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.touchText {
-  margin: 0;
-  color: #4f5b69;
-  line-height: 1.6;
-}
-
-.touchPanel {
-  border: 1px solid #d4deea;
-  border-radius: 16px;
-  background: linear-gradient(165deg, #fefcf8 0%, #f7fbff 100%);
-  padding: 14px;
+.pillarCard {
+  min-height: 100%;
   display: grid;
-  gap: 10px;
-  box-shadow: 0 10px 24px rgba(24, 41, 60, 0.09);
+  gap: 14px;
+  align-content: start;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 243, 0.98) 0%, rgba(247, 250, 255, 0.98) 100%),
+    #ffffff;
 }
 
-.touchPanel h3 {
+.pillarTitle,
+.sectionTitle,
+.rhythmTitle,
+.visitTitle,
+.supportTitle {
   margin: 0;
-  color: #23384f;
+  color: #16293f;
+  font-family: var(--native-font-heading);
+  line-height: 1;
+}
+
+.pillarTitle {
+  font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+}
+
+.storyGrid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+}
+
+.rhythmCard {
+  position: relative;
+  overflow: hidden;
+}
+
+.rhythmTitle {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #fff7ea;
+}
+
+.rhythmList {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.rhythmItem {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 16px 18px;
+}
+
+.rhythmItem h3 {
+  margin: 0 0 8px;
+  color: #fff6ea;
   font-size: 1rem;
 }
 
-.touchPanel a {
-  color: #204d79;
-  text-decoration: underline;
-  font-weight: 600;
+.rhythmItem p {
+  color: rgba(231, 239, 248, 0.86);
+}
+
+.visitCard {
+  display: grid;
+  gap: 18px;
+}
+
+.visitTitle {
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+}
+
+.visitList {
+  display: grid;
+  gap: 12px;
+}
+
+.visitList div {
+  display: grid;
+  gap: 4px;
+  padding: 14px 0;
+  border-top: 1px solid rgba(28, 47, 71, 0.12);
+}
+
+.visitList div:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.visitList span {
+  color: #7b5a32;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.visitList strong {
+  color: #1b3149;
+  font-size: 1rem;
 }
 
 .supportCard {
   overflow: hidden;
 }
 
-.supportContent {
+.supportHeader {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 28px;
-  align-items: center;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  align-items: end;
+}
+
+.supportTitle {
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #fff8ed;
 }
 
 .supportText {
+  color: rgba(227, 238, 251, 0.9);
+}
+
+.supportGrid {
+  margin-top: 20px;
   display: grid;
-  gap: 10px;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.supportHeading {
-  margin: 0;
-  color: #ffffff;
-  font-size: clamp(1.3rem, 3vw, 2rem);
-  line-height: 1.15;
-  letter-spacing: 0.03em;
-}
-
-.supportDescription {
-  margin: 0;
-  color: rgba(225, 238, 255, 0.92);
-  line-height: 1.6;
-  max-width: 52ch;
-}
-
-.supportButtons {
+.supportLink {
   display: grid;
-  gap: 10px;
-  min-width: 240px;
-}
-
-.supportButton {
-  display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(6px);
-  padding: 14px 16px;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
   text-decoration: none;
+  transition: transform 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.supportLink:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 16px 32px rgba(10, 20, 34, 0.16);
+}
+
+.supportLinkTitle {
   color: #ffffff;
-  transition: background-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+  font-size: 1.08rem;
+  font-weight: 800;
 }
 
-.supportButton:hover {
-  background: rgba(255, 255, 255, 0.22);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+.supportLinkNote {
+  color: rgba(222, 235, 250, 0.9);
+  line-height: 1.6;
 }
 
-.supportButtonIcon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.18);
+.eventsCard,
+.rabbisCard,
+.contactCard {
+  overflow: hidden;
+}
+
+.sectionHeader {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 18px;
 }
 
-.supportButtonBody {
+.sectionTitle {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.eventsGrid {
   display: grid;
-  gap: 2px;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.supportButtonLabel {
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1.25;
+.eventCard {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.9fr) minmax(0, 1fr);
+  border: 1px solid rgba(31, 51, 74, 0.12);
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #fffdf8 0%, #f4f8fd 100%);
+  box-shadow: 0 16px 36px rgba(25, 37, 52, 0.09);
 }
 
-.supportButtonUrl {
-  font-size: 0.82rem;
-  color: rgba(215, 232, 255, 0.82);
-  line-height: 1.2;
+.eventMedia {
+  background: linear-gradient(180deg, #f1f3f7 0%, #f8f7f4 100%);
 }
 
-@media (max-width: 980px) {
-  .featureGrid,
+.eventMedia img {
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  object-fit: contain;
+  object-position: center top;
+  display: block;
+}
+
+.eventBody {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  padding: 22px;
+}
+
+.eventDate {
+  margin: 0;
+  color: #7f5b2c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.eventBody h3 {
+  margin: 0;
+  color: #1a2d43;
+  font-size: 1.28rem;
+}
+
+.rabbisGrid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rabbiCard {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1fr);
+  padding: 12px;
+  border: 1px solid rgba(30, 50, 73, 0.12);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #fffdf9 0%, #f4f8fd 100%);
+}
+
+.rabbiPortrait {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #e7edf4;
+}
+
+.rabbiPortrait img {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.rabbiBody {
+  display: grid;
+  gap: 12px;
+  align-content: center;
+  padding: 8px 8px 8px 0;
+}
+
+.rabbiRole {
+  margin: 0;
+  color: #7b5a32;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.rabbiBody h3 {
+  margin: 0;
+  color: #15283c;
+  font-size: 1.5rem;
+}
+
+.contactGrid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  align-items: center;
+}
+
+.contactPanel {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+  border-radius: 22px;
+  border: 1px solid rgba(27, 48, 72, 0.12);
+  background: linear-gradient(180deg, #fffdf8 0%, #f2f6fb 100%);
+}
+
+.contactPanel p {
+  margin: 0;
+  color: #4b5d70;
+  line-height: 1.6;
+}
+
+@media (max-width: 1100px) {
+  .pillarGrid,
+  .signalGrid,
   .eventsGrid,
   .rabbisGrid,
-  .touchGrid {
+  .storyGrid,
+  .contactGrid,
+  .supportHeader {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .supportContent {
+  .introGrid {
     grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
   }
 
-  .supportButtons {
-    min-width: 0;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .introBody {
+    padding: 0;
+    border-left: none;
+  }
+
+  .supportGrid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-@media (max-width: 520px) {
-  .supportButtons {
+@media (max-width: 900px) {
+  .signalGrid {
+    margin-top: 0;
+  }
+
+  .eventCard,
+  .rabbiCard {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .eventMedia img,
+  .rabbiPortrait img {
+    min-height: 240px;
   }
 }
 
-@media (max-width: 760px) {
-  .eventCard img,
-  .rabbiCard img {
-    height: 200px;
-    object-fit: contain;
+@media (max-width: 640px) {
+  .stack {
+    gap: 20px;
+  }
+
+  .signalCard,
+  .eventBody,
+  .contactPanel {
+    padding: 18px;
+  }
+
+  .introStatement h2,
+  .sectionTitle,
+  .rhythmTitle,
+  .visitTitle,
+  .supportTitle,
+  .pillarTitle {
+    line-height: 0.96;
   }
 }

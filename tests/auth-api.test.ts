@@ -4,6 +4,8 @@ import test from "node:test";
 import { NextRequest } from "next/server";
 
 import { executeLogin } from "../app/api/auth/login/route";
+import { executePasswordResetComplete } from "../app/api/auth/password-reset/complete/route";
+import { executePasswordResetRequest } from "../app/api/auth/password-reset/request/route";
 import { executeSignup } from "../app/api/auth/signup/route";
 import { proxy } from "../proxy";
 
@@ -191,6 +193,154 @@ test("login succeeds and creates session when credentials are valid", async () =
     "mark:22",
     "session:22:member",
   ]);
+});
+
+test("password reset request is generic for unknown email", async () => {
+  const result = await executePasswordResetRequest(
+    {
+      email: "unknown@example.com",
+    },
+    {
+      findUserByEmail: async () => undefined,
+      invalidateActiveTokens: async () => {
+        throw new Error("invalidateActiveTokens should not run");
+      },
+      createResetToken: async () => {
+        throw new Error("createResetToken should not run");
+      },
+      sendResetEmail: async () => {
+        throw new Error("sendResetEmail should not run");
+      },
+    },
+    "https://mekor.test",
+  );
+
+  assert.equal(result.status, 200);
+  assert.deepEqual(result.body, {
+    ok: true,
+    message: "If an account exists for that email, a reset link has been sent.",
+  });
+});
+
+test("password reset request creates token and sends email for known user", async () => {
+  const steps: string[] = [];
+
+  const result = await executePasswordResetRequest(
+    {
+      email: "alice@example.com",
+    },
+    {
+      findUserByEmail: async (email) => {
+        steps.push(`find:${email}`);
+        return {
+          id: 17,
+          email,
+          displayName: "Alice Example",
+        };
+      },
+      invalidateActiveTokens: async (userId) => {
+        steps.push(`invalidate:${userId}`);
+      },
+      createResetToken: async ({ userId, tokenHash }) => {
+        steps.push(`token:${userId}:${tokenHash.length}`);
+      },
+      sendResetEmail: async ({ toEmail, displayName, resetUrl }) => {
+        steps.push(`email:${toEmail}:${displayName}`);
+        assert.equal(resetUrl.startsWith("https://mekor.test/reset-password?token="), true);
+      },
+    },
+    "https://mekor.test",
+  );
+
+  assert.equal(result.status, 200);
+  assert.deepEqual(result.body, {
+    ok: true,
+    message: "If an account exists for that email, a reset link has been sent.",
+  });
+  assert.deepEqual(steps, [
+    "find:alice@example.com",
+    "invalidate:17",
+    "token:17:64",
+    "email:alice@example.com:Alice Example",
+  ]);
+});
+
+test("password reset completion rejects expired or used tokens", async () => {
+  const expired = await executePasswordResetComplete(
+    {
+      token: "a".repeat(32),
+      password: "new-password-123",
+      confirmPassword: "new-password-123",
+    },
+    {
+      findResetTokenByHash: async () => ({
+        id: 8,
+        userId: 3,
+        expiresAt: new Date(Date.now() - 1_000),
+        usedAt: null,
+      }),
+      hashPassword: async () => {
+        throw new Error("hashPassword should not run");
+      },
+      applyPasswordReset: async () => {
+        throw new Error("applyPasswordReset should not run");
+      },
+    },
+  );
+  assert.equal(expired.status, 400);
+
+  const used = await executePasswordResetComplete(
+    {
+      token: "b".repeat(32),
+      password: "new-password-123",
+      confirmPassword: "new-password-123",
+    },
+    {
+      findResetTokenByHash: async () => ({
+        id: 9,
+        userId: 3,
+        expiresAt: new Date(Date.now() + 60_000),
+        usedAt: new Date(),
+      }),
+      hashPassword: async () => {
+        throw new Error("hashPassword should not run");
+      },
+      applyPasswordReset: async () => {
+        throw new Error("applyPasswordReset should not run");
+      },
+    },
+  );
+  assert.equal(used.status, 400);
+});
+
+test("password reset completion updates password on valid token", async () => {
+  const steps: string[] = [];
+  const result = await executePasswordResetComplete(
+    {
+      token: "c".repeat(32),
+      password: "new-password-123",
+      confirmPassword: "new-password-123",
+    },
+    {
+      findResetTokenByHash: async () => ({
+        id: 11,
+        userId: 44,
+        expiresAt: new Date(Date.now() + 60_000),
+        usedAt: null,
+      }),
+      hashPassword: async (password) => {
+        steps.push(`hash:${password}`);
+        return "hashed-password";
+      },
+      applyPasswordReset: async ({ userId, passwordHash }) => {
+        steps.push(`apply:${userId}:${passwordHash}`);
+      },
+    },
+  );
+
+  assert.equal(result.status, 200);
+  assert.deepEqual(result.body, { ok: true });
+  assert.deepEqual(steps, ["hash:new-password-123", "apply:44:hashed-password"]);
 });
 
 test("admin users API is gated without admin session cookie", async () => {

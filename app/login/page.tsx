@@ -23,6 +23,12 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const nextPath = useMemo(() => resolveNextPath(searchParams.get("next")), [searchParams]);
   const familyInviteToken = useMemo(() => searchParams.get("family_invite_token") ?? "", [searchParams]);
+  const resetNotice = useMemo(() => {
+    if (searchParams.get("reset") === "success") {
+      return "Your password has been reset. Log in with your new password.";
+    }
+    return "";
+  }, [searchParams]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -88,7 +94,12 @@ export default function LoginPage() {
         </label>
 
         <label className={styles.field}>
-          <span>Password</span>
+          <span className={styles.fieldHeader}>
+            <span>Password</span>
+            <Link href="/forgot-password" className={styles.secondaryLink}>
+              Forgot password?
+            </Link>
+          </span>
           <input
             type="password"
             value={password}
@@ -99,6 +110,7 @@ export default function LoginPage() {
           />
         </label>
 
+        {resetNotice ? <p className={styles.notice}>{resetNotice}</p> : null}
         {error ? <p className={styles.error}>{error}</p> : null}
 
         <button className={styles.button} type="submit" disabled={submitting}>
