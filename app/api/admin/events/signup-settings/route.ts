@@ -6,6 +6,7 @@ import { getDb } from "@/db/client";
 import { eventSignupSettings, eventTicketTiers, events } from "@/db/schema";
 import { requireAdminActor } from "@/lib/admin/actor";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
+import { normalizeEventSignupSettings } from "@/lib/events/signup-settings";
 
 const tierSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -89,16 +90,11 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     settings: rows.map((row) => ({
-      id: row.id,
+      id: row.id ?? null,
       eventId: row.eventId,
       eventTitle: row.eventTitle,
       eventPath: row.eventPath,
-      enabled: row.enabled ?? false,
-      capacity: row.capacity ?? null,
-      waitlistEnabled: row.waitlistEnabled ?? true,
-      paymentRequired: row.paymentRequired ?? false,
-      registrationDeadline: row.registrationDeadline ?? null,
-      organizerEmail: row.organizerEmail ?? "",
+      ...normalizeEventSignupSettings(row),
       updatedAt: row.updatedAt ?? null,
       tiers: row.id ? tiersBySetting.get(row.id) ?? [] : [],
     })),

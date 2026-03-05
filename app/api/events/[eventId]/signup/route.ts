@@ -7,6 +7,7 @@ import { eventRegistrations, eventSignupSettings, eventTicketTiers, events } fro
 import { getUserSession } from "@/lib/auth/session";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
 import { countActiveEventSpots } from "@/lib/events/registrations";
+import { normalizeEventSignupSettings } from "@/lib/events/signup-settings";
 
 type Params = {
   params: Promise<{ eventId: string }>;
@@ -15,16 +16,6 @@ type Params = {
 const signupPayloadSchema = z.object({
   ticketTierId: z.number().int().min(1).optional(),
 });
-
-const DEFAULT_SIGNUP_SETTINGS = {
-  id: 0,
-  enabled: true,
-  capacity: null,
-  waitlistEnabled: false,
-  paymentRequired: false,
-  registrationDeadline: null,
-  organizerEmail: "",
-} as const;
 
 async function resolveEventContext(eventId: number) {
   const db = getDb();
@@ -61,7 +52,7 @@ async function resolveEventContext(eventId: number) {
   if (!settings) {
     return {
       eventRow,
-      settings: { ...DEFAULT_SIGNUP_SETTINGS },
+      settings: normalizeEventSignupSettings(null),
       tiers: [],
     };
   }
@@ -81,7 +72,7 @@ async function resolveEventContext(eventId: number) {
 
   return {
     eventRow,
-    settings,
+    settings: normalizeEventSignupSettings(settings),
     tiers,
   };
 }
