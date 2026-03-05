@@ -38,10 +38,20 @@ export default function AccountProfilePage() {
     avatarUrl: "",
     profileVisibility: "private" as "private" | "members" | "public" | "anonymous",
   });
+  const [memberStats, setMemberStats] = useState<{
+    eventsHostedCount: number;
+    approvedAttendeesTotal: number;
+    uniqueAttendeesCount: number;
+    upcomingHostedCount: number;
+    attendanceRate: number;
+  } | null>(null);
 
   useEffect(() => {
     async function loadProfile() {
-      const response = await fetch("/api/account/profile");
+      const [response, statsResponse] = await Promise.all([
+        fetch("/api/account/profile"),
+        fetch("/api/account/member-stats"),
+      ]);
       if (response.status === 401) {
         router.replace("/login?next=/account/profile");
         return;
@@ -57,6 +67,18 @@ export default function AccountProfilePage() {
         avatarUrl: data.profile.avatarUrl,
         profileVisibility: data.profile.profileVisibility,
       });
+      if (statsResponse.ok) {
+        const statsPayload = (await statsResponse.json().catch(() => ({}))) as {
+          stats?: {
+            eventsHostedCount: number;
+            approvedAttendeesTotal: number;
+            uniqueAttendeesCount: number;
+            upcomingHostedCount: number;
+            attendanceRate: number;
+          };
+        };
+        setMemberStats(statsPayload.stats ?? null);
+      }
       setLoading(false);
     }
 
@@ -172,6 +194,8 @@ export default function AccountProfilePage() {
           { label: "Members Area", href: "/members" },
           { label: "Your Profile" },
         ]}
+        context="member"
+        activeSection="profile"
       />
 
       <form className={styles.card} onSubmit={saveProfile}>
@@ -285,6 +309,18 @@ export default function AccountProfilePage() {
           </select>
         </label>
 
+        {memberStats ? (
+          <section className={styles.avatarSection}>
+            <h2>Host stats</h2>
+            <p className={styles.avatarHint}>
+              Events hosted: {memberStats.eventsHostedCount} · Upcoming hosted: {memberStats.upcomingHostedCount}
+            </p>
+            <p className={styles.avatarHint}>
+              Approved attendees: {memberStats.approvedAttendeesTotal} · Unique attendees: {memberStats.uniqueAttendeesCount}
+            </p>
+          </section>
+        ) : null}
+
         <div className={styles.actions}>
           <button className={styles.button} type="submit" disabled={saving}>
             {saving ? "Saving..." : "Save profile"}
@@ -294,6 +330,9 @@ export default function AccountProfilePage() {
           </Link>
           <Link href="/account/dues" className={styles.secondaryLink}>
             View dues
+          </Link>
+          <Link href="/account/member-events" className={styles.secondaryLink}>
+            Host events
           </Link>
         </div>
 

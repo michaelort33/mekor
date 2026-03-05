@@ -6,22 +6,36 @@ import { useRouter } from "next/navigation";
 
 import styles from "./page.module.css";
 
-type MessageLog = {
-  id: number;
-  userId: number;
-  userEmail: string;
-  userDisplayName: string;
-  messageType: "membership_renewal_reminder";
-  membershipRenewalDate: string;
+type LogItem = {
+  id: string;
+  source: "manual" | "newsletter" | "automated" | "dues";
+  channel: "email";
+  recipientName: string;
   recipientEmail: string;
   subject: string;
   provider: string;
   providerMessageId: string;
-  deliveryStatus: "sent" | "failed";
+  status: "sent" | "failed" | "skipped";
   errorMessage: string;
-  sentAt: string | null;
   createdAt: string;
+  sentAt: string | null;
+  actorEmail: string;
+  campaignName: string;
+  segmentLabel: string;
 };
+
+type Segment = {
+  key: "all_people" | "prospects" | "invited_not_accepted" | "active_members" | "members_overdue";
+  label: string;
+};
+
+const DEFAULT_SEGMENTS: Segment[] = [
+  { key: "active_members", label: "Active members/admins" },
+  { key: "members_overdue", label: "Members with overdue/open dues" },
+  { key: "invited_not_accepted", label: "Invited, not onboarded" },
+  { key: "prospects", label: "Prospects (leads)" },
+  { key: "all_people", label: "All people" },
+];
 
 type PageInfo = {
   nextCursor: string | null;
@@ -32,11 +46,20 @@ type PageInfo = {
 export default function AdminMessagesPage() {
   const router = useRouter();
   const [q, setQ] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"" | "sent" | "failed">("");
+  const [statusFilter, setStatusFilter] = useState<"" | "sent" | "failed" | "skipped">("");
+  const [sourceFilter, setSourceFilter] = useState<"" | "manual" | "newsletter" | "automated" | "dues">("");
   const [loading, setLoading] = useState(true);
+  const [working, setWorking] = useState(false);
   const [error, setError] = useState("");
-  const [logs, setLogs] = useState<MessageLog[]>([]);
+  const [notice, setNotice] = useState("");
+  const [logs, setLogs] = useState<LogItem[]>([]);
+  const [segments, setSegments] = useState<Segment[]>([]);
   const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
+  const [campaignName, setCampaignName] = useState("Member Update");
+  const [campaignSegment, setCampaignSegment] = useState<Segment["key"]>("active_members");
+  const [campaignSubject, setCampaignSubject] = useState("");
+  const [campaignBody, setCampaignBody] = useState("");
+  const availableSegments = segments.length > 0 ? segments : DEFAULT_SEGMENTS;
 
   async function loadLogs(options?: { reset?: boolean; cursor?: string | null }) {
     setError("");
@@ -50,6 +73,7 @@ export default function AdminMessagesPage() {
     params.set("limit", "25");
     if (q.trim()) params.set("q", q.trim());
     if (statusFilter) params.set("status", statusFilter);
+    if (sourceFilter) params.set("source", sourceFilter);
     if (options?.cursor) params.set("cursor", options.cursor);
 
     const response = await fetch(`/api/admin/messages?${params.toString()}`);
@@ -58,20 +82,21 @@ export default function AdminMessagesPage() {
       return;
     }
 
-    const data = (await response.json().catch(() => ({}))) as {
-      items?: MessageLog[];
+    const payload = (await response.json().catch(() => ({}))) as {
+      items?: LogItem[];
       pageInfo?: PageInfo;
+      segments?: Segment[];
       error?: string;
     };
-
     if (!response.ok) {
-      setError(data.error || "Unable to load message logs");
+      setError(payload.error || "Unable to load message logs");
       setLoading(false);
       return;
     }
 
-    setLogs((prev) => (options?.reset ? data.items ?? [] : [...prev, ...(data.items ?? [])]));
-    setPageInfo(data.pageInfo ?? null);
+    setLogs((prev) => (options?.reset ? payload.items ?? [] : [...prev, ...(payload.items ?? [])]));
+    setSegments(payload.segments ?? []);
+    setPageInfo(payload.pageInfo ?? null);
     setLoading(false);
   }
 
@@ -83,39 +108,120 @@ export default function AdminMessagesPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  async function runCampaign(mode: "preview" | "send") {
+    setWorking(true);
+    setError("");
+    setNotice("");
+
+    const response = await fetch("/api/admin/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode,
+        channel: "email",
+        name: campaignName,
+        subject: campaignSubject,
+        body: campaignBody,
+        segmentKey: campaignSegment,
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      recipientCount?: number;
+      successCount?: number;
+      failedCount?: number;
+      skippedCount?: number;
+      status?: string;
+    };
+    setWorking(false);
+    if (!response.ok) {
+      setError(payload.error || "Unable to run campaign");
+      return;
+    }
+
+    if (mode === "preview") {
+      setNotice(`Preview ready for ${payload.recipientCount ?? 0} recipients.`);
+      return;
+    }
+    setNotice(
+      `Campaign sent. Success: ${payload.successCount ?? 0}, failed: ${payload.failedCount ?? 0}, skipped: ${payload.skippedCount ?? 0}.`,
+    );
+    await loadLogs({ reset: true });
+  }
+
   return (
     <main className={styles.page}>
       <header className={styles.header}>
         <div>
-          <h1>Automated Message Logs</h1>
-          <p>Review membership renewal reminders and delivery status.</p>
+          <h1>Unified Messages</h1>
+          <p>Campaigns, newsletters, dues reminders, and automated sends in one log.</p>
         </div>
         <div className={styles.links}>
-          <Link href="/admin/users">Users admin</Link>
-          <Link href="/admin/dues">Dues admin</Link>
-          <Link href="/admin/events">Events admin</Link>
-          <Link href="/admin/settings">Settings</Link>
+          <Link href="/admin/people">People</Link>
+          <Link href="/admin/users">Users</Link>
+          <Link href="/admin/dues">Dues</Link>
+          <Link href="/admin/events">Events</Link>
         </div>
       </header>
+
+      <section className={styles.compose}>
+        <h2>Quick campaign</h2>
+        <div className={styles.composeGrid}>
+          <label>
+            Campaign name
+            <input value={campaignName} onChange={(event) => setCampaignName(event.target.value)} />
+          </label>
+          <label>
+            Segment
+            <select value={campaignSegment} onChange={(event) => setCampaignSegment(event.target.value as Segment["key"])}>
+              {availableSegments.map((segment) => (
+                <option key={segment.key} value={segment.key}>
+                  {segment.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={styles.fullWidth}>
+            Subject
+            <input value={campaignSubject} onChange={(event) => setCampaignSubject(event.target.value)} />
+          </label>
+          <label className={styles.fullWidth}>
+            Message body
+            <textarea value={campaignBody} onChange={(event) => setCampaignBody(event.target.value)} rows={5} />
+          </label>
+        </div>
+        <div className={styles.composeActions}>
+          <button type="button" onClick={() => runCampaign("preview")} disabled={working}>
+            Preview recipients
+          </button>
+          <button type="button" onClick={() => runCampaign("send")} disabled={working}>
+            Send campaign
+          </button>
+        </div>
+      </section>
 
       <section className={styles.filters}>
         <label>
           Search
-          <input
-            value={q}
-            onChange={(event) => setQ(event.target.value)}
-            placeholder="Name, email, subject"
-          />
+          <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Name, email, subject" />
+        </label>
+        <label>
+          Source
+          <select value={sourceFilter} onChange={(event) => setSourceFilter(event.target.value as typeof sourceFilter)}>
+            <option value="">All</option>
+            <option value="manual">manual</option>
+            <option value="newsletter">newsletter</option>
+            <option value="automated">automated</option>
+            <option value="dues">dues</option>
+          </select>
         </label>
         <label>
           Status
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as "" | "sent" | "failed")}
-          >
+          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}>
             <option value="">All</option>
             <option value="sent">sent</option>
             <option value="failed">failed</option>
+            <option value="skipped">skipped</option>
           </select>
         </label>
         <button type="button" onClick={() => loadLogs({ reset: true })}>
@@ -124,6 +230,7 @@ export default function AdminMessagesPage() {
       </section>
 
       {error ? <p className={styles.error}>{error}</p> : null}
+      {notice ? <p className={styles.notice}>{notice}</p> : null}
 
       {loading ? (
         <p>Loading logs...</p>
@@ -134,12 +241,12 @@ export default function AdminMessagesPage() {
               <thead>
                 <tr>
                   <th>Created</th>
-                  <th>User</th>
-                  <th>Type</th>
-                  <th>Renewal date</th>
-                  <th>Status</th>
+                  <th>Source</th>
+                  <th>Recipient</th>
                   <th>Subject</th>
-                  <th>Provider</th>
+                  <th>Status</th>
+                  <th>Campaign</th>
+                  <th>Actor</th>
                   <th>Error</th>
                 </tr>
               </thead>
@@ -147,16 +254,20 @@ export default function AdminMessagesPage() {
                 {logs.map((log) => (
                   <tr key={log.id}>
                     <td>{new Date(log.createdAt).toLocaleString()}</td>
+                    <td>{log.source}</td>
                     <td>
-                      {log.userDisplayName}
+                      {log.recipientName}
                       <br />
-                      {log.userEmail}
+                      {log.recipientEmail}
                     </td>
-                    <td>{log.messageType}</td>
-                    <td>{log.membershipRenewalDate}</td>
-                    <td>{log.deliveryStatus}</td>
                     <td>{log.subject}</td>
-                    <td>{log.provider}</td>
+                    <td>{log.status}</td>
+                    <td>
+                      {log.campaignName}
+                      <br />
+                      <small>{log.segmentLabel}</small>
+                    </td>
+                    <td>{log.actorEmail}</td>
                     <td>{log.errorMessage || "-"}</td>
                   </tr>
                 ))}

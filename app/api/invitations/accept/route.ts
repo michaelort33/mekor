@@ -9,6 +9,7 @@ import { createUserSession } from "@/lib/auth/session";
 import { writeAdminAuditLog } from "@/lib/admin/actor";
 import { allowWithinWindow } from "@/lib/invitations/rate-limit";
 import { hashInvitationToken } from "@/lib/invitations/token";
+import { attachPersonToUserByEmail } from "@/lib/people/service";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
 const acceptInvitationSchema = z
@@ -63,6 +64,7 @@ export async function POST(request: Request) {
         id: userInvitations.id,
         email: userInvitations.email,
         role: userInvitations.role,
+        personId: userInvitations.personId,
         invitedByUserId: userInvitations.invitedByUserId,
       });
 
@@ -129,6 +131,7 @@ export async function POST(request: Request) {
 
     return {
       invitationId: invitation.id,
+      invitationPersonId: invitation.personId,
       invitedByUserId: invitation.invitedByUserId,
       user,
       previousRole: existing?.role ?? null,
@@ -138,6 +141,20 @@ export async function POST(request: Request) {
   if (!accepted) {
     return NextResponse.json({ error: "Invalid or expired invitation token" }, { status: 400 });
   }
+
+  const linkedPerson = await attachPersonToUserByEmail({
+    userId: accepted.user.id,
+    email: accepted.user.email,
+    role: accepted.user.role,
+    actorUserId: accepted.invitedByUserId,
+  });
+  await getDb()
+    .update(userInvitations)
+    .set({
+      personId: linkedPerson.personId,
+      updatedAt: new Date(),
+    })
+    .where(eq(userInvitations.id, accepted.invitationId));
 
   await writeAdminAuditLog({
     actorUserId: accepted.invitedByUserId,

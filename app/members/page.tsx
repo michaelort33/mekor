@@ -76,7 +76,11 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
 
   return (
     <main className={styles.page}>
-      <MembersBreadcrumbs items={[{ label: "Home", href: "/" }, { label: "Members Area" }]} />
+      <MembersBreadcrumbs
+        items={[{ label: "Home", href: "/" }, { label: "Members Area" }]}
+        context="member"
+        activeSection="members"
+      />
 
       <header className={styles.header}>
         <h1>Members Area</h1>

@@ -6,6 +6,7 @@ import { getDb } from "@/db/client";
 import { duesInvoices, stripeCustomers, users } from "@/db/schema";
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
+import { ensurePersonForUser } from "@/lib/people/service";
 
 const USER_ROLES = ["visitor", "member", "admin", "super_admin"] as const;
 const roleSchema = z.enum(USER_ROLES);
@@ -208,6 +209,12 @@ export async function PUT(request: Request) {
       membershipRenewalDate: updated.membershipRenewalDate,
       autoMessagesEnabled: updated.autoMessagesEnabled,
     },
+  });
+
+  await ensurePersonForUser({
+    userId: updated.id,
+    source: "admin_user_update",
+    actorUserId: actor.id,
   });
 
   return NextResponse.json({ user: updated });

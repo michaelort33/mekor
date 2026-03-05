@@ -128,6 +128,7 @@ export default function AdminInvitationsPage() {
           <p>Super admins can send onboarding links, preset roles, revoke, and resend invitations.</p>
         </div>
         <div className={styles.links}>
+          <Link href="/admin/people">People CRM</Link>
           <Link href="/admin/users">Users admin</Link>
           <Link href="/admin/dues">Dues admin</Link>
           <Link href="/admin/events">Events admin</Link>

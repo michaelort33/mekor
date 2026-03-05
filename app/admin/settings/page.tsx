@@ -93,6 +93,9 @@ export default function AdminSettingsPage() {
           <p>Manage feature flags and system configuration. Super admin access only.</p>
         </div>
         <div className={styles.actions}>
+          <Link href="/admin/people" className={styles.backLink}>
+            People CRM
+          </Link>
           <Link href="/admin/users" className={styles.backLink}>
             User admin
           </Link>

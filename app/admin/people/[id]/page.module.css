@@ -1,0 +1,150 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+  display: grid;
+  gap: 14px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.header h1 {
+  margin: 0;
+  color: #1a2a3a;
+}
+
+.header p {
+  margin: 6px 0 0;
+  color: #5a6a7a;
+}
+
+.links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.links a {
+  color: #245c8f;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.links a:hover {
+  text-decoration: underline;
+}
+
+.error {
+  margin: 0;
+  color: #a11d2d;
+  font-weight: 600;
+}
+
+.notice {
+  margin: 0;
+  color: #215f3d;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.card {
+  border: 1px solid #dde4ef;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.card h2 {
+  margin: 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.prefsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.card label {
+  display: grid;
+  gap: 6px;
+  color: #32495f;
+  font-weight: 600;
+}
+
+.card input,
+.card select,
+.card textarea,
+.card button {
+  min-height: 38px;
+  border: 1px solid #c8d6e4;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0 10px;
+}
+
+.card textarea {
+  padding: 8px 10px;
+  min-height: 90px;
+}
+
+.card button {
+  border-color: #295f92;
+  background: #356da2;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: #263a4e;
+}
+
+.meta {
+  margin: 0;
+  color: #42586e;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .formGrid,
+  .prefsGrid {
+    grid-template-columns: 1fr;
+  }
+}

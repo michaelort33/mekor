@@ -14,6 +14,19 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const templateStatusEnum = pgEnum("template_status", ["draft", "ready", "sent", "archived"]);
+export const newsletterRecipientGroupEnum = pgEnum("newsletter_recipient_group", [
+  "all_members",
+  "admins_only",
+  "dues_outstanding",
+  "directory_visible",
+]);
+export const newsletterCampaignStatusEnum = pgEnum("newsletter_campaign_status", [
+  "sending",
+  "completed",
+  "partial",
+  "failed",
+]);
+export const newsletterDeliveryStatusEnum = pgEnum("newsletter_delivery_status", ["sent", "failed"]);
 export const userRoleEnum = pgEnum("user_role", ["visitor", "member", "admin", "super_admin"]);
 export const profileVisibilityEnum = pgEnum("profile_visibility", ["private", "members", "public", "anonymous"]);
 export const duesFrequencyEnum = pgEnum("dues_frequency", ["annual", "monthly", "custom"]);
@@ -39,6 +52,66 @@ export const eventRegistrationStatusEnum = pgEnum("event_registration_status", [
 ]);
 export const duesReminderTypeEnum = pgEnum("dues_reminder_type", ["d30", "d7", "d1", "overdue_weekly"]);
 export const eventReminderTypeEnum = pgEnum("event_reminder_type", ["event_24h"]);
+export const memberEventJoinModeEnum = pgEnum("member_event_join_mode", ["open_join", "request_to_join"]);
+export const memberEventVisibilityEnum = pgEnum("member_event_visibility", ["members_only", "public"]);
+export const memberEventStatusEnum = pgEnum("member_event_status", ["draft", "published", "cancelled", "completed"]);
+export const memberEventAttendeeStatusEnum = pgEnum("member_event_attendee_status", [
+  "requested",
+  "approved",
+  "rejected",
+  "cancelled",
+  "waitlisted",
+]);
+export const familyStatusEnum = pgEnum("family_status", ["active", "archived"]);
+export const familyRoleInFamilyEnum = pgEnum("family_role_in_family", [
+  "primary_adult",
+  "adult",
+  "child",
+  "dependent",
+]);
+export const familyMembershipStatusEnum = pgEnum("family_membership_status", ["pending", "active", "former"]);
+export const familyInviteStatusEnum = pgEnum("family_invite_status", [
+  "pending",
+  "accepted",
+  "declined",
+  "expired",
+  "revoked",
+]);
+export const familyJoinRequestStatusEnum = pgEnum("family_join_request_status", [
+  "pending",
+  "accepted",
+  "declined",
+  "revoked",
+]);
+export const inboxThreadTypeEnum = pgEnum("inbox_thread_type", ["family_invite", "family_chat", "direct", "system"]);
+export const inboxMessageTypeEnum = pgEnum("inbox_message_type", ["text", "system", "action"]);
+export const notificationChannelEnum = pgEnum("notification_channel", ["email", "sms", "push"]);
+export const notificationsOutboxStatusEnum = pgEnum("notifications_outbox_status", ["queued", "sent", "failed"]);
+export const peopleStatusEnum = pgEnum("people_status", [
+  "lead",
+  "invited",
+  "visitor",
+  "member",
+  "admin",
+  "super_admin",
+  "inactive",
+]);
+export const contactMethodTypeEnum = pgEnum("contact_method_type", ["email", "phone", "whatsapp"]);
+export const communicationPreferredChannelEnum = pgEnum("communication_preferred_channel", ["email", "sms", "whatsapp"]);
+export const membershipPipelineEventTypeEnum = pgEnum("membership_pipeline_event_type", [
+  "lead_created",
+  "tour_attended",
+  "invited",
+  "joined",
+  "renewed",
+  "churned",
+  "status_changed",
+  "note",
+]);
+export const messageCampaignChannelEnum = pgEnum("message_campaign_channel", ["email", "sms", "whatsapp"]);
+export const messageCampaignSourceEnum = pgEnum("message_campaign_source", ["manual", "newsletter", "automated"]);
+export const messageCampaignStatusEnum = pgEnum("message_campaign_status", ["sending", "completed", "partial", "failed"]);
+export const messageDeliveryStatusEnum = pgEnum("message_delivery_status", ["queued", "sent", "failed", "skipped"]);
 
 export const formSubmissions = pgTable("form_submissions", {
   id: serial("id").primaryKey(),
@@ -172,6 +245,358 @@ export const users = pgTable(
     ),
     createdAtIdIdx: index("users_created_at_id_idx").on(table.createdAt, table.id),
     renewalAutoMessagesIdx: index("users_renewal_auto_messages_idx").on(table.membershipRenewalDate, table.autoMessagesEnabled),
+  }),
+);
+
+export const people = pgTable(
+  "people",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => users.id).unique(),
+    status: peopleStatusEnum("status").notNull().default("lead"),
+    firstName: varchar("first_name", { length: 120 }).notNull().default(""),
+    lastName: varchar("last_name", { length: 120 }).notNull().default(""),
+    displayName: varchar("display_name", { length: 160 }).notNull().default(""),
+    email: varchar("email", { length: 255 }).notNull().default(""),
+    phone: varchar("phone", { length: 60 }).notNull().default(""),
+    city: varchar("city", { length: 120 }).notNull().default(""),
+    notes: text("notes").notNull().default(""),
+    source: varchar("source", { length: 120 }).notNull().default(""),
+    tags: json("tags").$type<string[]>().notNull().default([]),
+    invitedAt: timestamp("invited_at"),
+    joinedAt: timestamp("joined_at"),
+    lastContactedAt: timestamp("last_contacted_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    emailUniqueIdx: uniqueIndex("people_email_unique_idx").on(table.email),
+    statusCreatedAtIdx: index("people_status_created_at_idx").on(table.status, table.createdAt),
+    userStatusIdx: index("people_user_status_idx").on(table.userId, table.status),
+    createdAtIdIdx: index("people_created_at_id_idx").on(table.createdAt, table.id),
+  }),
+);
+
+export const contactMethods = pgTable(
+  "contact_methods",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id")
+      .notNull()
+      .references(() => people.id),
+    type: contactMethodTypeEnum("type").notNull(),
+    value: varchar("value", { length: 255 }).notNull(),
+    isPrimary: boolean("is_primary").notNull().default(false),
+    verifiedAt: timestamp("verified_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    personTypePrimaryIdx: index("contact_methods_person_type_primary_idx").on(table.personId, table.type, table.isPrimary),
+    personTypeValueUniqueIdx: uniqueIndex("contact_methods_person_type_value_unique_idx").on(table.personId, table.type, table.value),
+  }),
+);
+
+export const communicationPreferences = pgTable(
+  "communication_preferences",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id")
+      .notNull()
+      .references(() => people.id)
+      .unique(),
+    emailOptIn: boolean("email_opt_in").notNull().default(true),
+    smsOptIn: boolean("sms_opt_in").notNull().default(false),
+    whatsappOptIn: boolean("whatsapp_opt_in").notNull().default(false),
+    doNotContact: boolean("do_not_contact").notNull().default(false),
+    quietHoursStart: varchar("quiet_hours_start", { length: 5 }).notNull().default(""),
+    quietHoursEnd: varchar("quiet_hours_end", { length: 5 }).notNull().default(""),
+    preferredChannel: communicationPreferredChannelEnum("preferred_channel").notNull().default("email"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    contactFlagsIdx: index("communication_preferences_contact_flags_idx").on(
+      table.doNotContact,
+      table.emailOptIn,
+      table.smsOptIn,
+      table.whatsappOptIn,
+    ),
+  }),
+);
+
+export const membershipPipelineEvents = pgTable(
+  "membership_pipeline_events",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id")
+      .notNull()
+      .references(() => people.id),
+    actorUserId: integer("actor_user_id").references(() => users.id),
+    eventType: membershipPipelineEventTypeEnum("event_type").notNull(),
+    summary: varchar("summary", { length: 255 }).notNull().default(""),
+    payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    occurredAt: timestamp("occurred_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    personOccurredAtIdx: index("membership_pipeline_events_person_occurred_at_idx").on(table.personId, table.occurredAt),
+    eventTypeOccurredAtIdx: index("membership_pipeline_events_type_occurred_at_idx").on(table.eventType, table.occurredAt),
+  }),
+);
+
+export const families = pgTable(
+  "families",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 160 }).notNull(),
+    slug: varchar("slug", { length: 180 }).notNull().unique(),
+    createdByUserId: integer("created_by_user_id")
+      .notNull()
+      .references(() => users.id),
+    status: familyStatusEnum("status").notNull().default("active"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    statusCreatedAtIdx: index("families_status_created_at_idx").on(table.status, table.createdAt),
+  }),
+);
+
+export const familyMembers = pgTable(
+  "family_members",
+  {
+    id: serial("id").primaryKey(),
+    familyId: integer("family_id")
+      .notNull()
+      .references(() => families.id),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    roleInFamily: familyRoleInFamilyEnum("role_in_family").notNull().default("adult"),
+    membershipStatus: familyMembershipStatusEnum("membership_status").notNull().default("active"),
+    joinedAt: timestamp("joined_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    familyUserUniqueIdx: uniqueIndex("family_members_family_user_unique_idx").on(table.familyId, table.userId),
+    userStatusFamilyIdx: index("family_members_user_status_family_idx").on(
+      table.userId,
+      table.membershipStatus,
+      table.familyId,
+    ),
+    familyStatusRoleIdx: index("family_members_family_status_role_idx").on(
+      table.familyId,
+      table.membershipStatus,
+      table.roleInFamily,
+    ),
+  }),
+);
+
+export const inboxThreads = pgTable(
+  "inbox_threads",
+  {
+    id: serial("id").primaryKey(),
+    type: inboxThreadTypeEnum("type").notNull(),
+    subject: varchar("subject", { length: 180 }).notNull().default(""),
+    familyId: integer("family_id").references(() => families.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    familyTypeIdx: index("inbox_threads_family_type_idx").on(table.familyId, table.type),
+  }),
+);
+
+export const familyInvites = pgTable(
+  "family_invites",
+  {
+    id: serial("id").primaryKey(),
+    familyId: integer("family_id")
+      .notNull()
+      .references(() => families.id),
+    threadId: integer("thread_id")
+      .notNull()
+      .references(() => inboxThreads.id),
+    inviterUserId: integer("inviter_user_id")
+      .notNull()
+      .references(() => users.id),
+    inviteeUserId: integer("invitee_user_id").references(() => users.id),
+    inviteeEmail: varchar("invitee_email", { length: 255 }),
+    inviteeFirstName: varchar("invitee_first_name", { length: 120 }).notNull().default(""),
+    inviteeLastName: varchar("invitee_last_name", { length: 120 }).notNull().default(""),
+    roleInFamily: familyRoleInFamilyEnum("role_in_family").notNull().default("adult"),
+    contactRequired: boolean("contact_required").notNull().default(false),
+    tokenHash: text("token_hash").notNull(),
+    status: familyInviteStatusEnum("status").notNull().default("pending"),
+    expiresAt: timestamp("expires_at").notNull(),
+    acceptedAt: timestamp("accepted_at"),
+    revokedAt: timestamp("revoked_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    tokenHashUniqueIdx: uniqueIndex("family_invites_token_hash_unique_idx").on(table.tokenHash),
+    familyInviteeEmailStatusUniqueIdx: uniqueIndex("family_invites_family_invitee_email_status_unique_idx").on(
+      table.familyId,
+      table.inviteeEmail,
+      table.status,
+    ),
+    familyInviteeStatusIdx: index("family_invites_family_invitee_status_idx").on(
+      table.familyId,
+      table.inviteeUserId,
+      table.status,
+    ),
+    inviteeEmailStatusIdx: index("family_invites_invitee_email_status_idx").on(table.inviteeEmail, table.status),
+    expiresAtIdx: index("family_invites_expires_at_idx").on(table.expiresAt),
+  }),
+);
+
+export const familyJoinRequests = pgTable(
+  "family_join_requests",
+  {
+    id: serial("id").primaryKey(),
+    familyId: integer("family_id")
+      .notNull()
+      .references(() => families.id),
+    requestorUserId: integer("requestor_user_id")
+      .notNull()
+      .references(() => users.id),
+    requestedRoleInFamily: familyRoleInFamilyEnum("requested_role_in_family").notNull().default("adult"),
+    status: familyJoinRequestStatusEnum("status").notNull().default("pending"),
+    respondedByUserId: integer("responded_by_user_id").references(() => users.id),
+    respondedAt: timestamp("responded_at"),
+    note: text("note").notNull().default(""),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    familyRequestorStatusIdx: index("family_join_requests_family_requestor_status_idx").on(
+      table.familyId,
+      table.requestorUserId,
+      table.status,
+    ),
+  }),
+);
+
+export const inboxParticipants = pgTable(
+  "inbox_participants",
+  {
+    id: serial("id").primaryKey(),
+    threadId: integer("thread_id")
+      .notNull()
+      .references(() => inboxThreads.id),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    lastReadAt: timestamp("last_read_at"),
+    muted: boolean("muted").notNull().default(false),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    threadUserUniqueIdx: uniqueIndex("inbox_participants_thread_user_unique_idx").on(table.threadId, table.userId),
+    userThreadIdx: index("inbox_participants_user_thread_idx").on(table.userId, table.threadId),
+  }),
+);
+
+export const inboxMessages = pgTable(
+  "inbox_messages",
+  {
+    id: serial("id").primaryKey(),
+    threadId: integer("thread_id")
+      .notNull()
+      .references(() => inboxThreads.id),
+    senderUserId: integer("sender_user_id").references(() => users.id),
+    messageType: inboxMessageTypeEnum("message_type").notNull().default("text"),
+    body: text("body").notNull().default(""),
+    actionPayloadJson: json("action_payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    threadCreatedAtIdx: index("inbox_messages_thread_created_at_idx").on(table.threadId, table.createdAt),
+  }),
+);
+
+export const notificationsOutbox = pgTable(
+  "notifications_outbox",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id").references(() => users.id),
+    threadId: integer("thread_id").references(() => inboxThreads.id),
+    channel: notificationChannelEnum("channel").notNull().default("email"),
+    toAddress: varchar("to_address", { length: 255 }).notNull(),
+    subject: varchar("subject", { length: 255 }).notNull().default(""),
+    body: text("body").notNull().default(""),
+    provider: varchar("provider", { length: 60 }).notNull().default("sendgrid"),
+    providerMessageId: varchar("provider_message_id", { length: 255 }).notNull().default(""),
+    status: notificationsOutboxStatusEnum("status").notNull().default("queued"),
+    errorMessage: text("error_message").notNull().default(""),
+    sentAt: timestamp("sent_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    statusCreatedAtIdx: index("notifications_outbox_status_created_at_idx").on(table.status, table.createdAt),
+    userCreatedAtIdx: index("notifications_outbox_user_created_at_idx").on(table.userId, table.createdAt),
+  }),
+);
+
+export const newsletterCampaigns = pgTable(
+  "newsletter_campaigns",
+  {
+    id: serial("id").primaryKey(),
+    templateId: integer("template_id")
+      .notNull()
+      .references(() => newsletterTemplates.id),
+    sentByUserId: integer("sent_by_user_id")
+      .notNull()
+      .references(() => users.id),
+    recipientGroup: newsletterRecipientGroupEnum("recipient_group").notNull(),
+    subject: varchar("subject", { length: 255 }).notNull(),
+    senderEmail: varchar("sender_email", { length: 255 }).notNull(),
+    recipientCount: integer("recipient_count").notNull().default(0),
+    successCount: integer("success_count").notNull().default(0),
+    failedCount: integer("failed_count").notNull().default(0),
+    status: newsletterCampaignStatusEnum("status").notNull().default("sending"),
+    startedAt: timestamp("started_at").defaultNow().notNull(),
+    completedAt: timestamp("completed_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    templateStartedIdx: index("newsletter_campaigns_template_started_idx").on(table.templateId, table.startedAt),
+    senderStartedIdx: index("newsletter_campaigns_sender_started_idx").on(table.sentByUserId, table.startedAt),
+  }),
+);
+
+export const newsletterCampaignDeliveries = pgTable(
+  "newsletter_campaign_deliveries",
+  {
+    id: serial("id").primaryKey(),
+    campaignId: integer("campaign_id")
+      .notNull()
+      .references(() => newsletterCampaigns.id),
+    templateId: integer("template_id")
+      .notNull()
+      .references(() => newsletterTemplates.id),
+    recipientUserId: integer("recipient_user_id").references(() => users.id),
+    recipientEmail: varchar("recipient_email", { length: 255 }).notNull(),
+    recipientName: varchar("recipient_name", { length: 120 }).notNull().default(""),
+    status: newsletterDeliveryStatusEnum("status").notNull(),
+    provider: varchar("provider", { length: 40 }).notNull().default("sendgrid"),
+    providerMessageId: varchar("provider_message_id", { length: 255 }).notNull().default(""),
+    errorMessage: text("error_message").notNull().default(""),
+    sentAt: timestamp("sent_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    campaignStatusIdx: index("newsletter_campaign_deliveries_campaign_status_idx").on(table.campaignId, table.status),
+    templateCreatedIdx: index("newsletter_campaign_deliveries_template_created_idx").on(table.templateId, table.createdAt),
+    recipientEmailIdx: index("newsletter_campaign_deliveries_recipient_email_idx").on(table.recipientEmail),
   }),
 );
 
@@ -371,6 +796,8 @@ export const eventRegistrations = pgTable(
     stripeCheckoutSessionId: text("stripe_checkout_session_id"),
     stripePaymentIntentId: text("stripe_payment_intent_id"),
     receiptUrl: text("receipt_url").notNull().default(""),
+    shareInFeed: boolean("share_in_feed").notNull().default(false),
+    signupComment: text("signup_comment").notNull().default(""),
     registeredAt: timestamp("registered_at").defaultNow().notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -380,6 +807,11 @@ export const eventRegistrations = pgTable(
     eventStatusRegisteredAtIdx: index("event_registrations_event_status_registered_at_idx").on(
       table.eventId,
       table.status,
+      table.registeredAt,
+    ),
+    eventSharedRegisteredAtIdx: index("event_registrations_event_shared_registered_at_idx").on(
+      table.eventId,
+      table.shareInFeed,
       table.registeredAt,
     ),
     registeredAtIdIdx: index("event_registrations_registered_at_id_idx").on(table.registeredAt, table.id),
@@ -440,6 +872,105 @@ export const eventReminderLog = pgTable(
   }),
 );
 
+export const memberEvents = pgTable(
+  "member_events",
+  {
+    id: serial("id").primaryKey(),
+    hostUserId: integer("host_user_id")
+      .notNull()
+      .references(() => users.id),
+    title: varchar("title", { length: 160 }).notNull(),
+    description: text("description").notNull().default(""),
+    startsAt: timestamp("starts_at").notNull(),
+    endsAt: timestamp("ends_at"),
+    location: varchar("location", { length: 255 }).notNull().default(""),
+    capacity: integer("capacity"),
+    joinMode: memberEventJoinModeEnum("join_mode").notNull().default("open_join"),
+    visibility: memberEventVisibilityEnum("visibility").notNull().default("members_only"),
+    status: memberEventStatusEnum("status").notNull().default("draft"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    startsAtIdx: index("member_events_starts_at_idx").on(table.startsAt),
+    hostStatusIdx: index("member_events_host_status_idx").on(table.hostUserId, table.status),
+    statusVisibilityStartsAtIdx: index("member_events_status_visibility_starts_at_idx").on(
+      table.status,
+      table.visibility,
+      table.startsAt,
+    ),
+  }),
+);
+
+export const memberEventAttendees = pgTable(
+  "member_event_attendees",
+  {
+    id: serial("id").primaryKey(),
+    eventId: integer("event_id")
+      .notNull()
+      .references(() => memberEvents.id),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    status: memberEventAttendeeStatusEnum("status").notNull(),
+    requestedAt: timestamp("requested_at").defaultNow().notNull(),
+    respondedAt: timestamp("responded_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    eventUserUniqueIdx: uniqueIndex("member_event_attendees_event_user_unique_idx").on(table.eventId, table.userId),
+    eventStatusRequestedIdx: index("member_event_attendees_event_status_requested_idx").on(
+      table.eventId,
+      table.status,
+      table.requestedAt,
+    ),
+    userStatusRequestedIdx: index("member_event_attendees_user_status_requested_idx").on(
+      table.userId,
+      table.status,
+      table.requestedAt,
+    ),
+  }),
+);
+
+export const memberEventActivityLog = pgTable(
+  "member_event_activity_log",
+  {
+    id: serial("id").primaryKey(),
+    eventId: integer("event_id")
+      .notNull()
+      .references(() => memberEvents.id),
+    actorUserId: integer("actor_user_id").references(() => users.id),
+    attendeeId: integer("attendee_id").references(() => memberEventAttendees.id),
+    action: varchar("action", { length: 120 }).notNull(),
+    payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    eventActionIdx: index("member_event_activity_log_event_action_idx").on(table.eventId, table.action),
+    eventCreatedAtIdx: index("member_event_activity_log_event_created_at_idx").on(table.eventId, table.createdAt),
+  }),
+);
+
+export const memberEventComments = pgTable(
+  "member_event_comments",
+  {
+    id: serial("id").primaryKey(),
+    eventId: integer("event_id")
+      .notNull()
+      .references(() => memberEvents.id),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    eventCreatedAtIdx: index("member_event_comments_event_created_at_idx").on(table.eventId, table.createdAt),
+  }),
+);
+
 export const systemSettings = pgTable("system_settings", {
   id: serial("id").primaryKey(),
   key: varchar("key", { length: 120 }).notNull().unique(),
@@ -457,6 +988,7 @@ export const userInvitations = pgTable(
     id: serial("id").primaryKey(),
     email: varchar("email", { length: 255 }).notNull(),
     role: userRoleEnum("role").notNull().default("visitor"),
+    personId: integer("person_id").references(() => people.id),
     invitedByUserId: integer("invited_by_user_id")
       .notNull()
       .references(() => users.id),
@@ -472,6 +1004,85 @@ export const userInvitations = pgTable(
     emailStateIdx: index("user_invitations_email_accepted_revoked_idx").on(table.email, table.acceptedAt, table.revokedAt),
     expiresAtIdx: index("user_invitations_expires_at_idx").on(table.expiresAt),
     createdAtIdIdx: index("user_invitations_created_at_id_idx").on(table.createdAt, table.id),
+    personEmailStateIdx: index("user_invitations_person_email_state_idx").on(table.personId, table.email, table.acceptedAt),
+  }),
+);
+
+export const messageCampaigns = pgTable(
+  "message_campaigns",
+  {
+    id: serial("id").primaryKey(),
+    createdByUserId: integer("created_by_user_id")
+      .notNull()
+      .references(() => users.id),
+    source: messageCampaignSourceEnum("source").notNull().default("manual"),
+    channel: messageCampaignChannelEnum("channel").notNull().default("email"),
+    name: varchar("name", { length: 180 }).notNull(),
+    subject: varchar("subject", { length: 255 }).notNull().default(""),
+    body: text("body").notNull().default(""),
+    segmentKey: varchar("segment_key", { length: 80 }).notNull().default(""),
+    recipientCount: integer("recipient_count").notNull().default(0),
+    successCount: integer("success_count").notNull().default(0),
+    failedCount: integer("failed_count").notNull().default(0),
+    skippedCount: integer("skipped_count").notNull().default(0),
+    status: messageCampaignStatusEnum("status").notNull().default("sending"),
+    startedAt: timestamp("started_at").defaultNow().notNull(),
+    completedAt: timestamp("completed_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    creatorStartedIdx: index("message_campaigns_creator_started_idx").on(table.createdByUserId, table.startedAt),
+    sourceChannelStartedIdx: index("message_campaigns_source_channel_started_idx").on(table.source, table.channel, table.startedAt),
+  }),
+);
+
+export const messageDeliveries = pgTable(
+  "message_deliveries",
+  {
+    id: serial("id").primaryKey(),
+    campaignId: integer("campaign_id")
+      .notNull()
+      .references(() => messageCampaigns.id),
+    personId: integer("person_id").references(() => people.id),
+    userId: integer("user_id").references(() => users.id),
+    recipientEmail: varchar("recipient_email", { length: 255 }).notNull().default(""),
+    recipientPhone: varchar("recipient_phone", { length: 60 }).notNull().default(""),
+    recipientName: varchar("recipient_name", { length: 160 }).notNull().default(""),
+    channel: messageCampaignChannelEnum("channel").notNull().default("email"),
+    provider: varchar("provider", { length: 60 }).notNull().default("sendgrid"),
+    providerMessageId: varchar("provider_message_id", { length: 255 }).notNull().default(""),
+    status: messageDeliveryStatusEnum("status").notNull().default("queued"),
+    errorMessage: text("error_message").notNull().default(""),
+    payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    sentAt: timestamp("sent_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    campaignStatusIdx: index("message_deliveries_campaign_status_idx").on(table.campaignId, table.status),
+    personCreatedAtIdx: index("message_deliveries_person_created_at_idx").on(table.personId, table.createdAt),
+    recipientEmailIdx: index("message_deliveries_recipient_email_idx").on(table.recipientEmail),
+  }),
+);
+
+export const messageSuppressions = pgTable(
+  "message_suppressions",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id").references(() => people.id),
+    channel: messageCampaignChannelEnum("channel").notNull(),
+    email: varchar("email", { length: 255 }),
+    phone: varchar("phone", { length: 60 }),
+    reason: varchar("reason", { length: 255 }).notNull().default(""),
+    createdByUserId: integer("created_by_user_id").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    channelEmailUniqueIdx: uniqueIndex("message_suppressions_channel_email_unique_idx").on(table.channel, table.email),
+    channelPhoneUniqueIdx: uniqueIndex("message_suppressions_channel_phone_unique_idx").on(table.channel, table.phone),
+    personChannelIdx: index("message_suppressions_person_channel_idx").on(table.personId, table.channel),
   }),
 );
 

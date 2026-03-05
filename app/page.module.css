@@ -1,10 +1,13 @@
 .page {
-  background: linear-gradient(180deg, #f8f8f4 0%, #f2f6fb 58%, #eef3f9 100%);
+  background:
+    radial-gradient(70% 55% at 0% 0%, rgba(246, 232, 210, 0.36) 0%, rgba(246, 232, 210, 0) 100%),
+    radial-gradient(80% 55% at 100% 0%, rgba(204, 223, 242, 0.28) 0%, rgba(204, 223, 242, 0) 100%),
+    linear-gradient(178deg, #f8f4ed 0%, #edf2f9 100%);
 }
 
 .stack {
   display: grid;
-  gap: 16px;
+  gap: 22px;
 }
 
 .welcome {
@@ -28,27 +31,34 @@
 
 .featureGrid {
   display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
 }
 
 .eventsGrid {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
 .eventCard {
-  border: 1px solid #d8d0bf;
-  border-radius: 14px;
-  background: #fcfbf7;
+  border: 1px solid #d4deea;
+  border-radius: 18px;
+  background: linear-gradient(170deg, #fefcf8 0%, #f7fbff 100%);
   overflow: hidden;
   display: grid;
+  box-shadow: 0 12px 26px rgba(24, 41, 60, 0.1);
+  transition: transform 130ms ease, box-shadow 130ms ease;
+}
+
+.eventCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(24, 41, 60, 0.14);
 }
 
 .eventCard img {
   width: 100%;
-  height: 220px;
+  height: 210px;
   object-fit: contain;
   object-position: center top;
   background: #f6f8fb;
@@ -57,8 +67,8 @@
 
 .eventCardBody {
   display: grid;
-  gap: 8px;
-  padding: 12px;
+  gap: 10px;
+  padding: 16px;
 }
 
 .eventCardBody h3 {
@@ -82,16 +92,23 @@
 
 .rabbisGrid {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .rabbiCard {
-  border: 1px solid #d8d0bf;
-  border-radius: 14px;
-  background: #fcfbf7;
+  border: 1px solid #d4deea;
+  border-radius: 18px;
+  background: linear-gradient(170deg, #fefcf8 0%, #f7fbff 100%);
   overflow: hidden;
   display: grid;
+  box-shadow: 0 12px 26px rgba(24, 41, 60, 0.1);
+  transition: transform 130ms ease, box-shadow 130ms ease;
+}
+
+.rabbiCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px rgba(24, 41, 60, 0.14);
 }
 
 .rabbiCard img {
@@ -105,8 +122,8 @@
 
 .rabbiCardBody {
   display: grid;
-  gap: 8px;
-  padding: 12px;
+  gap: 10px;
+  padding: 16px;
 }
 
 .rabbiRole {
@@ -145,7 +162,7 @@
 
 .touchGrid {
   display: grid;
-  gap: 12px;
+  gap: 18px;
   grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
 }
 
@@ -156,12 +173,13 @@
 }
 
 .touchPanel {
-  border: 1px solid #d8d0bf;
-  border-radius: 14px;
-  background: #fcfbf7;
-  padding: 12px;
+  border: 1px solid #d4deea;
+  border-radius: 16px;
+  background: linear-gradient(165deg, #fefcf8 0%, #f7fbff 100%);
+  padding: 14px;
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  box-shadow: 0 10px 24px rgba(24, 41, 60, 0.09);
 }
 
 .touchPanel h3 {
@@ -183,7 +201,7 @@
 .supportContent {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 24px;
+  gap: 28px;
   align-items: center;
 }
 
@@ -218,11 +236,11 @@
   grid-template-columns: 48px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(6px);
-  padding: 12px 16px;
+  padding: 14px 16px;
   text-decoration: none;
   color: #ffffff;
   transition: background-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;

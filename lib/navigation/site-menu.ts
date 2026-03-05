@@ -25,12 +25,12 @@ export const SUPPORT_MEKOR_LINK = {
 
 export const SITE_MENU: NavItem[] = [
   {
-    label: "Membership",
+    label: "Join",
     href: "/membership",
   },
   {
-    label: "Members Area",
-    href: "/members",
+    label: "Member Hub",
+    href: "/account",
     children: [
       { label: "Dashboard", href: "/account" },
       { label: "Dues & payments", href: "/account/dues" },
@@ -44,7 +44,7 @@ export const SITE_MENU: NavItem[] = [
     href: "/events",
   },
   {
-    label: "Who We Are",
+    label: "About",
     href: "/about-us",
     children: [
       { label: "About Us", href: "/about-us" },
@@ -58,7 +58,7 @@ export const SITE_MENU: NavItem[] = [
     ],
   },
   {
-    label: "Kosher",
+    label: "Kosher Guide",
     href: "/center-city",
     children: [
       { label: "Center City", href: "/center-city" },

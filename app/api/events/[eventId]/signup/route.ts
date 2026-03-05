@@ -106,6 +106,8 @@ export async function GET(_: Request, { params }: Params) {
       ticketTierId: eventRegistrations.ticketTierId,
       paymentDueAt: eventRegistrations.paymentDueAt,
       stripeCheckoutSessionId: eventRegistrations.stripeCheckoutSessionId,
+      shareInFeed: eventRegistrations.shareInFeed,
+      signupComment: eventRegistrations.signupComment,
     })
     .from(eventRegistrations)
     .where(eq(eventRegistrations.eventId, numericEventId))

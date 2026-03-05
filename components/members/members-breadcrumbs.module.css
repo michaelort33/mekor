@@ -1,12 +1,17 @@
 .wrap {
+  display: grid;
+  gap: 10px;
+  border: 1px solid #d7e0eb;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f9fcff 0%, #f5f9fe 100%);
+  padding: 11px 12px;
+}
+
+.topRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  border: 1px solid #d8e2ed;
-  border-radius: 12px;
-  background: #f8fbff;
-  padding: 10px 12px;
 }
 
 .trail {
@@ -18,38 +23,39 @@
 }
 
 .crumb {
-  color: #245c8f;
+  color: #2b5d89;
   font-size: 0.92rem;
   text-decoration: none;
   font-weight: 600;
 }
 
 .crumbCurrent {
-  color: #41596f;
+  color: #2f455a;
   font-size: 0.92rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .sep {
-  color: #8ca0b4;
+  color: #7c93a8;
   font-size: 0.85rem;
   margin: 0 8px;
 }
 
-.home {
+.pillAction {
   white-space: nowrap;
-  border: 1px solid #b8cadc;
+  border: 1px solid #b8c9dc;
   border-radius: 999px;
-  padding: 7px 11px;
-  color: #23415f;
+  padding: 6px 11px;
+  color: #234764;
   background: #ffffff;
   text-decoration: none;
   font-size: 0.86rem;
   font-weight: 700;
+  line-height: 1.2;
 }
 
-.home:hover {
-  background: #eef4fb;
+.pillAction:hover {
+  background: #f0f6fd;
 }
 
 .actions {
@@ -58,13 +64,56 @@
   gap: 8px;
 }
 
+.hubLinks {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hubLink {
+  border: 1px solid #c9d5e3;
+  border-radius: 999px;
+  padding: 7px 12px;
+  text-decoration: none;
+  color: #2d4b65;
+  background: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.hubLink:hover {
+  background: #edf4fc;
+}
+
+.hubLinkActive {
+  border-color: #3a6f9f;
+  background: #e9f2fb;
+  color: #1e4f79;
+  font-weight: 700;
+}
+
 @media (max-width: 700px) {
   .wrap {
+    align-items: flex-start;
+  }
+
+  .topRow {
     align-items: flex-start;
     flex-direction: column;
   }
 
   .actions {
     width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .hubLinks {
+    gap: 6px;
+  }
+
+  .hubLink {
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 }

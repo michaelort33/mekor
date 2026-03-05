@@ -1,4 +1,4 @@
-import { JOIN_US_LINK, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
+import { JOIN_US_LINK } from "@/lib/navigation/site-menu";
 
 type NavCtaProps = {
   isSignedIn: boolean;
@@ -9,13 +9,12 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   const authAction = isCheckingAuth
     ? { label: "Checking…", href: "/login?next=%2Fmembers", variant: "signin" as const }
     : isSignedIn
-      ? { label: "Account", href: "/account", variant: "members" as const }
+      ? { label: "Dashboard", href: "/account", variant: "members" as const }
       : { label: "Sign In", href: "/login?next=%2Fmembers", variant: "signin" as const };
   const signOutAction = { label: "Sign Out", href: "/logout", variant: "signout" as const };
 
   const links = [
-    { ...JOIN_US_LINK, label: "WhatsApp", variant: "join" as const },
-    { ...SUPPORT_MEKOR_LINK, variant: "support" as const },
+    { ...JOIN_US_LINK, label: "Join Chat", variant: "join" as const },
     authAction,
     ...(isSignedIn && !isCheckingAuth ? [signOutAction] : []),
   ];
@@ -23,23 +22,6 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   return (
     <div className="native-nav__cta-list">
       {links.map((link) => {
-        if (link.variant === "signout") {
-          return (
-            <button
-              key={link.label}
-              type="button"
-              className={`native-nav__cta native-nav__cta--${link.variant}`}
-              aria-label={link.label}
-              onClick={async () => {
-                await fetch("/api/auth/logout", { method: "POST" });
-                window.location.assign("/");
-              }}
-            >
-              <span className="native-nav__cta-label">{link.label}</span>
-            </button>
-          );
-        }
-
         const external = /^https?:\/\//i.test(link.href);
         return (
           <a

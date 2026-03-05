@@ -8,6 +8,7 @@ export const signupPayloadSchema = z
     email: z.string().trim().email().max(255),
     password: z.string().min(USER_PASSWORD_MIN_LENGTH),
     confirmPassword: z.string(),
+    familyInviteToken: z.string().trim().min(24).max(2048).optional(),
   })
   .refine((value) => value.password === value.confirmPassword, {
     path: ["confirmPassword"],
@@ -17,6 +18,7 @@ export const signupPayloadSchema = z
 export const loginPayloadSchema = z.object({
   email: z.string().trim().email().max(255),
   password: z.string().min(1),
+  familyInviteToken: z.string().trim().min(24).max(2048).optional(),
 });
 
 export const profileUpdatePayloadSchema = z.object({

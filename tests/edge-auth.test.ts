@@ -40,6 +40,31 @@ test("POST /api/events/:id/signup without user cookie returns 401", async () => 
   assert.equal(response.status, 401);
 });
 
+test("POST /api/member-events/:id/join without user cookie returns 401", async () => {
+  const request = new NextRequest("http://localhost:3000/api/member-events/9/join", {
+    method: "POST",
+  });
+  const response = await proxy(request);
+
+  assert.equal(response.status, 401);
+});
+
+test("POST /api/families/invites without user cookie returns 401", async () => {
+  const request = new NextRequest("http://localhost:3000/api/families/invites", {
+    method: "POST",
+  });
+  const response = await proxy(request);
+
+  assert.equal(response.status, 401);
+});
+
+test("GET /api/inbox/threads without user cookie returns 401", async () => {
+  const request = new NextRequest("http://localhost:3000/api/inbox/threads");
+  const response = await proxy(request);
+
+  assert.equal(response.status, 401);
+});
+
 test("GET /membership remains public", async () => {
   const request = new NextRequest("http://localhost:3000/membership");
   const response = await proxy(request);

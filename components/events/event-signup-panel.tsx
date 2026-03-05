@@ -31,12 +31,25 @@ type SignupData = {
     id: number;
     status: "registered" | "waitlisted" | "cancelled" | "payment_pending";
     ticketTierId: number | null;
+    shareInFeed: boolean;
+    signupComment: string;
   } | null;
   counts: {
     activeSpots: number;
     spotsRemaining: number | null;
     waitlisted: number;
   };
+};
+
+type FeedItem = {
+  id: number;
+  status: "registered" | "waitlisted" | "payment_pending";
+  signupComment: string;
+  registeredAt: string;
+  displayName: string;
+  avatarUrl: string;
+  role: "visitor" | "member" | "admin" | "super_admin" | null;
+  anonymous: boolean;
 };
 
 function toMoney(cents: number, currency: string) {
@@ -53,10 +66,15 @@ type EventSignupPanelProps = {
 
 export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
   const [loading, setLoading] = useState(Boolean(eventId));
+  const [feedLoading, setFeedLoading] = useState(Boolean(eventId));
   const [saving, setSaving] = useState(false);
+  const [savingFeed, setSavingFeed] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [signupData, setSignupData] = useState<SignupData | null>(null);
+  const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
+  const [shareInFeed, setShareInFeed] = useState(false);
+  const [signupComment, setSignupComment] = useState("");
   const [tierId, setTierId] = useState<number | null>(null);
   const [askSubject, setAskSubject] = useState("");
   const [askMessage, setAskMessage] = useState("");
@@ -77,6 +95,7 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
 
     if (response.status === 401) {
       setError("Please log in to register.");
+      setSignupData(null);
       setLoading(false);
       return;
     }
@@ -88,16 +107,40 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
     }
 
     setSignupData(payload);
+    setShareInFeed(Boolean(payload.userRegistration?.shareInFeed));
+    setSignupComment(payload.userRegistration?.signupComment ?? "");
     if (payload.tiers.length > 0) {
       setTierId(payload.tiers[0]?.id ?? null);
     }
     setLoading(false);
   }
 
+  async function loadFeed() {
+    if (!eventId) {
+      setFeedLoading(false);
+      return;
+    }
+
+    const response = await fetch(`/api/events/${eventId}/feed?limit=30`);
+    const payload = (await response.json().catch(() => ({}))) as { items?: FeedItem[] };
+    if (!response.ok) {
+      setFeedItems([]);
+      setFeedLoading(false);
+      return;
+    }
+
+    setFeedItems(payload.items ?? []);
+    setFeedLoading(false);
+  }
+
   useEffect(() => {
     loadSignup().catch(() => {
       setError("Unable to load registration details");
       setLoading(false);
+    });
+    loadFeed().catch(() => {
+      setFeedItems([]);
+      setFeedLoading(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId]);
@@ -154,7 +197,7 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
       return;
     }
 
-    await loadSignup();
+    await Promise.all([loadSignup(), loadFeed()]);
     setSaving(false);
   }
 
@@ -178,7 +221,9 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
     }
 
     setNotice("Registration cancelled.");
-    await loadSignup();
+    setShareInFeed(false);
+    setSignupComment("");
+    await Promise.all([loadSignup(), loadFeed()]);
     setSaving(false);
   }
 
@@ -208,6 +253,59 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
     setAskMessage("");
     setNotice("Message sent to organizer.");
     setSaving(false);
+  }
+
+  async function saveFeedSettings() {
+    if (!eventId || !signupData?.userRegistration || signupData.userRegistration.status === "cancelled") {
+      return;
+    }
+
+    setSavingFeed(true);
+    setError("");
+    setNotice("");
+
+    const response = await fetch(`/api/events/${eventId}/feed`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shareInFeed, signupComment }),
+    });
+
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      registration?: {
+        id: number;
+        status: "registered" | "waitlisted" | "cancelled" | "payment_pending";
+        shareInFeed: boolean;
+        signupComment: string;
+      };
+    };
+
+    if (!response.ok || !payload.registration) {
+      setError(payload.error || "Unable to update feed settings");
+      setSavingFeed(false);
+      return;
+    }
+
+    const updatedRegistration = payload.registration;
+    setShareInFeed(updatedRegistration.shareInFeed);
+    setSignupComment(updatedRegistration.signupComment);
+    setSignupData((prev) =>
+      prev
+        ? {
+            ...prev,
+            userRegistration: prev.userRegistration
+              ? {
+                  ...prev.userRegistration,
+                  shareInFeed: updatedRegistration.shareInFeed,
+                  signupComment: updatedRegistration.signupComment,
+                }
+              : prev.userRegistration,
+          }
+        : prev,
+    );
+    await loadFeed();
+    setNotice(updatedRegistration.shareInFeed ? "Your RSVP is now in the party feed." : "Your RSVP is hidden from the feed.");
+    setSavingFeed(false);
   }
 
   if (!eventId) {
@@ -249,6 +347,37 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
               <button type="button" disabled={saving} onClick={cancelRegistration} className={styles.secondaryButton}>
                 Cancel registration
               </button>
+
+              <div className={styles.feedComposer}>
+                <h3>Party feed post</h3>
+                <label className={styles.checkboxRow}>
+                  <input
+                    type="checkbox"
+                    checked={shareInFeed}
+                    onChange={(event) => setShareInFeed(event.target.checked)}
+                  />
+                  <span>Share my RSVP in this event feed</span>
+                </label>
+                <label className={styles.field}>
+                  <span>Comment (optional)</span>
+                  <textarea
+                    value={signupComment}
+                    onChange={(event) => setSignupComment(event.target.value)}
+                    rows={3}
+                    maxLength={280}
+                    placeholder="Excited to come. Anyone else from Center City?"
+                  />
+                </label>
+                <p className={styles.commentCount}>{signupComment.length}/280</p>
+                <button
+                  type="button"
+                  disabled={savingFeed}
+                  onClick={saveFeedSettings}
+                  className={styles.primaryButton}
+                >
+                  {savingFeed ? "Saving..." : "Update feed post"}
+                </button>
+              </div>
             </div>
           ) : (
             <div className={styles.registerBox}>
@@ -299,8 +428,40 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
               {saving ? "Sending..." : "Send"}
             </button>
           </form>
+
         </>
       ) : null}
+
+      <section className={styles.feedSection}>
+        <h3>Party feed</h3>
+        <p className={styles.feedIntro}>See who is going and what people are saying.</p>
+        {feedLoading ? <p>Loading feed...</p> : null}
+        {!feedLoading && feedItems.length === 0 ? (
+          <p className={styles.feedEmpty}>No one has shared an RSVP yet. Be the first.</p>
+        ) : null}
+        {!feedLoading && feedItems.length > 0 ? (
+          <ul className={styles.feedList}>
+            {feedItems.map((item) => (
+              <li key={item.id} className={styles.feedItem}>
+                {item.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={item.avatarUrl} alt={`${item.displayName} avatar`} className={styles.feedAvatar} />
+                ) : (
+                  <div className={styles.feedAvatarPlaceholder} aria-hidden="true">
+                    {item.displayName.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className={styles.feedBody}>
+                  <p className={styles.feedMeta}>
+                    <strong>{item.displayName}</strong> · {item.status} · {new Date(item.registeredAt).toLocaleString()}
+                  </p>
+                  {item.signupComment ? <p className={styles.feedComment}>{item.signupComment}</p> : null}
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </section>
     </section>
   );
 }

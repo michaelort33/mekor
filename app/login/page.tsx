@@ -6,6 +6,8 @@ import { useMemo, useState } from "react";
 
 import styles from "./page.module.css";
 
+const AUTH_REQUEST_TIMEOUT_MS = 15000;
+
 function resolveNextPath(value: string | null) {
   if (!value) return "/account/profile";
   if (!value.startsWith("/")) return "/account/profile";
@@ -20,6 +22,7 @@ function resolveNextPath(value: string | null) {
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const nextPath = useMemo(() => resolveNextPath(searchParams.get("next")), [searchParams]);
+  const familyInviteToken = useMemo(() => searchParams.get("family_invite_token") ?? "", [searchParams]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,12 +33,19 @@ export default function LoginPage() {
     event.preventDefault();
     setError("");
     setSubmitting(true);
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), AUTH_REQUEST_TIMEOUT_MS);
 
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email,
+          password,
+          familyInviteToken: familyInviteToken || undefined,
+        }),
+        signal: controller.signal,
       });
 
       const data = (await response.json().catch(() => ({}))) as { error?: string };
@@ -47,9 +57,11 @@ export default function LoginPage() {
 
       window.location.assign(nextPath);
     } catch {
-      setError("Login failed");
+      setError("Login timed out. Please try again.");
       setSubmitting(false);
       return;
+    } finally {
+      window.clearTimeout(timer);
     }
   }
 

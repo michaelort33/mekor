@@ -55,6 +55,21 @@ const STARTER_HTML = `<div style="max-width:600px;margin:0 auto;font-family:Robo
 export default function NewTemplatePage() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [design, setDesign] = useState({
+    preset: "modern" as "classic" | "modern" | "celebration",
+    subtitle: "",
+    intro: "",
+    primarySectionTitle: "Shabbat Schedule",
+    primarySectionBody: "",
+    secondarySectionTitle: "Announcements",
+    secondarySectionBody: "",
+    footer: "Mekor Habracha · 1500 Walnut St Suite 206, Philadelphia, PA",
+  });
   const [form, setForm] = useState({
     title: "",
     subject: "",
@@ -70,7 +85,100 @@ export default function NewTemplatePage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  function updateDesign(field: string, value: string) {
+    setDesign((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function generateDesign() {
+    setGenerating(true);
+    setError("");
+    setNotice("");
+    const response = await fetch("/api/admin/templates/design", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        preset: design.preset,
+        title: form.title || "Weekly Newsletter",
+        subtitle: design.subtitle,
+        intro: design.intro,
+        primarySectionTitle: design.primarySectionTitle,
+        primarySectionBody: design.primarySectionBody,
+        secondarySectionTitle: design.secondarySectionTitle,
+        secondarySectionBody: design.secondarySectionBody,
+        footer: design.footer,
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as { bodyHtml?: string; error?: string };
+
+    if (!response.ok || !payload.bodyHtml) {
+      setError(payload.error || "Unable to generate design");
+      setGenerating(false);
+      return;
+    }
+
+    update("bodyHtml", payload.bodyHtml);
+    setNotice("Design generated.");
+    setGenerating(false);
+  }
+
+  async function generateWithAi() {
+    if (!aiPrompt.trim()) {
+      setError("Add a prompt for OpenAI.");
+      return;
+    }
+    setAiGenerating(true);
+    setError("");
+    setNotice("");
+    const response = await fetch("/api/admin/templates/ai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode: "generate",
+        prompt: aiPrompt.trim(),
+        title: form.title,
+        subject: form.subject,
+        parshaName: form.parshaName,
+        shabbatDate: form.shabbatDate,
+        hebrewDate: form.hebrewDate,
+        candleLighting: form.candleLighting,
+        bodyHtml: form.bodyHtml,
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      template?: {
+        title: string;
+        subject: string;
+        parshaName: string;
+        shabbatDate: string;
+        hebrewDate: string;
+        candleLighting: string;
+        bodyHtml: string;
+        summary: string;
+      };
+    };
+    if (!response.ok || !payload.template) {
+      setError(payload.error || "Unable to generate with OpenAI");
+      setAiGenerating(false);
+      return;
+    }
+    setForm((prev) => ({
+      ...prev,
+      title: payload.template!.title,
+      subject: payload.template!.subject,
+      parshaName: payload.template!.parshaName,
+      shabbatDate: payload.template!.shabbatDate,
+      hebrewDate: payload.template!.hebrewDate,
+      candleLighting: payload.template!.candleLighting,
+      bodyHtml: payload.template!.bodyHtml,
+    }));
+    setNotice(payload.template.summary || "OpenAI generated a full template draft.");
+    setAiGenerating(false);
+  }
+
   async function save() {
+    setError("");
+    setNotice("");
     setSaving(true);
     const response = await fetch("/api/admin/templates", {
       method: "POST",
@@ -80,7 +188,9 @@ export default function NewTemplatePage() {
     if (response.ok) {
       router.push("/admin/templates");
       router.refresh();
+      return;
     }
+    setError("Unable to save template.");
     setSaving(false);
   }
 
@@ -134,6 +244,98 @@ export default function NewTemplatePage() {
 
           <fieldset className={styles.fieldset}>
             <legend>Email Body HTML</legend>
+            <div className={styles.designTools}>
+              <h3>Design Generator</h3>
+              <div className={styles.fieldRow}>
+                <label className={styles.field}>
+                  <span>Preset</span>
+                  <select value={design.preset} onChange={(event) => updateDesign("preset", event.target.value)}>
+                    <option value="modern">Modern</option>
+                    <option value="classic">Classic</option>
+                    <option value="celebration">Celebration</option>
+                  </select>
+                </label>
+                <label className={styles.field}>
+                  <span>Subtitle</span>
+                  <input
+                    type="text"
+                    value={design.subtitle}
+                    onChange={(event) => updateDesign("subtitle", event.target.value)}
+                    placeholder="Shabbat update · Center City"
+                  />
+                </label>
+              </div>
+              <label className={styles.field}>
+                <span>Intro</span>
+                <textarea value={design.intro} onChange={(event) => updateDesign("intro", event.target.value)} rows={3} />
+              </label>
+              <div className={styles.fieldRow}>
+                <label className={styles.field}>
+                  <span>Primary section title</span>
+                  <input
+                    type="text"
+                    value={design.primarySectionTitle}
+                    onChange={(event) => updateDesign("primarySectionTitle", event.target.value)}
+                  />
+                </label>
+                <label className={styles.field}>
+                  <span>Secondary section title</span>
+                  <input
+                    type="text"
+                    value={design.secondarySectionTitle}
+                    onChange={(event) => updateDesign("secondarySectionTitle", event.target.value)}
+                  />
+                </label>
+              </div>
+              <label className={styles.field}>
+                <span>Primary section body</span>
+                <textarea
+                  value={design.primarySectionBody}
+                  onChange={(event) => updateDesign("primarySectionBody", event.target.value)}
+                  rows={4}
+                />
+              </label>
+              <label className={styles.field}>
+                <span>Secondary section body</span>
+                <textarea
+                  value={design.secondarySectionBody}
+                  onChange={(event) => updateDesign("secondarySectionBody", event.target.value)}
+                  rows={4}
+                />
+              </label>
+              <label className={styles.field}>
+                <span>Footer</span>
+                <input
+                  type="text"
+                  value={design.footer}
+                  onChange={(event) => updateDesign("footer", event.target.value)}
+                />
+              </label>
+              <button type="button" className={styles.secondaryButton} onClick={generateDesign} disabled={generating}>
+                {generating ? "Generating..." : "Generate HTML design"}
+              </button>
+            </div>
+            <div className={styles.designTools}>
+              <h3>OpenAI Template Writer</h3>
+              <label className={styles.field}>
+                <span>Prompt</span>
+                <textarea
+                  value={aiPrompt}
+                  onChange={(event) => setAiPrompt(event.target.value)}
+                  rows={4}
+                  placeholder="Example: Write this week’s Shabbat email with a warm tone, schedule section, kiddush sponsor, and two announcements."
+                />
+              </label>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={generateWithAi}
+                disabled={aiGenerating}
+              >
+                {aiGenerating ? "Generating with OpenAI..." : "Generate with OpenAI"}
+              </button>
+            </div>
+
             <textarea
               className={styles.htmlEditor}
               value={form.bodyHtml}
@@ -141,6 +343,9 @@ export default function NewTemplatePage() {
               spellCheck={false}
             />
           </fieldset>
+
+          {error ? <p className={styles.error}>{error}</p> : null}
+          {notice ? <p className={styles.notice}>{notice}</p> : null}
 
           <button type="button" className={styles.saveButton} onClick={save} disabled={saving}>
             {saving ? "Saving..." : "Save Template"}

@@ -5,6 +5,8 @@ import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
 import { hashPassword } from "@/lib/auth/password";
 import { createUserSession } from "@/lib/auth/session";
+import { acceptFamilyInviteByToken } from "@/lib/families/service";
+import { ensurePersonForUser } from "@/lib/people/service";
 import { normalizeUserEmail, signupPayloadSchema } from "@/lib/users/validation";
 
 type UserRole = "visitor" | "member" | "admin" | "super_admin";
@@ -23,6 +25,8 @@ type SignupDependencies = {
   >;
   hashPassword: (password: string) => Promise<string>;
   createSession: (input: { userId: number; role: UserRole }) => Promise<void>;
+  ensurePersonForUser?: (input: { userId: number; source?: string; actorUserId?: number | null }) => Promise<void>;
+  acceptFamilyInviteByToken?: (input: { actorUserId: number; token: string; actorEmail: string }) => Promise<void>;
 };
 
 type SignupExecutionResult = {
@@ -64,6 +68,12 @@ function createSignupDependencies(): SignupDependencies {
     },
     hashPassword,
     createSession: createUserSession,
+    ensurePersonForUser: async (input) => {
+      await ensurePersonForUser(input);
+    },
+    acceptFamilyInviteByToken: async (input) => {
+      await acceptFamilyInviteByToken(input);
+    },
   };
 }
 
@@ -117,6 +127,26 @@ export async function executeSignup(
     userId: created.id,
     role: created.role,
   });
+
+  if (dependencies.ensurePersonForUser) {
+    await dependencies.ensurePersonForUser({
+      userId: created.id,
+      source: "account_signup",
+      actorUserId: created.id,
+    });
+  }
+
+  if (parsed.data.familyInviteToken && dependencies.acceptFamilyInviteByToken) {
+    try {
+      await dependencies.acceptFamilyInviteByToken({
+        actorUserId: created.id,
+        token: parsed.data.familyInviteToken,
+        actorEmail: created.email,
+      });
+    } catch {
+      // Keep signup successful even if invite token has expired or is invalid.
+    }
+  }
 
   return {
     status: 201,

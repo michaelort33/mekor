@@ -35,6 +35,8 @@ export default async function CommunityDirectoryPage({ searchParams }: Community
             { label: "Home", href: "/" },
             { label: "Community Directory" },
           ]}
+          context="public"
+          activeSection="community"
         />
 
         <header className={styles.header}>
@@ -59,6 +61,8 @@ export default async function CommunityDirectoryPage({ searchParams }: Community
             { label: "Home", href: "/" },
             { label: "Community Directory" },
           ]}
+          context="public"
+          activeSection="community"
         />
         <section className={styles.empty}>
           <p>Invalid page cursor.</p>
@@ -109,6 +113,8 @@ export default async function CommunityDirectoryPage({ searchParams }: Community
           { label: "Home", href: "/" },
           { label: "Community Directory" },
         ]}
+        context="public"
+        activeSection="community"
       />
 
       <header className={styles.header}>

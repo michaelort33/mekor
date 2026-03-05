@@ -24,4 +24,8 @@ test("members/account and event action APIs are user-protected", () => {
   assert.equal(getEdgeProtectionType("/api/events/33/checkout"), "user");
   assert.equal(getEdgeProtectionType("/api/events/33/cancel"), "user");
   assert.equal(getEdgeProtectionType("/api/events/33/ask-organizer"), "user");
+  assert.equal(getEdgeProtectionType("/api/member-events/12/join"), "user");
+  assert.equal(getEdgeProtectionType("/api/member-events/12/cancel"), "user");
+  assert.equal(getEdgeProtectionType("/api/member-events/12/requests/44/approve"), "user");
+  assert.equal(getEdgeProtectionType("/api/member-events/12/requests/44/reject"), "user");
 });

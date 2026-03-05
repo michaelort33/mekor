@@ -1,0 +1,141 @@
+.page {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 28px 20px 56px;
+  display: grid;
+  gap: 14px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.header h1 {
+  margin: 0;
+  color: #1f334a;
+}
+
+.header p {
+  margin: 4px 0 0;
+  color: #536a81;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.actions a {
+  text-decoration: none;
+  border: 1px solid #b9c8da;
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #1f4e79;
+  font-weight: 700;
+  background: #f7fbff;
+}
+
+.card {
+  border: 1px solid #d9e4ef;
+  border-radius: 14px;
+  background: #fff;
+  padding: 14px;
+}
+
+.card h2 {
+  margin: 0 0 8px;
+  color: #223f5d;
+}
+
+.card p {
+  margin: 0;
+  color: #4f657c;
+}
+
+.form {
+  display: grid;
+  gap: 10px;
+}
+
+.form label {
+  display: grid;
+  gap: 4px;
+  color: #1f3550;
+  font-weight: 600;
+}
+
+.form input,
+.form select {
+  border: 1px solid #c4d2e2;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.98rem;
+}
+
+.nameRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.form button,
+.rowActions button {
+  border: 1px solid #2a5f92;
+  background: #2b6499;
+  color: #fff;
+  border-radius: 9px;
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.rowActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.contactRow {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.contactRow input {
+  min-width: 220px;
+  border: 1px solid #c4d2e2;
+  border-radius: 9px;
+  padding: 8px 10px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.list li {
+  border: 1px solid #e8eef4;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.list strong {
+  color: #21384f;
+}
+
+.error {
+  margin: 0;
+  color: #a11d2d;
+  font-weight: 600;
+}

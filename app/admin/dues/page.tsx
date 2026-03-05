@@ -289,6 +289,7 @@ export default function AdminDuesPage() {
           <p>Manage dues schedules and invoice states.</p>
         </div>
         <div className={styles.links}>
+          <Link href="/admin/people">People CRM</Link>
           <Link href="/admin/settings">Settings</Link>
           <Link href="/admin/invitations">Invitations</Link>
           <Link href="/admin/events">Events admin</Link>

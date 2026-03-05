@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import styles from "./page.module.css";
 
+const AUTH_REQUEST_TIMEOUT_MS = 15000;
+
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [form, setForm] = useState({
     displayName: "",
     email: "",
@@ -25,22 +28,35 @@ export default function SignupPage() {
     event.preventDefault();
     setError("");
     setSubmitting(true);
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), AUTH_REQUEST_TIMEOUT_MS);
 
-    const response = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...form,
+          familyInviteToken: searchParams.get("family_invite_token") ?? undefined,
+        }),
+        signal: controller.signal,
+      });
 
-    const data = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setError(data.error || "Unable to sign up");
+      const data = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) {
+        setError(data.error || "Unable to sign up");
+        setSubmitting(false);
+        return;
+      }
+
+      router.push("/account/profile");
+      router.refresh();
+    } catch {
+      setError("Sign up timed out. Please try again.");
       setSubmitting(false);
-      return;
+    } finally {
+      window.clearTimeout(timer);
     }
-
-    router.push("/account/profile");
-    router.refresh();
   }
 
   return (
@@ -48,6 +64,10 @@ export default function SignupPage() {
       <form className={styles.card} onSubmit={handleSubmit}>
         <h1>Create account</h1>
         <p className={styles.subtitle}>Create your Mekor account to access the members area.</p>
+        <div className={styles.quickLinks}>
+          <Link href="/">← Back to Site Home</Link>
+          <Link href="/membership">Membership details</Link>
+        </div>
 
         <label className={styles.field}>
           <span>Display name</span>

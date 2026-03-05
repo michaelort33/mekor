@@ -3,7 +3,8 @@ import { getFormNotifyFrom } from "@/lib/forms/config";
 export type SendGridEmailInput = {
   to: string;
   subject: string;
-  text: string;
+  text?: string;
+  html?: string;
   from?: string;
 };
 
@@ -20,6 +21,22 @@ function getSendGridFromEmail() {
 }
 
 export async function sendSendGridEmail(input: SendGridEmailInput) {
+  const textBody =
+    input.text ??
+    (input.html
+      ? input.html
+          .replace(/<style[\s\S]*?<\/style>/gi, " ")
+          .replace(/<script[\s\S]*?<\/script>/gi, " ")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+      : "");
+
+  const content = [{ type: "text/plain", value: textBody || " " }];
+  if (input.html) {
+    content.push({ type: "text/html", value: input.html });
+  }
+
   const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
     method: "POST",
     headers: {
@@ -34,12 +51,7 @@ export async function sendSendGridEmail(input: SendGridEmailInput) {
       ],
       from: { email: input.from || getSendGridFromEmail() },
       subject: input.subject,
-      content: [
-        {
-          type: "text/plain",
-          value: input.text,
-        },
-      ],
+      content,
     }),
   });
 

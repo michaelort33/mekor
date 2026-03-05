@@ -42,6 +42,66 @@
   margin-bottom: 16px;
 }
 
+.compose {
+  border: 1px solid #d6dce5;
+  border-radius: 10px;
+  background: #f9fbff;
+  padding: 14px;
+  margin-bottom: 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.compose h2 {
+  margin: 0;
+}
+
+.composeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.composeGrid label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.composeGrid input,
+.composeGrid select,
+.composeGrid textarea {
+  min-height: 38px;
+  border-radius: 8px;
+  border: 1px solid #c0c8d4;
+  padding: 0 12px;
+  background: #ffffff;
+}
+
+.composeGrid textarea {
+  min-height: 120px;
+  padding: 8px 12px;
+}
+
+.composeActions {
+  display: flex;
+  gap: 10px;
+}
+
+.composeActions button {
+  min-height: 38px;
+  border-radius: 8px;
+  border: 1px solid #245f9c;
+  background: #245f9c;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0 12px;
+}
+
 .filters label {
   display: grid;
   gap: 6px;
@@ -93,6 +153,11 @@
   margin: 0 0 14px;
 }
 
+.notice {
+  color: #1e6b43;
+  margin: 0 0 14px;
+}
+
 .loadMoreWrap {
   margin-top: 14px;
 }
@@ -106,4 +171,10 @@
   padding: 0 14px;
   font-weight: 600;
   cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .composeGrid {
+    grid-template-columns: 1fr;
+  }
 }

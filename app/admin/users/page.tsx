@@ -132,6 +132,9 @@ export default function AdminUsersPage() {
           <p>Manage roles, profile visibility, membership dates, and automated reminder opt-in settings.</p>
         </div>
         <div className={styles.actions}>
+          <Link href="/admin/people" className={styles.backLink}>
+            People CRM
+          </Link>
           <Link href="/admin/settings" className={styles.backLink}>
             Settings
           </Link>

@@ -26,6 +26,8 @@ export default async function CommunityProfilePage({ params }: PageProps) {
             { label: "Home", href: "/" },
             { label: "Community Directory" },
           ]}
+          context="public"
+          activeSection="community"
         />
 
         <header className={styles.header}>
@@ -78,6 +80,8 @@ export default async function CommunityProfilePage({ params }: PageProps) {
           { label: "Community Directory", href: "/community" },
           { label: "Profile" },
         ]}
+        context="public"
+        activeSection="community"
       />
 
       <article className={styles.card}>

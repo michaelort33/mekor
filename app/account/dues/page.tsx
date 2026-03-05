@@ -134,6 +134,8 @@ export default function AccountDuesPage() {
           { label: "Members Area", href: "/members" },
           { label: "Dues & Payments" },
         ]}
+        context="member"
+        activeSection="dues"
       />
 
       <header className={styles.header}>

@@ -6,6 +6,7 @@ import { userInvitations } from "@/db/schema";
 import { requireSuperAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { sendInvitationEmail } from "@/lib/invitations/email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
+import { ensurePersonByEmail } from "@/lib/people/service";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -42,6 +43,12 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const now = new Date();
+  const person = await ensurePersonByEmail({
+    email: existing.email,
+    status: "invited",
+    source: "invitation_resend",
+    actorUserId: actor.id,
+  });
   const token = generateInvitationToken();
   const tokenHash = hashInvitationToken(token);
   const expiresAt = invitationExpiryFromNow();
@@ -60,6 +67,7 @@ export async function POST(request: Request, context: RouteContext) {
       .values({
         email: existing.email,
         role: existing.role,
+        personId: person.personId,
         invitedByUserId: actor.id,
         tokenHash,
         expiresAt,

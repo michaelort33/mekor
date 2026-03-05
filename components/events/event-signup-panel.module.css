@@ -1,9 +1,9 @@
 .panel {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1rem;
+  border: 1px solid #d9e2ee;
+  border-radius: 16px;
+  padding: 1.05rem;
   margin-top: 1rem;
-  background: #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
 }
 
 .panel h2,
@@ -20,27 +20,29 @@
 .field input,
 .field select,
 .field textarea {
-  border: 1px solid #d1d5db;
+  border: 1px solid #cbd6e3;
   border-radius: 8px;
-  padding: 0.45rem 0.6rem;
+  padding: 0.5rem 0.65rem;
+  background: #ffffff;
 }
 
 .primaryButton,
 .secondaryButton {
   border: 0;
   border-radius: 8px;
-  padding: 0.5rem 0.85rem;
+  padding: 0.54rem 0.9rem;
   cursor: pointer;
+  font-weight: 700;
 }
 
 .primaryButton {
-  background: #111827;
+  background: linear-gradient(160deg, #2469a4 0%, #1f4f7a 100%);
   color: #fff;
 }
 
 .secondaryButton {
-  background: #e5e7eb;
-  color: #111827;
+  background: #e7edf4;
+  color: #1f3247;
 }
 
 .error {
@@ -63,4 +65,110 @@
 .registerBox,
 .askForm {
   margin-top: 0.75rem;
+}
+
+.feedComposer {
+  margin-top: 0.9rem;
+  border: 1px dashed #bfd0e4;
+  border-radius: 12px;
+  padding: 0.85rem;
+  background: #f6faff;
+}
+
+.feedComposer h3 {
+  margin: 0 0 0.5rem;
+}
+
+.checkboxRow {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.checkboxRow input {
+  margin-top: 0.15rem;
+}
+
+.commentCount {
+  margin: -0.35rem 0 0.75rem;
+  color: #60748a;
+  font-size: 0.84rem;
+}
+
+.feedSection {
+  margin-top: 1rem;
+  border: 1px solid #d3e2f2;
+  border-radius: 14px;
+  padding: 0.9rem;
+  background: linear-gradient(160deg, #f3f9ff 0%, #f8fcff 100%);
+}
+
+.feedSection h3 {
+  margin: 0;
+}
+
+.feedIntro {
+  margin: 0.3rem 0 0.7rem;
+  color: #4b647d;
+}
+
+.feedEmpty {
+  margin: 0;
+  color: #4b647d;
+}
+
+.feedList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.feedItem {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 0.6rem;
+  border: 1px solid #d4e1ef;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 0.55rem;
+}
+
+.feedAvatar,
+.feedAvatarPlaceholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.feedAvatar {
+  object-fit: cover;
+  border: 1px solid #cad8e8;
+}
+
+.feedAvatarPlaceholder {
+  background: #1e4f79;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.feedBody {
+  min-width: 0;
+}
+
+.feedMeta {
+  margin: 0;
+  color: #2f4a63;
+  font-size: 0.84rem;
+}
+
+.feedComment {
+  margin: 0.35rem 0 0;
+  color: #1f3348;
+  line-height: 1.4;
 }

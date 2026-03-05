@@ -5,6 +5,8 @@ import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
 import { verifyPassword } from "@/lib/auth/password";
 import { createUserSession } from "@/lib/auth/session";
+import { acceptFamilyInviteByToken } from "@/lib/families/service";
+import { ensurePersonForUser } from "@/lib/people/service";
 import { loginPayloadSchema, normalizeUserEmail } from "@/lib/users/validation";
 
 type UserRole = "visitor" | "member" | "admin" | "super_admin";
@@ -23,7 +25,9 @@ type LoginDependencies = {
   >;
   verifyPassword: (password: string, passwordHash: string) => Promise<boolean>;
   markUserLoggedIn: (userId: number) => Promise<void>;
+  ensurePersonForUser?: (input: { userId: number; source?: string; actorUserId?: number | null }) => Promise<void>;
   createSession: (input: { userId: number; role: UserRole }) => Promise<void>;
+  acceptFamilyInviteByToken?: (input: { actorUserId: number; token: string; actorEmail: string }) => Promise<void>;
 };
 
 type LoginExecutionResult = {
@@ -65,7 +69,13 @@ function createLoginDependencies(): LoginDependencies {
         })
         .where(eq(users.id, userId));
     },
+    ensurePersonForUser: async (input) => {
+      await ensurePersonForUser(input);
+    },
     createSession: createUserSession,
+    acceptFamilyInviteByToken: async (input) => {
+      await acceptFamilyInviteByToken(input);
+    },
   };
 }
 
@@ -112,11 +122,30 @@ export async function executeLogin(
   }
 
   await dependencies.markUserLoggedIn(user.id);
+  if (dependencies.ensurePersonForUser) {
+    await dependencies.ensurePersonForUser({
+      userId: user.id,
+      source: "login_sync",
+      actorUserId: user.id,
+    });
+  }
 
   await dependencies.createSession({
     userId: user.id,
     role: user.role,
   });
+
+  if (parsed.data.familyInviteToken && dependencies.acceptFamilyInviteByToken) {
+    try {
+      await dependencies.acceptFamilyInviteByToken({
+        actorUserId: user.id,
+        token: parsed.data.familyInviteToken,
+        actorEmail: user.email,
+      });
+    } catch {
+      // Keep login successful even if invite token has expired or is invalid.
+    }
+  }
 
   return {
     status: 200,

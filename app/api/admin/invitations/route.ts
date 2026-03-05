@@ -8,6 +8,7 @@ import { userInvitations } from "@/db/schema";
 import { sendInvitationEmail } from "@/lib/invitations/email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
 import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
+import { ensurePersonByEmail } from "@/lib/people/service";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
 const USER_ROLES = ["visitor", "member", "admin", "super_admin"] as const;
@@ -109,6 +110,12 @@ export async function POST(request: Request) {
   }
 
   const email = normalizeUserEmail(parsed.data.email);
+  const person = await ensurePersonByEmail({
+    email,
+    status: "invited",
+    source: "admin_invitation",
+    actorUserId: actor.id,
+  });
   const token = generateInvitationToken();
   const tokenHash = hashInvitationToken(token);
   const expiresAt = invitationExpiryFromNow();
@@ -118,6 +125,7 @@ export async function POST(request: Request) {
     .values({
       email,
       role: parsed.data.role,
+      personId: person.personId,
       invitedByUserId: actor.id,
       tokenHash,
       expiresAt,

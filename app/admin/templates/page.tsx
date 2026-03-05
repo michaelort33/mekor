@@ -40,6 +40,12 @@ export default async function AdminTemplatesPage() {
             <Link href="/admin/users" className={styles.actionLink}>
               Manage Users
             </Link>
+            <Link href="/admin/people" className={styles.actionLink}>
+              People CRM
+            </Link>
+            <Link href="/admin/messages" className={styles.actionLink}>
+              Message Logs
+            </Link>
             <Link href="/admin/templates/new" className={styles.createButton}>
               + New Template
             </Link>
@@ -47,7 +53,7 @@ export default async function AdminTemplatesPage() {
           </div>
         </div>
         <p className={styles.subtitle}>
-          Create and manage weekly newsletter email templates.
+          Create templates, generate HTML designs, target member groups, and send campaigns with SendGrid.
         </p>
       </header>
 
@@ -82,7 +88,7 @@ export default async function AdminTemplatesPage() {
               </p>
               <div className={styles.cardActions}>
                 <Link href={`/admin/templates/${template.id}/edit`} className={styles.actionLink}>
-                  Edit
+                  Edit & Send
                 </Link>
                 <Link href={`/admin/templates/${template.id}/preview`} className={styles.actionLink}>
                   Preview

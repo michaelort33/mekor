@@ -88,10 +88,20 @@ export default function AccountDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
+  const [memberStats, setMemberStats] = useState<{
+    eventsHostedCount: number;
+    approvedAttendeesTotal: number;
+    uniqueAttendeesCount: number;
+    upcomingHostedCount: number;
+    attendanceRate: number;
+  } | null>(null);
 
   useEffect(() => {
     async function load() {
-      const response = await fetch("/api/account/dashboard");
+      const [response, statsResponse] = await Promise.all([
+        fetch("/api/account/dashboard"),
+        fetch("/api/account/member-stats"),
+      ]);
       if (response.status === 401) {
         router.replace("/login?next=/account");
         return;
@@ -105,6 +115,18 @@ export default function AccountDashboardPage() {
       }
 
       setDashboard(payload);
+      if (statsResponse.ok) {
+        const statsPayload = (await statsResponse.json().catch(() => ({}))) as {
+          stats?: {
+            eventsHostedCount: number;
+            approvedAttendeesTotal: number;
+            uniqueAttendeesCount: number;
+            upcomingHostedCount: number;
+            attendanceRate: number;
+          };
+        };
+        setMemberStats(statsPayload.stats ?? null);
+      }
       setLoading(false);
     }
 
@@ -135,6 +157,8 @@ export default function AccountDashboardPage() {
           { label: "Members Area", href: "/members" },
           { label: "Dashboard" },
         ]}
+        context="member"
+        activeSection="dashboard"
       />
 
       <header className={styles.header}>
@@ -145,6 +169,9 @@ export default function AccountDashboardPage() {
         <div className={styles.quickLinks}>
           <Link href="/account/profile">Profile</Link>
           <Link href="/account/dues">Dues</Link>
+          <Link href="/account/member-events">Host Events</Link>
+          <Link href="/account/family">Family</Link>
+          <Link href="/account/inbox">Inbox</Link>
           <Link href="/members">Members Area</Link>
           <Link href="/events">Events</Link>
         </div>
@@ -168,6 +195,15 @@ export default function AccountDashboardPage() {
           <p className={styles.metric}>{formatMoney(totalRecentPayments, "usd")}</p>
           <p>across your latest dues transactions</p>
         </article>
+        {memberStats ? (
+          <article className={styles.card}>
+            <h2>Host Stats</h2>
+            <p className={styles.metric}>{memberStats.eventsHostedCount}</p>
+            <p>
+              {memberStats.approvedAttendeesTotal} approved attendees · {memberStats.upcomingHostedCount} upcoming
+            </p>
+          </article>
+        ) : null}
       </section>
 
       <section className={styles.grid}>

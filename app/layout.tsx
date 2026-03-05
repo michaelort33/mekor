@@ -1,6 +1,21 @@
 import type { Metadata } from "next";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+
+const bodyFont = Manrope({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const headingFont = Cormorant_Garamond({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  weight: ["500", "600", "700"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Mekor Habracha | Center City Synagogue | Philadelphia | Synagogue",
@@ -19,7 +34,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body>
+      <body className={`${bodyFont.variable} ${headingFont.variable}`}>
         {gtmId ? (
           <Script
             id="gtm-script"

@@ -28,6 +28,23 @@
   color: #4f6174;
 }
 
+.quickLinks {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.quickLinks a {
+  color: #245c8f;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.quickLinks a:hover {
+  text-decoration: underline;
+}
+
 .field {
   display: grid;
   gap: 6px;

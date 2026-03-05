@@ -9,12 +9,16 @@ const PUBLIC_EXACT_PATHS = new Set([
 
 const PUBLIC_PREFIX_PATHS = ["/community"];
 const USER_PAGE_PREFIX_PATHS = ["/account", "/members"];
-const USER_API_PREFIX_PATHS = ["/api/account"];
+const USER_API_PREFIX_PATHS = ["/api/account", "/api/families", "/api/inbox"];
 const USER_API_PATTERNS = [
   /^\/api\/events\/[^/]+\/signup$/,
   /^\/api\/events\/[^/]+\/checkout$/,
   /^\/api\/events\/[^/]+\/cancel$/,
   /^\/api\/events\/[^/]+\/ask-organizer$/,
+  /^\/api\/member-events\/[^/]+\/join$/,
+  /^\/api\/member-events\/[^/]+\/cancel$/,
+  /^\/api\/member-events\/[^/]+\/requests\/[^/]+\/approve$/,
+  /^\/api\/member-events\/[^/]+\/requests\/[^/]+\/reject$/,
 ];
 
 const ADMIN_PAGE_PREFIX = "/admin";

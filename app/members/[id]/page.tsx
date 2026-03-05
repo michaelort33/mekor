@@ -61,6 +61,8 @@ export default async function MemberProfilePage({ params }: PageProps) {
           { label: "Members Area", href: "/members" },
           { label: "Member Profile" },
         ]}
+        context="member"
+        activeSection="members"
       />
 
       <article className={styles.card}>
