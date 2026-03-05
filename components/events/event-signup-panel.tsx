@@ -21,6 +21,7 @@ type SignupData = {
   };
   settings: {
     id: number;
+    enabled: boolean;
     capacity: number | null;
     waitlistEnabled: boolean;
     paymentRequired: boolean;
