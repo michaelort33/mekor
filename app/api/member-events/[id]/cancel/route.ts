@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { getUserSession } from "@/lib/auth/session";
-import { cancelMemberEvent, MemberEventServiceError } from "@/lib/member-events/service";
+import { memberEventsServiceErrorResponse } from "@/lib/member-events/http";
+import { cancelMemberEvent } from "@/lib/member-events/service";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -11,13 +12,6 @@ function parseEventId(raw: string) {
   const value = Number.parseInt(raw, 10);
   if (!Number.isInteger(value) || value < 1) return null;
   return value;
-}
-
-function serviceErrorResponse(error: unknown) {
-  if (error instanceof MemberEventServiceError) {
-    return NextResponse.json({ error: error.message, code: error.code }, { status: error.status });
-  }
-  return NextResponse.json({ error: "Unexpected member event error" }, { status: 500 });
 }
 
 export async function POST(_: Request, context: RouteContext) {
@@ -38,6 +32,6 @@ export async function POST(_: Request, context: RouteContext) {
     });
     return NextResponse.json({ event });
   } catch (error) {
-    return serviceErrorResponse(error);
+    return memberEventsServiceErrorResponse(error);
   }
 }

@@ -1,9 +1,10 @@
-import { asc, desc } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 
 import { getDb } from "@/db/client";
-import { events } from "@/db/schema";
+import { eventSignupSettings, events } from "@/db/schema";
 import { loadExtractedEvents, type ExtractedEvent } from "@/lib/events/extract";
 import { validateManagedEventsContract } from "@/lib/native/contracts";
+import { normalizeEventSignupSettings } from "@/lib/events/signup-settings";
 
 export type ManagedEvent = {
   slug: string;
@@ -15,6 +16,7 @@ export type ManagedEvent = {
   startAt: string | null;
   endAt: string | null;
   isClosed: boolean;
+  signupEnabled: boolean;
 };
 
 function toManagedEvent(row: {
@@ -27,6 +29,7 @@ function toManagedEvent(row: {
   startAt: Date | null;
   endAt: Date | null;
   isClosed: boolean;
+  signupEnabled?: boolean | null;
 }): ManagedEvent {
   return {
     slug: row.slug,
@@ -38,6 +41,7 @@ function toManagedEvent(row: {
     startAt: row.startAt ? row.startAt.toISOString() : null,
     endAt: row.endAt ? row.endAt.toISOString() : null,
     isClosed: row.isClosed,
+    signupEnabled: row.signupEnabled ?? true,
   };
 }
 
@@ -82,6 +86,39 @@ async function syncExtractedEventsToDb(rows: ExtractedEvent[]) {
   }
 }
 
+export async function ensureManagedEventRecordByPath(path: string) {
+  if (!process.env.DATABASE_URL || process.env.EVENTS_DIRECTORY_USE_DB !== "1") {
+    return null;
+  }
+
+  const db = getDb();
+  const [existing] = await db
+    .select({ id: events.id })
+    .from(events)
+    .where(eq(events.path, path))
+    .limit(1);
+
+  if (existing) {
+    return existing.id;
+  }
+
+  const extracted = await loadExtractedEvents();
+  const target = extracted.find((row) => row.path === path);
+  if (!target) {
+    return null;
+  }
+
+  await syncExtractedEventsToDb([target]);
+
+  const [created] = await db
+    .select({ id: events.id })
+    .from(events)
+    .where(eq(events.path, path))
+    .limit(1);
+
+  return created?.id ?? null;
+}
+
 export async function getManagedEvents() {
   const extracted = await loadExtractedEvents();
   const extractedManaged = extracted.map((row) =>
@@ -110,11 +147,18 @@ export async function getManagedEvents() {
         startAt: events.startAt,
         endAt: events.endAt,
         isClosed: events.isClosed,
+        signupSettingEnabled: eventSignupSettings.enabled,
       })
       .from(events)
+      .leftJoin(eventSignupSettings, eq(eventSignupSettings.eventId, events.id))
       .orderBy(asc(events.startAt), desc(events.updatedAt));
 
-    managed = rows.map((row) => toManagedEvent(row));
+    managed = rows.map((row) =>
+      toManagedEvent({
+        ...row,
+        signupEnabled: normalizeEventSignupSettings({ enabled: row.signupSettingEnabled }).enabled,
+      }),
+    );
     if (managed.length === 0) {
       managed = extractedManaged;
     }

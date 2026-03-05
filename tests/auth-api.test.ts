@@ -61,6 +61,47 @@ test("signup fails fast when USER_SESSION_SECRET is not configured", async () =>
   assert.deepEqual(result.body, { error: "Auth session is not configured" });
 });
 
+test("signup stays successful when people schema is missing", async () => {
+  const steps: string[] = [];
+  const result = await executeSignup(
+    {
+      displayName: "Alice",
+      email: "alice@example.com",
+      password: "password123",
+      confirmPassword: "password123",
+    },
+    {
+      assertSessionConfigured: () => {},
+      findUserByEmail: async () => undefined,
+      createUser: async () => ({
+        id: 44,
+        email: "alice@example.com",
+        displayName: "Alice",
+        role: "member",
+      }),
+      hashPassword: async () => "hash",
+      createSession: async () => {
+        steps.push("session");
+      },
+      ensurePersonForUser: async () => {
+        throw new Error('relation "people" does not exist');
+      },
+    },
+  );
+
+  assert.equal(result.status, 201);
+  assert.deepEqual(result.body, {
+    ok: true,
+    user: {
+      id: 44,
+      email: "alice@example.com",
+      displayName: "Alice",
+      role: "member",
+    },
+  });
+  assert.deepEqual(steps, ["session"]);
+});
+
 test("login returns 401 when credentials are invalid", async () => {
   const noUser = await executeLogin(
     {

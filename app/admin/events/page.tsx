@@ -18,9 +18,10 @@ type Registration = {
 };
 
 type SignupSetting = {
-  id: number;
+  id: number | null;
   eventId: number;
   eventTitle: string;
+  eventPath: string;
   enabled: boolean;
   capacity: number | null;
   waitlistEnabled: boolean;
@@ -122,13 +123,13 @@ export default function AdminEventsPage() {
   }, [router]);
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
+    <main className={`${styles.page} internal-page`}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>Events Admin</h1>
           <p>Manage registrations and signup settings.</p>
         </div>
-        <div className={styles.links}>
+        <div className={`${styles.links} internal-actions`}>
           <Link href="/admin/people">People CRM</Link>
           <Link href="/admin/settings">Settings</Link>
           <Link href="/admin/dues">Dues admin</Link>
@@ -143,20 +144,21 @@ export default function AdminEventsPage() {
 
       {!loading ? (
         <>
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Signup settings</h2>
             {settings.length === 0 ? (
               <p>No settings configured.</p>
             ) : (
               <ul className={styles.list}>
                 {settings.map((setting) => (
-                  <li key={setting.id} className={styles.listItem}>
+                  <li key={setting.eventId} className={styles.listItem}>
                     <div>
                       <strong>{setting.eventTitle}</strong>
                       <p>
                         {setting.enabled ? "enabled" : "disabled"} · capacity:{" "}
                         {setting.capacity === null ? "unlimited" : setting.capacity}
                       </p>
+                      <p>{setting.id ? "configured" : "not configured yet"}</p>
                     </div>
                     <button type="button" onClick={() => toggleEnabled(setting)}>
                       {setting.enabled ? "Disable" : "Enable"}
@@ -167,7 +169,7 @@ export default function AdminEventsPage() {
             )}
           </section>
 
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Registrations</h2>
             {registrations.length === 0 ? (
               <p>No registrations yet.</p>

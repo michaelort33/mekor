@@ -383,7 +383,7 @@ a {
 
 .native-nav__submenu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 2px);
   left: 0;
   min-width: 250px;
   max-width: min(360px, 78vw);
@@ -1783,6 +1783,53 @@ body.native-nav--mobile-open {
   margin: 12px 0 0;
   color: #1f5d34;
   font-weight: 600;
+}
+
+.internal-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(22px, 2.8vw, 34px) clamp(14px, 2.2vw, 24px) 64px;
+}
+
+.internal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.internal-card {
+  border: 1px solid var(--native-nav-border);
+  border-radius: 14px;
+  background: var(--native-nav-surface);
+  box-shadow: 0 8px 20px rgba(24, 43, 65, 0.08);
+}
+
+.internal-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.internal-actions :is(a, button),
+.internal-pill-button {
+  border: 1px solid #b9ccdf;
+  border-radius: 999px;
+  background: #f4f9ff;
+  color: #2d547a;
+  padding: 7px 12px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.internal-actions :is(a, button):hover,
+.internal-pill-button:hover {
+  border-color: #2a6194;
+  background: #e8f2fb;
+  color: #1f4d76;
 }
 
 .kosher-places-page {

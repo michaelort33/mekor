@@ -179,7 +179,7 @@ export default function AccountMemberEventsPage() {
   }
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} internal-page`}>
       <MembersBreadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -190,7 +190,7 @@ export default function AccountMemberEventsPage() {
         activeSection="host-events"
       />
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <h1>Host a Member Event</h1>
         <p>Create gatherings for the community and manage join requests.</p>
 
@@ -306,7 +306,7 @@ export default function AccountMemberEventsPage() {
         </form>
       </section>
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <h2>Your Hosted Events</h2>
         {loading ? <p>Loading events...</p> : null}
         {!loading && items.length === 0 ? <p>You have not hosted any events yet.</p> : null}

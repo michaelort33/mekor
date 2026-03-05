@@ -223,9 +223,6 @@ export async function createMemberEvent(input: {
   publishNow?: boolean;
 }) {
   const actor = await getActor(input.actorUserId);
-  if (actor.role === "visitor") {
-    fail(403, "MEMBER_REQUIRED", "Only member/admin accounts can host events");
-  }
 
   const now = new Date();
   const [created] = await getDb()
@@ -555,9 +552,6 @@ export async function joinMemberEvent(input: {
   ipAddress?: string;
 }) {
   const actor = await getActor(input.actorUserId);
-  if (actor.role === "visitor") {
-    fail(403, "MEMBER_REQUIRED", "Only member/admin accounts can join member events");
-  }
 
   const ip = input.ipAddress ?? "unknown";
   if (!allowWithinWindow(`member-event-join:${actor.id}:${input.eventId}:${ip}`, 20, 60_000)) {
@@ -897,9 +891,6 @@ export async function createMemberEventComment(input: {
   body: string;
 }) {
   const actor = await getActor(input.actorUserId);
-  if (actor.role === "visitor") {
-    fail(403, "MEMBER_REQUIRED", "Only member/admin accounts can comment");
-  }
   const text = clean(input.body);
   if (!text) {
     fail(400, "COMMENT_REQUIRED", "Comment body is required");

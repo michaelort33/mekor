@@ -3,7 +3,8 @@ import { z } from "zod";
 
 import { getUserSession } from "@/lib/auth/session";
 import { allowWithinWindow } from "@/lib/invitations/rate-limit";
-import { MemberEventServiceError, createMemberEvent, listMemberEvents } from "@/lib/member-events/service";
+import { memberEventsServiceErrorResponse } from "@/lib/member-events/http";
+import { createMemberEvent, listMemberEvents } from "@/lib/member-events/service";
 
 const createMemberEventSchema = z
   .object({
@@ -21,13 +22,6 @@ const createMemberEventSchema = z
     if (!value.endsAt) return true;
     return new Date(value.endsAt).getTime() > new Date(value.startsAt).getTime();
   }, "Event end time must be after start time");
-
-function serviceErrorResponse(error: unknown) {
-  if (error instanceof MemberEventServiceError) {
-    return NextResponse.json({ error: error.message, code: error.code }, { status: error.status });
-  }
-  return NextResponse.json({ error: "Unexpected member event error" }, { status: 500 });
-}
 
 export async function GET(request: Request) {
   try {
@@ -53,7 +47,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ items });
   } catch (error) {
-    return serviceErrorResponse(error);
+    return memberEventsServiceErrorResponse(error);
   }
 }
 
@@ -88,6 +82,6 @@ export async function POST(request: Request) {
     });
     return NextResponse.json({ event: created }, { status: 201 });
   } catch (error) {
-    return serviceErrorResponse(error);
+    return memberEventsServiceErrorResponse(error);
   }
 }

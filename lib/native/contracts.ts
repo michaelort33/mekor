@@ -35,7 +35,7 @@ export const NATIVE_CONTRACT_MATRIX: readonly NativeContractMatrixRow[] = [
     dataSource: "lib/events/store#getManagedEvents",
     requiresMirrorRouteContract: true,
     requiredFields: ["slug", "path", "title", "shortDate", "isClosed"],
-    optionalFields: ["location", "timeLabel", "startAt", "endAt"],
+    optionalFields: ["location", "timeLabel", "startAt", "endAt", "signupEnabled"],
   },
   {
     routePath: "/in-the-news",
@@ -329,6 +329,7 @@ export const managedEventContractSchema = z
     startAt: isoDateTimeString.nullable(),
     endAt: isoDateTimeString.nullable(),
     isClosed: z.boolean(),
+    signupEnabled: z.boolean(),
   })
   .strict();
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { isNavigationPathActive } from "@/lib/navigation/path";
 import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
 import type { NavItem } from "@/lib/navigation/site-menu";
@@ -18,29 +19,6 @@ type MobileDrawerProps = {
   isSignedIn: boolean;
   isCheckingAuth: boolean;
 };
-
-function normalizePath(path: string) {
-  if (!path) {
-    return "/";
-  }
-
-  if (path === "/") {
-    return "/";
-  }
-
-  return path.endsWith("/") ? path.slice(0, -1) : path;
-}
-
-function isPathActive(currentPath: string, targetPath: string) {
-  const current = normalizePath(currentPath);
-  const target = normalizePath(targetPath);
-
-  if (target === "/") {
-    return current === target;
-  }
-
-  return current === target || current.startsWith(`${target}/`);
-}
 
 function getGroupId(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -72,7 +50,10 @@ export function MobileDrawer({
         return;
       }
 
-      if (item.children.some((child) => isPathActive(currentPath, child.href)) || isPathActive(currentPath, item.href)) {
+      if (
+        item.children.some((child) => isNavigationPathActive(currentPath, child.href)) ||
+        isNavigationPathActive(currentPath, item.href)
+      ) {
         expanded.add(getGroupId(item.label));
       }
     });
@@ -173,9 +154,9 @@ export function MobileDrawer({
                   <Link
                     href={item.href}
                     prefetch={false}
-                    className={`native-nav__mobile-link${isPathActive(currentPath, item.href) ? " is-active" : ""}`}
+                    className={`native-nav__mobile-link${isNavigationPathActive(currentPath, item.href) ? " is-active" : ""}`}
                     onClick={onClose}
-                    aria-current={isPathActive(currentPath, item.href) ? "page" : undefined}
+                    aria-current={isNavigationPathActive(currentPath, item.href) ? "page" : undefined}
                   >
                     {item.label}
                   </Link>
@@ -192,9 +173,9 @@ export function MobileDrawer({
                   <Link
                     href={item.href}
                     prefetch={false}
-                    className={`native-nav__mobile-link${isPathActive(currentPath, item.href) ? " is-active" : ""}`}
+                    className={`native-nav__mobile-link${isNavigationPathActive(currentPath, item.href) ? " is-active" : ""}`}
                     onClick={onClose}
-                    aria-current={isPathActive(currentPath, item.href) ? "page" : undefined}
+                    aria-current={isNavigationPathActive(currentPath, item.href) ? "page" : undefined}
                   >
                     {item.label}
                   </Link>
@@ -228,9 +209,9 @@ export function MobileDrawer({
                         <Link
                           href={child.href}
                           prefetch={false}
-                          className={`native-nav__mobile-sublink${isPathActive(currentPath, child.href) ? " is-active" : ""}`}
+                          className={`native-nav__mobile-sublink${isNavigationPathActive(currentPath, child.href) ? " is-active" : ""}`}
                           onClick={onClose}
-                          aria-current={isPathActive(currentPath, child.href) ? "page" : undefined}
+                          aria-current={isNavigationPathActive(currentPath, child.href) ? "page" : undefined}
                         >
                           {child.label}
                         </Link>

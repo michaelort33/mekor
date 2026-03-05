@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import type { ManagedEvent } from "@/lib/events/store";
+import { canShowEventSignupAction } from "@/lib/events/signup-availability";
 
 type EventsCalendarProps = {
   events: ManagedEvent[];
@@ -230,7 +231,7 @@ export function EventsCalendar({ events }: EventsCalendarProps) {
             <Link href={event.path} className="events-hub__event-link">
               View event
             </Link>
-            {!event.isClosed ? (
+            {canShowEventSignupAction({ isClosed: event.isClosed, signupEnabled: event.signupEnabled }) ? (
               <Link href={`${event.path}#signup`} className="events-hub__event-link">
                 Sign up
               </Link>

@@ -21,6 +21,7 @@ type SignupData = {
   };
   settings: {
     id: number;
+    enabled: boolean;
     capacity: number | null;
     waitlistEnabled: boolean;
     paymentRequired: boolean;
@@ -83,6 +84,24 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
     () => signupData?.tiers.find((tier) => tier.id === tierId) ?? null,
     [signupData?.tiers, tierId],
   );
+  const registrationUnavailableReason = useMemo(() => {
+    if (isClosed) {
+      return "Registration is closed for this event.";
+    }
+    if (!signupData?.settings) {
+      return "Registration is not configured for this event.";
+    }
+    if (!signupData.settings.enabled) {
+      return "Registration is currently unavailable for this event.";
+    }
+    if (signupData.settings.registrationDeadline) {
+      const deadline = new Date(signupData.settings.registrationDeadline);
+      if (!Number.isNaN(deadline.getTime()) && deadline.getTime() < Date.now()) {
+        return "Registration deadline has passed.";
+      }
+    }
+    return "";
+  }, [isClosed, signupData?.settings]);
 
   async function loadSignup() {
     if (!eventId) {
@@ -381,7 +400,7 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
             </div>
           ) : (
             <div className={styles.registerBox}>
-              {isClosed ? <p>Registration is closed for this event.</p> : null}
+              {registrationUnavailableReason ? <p>{registrationUnavailableReason}</p> : null}
               {signupData.tiers.length > 0 ? (
                 <label className={styles.field}>
                   <span>Ticket</span>
@@ -395,7 +414,12 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
                 </label>
               ) : null}
               {selectedTier ? <p>Selected: {selectedTier.name}</p> : null}
-              <button type="button" disabled={saving || isClosed} onClick={register} className={styles.primaryButton}>
+              <button
+                type="button"
+                disabled={saving || Boolean(registrationUnavailableReason)}
+                onClick={register}
+                className={styles.primaryButton}
+              >
                 {saving ? "Working..." : "Sign up"}
               </button>
             </div>

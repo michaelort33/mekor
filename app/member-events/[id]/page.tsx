@@ -208,22 +208,22 @@ export default function MemberEventDetailPage() {
   }
 
   if (!eventId) {
-    return <main className={styles.page}>Invalid event id.</main>;
+    return <main className={`${styles.page} internal-page`}>Invalid event id.</main>;
   }
 
   if (loading) {
-    return <main className={styles.page}>Loading event...</main>;
+    return <main className={`${styles.page} internal-page`}>Loading event...</main>;
   }
 
   if (!detail) {
-    return <main className={styles.page}>{error || "Event unavailable"}</main>;
+    return <main className={`${styles.page} internal-page`}>{error || "Event unavailable"}</main>;
   }
 
   const requestedAttendees = detail.attendees.filter((attendee) => attendee.status === "requested");
   const approvedCount = detail.attendees.filter((attendee) => attendee.status === "approved").length;
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} internal-page`}>
       <MembersBreadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -234,8 +234,8 @@ export default function MemberEventDetailPage() {
         activeSection="none"
       />
 
-      <section className={styles.card}>
-        <header className={styles.header}>
+      <section className={`${styles.card} internal-card`}>
+        <header className={`${styles.header} internal-header`}>
           <div>
             <h1>{detail.event.title}</h1>
             <p>{detail.event.description || "No description provided."}</p>
@@ -282,7 +282,7 @@ export default function MemberEventDetailPage() {
       </section>
 
       {detail.canManage ? (
-        <section className={styles.card}>
+        <section className={`${styles.card} internal-card`}>
           <h2>Pending Join Requests</h2>
           {requestedAttendees.length === 0 ? (
             <p>No pending requests.</p>
@@ -307,7 +307,7 @@ export default function MemberEventDetailPage() {
         </section>
       ) : null}
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <h2>Comments</h2>
         <form className={styles.commentForm} onSubmit={submitComment}>
           <textarea

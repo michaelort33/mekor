@@ -150,13 +150,13 @@ export default function AdminMessagesPage() {
   }
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
+    <main className={`${styles.page} internal-page`}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>Unified Messages</h1>
           <p>Campaigns, newsletters, dues reminders, and automated sends in one log.</p>
         </div>
-        <div className={styles.links}>
+        <div className={`${styles.links} internal-actions`}>
           <Link href="/admin/people">People</Link>
           <Link href="/admin/users">Users</Link>
           <Link href="/admin/dues">Dues</Link>

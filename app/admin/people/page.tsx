@@ -161,13 +161,13 @@ export default function AdminPeoplePage() {
   }
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
+    <main className={`${styles.page} internal-page`}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>People CRM</h1>
           <p>Manage leads, invited users, and members in one directory.</p>
         </div>
-        <div className={styles.links}>
+        <div className={`${styles.links} internal-actions`}>
           <Link href="/admin/users">Users</Link>
           <Link href="/admin/invitations">Invitations</Link>
           <Link href="/admin/messages">Messages</Link>
@@ -175,7 +175,7 @@ export default function AdminPeoplePage() {
         </div>
       </header>
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <h2>Create lead</h2>
         <form className={styles.createForm} onSubmit={createLead}>
           <input

@@ -121,13 +121,13 @@ export default function AdminInvitationsPage() {
   }
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
+    <main className={`${styles.page} internal-page`}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>Invitations</h1>
           <p>Super admins can send onboarding links, preset roles, revoke, and resend invitations.</p>
         </div>
-        <div className={styles.links}>
+        <div className={`${styles.links} internal-actions`}>
           <Link href="/admin/people">People CRM</Link>
           <Link href="/admin/users">Users admin</Link>
           <Link href="/admin/dues">Dues admin</Link>
@@ -137,7 +137,7 @@ export default function AdminInvitationsPage() {
         </div>
       </header>
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <h2>Create invitation</h2>
         <form onSubmit={onCreateInvite} className={styles.formRow}>
           <label>
@@ -160,7 +160,7 @@ export default function AdminInvitationsPage() {
         </form>
       </section>
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <div className={styles.tableHeader}>
           <h2>Invitations</h2>
           <label>

@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getUserSession } from "@/lib/auth/session";
-import { MemberEventServiceError, getMemberEventDetail, updateMemberEvent } from "@/lib/member-events/service";
+import { memberEventsServiceErrorResponse } from "@/lib/member-events/http";
+import { getMemberEventDetail, updateMemberEvent } from "@/lib/member-events/service";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -31,13 +32,6 @@ function parseEventId(raw: string) {
   return value;
 }
 
-function serviceErrorResponse(error: unknown) {
-  if (error instanceof MemberEventServiceError) {
-    return NextResponse.json({ error: error.message, code: error.code }, { status: error.status });
-  }
-  return NextResponse.json({ error: "Unexpected member event error" }, { status: 500 });
-}
-
 export async function GET(_: Request, context: RouteContext) {
   const eventId = parseEventId((await context.params).id);
   if (!eventId) {
@@ -52,7 +46,7 @@ export async function GET(_: Request, context: RouteContext) {
     });
     return NextResponse.json(detail);
   } catch (error) {
-    return serviceErrorResponse(error);
+    return memberEventsServiceErrorResponse(error);
   }
 }
 
@@ -88,6 +82,6 @@ export async function PUT(request: Request, context: RouteContext) {
     });
     return NextResponse.json({ event: updated });
   } catch (error) {
-    return serviceErrorResponse(error);
+    return memberEventsServiceErrorResponse(error);
   }
 }

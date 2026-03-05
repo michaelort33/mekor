@@ -123,11 +123,11 @@ export default function AccountDuesPage() {
   }
 
   if (loading) {
-    return <main className={styles.page}>Loading dues...</main>;
+    return <main className={`${styles.page} internal-page`}>Loading dues...</main>;
   }
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} internal-page`}>
       <MembersBreadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -138,14 +138,14 @@ export default function AccountDuesPage() {
         activeSection="dues"
       />
 
-      <header className={styles.header}>
+      <header className={`${styles.header} internal-header`}>
         <h1>Dues & Payments</h1>
         <p>Review open dues, payment history, and saved payment methods.</p>
       </header>
 
       {error ? <p className={styles.error}>{error}</p> : null}
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <h2>Amount due</h2>
         <p className={styles.total}>{toMoney(totalDueCents, "usd")}</p>
         <button type="button" className={styles.secondaryButton} disabled={portalLoading} onClick={openPortal}>
@@ -153,7 +153,7 @@ export default function AccountDuesPage() {
         </button>
       </section>
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <h2>Open invoices</h2>
         {data.openInvoices.length === 0 ? (
           <p>No open invoices.</p>
@@ -182,7 +182,7 @@ export default function AccountDuesPage() {
         )}
       </section>
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <h2>Schedules</h2>
         {data.schedules.length === 0 ? (
           <p>No schedules configured yet.</p>
@@ -203,7 +203,7 @@ export default function AccountDuesPage() {
         )}
       </section>
 
-      <section className={styles.card}>
+      <section className={`${styles.card} internal-card`}>
         <h2>Payment history</h2>
         {data.payments.length === 0 ? (
           <p>No payments yet.</p>
