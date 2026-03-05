@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 import type { NavItem } from "@/lib/navigation/site-menu";
+import { isNavigationPathActive } from "@/lib/navigation/path";
 import { isNavGroup } from "@/lib/navigation/site-menu";
 
 type DesktopNavProps = {
@@ -12,29 +13,6 @@ type DesktopNavProps = {
   openGroupId: string | null;
   setOpenGroupId: (groupId: string | null) => void;
 };
-
-function normalizePath(path: string) {
-  if (!path) {
-    return "/";
-  }
-
-  if (path === "/") {
-    return "/";
-  }
-
-  return path.endsWith("/") ? path.slice(0, -1) : path;
-}
-
-function isPathActive(currentPath: string, targetPath: string) {
-  const current = normalizePath(currentPath);
-  const target = normalizePath(targetPath);
-
-  if (target === "/") {
-    return current === target;
-  }
-
-  return current === target || current.startsWith(`${target}/`);
-}
 
 function getGroupId(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -111,7 +89,7 @@ export function DesktopNav({
     >
       <ul className="native-nav__desktop-list">
         {items.map((item) => {
-          const active = isPathActive(currentPath, item.href);
+          const active = isNavigationPathActive(currentPath, item.href);
 
           if (!isNavGroup(item)) {
             return (
@@ -201,7 +179,7 @@ export function DesktopNav({
               >
                 <ul className="native-nav__submenu-list">
                   {item.children.map((child) => {
-                    const childActive = isPathActive(currentPath, child.href);
+                    const childActive = isNavigationPathActive(currentPath, child.href);
                     return (
                       <li key={child.label}>
                         <Link

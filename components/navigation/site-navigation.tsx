@@ -7,27 +7,16 @@ import { DesktopNav } from "@/components/navigation/desktop-nav";
 import { MobileDrawer } from "@/components/navigation/mobile-drawer";
 import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
+import { normalizeNavigationPath } from "@/lib/navigation/path";
 import { SITE_MENU } from "@/lib/navigation/site-menu";
 
 type SiteNavigationProps = {
   currentPath: string;
 };
 
-function normalizePath(path: string) {
-  if (!path) {
-    return "/";
-  }
-
-  if (path === "/") {
-    return "/";
-  }
-
-  return path.endsWith("/") ? path.slice(0, -1) : path;
-}
-
 export function SiteNavigation({ currentPath }: SiteNavigationProps) {
   const pathname = usePathname();
-  const activePath = normalizePath(pathname ?? currentPath);
+  const activePath = normalizeNavigationPath(pathname ?? currentPath);
   const [openDesktopByPath, setOpenDesktopByPath] = useState<Record<string, string | null>>({});
   const [mobileOpenByPath, setMobileOpenByPath] = useState<Record<string, boolean>>({});
   const [isSignedIn, setIsSignedIn] = useState(false);
