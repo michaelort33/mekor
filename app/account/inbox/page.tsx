@@ -277,7 +277,7 @@ export default function AccountInboxPage() {
   );
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} internal-page`}>
       <MembersBreadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -288,12 +288,12 @@ export default function AccountInboxPage() {
         activeSection="inbox"
       />
 
-      <header className={styles.header}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>Member Inbox</h1>
           <p>Manage family invites, member event requests, and household chat.</p>
         </div>
-        <div className={styles.headerLinks}>
+        <div className={`${styles.headerLinks} internal-actions`}>
           <Link href="/account/family">Family management</Link>
           <Link href="/account">Account dashboard</Link>
         </div>

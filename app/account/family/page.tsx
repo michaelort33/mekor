@@ -198,7 +198,7 @@ export default function AccountFamilyPage() {
   const pendingInvites = useMemo(() => overview?.invites.filter((invite) => invite.status === "pending") ?? [], [overview]);
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} internal-page`}>
       <MembersBreadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -209,12 +209,12 @@ export default function AccountFamilyPage() {
         activeSection="family"
       />
 
-      <header className={styles.header}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>Family Management</h1>
           <p>Invite household members and manage active family access.</p>
         </div>
-        <div className={styles.actions}>
+        <div className={`${styles.actions} internal-actions`}>
           <Link href="/account/inbox">Open inbox</Link>
           <Link href="/account">Account dashboard</Link>
         </div>
@@ -225,7 +225,7 @@ export default function AccountFamilyPage() {
 
       {overview ? (
         <>
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>{overview.family ? overview.family.familyName : "No active family yet"}</h2>
             <p>
               {overview.family
@@ -234,7 +234,7 @@ export default function AccountFamilyPage() {
             </p>
           </section>
 
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Invite a family member</h2>
             <form className={styles.form} onSubmit={createInvite}>
               <label>
@@ -293,7 +293,7 @@ export default function AccountFamilyPage() {
             {actionError ? <p className={styles.error}>{actionError}</p> : null}
           </section>
 
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Family members</h2>
             {overview.members.length === 0 ? (
               <p>No active family members yet.</p>
@@ -311,7 +311,7 @@ export default function AccountFamilyPage() {
             )}
           </section>
 
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Pending invites</h2>
             {pendingInvites.length === 0 ? (
               <p>No pending invites.</p>

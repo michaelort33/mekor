@@ -183,11 +183,11 @@ export default function AccountProfilePage() {
   }
 
   if (loading) {
-    return <main className={styles.page}>Loading profile...</main>;
+    return <main className={`${styles.page} internal-page`}>Loading profile...</main>;
   }
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} internal-page`}>
       <MembersBreadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -198,10 +198,10 @@ export default function AccountProfilePage() {
         activeSection="profile"
       />
 
-      <form className={styles.card} onSubmit={saveProfile}>
-        <div className={styles.header}>
+      <form className={`${styles.card} internal-card`} onSubmit={saveProfile}>
+        <div className={`${styles.header} internal-header`}>
           <h1>Your profile</h1>
-          <button type="button" className={styles.secondaryButton} onClick={logout}>
+          <button type="button" className={`${styles.secondaryButton} internal-pill-button`} onClick={logout}>
             Log out
           </button>
         </div>
@@ -321,7 +321,7 @@ export default function AccountProfilePage() {
           </section>
         ) : null}
 
-        <div className={styles.actions}>
+        <div className={`${styles.actions} internal-actions`}>
           <button className={styles.button} type="submit" disabled={saving}>
             {saving ? "Saving..." : "Save profile"}
           </button>

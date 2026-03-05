@@ -123,13 +123,13 @@ export default function AdminEventsPage() {
   }, [router]);
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
+    <main className={`${styles.page} internal-page`}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>Events Admin</h1>
           <p>Manage registrations and signup settings.</p>
         </div>
-        <div className={styles.links}>
+        <div className={`${styles.links} internal-actions`}>
           <Link href="/admin/people">People CRM</Link>
           <Link href="/admin/settings">Settings</Link>
           <Link href="/admin/dues">Dues admin</Link>
@@ -144,7 +144,7 @@ export default function AdminEventsPage() {
 
       {!loading ? (
         <>
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Signup settings</h2>
             {settings.length === 0 ? (
               <p>No settings configured.</p>
@@ -169,7 +169,7 @@ export default function AdminEventsPage() {
             )}
           </section>
 
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Registrations</h2>
             {registrations.length === 0 ? (
               <p>No registrations yet.</p>

@@ -282,13 +282,13 @@ export default function AdminDuesPage() {
   }, [router]);
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
+    <main className={`${styles.page} internal-page`}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>Dues Admin</h1>
           <p>Manage dues schedules and invoice states.</p>
         </div>
-        <div className={styles.links}>
+        <div className={`${styles.links} internal-actions`}>
           <Link href="/admin/people">People CRM</Link>
           <Link href="/admin/settings">Settings</Link>
           <Link href="/admin/invitations">Invitations</Link>
@@ -305,7 +305,7 @@ export default function AdminDuesPage() {
 
       {!loading ? (
         <>
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>User balance summary</h2>
             {users.length === 0 ? (
               <p>No users found.</p>
@@ -322,7 +322,7 @@ export default function AdminDuesPage() {
             )}
           </section>
 
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Add invoice</h2>
             <form className={styles.formGrid} onSubmit={createInvoice}>
               <label>
@@ -373,7 +373,7 @@ export default function AdminDuesPage() {
             </form>
           </section>
 
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Add schedule</h2>
             <form className={styles.formGrid} onSubmit={createSchedule}>
               <label>
@@ -449,7 +449,7 @@ export default function AdminDuesPage() {
             </form>
           </section>
 
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <div className={styles.scheduleHeader}>
               <h2>Schedules</h2>
               <button type="button" onClick={runScheduleInvoicing} disabled={runningSchedules}>
@@ -483,7 +483,7 @@ export default function AdminDuesPage() {
             )}
           </section>
 
-          <section className={styles.card}>
+          <section className={`${styles.card} internal-card`}>
             <h2>Invoices</h2>
             {invoices.length === 0 ? (
               <p>No invoices found.</p>

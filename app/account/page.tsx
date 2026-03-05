@@ -150,7 +150,7 @@ export default function AccountDashboardPage() {
   }
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} internal-page`}>
       <MembersBreadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -161,12 +161,12 @@ export default function AccountDashboardPage() {
         activeSection="dashboard"
       />
 
-      <header className={styles.header}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>Welcome, {dashboard.summary.displayName}</h1>
           <p>Track dues, events, and community updates from one place.</p>
         </div>
-        <div className={styles.quickLinks}>
+        <div className={`${styles.quickLinks} internal-actions`}>
           <Link href="/account/profile">Profile</Link>
           <Link href="/account/dues">Dues</Link>
           <Link href="/account/member-events">Host Events</Link>
@@ -180,23 +180,23 @@ export default function AccountDashboardPage() {
       {error ? <p className={styles.error}>{error}</p> : null}
 
       <section className={styles.summaryGrid}>
-        <article className={styles.card}>
+        <article className={`${styles.card} internal-card`}>
           <h2>Amount Due</h2>
           <p className={styles.metric}>{formatMoney(dashboard.summary.totalDueCents, "usd")}</p>
           <p>{dashboard.summary.openInvoicesCount} open invoice(s)</p>
         </article>
-        <article className={styles.card}>
+        <article className={`${styles.card} internal-card`}>
           <h2>Upcoming Registrations</h2>
           <p className={styles.metric}>{dashboard.summary.upcomingRegistrationsCount}</p>
           <p>events currently on your calendar</p>
         </article>
-        <article className={styles.card}>
+        <article className={`${styles.card} internal-card`}>
           <h2>Recent Payments</h2>
           <p className={styles.metric}>{formatMoney(totalRecentPayments, "usd")}</p>
           <p>across your latest dues transactions</p>
         </article>
         {memberStats ? (
-          <article className={styles.card}>
+          <article className={`${styles.card} internal-card`}>
             <h2>Host Stats</h2>
             <p className={styles.metric}>{memberStats.eventsHostedCount}</p>
             <p>
@@ -207,7 +207,7 @@ export default function AccountDashboardPage() {
       </section>
 
       <section className={styles.grid}>
-        <article className={styles.card}>
+        <article className={`${styles.card} internal-card`}>
           <h2>Dues Snapshot</h2>
           {dashboard.dues.enabled ? (
             dashboard.dues.openInvoices.length > 0 ? (
@@ -232,7 +232,7 @@ export default function AccountDashboardPage() {
           </Link>
         </article>
 
-        <article className={styles.card}>
+        <article className={`${styles.card} internal-card`}>
           <h2>Upcoming Events</h2>
           {dashboard.events.enabled ? (
             dashboard.events.upcomingRegistrations.length > 0 ? (
@@ -258,7 +258,7 @@ export default function AccountDashboardPage() {
           )}
         </article>
 
-        <article className={styles.card}>
+        <article className={`${styles.card} internal-card`}>
           <h2>Suggested Events</h2>
           {dashboard.events.suggestedEvents.length > 0 ? (
             <ul className={styles.list}>
@@ -277,7 +277,7 @@ export default function AccountDashboardPage() {
           )}
         </article>
 
-        <article className={styles.card}>
+        <article className={`${styles.card} internal-card`}>
           <h2>Activity Feed</h2>
           {dashboard.activity.length > 0 ? (
             <ul className={styles.list}>
@@ -298,7 +298,7 @@ export default function AccountDashboardPage() {
           )}
         </article>
 
-        <article className={styles.card}>
+        <article className={`${styles.card} internal-card`}>
           <h2>Community Updates</h2>
           {dashboard.announcements.length > 0 ? (
             <ul className={styles.list}>

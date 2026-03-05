@@ -125,13 +125,13 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
+    <main className={`${styles.page} internal-page`}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>Manage Users</h1>
           <p>Manage roles, profile visibility, membership dates, and automated reminder opt-in settings.</p>
         </div>
-        <div className={styles.actions}>
+        <div className={`${styles.actions} internal-actions`}>
           <Link href="/admin/people" className={styles.backLink}>
             People CRM
           </Link>

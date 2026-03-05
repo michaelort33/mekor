@@ -86,13 +86,13 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <main className={styles.page}>
-      <header className={styles.header}>
+    <main className={`${styles.page} internal-page`}>
+      <header className={`${styles.header} internal-header`}>
         <div>
           <h1>System Settings</h1>
           <p>Manage feature flags and system configuration. Super admin access only.</p>
         </div>
-        <div className={styles.actions}>
+        <div className={`${styles.actions} internal-actions`}>
           <Link href="/admin/people" className={styles.backLink}>
             People CRM
           </Link>
