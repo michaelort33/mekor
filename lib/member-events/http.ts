@@ -2,12 +2,24 @@ import { NextResponse } from "next/server";
 
 import { MemberEventServiceError } from "@/lib/member-events/service";
 
+function getErrorMessages(error: unknown) {
+  const messages: string[] = [];
+  let current: unknown = error;
+
+  for (let index = 0; index < 4 && current instanceof Error; index += 1) {
+    messages.push(current.message.toLowerCase());
+    current = current.cause;
+  }
+
+  return messages.join(" ");
+}
+
 function isMissingSchemaError(error: unknown) {
-  if (!(error instanceof Error)) {
+  const message = getErrorMessages(error);
+  if (!message) {
     return false;
   }
 
-  const message = error.message.toLowerCase();
   return (
     message.includes("relation") &&
     message.includes("does not exist") &&

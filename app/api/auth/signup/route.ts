@@ -36,6 +36,31 @@ type SignupExecutionResult = {
     | { error: string; issues?: unknown };
 };
 
+function getErrorMessages(error: unknown) {
+  const messages: string[] = [];
+  let current: unknown = error;
+
+  for (let index = 0; index < 4 && current instanceof Error; index += 1) {
+    messages.push(current.message.toLowerCase());
+    current = current.cause;
+  }
+
+  return messages.join(" ");
+}
+
+function isMissingRelationError(error: unknown, keywords: string[] = []) {
+  const message = getErrorMessages(error);
+  if (!message || !message.includes("relation") || !message.includes("does not exist")) {
+    return false;
+  }
+
+  if (keywords.length === 0) {
+    return true;
+  }
+
+  return keywords.some((keyword) => message.includes(keyword));
+}
+
 function createSignupDependencies(): SignupDependencies {
   const db = getDb();
   return {
@@ -130,11 +155,24 @@ export async function executeSignup(
   });
 
   if (dependencies.ensurePersonForUser) {
-    await dependencies.ensurePersonForUser({
-      userId: created.id,
-      source: "account_signup",
-      actorUserId: created.id,
-    });
+    try {
+      await dependencies.ensurePersonForUser({
+        userId: created.id,
+        source: "account_signup",
+        actorUserId: created.id,
+      });
+    } catch (error) {
+      if (
+        !isMissingRelationError(error, [
+          "people",
+          "contact_method",
+          "communication_preference",
+          "membership_pipeline_event",
+        ])
+      ) {
+        throw error;
+      }
+    }
   }
 
   if (parsed.data.familyInviteToken && dependencies.acceptFamilyInviteByToken) {
@@ -160,8 +198,7 @@ export async function POST(request: Request) {
     const result = await executeSignup(await request.json(), createSignupDependencies());
     return NextResponse.json(result.body, { status: result.status });
   } catch (error) {
-    const message = error instanceof Error ? error.message.toLowerCase() : "";
-    if (message.includes("relation") && message.includes("does not exist")) {
+    if (isMissingRelationError(error)) {
       return NextResponse.json(
         { error: "Database schema is not initialized. Run the latest database migration." },
         { status: 500 },

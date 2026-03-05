@@ -22,3 +22,13 @@ test("member events http mapper returns 503 for missing schema errors", async ()
   assert.equal(response.status, 503);
   assert.equal(body.code, "MEMBER_EVENTS_SCHEMA_MISSING");
 });
+
+test("member events http mapper returns 503 for wrapped query errors", async () => {
+  const response = memberEventsServiceErrorResponse(
+    new Error("Failed query", { cause: new Error('relation "member_event_join_requests" does not exist') }),
+  );
+  const body = (await response.json()) as { error: string; code: string };
+
+  assert.equal(response.status, 503);
+  assert.equal(body.code, "MEMBER_EVENTS_SCHEMA_MISSING");
+});
