@@ -10,6 +10,7 @@ import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
 import { buildEventTemplateData } from "@/lib/templates/template-data";
 import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
+import { ensureManagedEventRecordByPath } from "@/lib/events/store";
 
 export const dynamicParams = true;
 export const dynamic = "force-dynamic";
@@ -70,7 +71,7 @@ export default async function EventTemplatePage({ params }: PageProps) {
   let eventId: number | null = null;
   if (process.env.DATABASE_URL) {
     const [eventRow] = await getDb().select({ id: events.id }).from(events).where(eq(events.path, path)).limit(1);
-    eventId = eventRow?.id ?? null;
+    eventId = eventRow?.id ?? (await ensureManagedEventRecordByPath(path));
   }
 
   return <EventTemplate data={buildEventTemplateData(route.document, { eventId })} />;

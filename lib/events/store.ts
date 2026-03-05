@@ -1,4 +1,4 @@
-import { asc, desc } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 
 import { getDb } from "@/db/client";
 import { events } from "@/db/schema";
@@ -80,6 +80,39 @@ async function syncExtractedEventsToDb(rows: ExtractedEvent[]) {
         },
       });
   }
+}
+
+export async function ensureManagedEventRecordByPath(path: string) {
+  if (!process.env.DATABASE_URL || process.env.EVENTS_DIRECTORY_USE_DB !== "1") {
+    return null;
+  }
+
+  const db = getDb();
+  const [existing] = await db
+    .select({ id: events.id })
+    .from(events)
+    .where(eq(events.path, path))
+    .limit(1);
+
+  if (existing) {
+    return existing.id;
+  }
+
+  const extracted = await loadExtractedEvents();
+  const target = extracted.find((row) => row.path === path);
+  if (!target) {
+    return null;
+  }
+
+  await syncExtractedEventsToDb([target]);
+
+  const [created] = await db
+    .select({ id: events.id })
+    .from(events)
+    .where(eq(events.path, path))
+    .limit(1);
+
+  return created?.id ?? null;
 }
 
 export async function getManagedEvents() {
