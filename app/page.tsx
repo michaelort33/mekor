@@ -183,7 +183,6 @@ export default function HomePage() {
             title="Davening"
             kicker="Shabbat and Weekday Services"
             className={styles.featureStory}
-            reverse
             media={{
               src: "https://static.wixstatic.com/media/92f487_34e64b1fb2e94c56886578290ef2bcd0~mv2.jpeg",
               alt: "Prayer service at Mekor",
