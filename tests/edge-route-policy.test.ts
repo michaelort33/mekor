@@ -5,11 +5,13 @@ import { getEdgeProtectionType, isExplicitlyPublicPath } from "../lib/auth/edge-
 
 test("public paths remain unprotected", () => {
   assert.equal(isExplicitlyPublicPath("/membership"), true);
+  assert.equal(isExplicitlyPublicPath("/membership/apply"), true);
   assert.equal(isExplicitlyPublicPath("/community"), true);
   assert.equal(isExplicitlyPublicPath("/community/12"), true);
   assert.equal(getEdgeProtectionType("/login"), "none");
   assert.equal(getEdgeProtectionType("/forgot-password"), "none");
   assert.equal(getEdgeProtectionType("/reset-password"), "none");
+  assert.equal(getEdgeProtectionType("/membership/apply"), "none");
   assert.equal(getEdgeProtectionType("/invite/accept"), "none");
 });
 

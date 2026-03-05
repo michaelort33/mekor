@@ -22,6 +22,7 @@ export const NATIVE_APP_ROUTE_PATHS = [
   "/mekor-bulletin-board",
   "/mekorcouples",
   "/membership",
+  "/membership/apply",
   "/old-kosher-restaurants",
   "/old-yorkroad-northeast",
   "/our-communities",

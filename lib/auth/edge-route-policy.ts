@@ -6,6 +6,7 @@ const PUBLIC_EXACT_PATHS = new Set([
   "/forgot-password",
   "/reset-password",
   "/membership",
+  "/membership/apply",
   "/invite/accept",
 ]);
 

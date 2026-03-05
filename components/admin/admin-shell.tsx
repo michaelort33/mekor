@@ -11,6 +11,7 @@ export type AdminRouteItem = {
 
 export const ADMIN_ROUTES: AdminRouteItem[] = [
   { href: "/admin", label: "Dashboard" },
+  { href: "/admin/membership-applications", label: "Applications" },
   { href: "/admin/people", label: "People" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/invitations", label: "Invitations" },

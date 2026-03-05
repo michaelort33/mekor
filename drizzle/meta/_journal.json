@@ -141,6 +141,13 @@
       "when": 1772736302787,
       "tag": "0019_stale_anthem",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1772740899164,
+      "tag": "0020_windy_mentallo",
+      "breakpoints": true
     }
   ]
 }

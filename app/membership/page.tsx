@@ -10,7 +10,7 @@ import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
 
 const PATH = "/membership" as const;
-const MEMBERSHIP_FORM_URL = "https://fs3.formsite.com/PrCyQq/kjkfhhvneh/index";
+const MEMBERSHIP_FORM_URL = "/membership/apply";
 
 const MEMBERSHIP_IMAGES = {
   hero:
@@ -78,7 +78,7 @@ export default async function MembershipPage() {
           "Choose from annual membership options below and connect directly for payment support.",
         ]}
         actions={[
-          { label: "Use membership form", href: MEMBERSHIP_FORM_URL },
+          { label: "Apply for membership", href: MEMBERSHIP_FORM_URL },
           { label: "Email membership team", href: "mailto:mekorhabracha@gmail.com?subject=Membership%20Question" },
         ]}
       />
@@ -123,9 +123,9 @@ export default async function MembershipPage() {
               <p className={styles.rateTitle}>{row[0]}</p>
               <p className={styles.rateAmount}>{row[1]}</p>
               <p className={styles.rateTerm}>{row[2]}</p>
-              <a href={MEMBERSHIP_FORM_URL} target="_blank" rel="noreferrer noopener" className={styles.inlineAction}>
+              <Link href={MEMBERSHIP_FORM_URL} className={styles.inlineAction}>
                 Join now
-              </a>
+              </Link>
             </article>
           ))}
         </div>
@@ -206,9 +206,9 @@ export default async function MembershipPage() {
               <li>Reach out directly if you need a payment plan or reduction.</li>
             </ul>
             <div className={styles.actionRow}>
-              <a href={MEMBERSHIP_FORM_URL} target="_blank" rel="noreferrer noopener" className={styles.actionButton}>
-                Use membership form
-              </a>
+              <Link href={MEMBERSHIP_FORM_URL} className={styles.actionButton}>
+                Apply for membership
+              </Link>
               <a href="mailto:mekorhabracha@gmail.com?subject=Membership%20Question" className={styles.actionButtonSecondary}>
                 Email us
               </a>

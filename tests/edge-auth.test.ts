@@ -72,6 +72,13 @@ test("GET /membership remains public", async () => {
   assert.equal(response.status, 200);
 });
 
+test("GET /membership/apply remains public", async () => {
+  const request = new NextRequest("http://localhost:3000/membership/apply");
+  const response = await proxy(request);
+
+  assert.equal(response.status, 200);
+});
+
 test("expired session token is rejected and cookie is cleared", async () => {
   process.env.USER_SESSION_SECRET = "test-user-session-secret";
   const token = await signUserSessionToken(

@@ -216,7 +216,12 @@ export default function AdminPeoplePage() {
       title="People CRM"
       description="Search leads, invited contacts, and members from one operational view."
       stats={stats}
-      actions={<Link href="/admin/invitations" className={adminStyles.actionPill}>Open invitations</Link>}
+      actions={
+        <>
+          <Link href="/admin/membership-applications" className={adminStyles.actionPill}>Open applications</Link>
+          <Link href="/admin/invitations" className={adminStyles.actionPill}>Open invitations</Link>
+        </>
+      }
     >
       <section className={`${styles.card} internal-card`}>
         <h2>Create lead</h2>

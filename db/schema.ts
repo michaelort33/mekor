@@ -108,6 +108,7 @@ export const membershipPipelineEventTypeEnum = pgEnum("membership_pipeline_event
   "status_changed",
   "note",
 ]);
+export const membershipApplicationStatusEnum = pgEnum("membership_application_status", ["pending", "approved", "declined"]);
 export const messageCampaignChannelEnum = pgEnum("message_campaign_channel", ["email", "sms", "whatsapp"]);
 export const messageCampaignSourceEnum = pgEnum("message_campaign_source", ["manual", "newsletter", "automated"]);
 export const messageCampaignStatusEnum = pgEnum("message_campaign_status", ["sending", "completed", "partial", "failed"]);
@@ -1024,6 +1025,54 @@ export const userInvitations = pgTable(
     expiresAtIdx: index("user_invitations_expires_at_idx").on(table.expiresAt),
     createdAtIdIdx: index("user_invitations_created_at_id_idx").on(table.createdAt, table.id),
     personEmailStateIdx: index("user_invitations_person_email_state_idx").on(table.personId, table.email, table.acceptedAt),
+  }),
+);
+
+export const membershipApplications = pgTable(
+  "membership_applications",
+  {
+    id: serial("id").primaryKey(),
+    status: membershipApplicationStatusEnum("status").notNull().default("pending"),
+    applicationType: varchar("application_type", { length: 40 }).notNull(),
+    membershipCategory: varchar("membership_category", { length: 40 }).notNull(),
+    preferredPaymentMethod: varchar("preferred_payment_method", { length: 40 }).notNull().default("undecided"),
+    includeSecurityDonation: boolean("include_security_donation").notNull().default(true),
+    coverOnlineFees: boolean("cover_online_fees").notNull().default(false),
+    totalAmountCents: integer("total_amount_cents").notNull().default(0),
+    firstName: varchar("first_name", { length: 120 }).notNull().default(""),
+    lastName: varchar("last_name", { length: 120 }).notNull().default(""),
+    displayName: varchar("display_name", { length: 160 }).notNull().default(""),
+    hebrewName: varchar("hebrew_name", { length: 120 }).notNull().default(""),
+    email: varchar("email", { length: 255 }).notNull(),
+    phone: varchar("phone", { length: 60 }).notNull().default(""),
+    addressLine1: varchar("address_line_1", { length: 160 }).notNull().default(""),
+    addressLine2: varchar("address_line_2", { length: 160 }).notNull().default(""),
+    city: varchar("city", { length: 120 }).notNull().default(""),
+    state: varchar("state", { length: 80 }).notNull().default(""),
+    postalCode: varchar("postal_code", { length: 20 }).notNull().default(""),
+    spouseFirstName: varchar("spouse_first_name", { length: 120 }).notNull().default(""),
+    spouseLastName: varchar("spouse_last_name", { length: 120 }).notNull().default(""),
+    spouseHebrewName: varchar("spouse_hebrew_name", { length: 120 }).notNull().default(""),
+    spouseEmail: varchar("spouse_email", { length: 255 }).notNull().default(""),
+    spousePhone: varchar("spouse_phone", { length: 60 }).notNull().default(""),
+    householdMembersJson: json("household_members_json").$type<Array<Record<string, string>>>().notNull().default([]),
+    yahrzeitsJson: json("yahrzeits_json").$type<Array<Record<string, string>>>().notNull().default([]),
+    volunteerInterestsJson: json("volunteer_interests_json").$type<string[]>().notNull().default([]),
+    notes: text("notes").notNull().default(""),
+    reviewNotes: text("review_notes").notNull().default(""),
+    sourcePath: varchar("source_path", { length: 512 }).notNull().default("/membership/apply"),
+    payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    reviewedAt: timestamp("reviewed_at"),
+    reviewedByUserId: integer("reviewed_by_user_id").references(() => users.id),
+    approvedPersonId: integer("approved_person_id").references(() => people.id),
+    invitationId: integer("invitation_id").references(() => userInvitations.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    statusCreatedAtIdx: index("membership_applications_status_created_at_idx").on(table.status, table.createdAt),
+    emailCreatedAtIdx: index("membership_applications_email_created_at_idx").on(table.email, table.createdAt),
+    reviewerStatusIdx: index("membership_applications_reviewer_status_idx").on(table.reviewedByUserId, table.status),
   }),
 );
 

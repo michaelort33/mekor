@@ -4,6 +4,7 @@ import { ADMIN_ROUTES, AdminShell } from "@/components/admin/admin-shell";
 import styles from "./page.module.css";
 
 const DESCRIPTIONS: Record<string, string> = {
+  "/admin/membership-applications": "Review hosted membership applications and approve applicants into the member flow.",
   "/admin/people": "Search leads and members, update records, and open individual profiles.",
   "/admin/users": "Adjust account roles, visibility, renewal dates, and automation settings.",
   "/admin/invitations": "Send onboarding links, track status, and resend or revoke invites.",

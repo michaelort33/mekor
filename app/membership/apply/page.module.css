@@ -1,0 +1,311 @@
+.page {
+  background:
+    radial-gradient(120% 80% at 0% 0%, rgba(210, 196, 170, 0.14) 0%, rgba(210, 196, 170, 0) 42%),
+    linear-gradient(180deg, #f5f1e8 0%, #f3f5f8 42%, #eef2f7 100%);
+}
+
+.content {
+  display: grid;
+  gap: 24px;
+}
+
+.introCard,
+.helpCard {
+  gap: 18px;
+}
+
+.introGrid,
+.helpGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+}
+
+.sectionEyebrow {
+  margin: 0 0 10px;
+  color: #6a5532;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.panelTitle,
+.cardTitle {
+  margin: 0;
+  color: #1d3044;
+  font-size: clamp(1.45rem, 3vw, 2.5rem);
+  line-height: 1.08;
+}
+
+.bodyText,
+.expectList,
+.helperText,
+.summaryNote,
+.reviewList {
+  margin: 0;
+  color: #576678;
+  line-height: 1.7;
+}
+
+.expectList,
+.reviewList {
+  padding-left: 1.1rem;
+}
+
+.helpActions {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.primaryAction,
+.secondaryAction,
+.submitButton,
+.ghostButton,
+.removeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.primaryAction,
+.submitButton {
+  border: none;
+  background: #1f4f78;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(17, 39, 63, 0.16);
+}
+
+.primaryAction:hover,
+.submitButton:hover {
+  transform: translateY(-1px);
+  background: #1a4265;
+}
+
+.secondaryAction,
+.ghostButton,
+.removeButton {
+  border: 1px solid rgba(31, 79, 120, 0.2);
+  background: rgba(255, 255, 255, 0.72);
+  color: #1f4f78;
+}
+
+.formShell {
+  display: grid;
+}
+
+.formGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.78fr);
+  align-items: start;
+}
+
+.formColumn,
+.summaryColumn {
+  display: grid;
+  gap: 18px;
+}
+
+.formCard,
+.summaryCard,
+.summaryCardAlt,
+.successCard {
+  display: grid;
+  gap: 16px;
+  padding: clamp(20px, 3vw, 30px);
+  border-radius: 26px;
+  border: 1px solid rgba(32, 49, 68, 0.12);
+  background:
+    linear-gradient(165deg, rgba(255, 253, 248, 0.98) 0%, rgba(248, 250, 253, 0.98) 100%),
+    radial-gradient(80% 70% at 0% 0%, rgba(223, 209, 178, 0.2) 0%, rgba(223, 209, 178, 0) 100%);
+  box-shadow: 0 18px 34px rgba(22, 35, 49, 0.08);
+}
+
+.summaryCard {
+  position: sticky;
+  top: 104px;
+}
+
+.summaryCardAlt,
+.successCard {
+  background: linear-gradient(165deg, rgba(247, 251, 255, 0.98) 0%, rgba(255, 253, 249, 0.98) 100%);
+}
+
+.cardHeader,
+.cardHeaderRow {
+  display: grid;
+  gap: 8px;
+}
+
+.cardHeaderRow {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.inlineGrid,
+.inlineGridTriple,
+.inlineGridRepeatFooter,
+.toggleGrid,
+.optionGrid,
+.stack,
+.summaryList {
+  display: grid;
+  gap: 14px;
+}
+
+.inlineGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.inlineGridTriple {
+  grid-template-columns: 1.1fr 0.7fr 0.8fr;
+}
+
+.inlineGridRepeatFooter {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.toggleGrid,
+.optionGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field span {
+  color: #223649;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid rgba(40, 61, 84, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.84);
+  color: #1f3042;
+  font: inherit;
+  padding: 13px 15px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.checkboxCard,
+.optionChip {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1px solid rgba(31, 79, 120, 0.14);
+  border-radius: 18px;
+  background: rgba(253, 251, 246, 0.92);
+  color: #30465d;
+}
+
+.checkboxCard input,
+.optionChip input {
+  margin-top: 4px;
+}
+
+.repeatRow {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(31, 79, 120, 0.12);
+  border-radius: 18px;
+  background: rgba(250, 252, 255, 0.78);
+}
+
+.summaryList div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(29, 48, 68, 0.08);
+}
+
+.summaryList dt {
+  color: #617384;
+}
+
+.summaryList dd {
+  margin: 0;
+  color: #1d3044;
+  font-weight: 700;
+  text-align: right;
+}
+
+.errorBanner {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(163, 33, 41, 0.1);
+  color: #8f2028;
+  font-weight: 700;
+}
+
+.submitButton {
+  width: 100%;
+  min-height: 54px;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.ghostButton,
+.removeButton {
+  cursor: pointer;
+  min-height: 42px;
+  padding: 0 16px;
+}
+
+.helperText {
+  font-size: 0.95rem;
+}
+
+@media (max-width: 1080px) {
+  .formGrid,
+  .introGrid,
+  .helpGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryCard {
+    position: static;
+  }
+}
+
+@media (max-width: 760px) {
+  .inlineGrid,
+  .inlineGridTriple,
+  .inlineGridRepeatFooter,
+  .toggleGrid,
+  .optionGrid,
+  .cardHeaderRow {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeaderRow {
+    align-items: start;
+  }
+}
