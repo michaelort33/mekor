@@ -6,7 +6,7 @@ import { getDb } from "@/db/client";
 import { eventSignupSettings, eventTicketTiers, events } from "@/db/schema";
 import { requireAdminActor } from "@/lib/admin/actor";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
-import { normalizeEventSignupSettings } from "@/lib/events/signup-settings";
+import { toAdminEventSignupSettings } from "@/lib/events/admin-signup-settings";
 
 const tierSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -89,15 +89,7 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.json({
-    settings: rows.map((row) => ({
-      id: row.id ?? null,
-      eventId: row.eventId,
-      eventTitle: row.eventTitle,
-      eventPath: row.eventPath,
-      ...normalizeEventSignupSettings(row),
-      updatedAt: row.updatedAt ?? null,
-      tiers: row.id ? tiersBySetting.get(row.id) ?? [] : [],
-    })),
+    settings: rows.map((row) => toAdminEventSignupSettings(row, tiersBySetting)),
   });
 }
 
