@@ -4,11 +4,13 @@ export const MEMBERSHIP_APPLICATION_STATUS = ["pending", "approved", "declined"]
 export const MEMBERSHIP_APPLICATION_TYPE = ["new", "renewal"] as const;
 export const MEMBERSHIP_CATEGORY = ["single", "couple_family", "student"] as const;
 export const PAYMENT_METHOD_PREFERENCE = ["undecided", "check", "venmo", "paypal", "credit_card", "other"] as const;
+export const MEMBERSHIP_APPROVAL_BILLING_MODE = ["none", "invoice", "schedule"] as const;
 
 export type MembershipApplicationStatus = (typeof MEMBERSHIP_APPLICATION_STATUS)[number];
 export type MembershipApplicationType = (typeof MEMBERSHIP_APPLICATION_TYPE)[number];
 export type MembershipCategory = (typeof MEMBERSHIP_CATEGORY)[number];
 export type PaymentMethodPreference = (typeof PAYMENT_METHOD_PREFERENCE)[number];
+export type MembershipApprovalBillingMode = (typeof MEMBERSHIP_APPROVAL_BILLING_MODE)[number];
 
 export const MEMBERSHIP_CATEGORY_OPTIONS: Array<{
   value: MembershipCategory;
@@ -125,8 +127,79 @@ export const membershipApplicationSchema = z
     });
   });
 
+export const membershipApprovalPlanSchema = z
+  .object({
+    membershipStartDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    membershipRenewalDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    billingMode: z.enum(MEMBERSHIP_APPROVAL_BILLING_MODE),
+    invoiceLabel: z.string().trim().min(1).max(160),
+    invoiceAmountCents: z.number().int().min(0),
+    invoiceDueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    scheduleFrequency: z.enum(["annual", "monthly", "custom"]),
+    scheduleAmountCents: z.number().int().min(0),
+    scheduleNextDueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    scheduleNotes: z.string().trim().max(4000).default(""),
+    createSpouseLead: z.boolean().default(false),
+  })
+  .superRefine((value, ctx) => {
+    if (value.membershipRenewalDate < value.membershipStartDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["membershipRenewalDate"],
+        message: "Renewal date must be on or after the membership start date",
+      });
+    }
+
+    if (value.billingMode === "invoice") {
+      if (value.invoiceAmountCents < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["invoiceAmountCents"],
+          message: "Invoice amount must be greater than zero",
+        });
+      }
+      if (value.invoiceDueDate < value.membershipStartDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["invoiceDueDate"],
+          message: "Invoice due date must be on or after the membership start date",
+        });
+      }
+    }
+
+    if (value.billingMode === "schedule") {
+      if (value.scheduleAmountCents < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["scheduleAmountCents"],
+          message: "Schedule amount must be greater than zero",
+        });
+      }
+      if (value.scheduleNextDueDate < value.membershipStartDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["scheduleNextDueDate"],
+          message: "Schedule due date must be on or after the membership start date",
+        });
+      }
+    }
+  });
+
 export type MembershipApplicationInput = z.input<typeof membershipApplicationSchema>;
 export type MembershipApplicationRecordInput = z.output<typeof membershipApplicationSchema>;
+export type MembershipApprovalPlan = z.output<typeof membershipApprovalPlanSchema>;
+
+function dateOnlyUtc(value: Date) {
+  return value.toISOString().slice(0, 10);
+}
+
+function addYearsToDateOnly(value: string, yearsToAdd: number) {
+  const source = new Date(`${value}T00:00:00.000Z`);
+  const target = new Date(
+    Date.UTC(source.getUTCFullYear() + yearsToAdd, source.getUTCMonth(), source.getUTCDate()),
+  );
+  return dateOnlyUtc(target);
+}
 
 export function getMembershipCategoryOption(category: MembershipCategory) {
   const option = MEMBERSHIP_CATEGORY_OPTIONS.find((item) => item.value === category);
@@ -184,4 +257,30 @@ export function calculateMembershipEstimate(input: {
 
 export function buildApplicantDisplayName(input: { firstName: string; lastName: string }) {
   return `${input.firstName.trim()} ${input.lastName.trim()}`.trim();
+}
+
+export function buildDefaultMembershipApprovalPlan(input: {
+  totalAmountCents: number;
+  spouseEmail?: string;
+  now?: Date;
+}): MembershipApprovalPlan {
+  const now = input.now ?? new Date();
+  const membershipStartDate = dateOnlyUtc(now);
+  const membershipRenewalDate = addYearsToDateOnly(membershipStartDate, 1);
+  const totalAmountCents = Math.max(0, input.totalAmountCents);
+  const hasSpouseEmail = Boolean(input.spouseEmail?.trim());
+
+  return {
+    membershipStartDate,
+    membershipRenewalDate,
+    billingMode: totalAmountCents > 0 ? "invoice" : "none",
+    invoiceLabel: "Membership dues",
+    invoiceAmountCents: totalAmountCents,
+    invoiceDueDate: membershipStartDate,
+    scheduleFrequency: "annual",
+    scheduleAmountCents: totalAmountCents,
+    scheduleNextDueDate: membershipStartDate,
+    scheduleNotes: "Created from membership application approval",
+    createSpouseLead: hasSpouseEmail,
+  };
 }

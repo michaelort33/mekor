@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { approveMembershipApplication } from "@/lib/membership/application-service";
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
+import { membershipApprovalPlanSchema } from "@/lib/membership/applications";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -10,6 +11,7 @@ type RouteContext = {
 
 const bodySchema = z.object({
   reviewNotes: z.string().trim().max(4000).default(""),
+  approvalPlan: membershipApprovalPlanSchema,
 });
 
 function parseApplicationId(rawId: string) {
@@ -39,6 +41,7 @@ export async function POST(request: Request, context: RouteContext) {
       actor,
       reviewNotes: parsed.data.reviewNotes,
       siteOrigin: new URL(request.url).origin,
+      approvalPlan: parsed.data.approvalPlan,
     });
 
     await writeAdminAuditLog({

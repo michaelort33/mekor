@@ -7,10 +7,13 @@ import { useRouter } from "next/navigation";
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
 import {
+  buildDefaultMembershipApprovalPlan,
   formatUsd,
   getApplicationTypeLabel,
   getMembershipCategoryLabel,
   getPaymentMethodLabel,
+  type MembershipApprovalBillingMode,
+  type MembershipApprovalPlan,
   type MembershipApplicationStatus,
 } from "@/lib/membership/applications";
 import styles from "./page.module.css";
@@ -54,6 +57,38 @@ type ApplicationItem = {
 
 const STATUS_OPTIONS: Array<"" | MembershipApplicationStatus> = ["", "pending", "approved", "declined"];
 
+function createApprovalPlan(item: ApplicationItem) {
+  return buildDefaultMembershipApprovalPlan({
+    totalAmountCents: item.totalAmountCents,
+    spouseEmail: item.spouseEmail,
+  });
+}
+
+function buildApprovalNotice(payload: {
+  billingMode?: MembershipApprovalBillingMode;
+  provisioningStatus?: string;
+  duesInvoiceId?: number | null;
+  duesScheduleId?: number | null;
+  spouseLeadPersonId?: number | null;
+}) {
+  const details = [
+    payload.provisioningStatus === "applied"
+      ? payload.duesInvoiceId
+        ? `invoice #${payload.duesInvoiceId} created`
+        : payload.duesScheduleId
+          ? `schedule #${payload.duesScheduleId} created`
+          : "membership dates applied"
+      : payload.provisioningStatus === "pending_invite_acceptance"
+        ? "billing will finish after account activation"
+        : null,
+    payload.spouseLeadPersonId ? `spouse lead #${payload.spouseLeadPersonId} created` : null,
+  ].filter(Boolean);
+
+  return details.length > 0
+    ? `Application approved. ${details.join(" · ")}.`
+    : "Application approved and welcome email sent.";
+}
+
 export default function AdminMembershipApplicationsPage() {
   const router = useRouter();
   const [items, setItems] = useState<ApplicationItem[]>([]);
@@ -64,6 +99,7 @@ export default function AdminMembershipApplicationsPage() {
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"" | MembershipApplicationStatus>("pending");
   const [reviewNotes, setReviewNotes] = useState<Record<number, string>>({});
+  const [approvalPlans, setApprovalPlans] = useState<Record<number, MembershipApprovalPlan>>({});
 
   const stats = useMemo(() => {
     const pendingCount = items.filter((item) => item.status === "pending").length;
@@ -100,6 +136,12 @@ export default function AdminMembershipApplicationsPage() {
     setReviewNotes(
       Object.fromEntries((payload.items ?? []).map((item) => [item.id, item.reviewNotes || ""])) as Record<number, string>,
     );
+    setApprovalPlans(
+      Object.fromEntries((payload.items ?? []).map((item) => [item.id, createApprovalPlan(item)])) as Record<
+        number,
+        MembershipApprovalPlan
+      >,
+    );
     setLoading(false);
   }
 
@@ -111,22 +153,46 @@ export default function AdminMembershipApplicationsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
+  function updateApprovalPlan(applicationId: number, patch: Partial<MembershipApprovalPlan>) {
+    setApprovalPlans((current) => ({
+      ...current,
+      [applicationId]: {
+        ...current[applicationId],
+        ...patch,
+      },
+    }));
+  }
+
   async function applyDecision(applicationId: number, action: "approve" | "decline") {
     setWorkingId(applicationId);
     setError("");
     setNotice("");
+    const body =
+      action === "approve"
+        ? {
+            reviewNotes: reviewNotes[applicationId] ?? "",
+            approvalPlan: approvalPlans[applicationId],
+          }
+        : { reviewNotes: reviewNotes[applicationId] ?? "" };
     const response = await fetch(`/api/admin/membership-applications/${applicationId}/${action}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reviewNotes: reviewNotes[applicationId] ?? "" }),
+      body: JSON.stringify(body),
     });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      billingMode?: MembershipApprovalBillingMode;
+      provisioningStatus?: string;
+      duesInvoiceId?: number | null;
+      duesScheduleId?: number | null;
+      spouseLeadPersonId?: number | null;
+    };
     if (!response.ok) {
       setError(payload.error || `Unable to ${action} application`);
       setWorkingId(null);
       return;
     }
-    setNotice(action === "approve" ? "Application approved and welcome email sent." : "Application declined.");
+    setNotice(action === "approve" ? buildApprovalNotice(payload) : "Application declined.");
     setWorkingId(null);
     await loadApplications();
   }
@@ -271,34 +337,182 @@ export default function AdminMembershipApplicationsPage() {
               ) : null}
 
               <section className={styles.reviewPanel}>
-                <label className={styles.notesField}>
-                  <span>Admin review notes</span>
-                  <textarea
-                    rows={4}
-                    value={reviewNotes[item.id] ?? ""}
-                    onChange={(event) =>
-                      setReviewNotes((current) => ({
-                        ...current,
-                        [item.id]: event.target.value,
-                      }))
-                    }
-                    placeholder="Internal notes, payment follow-up, or membership conditions"
-                  />
-                </label>
-                <div className={styles.actions}>
-                  {item.status === "pending" ? (
-                    <>
+                {item.status === "pending" ? (
+                  <>
+                    <div className={styles.reviewGrid}>
+                      <label className={styles.notesField}>
+                        <span>Admin review notes</span>
+                        <textarea
+                          rows={4}
+                          value={reviewNotes[item.id] ?? ""}
+                          onChange={(event) =>
+                            setReviewNotes((current) => ({
+                              ...current,
+                              [item.id]: event.target.value,
+                            }))
+                          }
+                          placeholder="Internal notes, payment follow-up, or membership conditions"
+                        />
+                      </label>
+
+                      <section className={styles.approvalPanel}>
+                        <h3>Approval setup</h3>
+                        <div className={styles.approvalFields}>
+                          <label>
+                            Membership start
+                            <input
+                              type="date"
+                              value={approvalPlans[item.id]?.membershipStartDate ?? ""}
+                              onChange={(event) =>
+                                updateApprovalPlan(item.id, { membershipStartDate: event.target.value })
+                              }
+                            />
+                          </label>
+                          <label>
+                            Renewal date
+                            <input
+                              type="date"
+                              value={approvalPlans[item.id]?.membershipRenewalDate ?? ""}
+                              onChange={(event) =>
+                                updateApprovalPlan(item.id, { membershipRenewalDate: event.target.value })
+                              }
+                            />
+                          </label>
+                          <label>
+                            Billing
+                            <select
+                              value={approvalPlans[item.id]?.billingMode ?? "none"}
+                              onChange={(event) =>
+                                updateApprovalPlan(item.id, {
+                                  billingMode: event.target.value as MembershipApprovalBillingMode,
+                                })
+                              }
+                            >
+                              <option value="none">none</option>
+                              <option value="invoice">create invoice</option>
+                              <option value="schedule">create recurring schedule</option>
+                            </select>
+                          </label>
+
+                          {approvalPlans[item.id]?.billingMode === "invoice" ? (
+                            <>
+                              <label>
+                                Invoice label
+                                <input
+                                  value={approvalPlans[item.id]?.invoiceLabel ?? ""}
+                                  onChange={(event) =>
+                                    updateApprovalPlan(item.id, { invoiceLabel: event.target.value })
+                                  }
+                                />
+                              </label>
+                              <label>
+                                Invoice amount (cents)
+                                <input
+                                  type="number"
+                                  min={0}
+                                  value={approvalPlans[item.id]?.invoiceAmountCents ?? 0}
+                                  onChange={(event) =>
+                                    updateApprovalPlan(item.id, {
+                                      invoiceAmountCents: Number.parseInt(event.target.value || "0", 10),
+                                    })
+                                  }
+                                />
+                              </label>
+                              <label>
+                                Invoice due date
+                                <input
+                                  type="date"
+                                  value={approvalPlans[item.id]?.invoiceDueDate ?? ""}
+                                  onChange={(event) =>
+                                    updateApprovalPlan(item.id, { invoiceDueDate: event.target.value })
+                                  }
+                                />
+                              </label>
+                            </>
+                          ) : null}
+
+                          {approvalPlans[item.id]?.billingMode === "schedule" ? (
+                            <>
+                              <label>
+                                Schedule frequency
+                                <select
+                                  value={approvalPlans[item.id]?.scheduleFrequency ?? "annual"}
+                                  onChange={(event) =>
+                                    updateApprovalPlan(item.id, {
+                                      scheduleFrequency: event.target.value as "annual" | "monthly" | "custom",
+                                    })
+                                  }
+                                >
+                                  <option value="annual">annual</option>
+                                  <option value="monthly">monthly</option>
+                                  <option value="custom">custom</option>
+                                </select>
+                              </label>
+                              <label>
+                                Schedule amount (cents)
+                                <input
+                                  type="number"
+                                  min={0}
+                                  value={approvalPlans[item.id]?.scheduleAmountCents ?? 0}
+                                  onChange={(event) =>
+                                    updateApprovalPlan(item.id, {
+                                      scheduleAmountCents: Number.parseInt(event.target.value || "0", 10),
+                                    })
+                                  }
+                                />
+                              </label>
+                              <label>
+                                First due date
+                                <input
+                                  type="date"
+                                  value={approvalPlans[item.id]?.scheduleNextDueDate ?? ""}
+                                  onChange={(event) =>
+                                    updateApprovalPlan(item.id, { scheduleNextDueDate: event.target.value })
+                                  }
+                                />
+                              </label>
+                              <label className={styles.fullWidth}>
+                                Schedule note
+                                <input
+                                  value={approvalPlans[item.id]?.scheduleNotes ?? ""}
+                                  onChange={(event) =>
+                                    updateApprovalPlan(item.id, { scheduleNotes: event.target.value })
+                                  }
+                                />
+                              </label>
+                            </>
+                          ) : null}
+
+                          <label className={styles.checkboxField}>
+                            <input
+                              type="checkbox"
+                              checked={approvalPlans[item.id]?.createSpouseLead ?? false}
+                              disabled={!item.spouseEmail}
+                              onChange={(event) =>
+                                updateApprovalPlan(item.id, { createSpouseLead: event.target.checked })
+                              }
+                            />
+                            <span>
+                              Create spouse CRM lead
+                              {item.spouseEmail ? ` (${item.spouseEmail})` : " (requires spouse email)"}
+                            </span>
+                          </label>
+                        </div>
+                      </section>
+                    </div>
+
+                    <div className={styles.actions}>
                       <button type="button" onClick={() => void applyDecision(item.id, "decline")} disabled={workingId === item.id}>
                         {workingId === item.id ? "Working..." : "Decline"}
                       </button>
                       <button type="button" className={styles.primaryButton} onClick={() => void applyDecision(item.id, "approve")} disabled={workingId === item.id}>
-                        {workingId === item.id ? "Working..." : "Approve and welcome"}
+                        {workingId === item.id ? "Working..." : "Approve and provision"}
                       </button>
-                    </>
-                  ) : (
-                    <p className={styles.muted}>Reviewed {item.reviewedAt ? new Date(item.reviewedAt).toLocaleString() : ""}</p>
-                  )}
-                </div>
+                    </div>
+                  </>
+                ) : (
+                  <p className={styles.muted}>Reviewed {item.reviewedAt ? new Date(item.reviewedAt).toLocaleString() : ""}</p>
+                )}
               </section>
             </article>
           ))
