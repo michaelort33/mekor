@@ -47,6 +47,21 @@ type FamilyOverview = {
     expiresAt: string;
     createdAt: string;
   }>;
+  joinRequests: Array<{
+    id: number;
+    requestorUserId: number;
+    requestorDisplayName: string;
+    requestedRoleInFamily: "primary_adult" | "adult" | "child" | "dependent";
+    status: "pending" | "accepted" | "declined" | "revoked";
+    note: string;
+    createdAt: string;
+    respondedAt: string | null;
+  }>;
+  duesByMember: Array<{
+    userId: number;
+    openInvoiceCount: number;
+    totalOpenAmountCents: number;
+  }>;
   canManageInvites: boolean;
 };
 
@@ -67,6 +82,13 @@ const initialInviteForm: CreateInviteForm = {
 function isInvitee(invite: FamilyOverview["invites"][number], actor: FamilyOverview["actor"]) {
   if (invite.inviteeUserId && invite.inviteeUserId === actor.id) return true;
   return Boolean(invite.inviteeEmail && invite.inviteeEmail.toLowerCase() === actor.email.toLowerCase());
+}
+
+function formatMoney(cents: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(cents / 100);
 }
 
 export default function AccountFamilyPage() {
@@ -202,12 +224,20 @@ export default function AccountFamilyPage() {
     () => overview?.invites.filter((invite) => (inviteStatusFilter ? invite.status === inviteStatusFilter : invite.status === "pending")) ?? [],
     [inviteStatusFilter, overview],
   );
+  const duesByUserId = useMemo(
+    () => new Map((overview?.duesByMember ?? []).map((row) => [row.userId, row])),
+    [overview],
+  );
 
   const shellStats = overview
     ? [
         { label: "Household members", value: String(overview.members.length), hint: overview.family ? overview.family.familyName : "No active family yet" },
         { label: "Pending invites", value: String(pendingInvites.length), hint: overview.canManageInvites ? "You can manage household access" : "Read-only access" },
-        { label: "Total invites", value: String(overview.invites.length), hint: "Invitation history" },
+        {
+          label: "Open household dues",
+          value: formatMoney(overview.duesByMember.reduce((sum, row) => sum + row.totalOpenAmountCents, 0)),
+          hint: `${overview.duesByMember.reduce((sum, row) => sum + row.openInvoiceCount, 0)} invoice(s) across household`,
+        },
       ]
     : [];
 
@@ -334,6 +364,34 @@ export default function AccountFamilyPage() {
                     <p>
                       {member.email} · {member.roleInFamily} · {member.membershipStatus}
                     </p>
+                    {duesByUserId.get(member.userId) ? (
+                      <p>
+                        {formatMoney(duesByUserId.get(member.userId)!.totalOpenAmountCents)} open ·{" "}
+                        {duesByUserId.get(member.userId)!.openInvoiceCount} invoice(s)
+                      </p>
+                    ) : (
+                      <p>No open dues.</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className={`${styles.card} internal-card`}>
+            <h2>Join requests</h2>
+            {overview.joinRequests.length === 0 ? (
+              <p>No household join requests yet.</p>
+            ) : (
+              <ul className={styles.list}>
+                {overview.joinRequests.map((request) => (
+                  <li key={request.id}>
+                    <strong>{request.requestorDisplayName}</strong>
+                    <p>
+                      {request.requestedRoleInFamily} · {request.status} · requested{" "}
+                      {new Date(request.createdAt).toLocaleString()}
+                    </p>
+                    {request.note ? <p>{request.note}</p> : null}
                   </li>
                 ))}
               </ul>

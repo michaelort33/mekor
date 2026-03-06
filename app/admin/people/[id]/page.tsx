@@ -74,8 +74,18 @@ type PersonInvitation = {
   createdAt: string;
 };
 
+type PersonContact = {
+  id: number;
+  type: "email" | "phone" | "whatsapp";
+  value: string;
+  isPrimary: boolean;
+  verifiedAt: string | null;
+  createdAt: string;
+};
+
 type PersonPayload = {
   person: PersonDetail;
+  contacts: PersonContact[];
   timeline: TimelineEvent[];
   invitations: PersonInvitation[];
   deliveries: PersonDelivery[];
@@ -411,6 +421,23 @@ export default function AdminPersonDetailPage() {
               currency: "USD",
             })}
           </p>
+        </article>
+
+        <article className={styles.card}>
+          <h2>Contact Methods</h2>
+          {data.contacts.length === 0 ? (
+            <p className={styles.meta}>No saved contact methods yet.</p>
+          ) : (
+            <ul className={styles.list}>
+              {data.contacts.map((contact) => (
+                <li key={contact.id}>
+                  <strong>{contact.type}</strong> · {contact.value}
+                  {contact.isPrimary ? " · primary" : ""}
+                  {contact.verifiedAt ? ` · verified ${new Date(contact.verifiedAt).toLocaleDateString()}` : ""}
+                </li>
+              ))}
+            </ul>
+          )}
         </article>
       </section>
 
