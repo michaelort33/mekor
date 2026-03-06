@@ -78,6 +78,8 @@ export default function AccountDuesPage() {
     [data.payments, paymentStatusFilter],
   );
 
+  const primaryRenewalInvoice = data.openInvoices[0] ?? null;
+
   useEffect(() => {
     async function load() {
       const response = await fetch("/api/account/dues");
@@ -156,7 +158,23 @@ export default function AccountDuesPage() {
       ]}
       activeSection="dues"
       stats={shellStats}
-      actions={<button type="button" className={memberShellStyles.secondaryButton} disabled={portalLoading} onClick={openPortal}>{portalLoading ? "Opening..." : "Manage payment methods"}</button>}
+      actions={
+        <>
+          {primaryRenewalInvoice ? (
+            <button
+              type="button"
+              className={memberShellStyles.primaryButton}
+              disabled={checkoutLoadingId === primaryRenewalInvoice.id}
+              onClick={() => payInvoice(primaryRenewalInvoice.id)}
+            >
+              {checkoutLoadingId === primaryRenewalInvoice.id ? "Opening..." : "Click to Renew"}
+            </button>
+          ) : null}
+          <button type="button" className={memberShellStyles.secondaryButton} disabled={portalLoading} onClick={openPortal}>
+            {portalLoading ? "Opening..." : "Manage payment methods"}
+          </button>
+        </>
+      }
     >
 
       <section className={memberShellStyles.toolbar}>

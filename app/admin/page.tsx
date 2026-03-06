@@ -7,6 +7,8 @@ const DESCRIPTIONS: Record<string, string> = {
   "/admin/membership-applications": "Review hosted membership applications and approve applicants into the member flow.",
   "/admin/people": "Search leads and members, update records, and open individual profiles.",
   "/admin/users": "Adjust account roles, visibility, renewal dates, and automation settings.",
+  "/admin/campaigns": "Create fundraising campaigns, launch public links, and track active appeals.",
+  "/admin/payments": "Reconcile multi-source payments, classify payers, and generate tax reporting.",
   "/admin/invitations": "Send onboarding links, track status, and resend or revoke invites.",
   "/admin/messages": "Run quick campaigns and review delivery history in one place.",
   "/admin/dues": "Manage schedules, invoices, balances, and manual dues actions.",

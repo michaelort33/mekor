@@ -446,6 +446,8 @@ a {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .native-nav__cta-wrap {
@@ -700,6 +702,8 @@ a {
 }
 
 .native-nav__mobile-footer {
+  display: grid;
+  gap: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--native-nav-border);
 }
@@ -733,7 +737,7 @@ body.native-nav--mobile-open {
   overflow: hidden;
 }
 
-@media (max-width: 1320px) {
+@media (max-width: 1480px) {
   .native-nav__container {
     padding: 12px 14px;
     gap: 10px;

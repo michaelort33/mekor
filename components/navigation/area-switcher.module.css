@@ -1,0 +1,97 @@
+.switcher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.label {
+  color: #7b6343;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  border: 1px solid #bfd0df;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #274d6f;
+  padding: 0 13px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 130ms ease, border-color 130ms ease, color 130ms ease, transform 130ms ease;
+}
+
+.link:hover,
+.link:focus-visible {
+  border-color: #5a82aa;
+  background: #edf4fc;
+  color: #173f63;
+  outline: 2px solid rgba(67, 124, 178, 0.18);
+  outline-offset: 2px;
+  transform: translateY(-1px);
+}
+
+.linkCurrent {
+  border-color: #2f6396;
+  background: linear-gradient(180deg, #31689d 0%, #25527d 100%);
+  color: #f7fbff;
+}
+
+.linkCurrent:hover,
+.linkCurrent:focus-visible {
+  border-color: #25527d;
+  background: linear-gradient(180deg, #2d6193 0%, #214a71 100%);
+  color: #f7fbff;
+}
+
+.linkSignIn {
+  border-style: dashed;
+  color: #4b6985;
+}
+
+.switcher--compact .label {
+  display: none;
+}
+
+.switcher--mobile {
+  align-items: stretch;
+}
+
+.switcher--mobile .label {
+  font-size: 0.7rem;
+}
+
+.switcher--mobile .links {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+}
+
+.switcher--mobile .link {
+  width: 100%;
+  min-height: 44px;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .switcher--default .label {
+    display: none;
+  }
+}

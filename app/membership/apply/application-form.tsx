@@ -142,6 +142,20 @@ export function MembershipApplicationForm() {
       return;
     }
 
+    if (payload.preferredPaymentMethod === "credit_card") {
+      const checkoutResponse = await fetch(`/api/membership-applications/${data.applicationId}/checkout`, {
+        method: "POST",
+      });
+      const checkoutPayload = (await checkoutResponse.json().catch(() => ({}))) as { error?: string; url?: string };
+      if (!checkoutResponse.ok || !checkoutPayload.url) {
+        setError(checkoutPayload.error || "Application saved, but payment checkout could not be started.");
+        setSubmitting(false);
+        return;
+      }
+      window.location.assign(checkoutPayload.url);
+      return;
+    }
+
     setSuccess({ applicationId: data.applicationId });
     setSubmitting(false);
     setForm(initialState);

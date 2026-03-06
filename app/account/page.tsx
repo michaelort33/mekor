@@ -186,6 +186,7 @@ export default function AccountDashboardPage() {
       actions={
         <>
           <Link href="/account/profile" className={memberShellStyles.actionPill}>Profile</Link>
+          <Link href="/account/payments" className={memberShellStyles.actionPill}>Payments</Link>
           <Link href="/account/dues" className={memberShellStyles.actionPill}>Dues</Link>
           <Link href="/account/member-events" className={memberShellStyles.actionPill}>Host events</Link>
           <Link href="/account/inbox" className={memberShellStyles.actionPill}>Inbox</Link>

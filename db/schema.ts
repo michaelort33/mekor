@@ -91,6 +91,7 @@ export const peopleStatusEnum = pgEnum("people_status", [
   "lead",
   "invited",
   "visitor",
+  "guest",
   "member",
   "admin",
   "super_admin",
@@ -98,6 +99,36 @@ export const peopleStatusEnum = pgEnum("people_status", [
 ]);
 export const contactMethodTypeEnum = pgEnum("contact_method_type", ["email", "phone", "whatsapp"]);
 export const communicationPreferredChannelEnum = pgEnum("communication_preferred_channel", ["email", "sms", "whatsapp"]);
+export const paymentSourceEnum = pgEnum("payment_source", [
+  "stripe",
+  "paypal",
+  "zelle",
+  "flipcause",
+  "network_for_good",
+  "chesed",
+  "manual",
+  "other",
+]);
+export const paymentKindEnum = pgEnum("payment_kind", [
+  "donation",
+  "membership_dues",
+  "campaign_donation",
+  "event",
+  "goods_services",
+  "other",
+]);
+export const paymentClassificationStatusEnum = pgEnum("payment_classification_status", [
+  "unreconciled",
+  "auto_matched",
+  "manually_matched",
+]);
+export const taxDeductibilityEnum = pgEnum("tax_deductibility", [
+  "deductible",
+  "partially_deductible",
+  "non_deductible",
+]);
+export const paymentCampaignStatusEnum = pgEnum("payment_campaign_status", ["draft", "active", "closed", "archived"]);
+export const taxDocumentTypeEnum = pgEnum("tax_document_type", ["receipt", "year_end_letter"]);
 export const membershipPipelineEventTypeEnum = pgEnum("membership_pipeline_event_type", [
   "lead_created",
   "tour_attended",
@@ -631,6 +662,7 @@ export const stripeCustomers = pgTable("stripe_customers", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+
 export const duesSchedules = pgTable(
   "dues_schedules",
   {
@@ -1073,6 +1105,111 @@ export const membershipApplications = pgTable(
     statusCreatedAtIdx: index("membership_applications_status_created_at_idx").on(table.status, table.createdAt),
     emailCreatedAtIdx: index("membership_applications_email_created_at_idx").on(table.email, table.createdAt),
     reviewerStatusIdx: index("membership_applications_reviewer_status_idx").on(table.reviewedByUserId, table.status),
+  }),
+);
+
+export const paymentCampaigns = pgTable(
+  "payment_campaigns",
+  {
+    id: serial("id").primaryKey(),
+    createdByUserId: integer("created_by_user_id")
+      .notNull()
+      .references(() => users.id),
+    title: varchar("title", { length: 180 }).notNull(),
+    slug: varchar("slug", { length: 200 }).notNull().unique(),
+    description: text("description").notNull().default(""),
+    designationLabel: varchar("designation_label", { length: 160 }).notNull().default("General donation"),
+    targetAmountCents: integer("target_amount_cents"),
+    suggestedAmountCents: integer("suggested_amount_cents"),
+    status: paymentCampaignStatusEnum("status").notNull().default("draft"),
+    shareablePath: varchar("shareable_path", { length: 255 }).notNull().unique(),
+    launchedAt: timestamp("launched_at"),
+    closedAt: timestamp("closed_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    statusLaunchedIdx: index("payment_campaigns_status_launched_idx").on(table.status, table.launchedAt),
+    createdByStatusIdx: index("payment_campaigns_created_by_status_idx").on(table.createdByUserId, table.status),
+  }),
+);
+
+export const paymentsLedger = pgTable(
+  "payments_ledger",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id").references(() => people.id),
+    userId: integer("user_id").references(() => users.id),
+    familyId: integer("family_id").references(() => families.id),
+    duesInvoiceId: integer("dues_invoice_id").references(() => duesInvoices.id),
+    membershipApplicationId: integer("membership_application_id").references(() => membershipApplications.id),
+    eventRegistrationId: integer("event_registration_id").references(() => eventRegistrations.id),
+    campaignId: integer("campaign_id").references(() => paymentCampaigns.id),
+    source: paymentSourceEnum("source").notNull().default("manual"),
+    sourceLabel: varchar("source_label", { length: 120 }).notNull().default(""),
+    externalPaymentId: varchar("external_payment_id", { length: 255 }).notNull().default(""),
+    externalReference: varchar("external_reference", { length: 255 }).notNull().default(""),
+    status: paymentStatusEnum("status").notNull().default("pending"),
+    kind: paymentKindEnum("kind").notNull().default("donation"),
+    classificationStatus: paymentClassificationStatusEnum("classification_status").notNull().default("unreconciled"),
+    taxDeductibility: taxDeductibilityEnum("tax_deductibility").notNull().default("deductible"),
+    amountCents: integer("amount_cents").notNull(),
+    deductibleAmountCents: integer("deductible_amount_cents").notNull().default(0),
+    goodsServicesValueCents: integer("goods_services_value_cents").notNull().default(0),
+    currency: varchar("currency", { length: 3 }).notNull().default("usd"),
+    designation: varchar("designation", { length: 180 }).notNull().default("General donation"),
+    payerDisplayName: varchar("payer_display_name", { length: 180 }).notNull().default(""),
+    payerEmail: varchar("payer_email", { length: 255 }).notNull().default(""),
+    payerPhone: varchar("payer_phone", { length: 60 }).notNull().default(""),
+    thankYouTemplateVersion: varchar("thank_you_template_version", { length: 60 }).notNull().default("v1"),
+    receiptNumber: varchar("receipt_number", { length: 80 }).notNull().default(""),
+    receiptUrl: text("receipt_url").notNull().default(""),
+    receiptGeneratedAt: timestamp("receipt_generated_at"),
+    yearEndLetterUrl: text("year_end_letter_url").notNull().default(""),
+    yearEndLetterGeneratedAt: timestamp("year_end_letter_generated_at"),
+    notes: text("notes").notNull().default(""),
+    metadataJson: json("metadata_json").$type<Record<string, unknown>>().notNull().default({}),
+    paidAt: timestamp("paid_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    personPaidAtIdx: index("payments_ledger_person_paid_at_idx").on(table.personId, table.paidAt),
+    familyPaidAtIdx: index("payments_ledger_family_paid_at_idx").on(table.familyId, table.paidAt),
+    userPaidAtIdx: index("payments_ledger_user_paid_at_idx").on(table.userId, table.paidAt),
+    campaignPaidAtIdx: index("payments_ledger_campaign_paid_at_idx").on(table.campaignId, table.paidAt),
+    sourceStatusPaidAtIdx: index("payments_ledger_source_status_paid_at_idx").on(table.source, table.status, table.paidAt),
+    classificationPaidAtIdx: index("payments_ledger_classification_paid_at_idx").on(
+      table.classificationStatus,
+      table.paidAt,
+    ),
+    externalSourceIdx: index("payments_ledger_external_source_idx").on(
+      table.source,
+      table.externalPaymentId,
+    ),
+  }),
+);
+
+export const taxDocuments = pgTable(
+  "tax_documents",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id").references(() => people.id),
+    familyId: integer("family_id").references(() => families.id),
+    paymentId: integer("payment_id").references(() => paymentsLedger.id),
+    documentType: taxDocumentTypeEnum("document_type").notNull(),
+    taxYear: integer("tax_year"),
+    title: varchar("title", { length: 180 }).notNull(),
+    documentNumber: varchar("document_number", { length: 80 }).notNull().unique(),
+    fileUrl: text("file_url").notNull().default(""),
+    payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    personTypeYearIdx: index("tax_documents_person_type_year_idx").on(table.personId, table.documentType, table.taxYear),
+    familyTypeYearIdx: index("tax_documents_family_type_year_idx").on(table.familyId, table.documentType, table.taxYear),
+    paymentTypeIdx: index("tax_documents_payment_type_idx").on(table.paymentId, table.documentType),
   }),
 );
 

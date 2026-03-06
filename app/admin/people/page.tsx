@@ -8,7 +8,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
 import styles from "./page.module.css";
 
-type PersonStatus = "lead" | "invited" | "visitor" | "member" | "admin" | "super_admin" | "inactive";
+type PersonStatus = "lead" | "invited" | "visitor" | "guest" | "member" | "admin" | "super_admin" | "inactive";
 
 type PersonRow = {
   id: number;
@@ -37,7 +37,7 @@ type PageInfo = {
   limit: number;
 };
 
-const STATUS_OPTIONS: PersonStatus[] = ["lead", "invited", "visitor", "member", "admin", "super_admin", "inactive"];
+const STATUS_OPTIONS: PersonStatus[] = ["lead", "invited", "visitor", "guest", "member", "admin", "super_admin", "inactive"];
 
 type CreateLeadForm = {
   displayName: string;

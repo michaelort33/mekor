@@ -1,0 +1,105 @@
+.stack {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.card {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field input,
+.field select {
+  min-height: 2.8rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(23, 32, 51, 0.14);
+  background: #fff;
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.button {
+  border: none;
+  border-radius: 999px;
+  background: #172033;
+  color: #fff;
+  padding: 0.8rem 1.2rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ghostButton {
+  border: 1px solid rgba(23, 32, 51, 0.12);
+  border-radius: 999px;
+  background: #fff;
+  color: #172033;
+  padding: 0.72rem 1rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.item {
+  border: 1px solid rgba(23, 32, 51, 0.1);
+  border-radius: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  display: grid;
+  gap: 0.8rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  color: rgba(23, 32, 51, 0.72);
+}
+
+.assignBox {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(23, 32, 51, 0.08);
+}
+
+.matchList {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.matchButton {
+  border: 1px solid rgba(23, 32, 51, 0.1);
+  border-radius: 0.85rem;
+  background: #f8fafc;
+  text-align: left;
+  padding: 0.7rem 0.8rem;
+  cursor: pointer;
+}
+
+.error {
+  color: #9f1732;
+  margin: 0;
+}

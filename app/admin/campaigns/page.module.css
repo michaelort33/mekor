@@ -1,0 +1,90 @@
+.stack {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.card {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+  min-height: 2.8rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(23, 32, 51, 0.14);
+  background: #fff;
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+}
+
+.field textarea {
+  min-height: 7rem;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.button {
+  border: none;
+  border-radius: 999px;
+  background: #172033;
+  color: #fff;
+  padding: 0.8rem 1.2rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.item {
+  border: 1px solid rgba(23, 32, 51, 0.1);
+  border-radius: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  display: grid;
+  gap: 0.8rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  color: rgba(23, 32, 51, 0.72);
+}
+
+.link {
+  color: #0b5cad;
+  word-break: break-all;
+}
+
+.error {
+  color: #9f1732;
+  margin: 0;
+}
+
+.notice {
+  color: #17603c;
+  margin: 0;
+}

@@ -1,5 +1,9 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { AreaSwitcher } from "@/components/navigation/area-switcher";
 import styles from "./members-breadcrumbs.module.css";
 
 export type BreadcrumbItem = {
@@ -10,6 +14,7 @@ export type BreadcrumbItem = {
 export type MembersNavSection =
   | "dashboard"
   | "profile"
+  | "payments"
   | "dues"
   | "family"
   | "inbox"
@@ -29,6 +34,7 @@ type MembersBreadcrumbsProps = {
 const memberLinks: Array<{ section: MembersNavSection; label: string; href: string }> = [
   { section: "dashboard", label: "Dashboard", href: "/account" },
   { section: "profile", label: "Profile", href: "/account/profile" },
+  { section: "payments", label: "Payments", href: "/account/payments" },
   { section: "dues", label: "Dues", href: "/account/dues" },
   { section: "host-events", label: "Host Events", href: "/account/member-events" },
   { section: "family", label: "Family", href: "/account/family" },
@@ -48,7 +54,10 @@ export function MembersBreadcrumbs({
   context = "member",
   activeSection = "none",
 }: MembersBreadcrumbsProps) {
+  const pathname = usePathname();
   const links = context === "member" ? memberLinks : publicLinks;
+  const currentPath = pathname ?? "/";
+  const currentArea = context === "member" ? "member" : "site";
 
   return (
     <nav className={styles.wrap} aria-label="Members navigation">
@@ -71,9 +80,12 @@ export function MembersBreadcrumbs({
         </div>
 
         <div className={styles.actions}>
-          <Link href="/" className={styles.pillAction}>
-            Site Home
-          </Link>
+          <AreaSwitcher
+            currentPath={currentPath}
+            currentArea={currentArea}
+            includeSignInLinks={context === "public"}
+            variant="compact"
+          />
           {context === "member" ? (
             <form action="/logout" method="post">
               <button type="submit" className={styles.pillAction}>

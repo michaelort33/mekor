@@ -18,7 +18,7 @@ type UserRole = "visitor" | "member" | "admin" | "super_admin";
 type ResolvedRecipient = {
   personId: number;
   userId: number | null;
-  status: "lead" | "invited" | "visitor" | "member" | "admin" | "super_admin" | "inactive";
+  status: "lead" | "invited" | "visitor" | "guest" | "member" | "admin" | "super_admin" | "inactive";
   displayName: string;
   email: string;
   phone: string;

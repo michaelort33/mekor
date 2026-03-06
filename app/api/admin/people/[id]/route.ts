@@ -22,7 +22,7 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-const PEOPLE_STATUSES = ["lead", "invited", "visitor", "member", "admin", "super_admin", "inactive"] as const;
+const PEOPLE_STATUSES = ["lead", "invited", "visitor", "guest", "member", "admin", "super_admin", "inactive"] as const;
 const statusSchema = z.enum(PEOPLE_STATUSES);
 
 const updatePersonSchema = z.object({

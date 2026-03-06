@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { AdminLogoutButton } from "@/components/admin/logout-button";
+import { AreaSwitcher } from "@/components/navigation/area-switcher";
 import styles from "./admin-shell.module.css";
 
 export type AdminRouteItem = {
@@ -14,6 +15,8 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
   { href: "/admin/membership-applications", label: "Applications" },
   { href: "/admin/people", label: "People" },
   { href: "/admin/users", label: "Users" },
+  { href: "/admin/campaigns", label: "Campaigns" },
+  { href: "/admin/payments", label: "Payments" },
   { href: "/admin/invitations", label: "Invitations" },
   { href: "/admin/messages", label: "Messages" },
   { href: "/admin/dues", label: "Dues" },
@@ -69,13 +72,16 @@ export function AdminShell({
   return (
     <main className={`internal-page ${styles.shell}`}>
       <section className={styles.headerCard}>
-        <div className={styles.breadcrumbs} aria-label="Breadcrumbs">
-          {trail.map((item, index) => (
-            <span key={`${item.label}-${index}`} className={item.href ? styles.breadcrumbLink : styles.breadcrumbCurrent}>
-              {item.href ? <Link href={item.href}>{item.label}</Link> : item.label}
-              {index < trail.length - 1 ? <span className={styles.breadcrumbSeparator}>/</span> : null}
-            </span>
-          ))}
+        <div className={styles.headerMeta}>
+          <div className={styles.breadcrumbs} aria-label="Breadcrumbs">
+            {trail.map((item, index) => (
+              <span key={`${item.label}-${index}`} className={item.href ? styles.breadcrumbLink : styles.breadcrumbCurrent}>
+                {item.href ? <Link href={item.href}>{item.label}</Link> : item.label}
+                {index < trail.length - 1 ? <span className={styles.breadcrumbSeparator}>/</span> : null}
+              </span>
+            ))}
+          </div>
+          <AreaSwitcher currentPath={currentPath} currentArea="admin" variant="compact" />
         </div>
 
         <div className={styles.headerMain}>

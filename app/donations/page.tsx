@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import { DonationCheckoutForm } from "@/components/payments/donation-checkout-form";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
@@ -164,6 +165,16 @@ export default async function DonationsPage() {
           By check: make checks payable to <strong>Mekor Habracha</strong> and mail to{" "}
           <strong>1500 Walnut St #206, Philadelphia, PA 19102</strong>, c/o Ellen Geller.
         </p>
+      </SectionCard>
+
+      <SectionCard tone="blue">
+        <DonationCheckoutForm
+          title="Donate inside Mekor"
+          description="This intake flow keeps the donation purpose explicit, preserves donor details for receipts, and standardizes classification across sources."
+          defaultAmountCents={3600}
+          defaultDesignation="General donation"
+          returnPath="/donations"
+        />
       </SectionCard>
 
       <SectionCard>

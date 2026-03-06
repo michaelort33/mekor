@@ -254,6 +254,7 @@ export default function AccountFamilyPage() {
       stats={shellStats}
       actions={
         <>
+          <Link href="/account/payments" className={memberShellStyles.actionPill}>Household payments</Link>
           <Link href="/account/inbox" className={memberShellStyles.actionPill}>Open inbox</Link>
           <Link href="/account" className={memberShellStyles.actionPill}>Account dashboard</Link>
         </>

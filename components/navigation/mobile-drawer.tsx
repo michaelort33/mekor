@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { AreaSwitcher } from "@/components/navigation/area-switcher";
 import { isNavigationPathActive } from "@/lib/navigation/path";
 import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
+import type { UserSessionRole } from "@/lib/auth/session";
 import type { NavItem } from "@/lib/navigation/site-menu";
 import { isNavGroup } from "@/lib/navigation/site-menu";
 
@@ -16,7 +18,7 @@ type MobileDrawerProps = {
   onClose: () => void;
   drawerId: string;
   titleId: string;
-  isSignedIn: boolean;
+  role: UserSessionRole | null;
   isCheckingAuth: boolean;
 };
 
@@ -39,7 +41,7 @@ export function MobileDrawer({
   onClose,
   drawerId,
   titleId,
-  isSignedIn,
+  role,
   isCheckingAuth,
 }: MobileDrawerProps) {
   const initialExpanded = useMemo(() => {
@@ -226,7 +228,15 @@ export function MobileDrawer({
       </nav>
 
       <div className="native-nav__mobile-footer">
-        <NavCta isSignedIn={isSignedIn} isCheckingAuth={isCheckingAuth} />
+        <AreaSwitcher
+          currentPath={currentPath}
+          currentArea="site"
+          role={role}
+          isCheckingAuth={isCheckingAuth}
+          includeSignInLinks
+          variant="mobile"
+        />
+        <NavCta isSignedIn={role !== null} isCheckingAuth={isCheckingAuth} />
       </div>
     </div>
   );

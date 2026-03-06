@@ -9,7 +9,7 @@ import adminStyles from "@/components/admin/admin-shell.module.css";
 import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import styles from "./page.module.css";
 
-type PersonStatus = "lead" | "invited" | "visitor" | "member" | "admin" | "super_admin" | "inactive";
+type PersonStatus = "lead" | "invited" | "visitor" | "guest" | "member" | "admin" | "super_admin" | "inactive";
 
 type PersonDetail = {
   id: number;
@@ -92,7 +92,7 @@ type PersonPayload = {
   deliveries: PersonDelivery[];
 };
 
-const STATUS_OPTIONS: PersonStatus[] = ["lead", "invited", "visitor", "member", "admin", "super_admin", "inactive"];
+const STATUS_OPTIONS: PersonStatus[] = ["lead", "invited", "visitor", "guest", "member", "admin", "super_admin", "inactive"];
 
 export default function AdminPersonDetailPage() {
   const params = useParams<{ id: string }>();

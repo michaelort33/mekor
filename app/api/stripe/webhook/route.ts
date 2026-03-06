@@ -3,9 +3,10 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 
 import { getDb } from "@/db/client";
-import { duesInvoices, duesPayments, eventRegistrations, users } from "@/db/schema";
+import { duesInvoices, duesPayments, eventRegistrations, paymentsLedger, users } from "@/db/schema";
 import { sendDuesNotification } from "@/lib/dues/notifications";
 import { promoteWaitlistForEvent } from "@/lib/events/waitlist";
+import { ensureTaxReceiptForPayment } from "@/lib/payments/service";
 import { getStripeClient, getStripeWebhookSecret } from "@/lib/stripe/client";
 
 function getMetadata(value: Stripe.Checkout.Session | Stripe.PaymentIntent) {
@@ -185,6 +186,20 @@ async function handleDuesCheckoutExpired(session: Stripe.Checkout.Session) {
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   const metadata = getMetadata(paymentIntent);
+  if (metadata.kind === "donation") {
+    const paymentLedgerId = Number(metadata.paymentLedgerId);
+    if (Number.isInteger(paymentLedgerId) && paymentLedgerId > 0) {
+      await getDb()
+        .update(paymentsLedger)
+        .set({
+          status: "failed",
+          externalReference: paymentIntent.id,
+          updatedAt: new Date(),
+        })
+        .where(eq(paymentsLedger.id, paymentLedgerId));
+    }
+    return;
+  }
   if (metadata.kind !== "dues") return;
   const invoiceId = Number(metadata.invoiceId);
   if (!Number.isInteger(invoiceId) || invoiceId < 1) return;
@@ -235,6 +250,51 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   }
 }
 
+async function handleDonationCheckoutCompleted(session: Stripe.Checkout.Session) {
+  const metadata = getMetadata(session);
+  const paymentLedgerId = Number(metadata.paymentLedgerId);
+  if (!Number.isInteger(paymentLedgerId) || paymentLedgerId < 1) return;
+
+  const paymentIntentId =
+    typeof session.payment_intent === "string"
+      ? session.payment_intent
+      : (session.payment_intent?.id ?? null);
+
+  const [payment] = await getDb()
+    .update(paymentsLedger)
+    .set({
+      status: "succeeded",
+      externalReference: paymentIntentId ?? "",
+      paidAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .where(eq(paymentsLedger.id, paymentLedgerId))
+    .returning({
+      id: paymentsLedger.id,
+      payerEmail: paymentsLedger.payerEmail,
+      payerDisplayName: paymentsLedger.payerDisplayName,
+      designation: paymentsLedger.designation,
+      amountCents: paymentsLedger.amountCents,
+    });
+
+  if (!payment) return;
+
+  await ensureTaxReceiptForPayment(payment.id);
+}
+
+async function handleDonationCheckoutExpired(session: Stripe.Checkout.Session) {
+  const paymentLedgerId = Number(session.metadata?.paymentLedgerId);
+  if (!Number.isInteger(paymentLedgerId) || paymentLedgerId < 1) return;
+
+  await getDb()
+    .update(paymentsLedger)
+    .set({
+      status: "failed",
+      updatedAt: new Date(),
+    })
+    .where(eq(paymentsLedger.id, paymentLedgerId));
+}
+
 export async function POST(request: Request) {
   const signature = request.headers.get("stripe-signature");
   if (!signature) {
@@ -254,6 +314,9 @@ export async function POST(request: Request) {
     if (kind === "event") {
       await handleEventCheckoutCompleted(session);
     }
+    if (kind === "donation") {
+      await handleDonationCheckoutCompleted(session);
+    }
   }
 
   if (event.type === "checkout.session.expired") {
@@ -263,6 +326,9 @@ export async function POST(request: Request) {
     }
     if (session.metadata?.kind === "event") {
       await handleEventCheckoutExpired(session);
+    }
+    if (session.metadata?.kind === "donation") {
+      await handleDonationCheckoutExpired(session);
     }
   }
 

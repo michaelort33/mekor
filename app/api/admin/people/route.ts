@@ -16,7 +16,7 @@ import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
-const PEOPLE_STATUSES = ["lead", "invited", "visitor", "member", "admin", "super_admin", "inactive"] as const;
+const PEOPLE_STATUSES = ["lead", "invited", "visitor", "guest", "member", "admin", "super_admin", "inactive"] as const;
 
 const peopleCursorSchema = z.object({
   createdAt: z.string().datetime(),
