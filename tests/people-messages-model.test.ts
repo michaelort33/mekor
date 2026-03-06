@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { MESSAGE_SEGMENT_LABELS, MESSAGE_SEGMENTS } from "@/lib/messages/segments";
+import { isNewsletterRecipientAllowed } from "@/lib/newsletter/recipients";
 import { userRoleToPersonStatus } from "@/lib/people/status";
 
 test("userRoleToPersonStatus maps account roles to person statuses", () => {
@@ -15,4 +16,46 @@ test("message segment labels cover all configured segments", () => {
   for (const key of MESSAGE_SEGMENTS) {
     assert.ok(MESSAGE_SEGMENT_LABELS[key]);
   }
+});
+
+test("newsletter recipients are blocked by suppression and opt-out preferences", () => {
+  assert.equal(
+    isNewsletterRecipientAllowed({
+      email: "member@example.com",
+      emailOptIn: true,
+      doNotContact: false,
+      suppressed: false,
+    }),
+    true,
+  );
+
+  assert.equal(
+    isNewsletterRecipientAllowed({
+      email: "member@example.com",
+      emailOptIn: false,
+      doNotContact: false,
+      suppressed: false,
+    }),
+    false,
+  );
+
+  assert.equal(
+    isNewsletterRecipientAllowed({
+      email: "member@example.com",
+      emailOptIn: true,
+      doNotContact: true,
+      suppressed: false,
+    }),
+    false,
+  );
+
+  assert.equal(
+    isNewsletterRecipientAllowed({
+      email: "member@example.com",
+      emailOptIn: true,
+      doNotContact: false,
+      suppressed: true,
+    }),
+    false,
+  );
 });
