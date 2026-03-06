@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
+import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import { type newsletterTemplates } from "@/db/schema";
 import styles from "../../new/page.module.css";
 
@@ -359,9 +360,17 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
       return;
     }
 
-    setCampaignNotice(
-      `Campaign sent. ${payload.successCount ?? 0} succeeded, ${payload.failedCount ?? 0} failed.`,
-    );
+    const feedback = buildSendFeedback({
+      label: "Campaign",
+      successCount: payload.successCount ?? 0,
+      failedCount: payload.failedCount ?? 0,
+      skippedCount: 0,
+    });
+    if (feedback.status === "failure") {
+      setCampaignError(feedback.message);
+    } else {
+      setCampaignNotice(feedback.message);
+    }
     setSendingCampaign(false);
     await loadCampaigns();
     router.refresh();

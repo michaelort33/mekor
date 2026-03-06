@@ -7,6 +7,7 @@ import { membershipPipelineEvents, people, userInvitations } from "@/db/schema";
 import { requireSuperAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { sendInvitationEmail } from "@/lib/invitations/email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
+import { persistAfterSuccessfulDelivery } from "@/lib/notifications/persist-after-delivery";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
 type RouteContext = {
@@ -62,68 +63,95 @@ export async function POST(request: Request, context: RouteContext) {
   const expiresAt = invitationExpiryFromNow();
   const email = normalizeUserEmail(person.email);
 
-  const [invitation] = await getDb().transaction(async (tx) => {
-    const [created] = await tx
-      .insert(userInvitations)
-      .values({
-        email,
-        role: parsed.data.role,
-        personId: person.id,
-        invitedByUserId: actor.id,
-        tokenHash,
-        expiresAt,
-        createdAt: now,
-        updatedAt: now,
-      })
-      .returning({
-        id: userInvitations.id,
-        expiresAt: userInvitations.expiresAt,
-      });
-
-    await tx
-      .update(people)
-      .set({
-        status: "invited",
-        invitedAt: now,
-        updatedAt: now,
-      })
-      .where(eq(people.id, person.id));
-
-    await tx.insert(membershipPipelineEvents).values({
-      personId: person.id,
-      actorUserId: actor.id,
-      eventType: "invited",
-      summary: `Invitation sent as ${parsed.data.role}`,
-      payloadJson: {
-        invitationId: created.id,
-        role: parsed.data.role,
-        expiresAt: created.expiresAt.toISOString(),
-      },
-      occurredAt: now,
-      createdAt: now,
-    });
-    return [created];
-  });
-
   const origin = new URL(request.url).origin;
   const acceptUrl = `${origin}/invite/accept?token=${encodeURIComponent(token)}`;
   try {
-    await sendInvitationEmail({
-      toEmail: email,
-      inviterName: actor.email,
-      role: parsed.data.role,
-      acceptUrl,
-      expiresAt: invitation.expiresAt,
+    const invitation = await persistAfterSuccessfulDelivery({
+      deliver: async () => {
+        await sendInvitationEmail({
+          toEmail: email,
+          inviterName: actor.email,
+          role: parsed.data.role,
+          acceptUrl,
+          expiresAt,
+        });
+      },
+      persist: async () => {
+        const [created] = await getDb().transaction(async (tx) => {
+          const [currentPerson] = await tx
+            .select({ id: people.id })
+            .from(people)
+            .where(eq(people.id, person.id))
+            .limit(1);
+
+          if (!currentPerson) {
+            throw new Error("Person not found");
+          }
+
+          const [createdInvitation] = await tx
+            .insert(userInvitations)
+            .values({
+              email,
+              role: parsed.data.role,
+              personId: person.id,
+              invitedByUserId: actor.id,
+              tokenHash,
+              expiresAt,
+              createdAt: now,
+              updatedAt: now,
+            })
+            .returning({
+              id: userInvitations.id,
+              expiresAt: userInvitations.expiresAt,
+            });
+
+          await tx
+            .update(people)
+            .set({
+              status: "invited",
+              invitedAt: now,
+              updatedAt: now,
+            })
+            .where(eq(people.id, person.id));
+
+          await tx.insert(membershipPipelineEvents).values({
+            personId: person.id,
+            actorUserId: actor.id,
+            eventType: "invited",
+            summary: `Invitation sent as ${parsed.data.role}`,
+            payloadJson: {
+              invitationId: createdInvitation.id,
+              role: parsed.data.role,
+              expiresAt: createdInvitation.expiresAt.toISOString(),
+            },
+            occurredAt: now,
+            createdAt: now,
+          });
+          return [createdInvitation];
+        });
+
+        return created;
+      },
+    });
+
+    await writeAdminAuditLog({
+      actorUserId: actor.id,
+      action: "people.invited",
+      targetType: "person",
+      targetId: String(person.id),
+      payload: {
+        invitationId: invitation.id,
+        email,
+        role: parsed.data.role,
+        expiresAt: invitation.expiresAt.toISOString(),
+      },
+    });
+
+    return NextResponse.json({
+      invitationId: invitation.id,
+      expiresAt: invitation.expiresAt.toISOString(),
     });
   } catch (error) {
-    await getDb()
-      .update(userInvitations)
-      .set({
-        revokedAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(eq(userInvitations.id, invitation.id));
-
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Unable to send invitation email",
@@ -131,22 +159,4 @@ export async function POST(request: Request, context: RouteContext) {
       { status: 502 },
     );
   }
-
-  await writeAdminAuditLog({
-    actorUserId: actor.id,
-    action: "people.invited",
-    targetType: "person",
-    targetId: String(person.id),
-    payload: {
-      invitationId: invitation.id,
-      email,
-      role: parsed.data.role,
-      expiresAt: invitation.expiresAt.toISOString(),
-    },
-  });
-
-  return NextResponse.json({
-    invitationId: invitation.id,
-    expiresAt: invitation.expiresAt.toISOString(),
-  });
 }

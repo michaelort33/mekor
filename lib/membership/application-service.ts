@@ -24,8 +24,12 @@ import {
 } from "@/lib/membership/applications";
 import { sendMembershipApprovalEmail } from "@/lib/membership/applications-email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
+import { persistAfterSuccessfulDelivery } from "@/lib/notifications/persist-after-delivery";
 import { ensurePersonByEmail } from "@/lib/people/service";
 import { normalizeUserEmail } from "@/lib/users/validation";
+
+type DrizzleTx = Parameters<Parameters<ReturnType<typeof getDb>["transaction"]>[0]>[0];
+type DbExecutor = ReturnType<typeof getDb> | DrizzleTx;
 
 function asRecord(value: unknown) {
   if (value && typeof value === "object" && !Array.isArray(value)) {
@@ -46,45 +50,28 @@ function applicationSourceLabel(applicationId: number) {
   return `membership_application:${applicationId}`;
 }
 
-async function createMembershipInvitation(input: {
-  email: string;
-  personId: number;
-  actorUserId: number;
-  siteOrigin: string;
-  now: Date;
-}) {
+function createMembershipInvitationDraft(input: { email: string; siteOrigin: string }) {
   const token = generateInvitationToken();
   const tokenHash = hashInvitationToken(token);
   const expiresAt = invitationExpiryFromNow();
-  const [createdInvitation] = await getDb()
-    .insert(userInvitations)
-    .values({
-      email: input.email,
-      role: "member",
-      personId: input.personId,
-      invitedByUserId: input.actorUserId,
-      tokenHash,
-      expiresAt,
-      createdAt: input.now,
-      updatedAt: input.now,
-    })
-    .returning({ id: userInvitations.id });
 
   return {
-    invitationId: createdInvitation.id,
+    email: input.email,
+    tokenHash,
+    expiresAt,
     acceptUrl: `${input.siteOrigin}/invite/accept?token=${encodeURIComponent(token)}`,
   };
 }
 
 async function provisionApprovedMembershipForUser(input: {
+  db: DbExecutor;
   applicationId: number;
   userId: number;
   city: string;
   approvalPlan: MembershipApprovalPlan;
   now: Date;
 }) {
-  const db = getDb();
-  await db
+  await input.db
     .update(users)
     .set({
       role: "member",
@@ -100,7 +87,7 @@ async function provisionApprovedMembershipForUser(input: {
 
   if (input.approvalPlan.billingMode === "schedule") {
     const scheduleMarker = applicationSourceLabel(input.applicationId);
-    const [existingSchedule] = await db
+    const [existingSchedule] = await input.db
       .select({ id: duesSchedules.id })
       .from(duesSchedules)
       .where(and(eq(duesSchedules.userId, input.userId), eq(duesSchedules.notes, scheduleMarker)))
@@ -109,7 +96,7 @@ async function provisionApprovedMembershipForUser(input: {
     if (existingSchedule) {
       duesScheduleId = existingSchedule.id;
     } else {
-      const [createdSchedule] = await db
+      const [createdSchedule] = await input.db
         .insert(duesSchedules)
         .values({
           userId: input.userId,
@@ -128,7 +115,7 @@ async function provisionApprovedMembershipForUser(input: {
   }
 
   if (input.approvalPlan.billingMode === "invoice") {
-    const [existingInvoice] = await db
+    const [existingInvoice] = await input.db
       .select({ id: duesInvoices.id })
       .from(duesInvoices)
       .where(
@@ -145,7 +132,7 @@ async function provisionApprovedMembershipForUser(input: {
     if (existingInvoice) {
       duesInvoiceId = existingInvoice.id;
     } else {
-      const [createdInvoice] = await db
+      const [createdInvoice] = await input.db
         .insert(duesInvoices)
         .values({
           userId: input.userId,
@@ -203,7 +190,7 @@ async function maybeCreateSpouseLead(input: {
     actorUserId: input.actor.id,
   });
 
-  await upsertContactRecords({
+  await upsertContactRecords(getDb(), {
     personId: spouse.personId,
     email: spouseEmail,
     phone: input.application.spousePhone,
@@ -334,8 +321,8 @@ export async function listMembershipApplications(input: {
     .orderBy(desc(membershipApplications.createdAt), desc(membershipApplications.id));
 }
 
-async function upsertCommunicationDefaults(personId: number, now: Date) {
-  await getDb()
+async function upsertCommunicationDefaults(db: DbExecutor, personId: number, now: Date) {
+  await db
     .insert(communicationPreferences)
     .values({
       personId,
@@ -352,8 +339,8 @@ async function upsertCommunicationDefaults(personId: number, now: Date) {
     .onConflictDoNothing();
 }
 
-async function upsertContactRecords(input: { personId: number; email: string; phone: string; now: Date }) {
-  await getDb()
+async function upsertContactRecords(db: DbExecutor, input: { personId: number; email: string; phone: string; now: Date }) {
+  await db
     .insert(contactMethods)
     .values({
       personId: input.personId,
@@ -373,7 +360,7 @@ async function upsertContactRecords(input: { personId: number; email: string; ph
     });
 
   if (input.phone) {
-    await getDb()
+    await db
       .insert(contactMethods)
       .values({
         personId: input.personId,
@@ -418,19 +405,7 @@ export async function approveMembershipApplication(input: {
 
   const normalizedEmail = normalizeUserEmail(application.email);
   const displayName = buildApplicantDisplayName(application);
-  const currentPayloadJson = asRecord(application.payloadJson);
   const approvalPlan = input.approvalPlan;
-
-  const [existingPerson] = await db
-    .select({
-      id: people.id,
-      userId: people.userId,
-      status: people.status,
-      joinedAt: people.joinedAt,
-    })
-    .from(people)
-    .where(eq(people.email, normalizedEmail))
-    .limit(1);
 
   const [existingUser] = await db
     .select({
@@ -441,175 +416,243 @@ export async function approveMembershipApplication(input: {
     .where(eq(users.email, normalizedEmail))
     .limit(1);
 
-  const [person] = existingPerson
-    ? await db
-        .update(people)
-        .set({
-          userId: existingUser?.id ?? existingPerson.userId,
-          status: "member",
-          firstName: application.firstName,
-          lastName: application.lastName,
-          displayName,
+  const invitationDraft = existingUser ? null : createMembershipInvitationDraft({
+    email: normalizedEmail,
+    siteOrigin: input.siteOrigin,
+  });
+
+  return persistAfterSuccessfulDelivery({
+    deliver: async () => {
+      await sendMembershipApprovalEmail({
+        toEmail: normalizedEmail,
+        firstName: application.firstName,
+        membershipLabel: getMembershipCategoryLabel(
+          application.membershipCategory as "single" | "couple_family" | "student",
+        ),
+        loginUrl: `${input.siteOrigin}/login`,
+        acceptUrl: invitationDraft?.acceptUrl,
+      });
+    },
+    persist: async () => {
+      const persisted = await db.transaction(async (tx) => {
+        const [currentApplication] = await tx
+          .select()
+          .from(membershipApplications)
+          .where(eq(membershipApplications.id, input.applicationId))
+          .limit(1);
+
+        if (!currentApplication) {
+          throw new Error("Application not found");
+        }
+        if (currentApplication.status !== "pending") {
+          throw new Error("Only pending applications can be approved");
+        }
+
+        const currentPayloadJson = asRecord(currentApplication.payloadJson);
+        const [currentPerson] = await tx
+          .select({
+            id: people.id,
+            userId: people.userId,
+            status: people.status,
+            joinedAt: people.joinedAt,
+          })
+          .from(people)
+          .where(eq(people.email, normalizedEmail))
+          .limit(1);
+
+        const [currentUser] = await tx
+          .select({
+            id: users.id,
+            role: users.role,
+          })
+          .from(users)
+          .where(eq(users.email, normalizedEmail))
+          .limit(1);
+
+        const [person] = currentPerson
+          ? await tx
+              .update(people)
+              .set({
+                userId: currentUser?.id ?? currentPerson.userId,
+                status: "member",
+                firstName: currentApplication.firstName,
+                lastName: currentApplication.lastName,
+                displayName,
+                email: normalizedEmail,
+                phone: currentApplication.phone,
+                city: currentApplication.city,
+                notes: currentApplication.notes,
+                source: "membership_application",
+                joinedAt: currentPerson.joinedAt ?? now,
+                updatedAt: now,
+              })
+              .where(eq(people.id, currentPerson.id))
+              .returning({ id: people.id })
+          : await tx
+              .insert(people)
+              .values({
+                userId: currentUser?.id ?? null,
+                status: "member",
+                firstName: currentApplication.firstName,
+                lastName: currentApplication.lastName,
+                displayName,
+                email: normalizedEmail,
+                phone: currentApplication.phone,
+                city: currentApplication.city,
+                notes: currentApplication.notes,
+                source: "membership_application",
+                tags: [],
+                invitedAt: null,
+                joinedAt: now,
+                lastContactedAt: null,
+                createdAt: now,
+                updatedAt: now,
+              })
+              .returning({ id: people.id });
+
+        await upsertCommunicationDefaults(tx, person.id, now);
+        await upsertContactRecords(tx, {
+          personId: person.id,
           email: normalizedEmail,
-          phone: application.phone,
-          city: application.city,
-          notes: application.notes,
-          source: "membership_application",
-          joinedAt: existingPerson.joinedAt ?? now,
-          updatedAt: now,
-        })
-        .where(eq(people.id, existingPerson.id))
-        .returning({ id: people.id })
-    : await db
-        .insert(people)
-        .values({
-          userId: existingUser?.id ?? null,
-          status: "member",
-          firstName: application.firstName,
-          lastName: application.lastName,
-          displayName,
-          email: normalizedEmail,
-          phone: application.phone,
-          city: application.city,
-          notes: application.notes,
-          source: "membership_application",
-          tags: [],
-          invitedAt: null,
-          joinedAt: now,
-          lastContactedAt: null,
+          phone: currentApplication.phone,
+          now,
+        });
+
+        let approvalProvisioning = null;
+        if (currentUser) {
+          await tx
+            .update(users)
+            .set({
+              role: "member",
+              displayName,
+              city: currentApplication.city,
+              membershipStartDate: approvalPlan.membershipStartDate,
+              membershipRenewalDate: approvalPlan.membershipRenewalDate,
+              updatedAt: now,
+            })
+            .where(eq(users.id, currentUser.id));
+
+          approvalProvisioning = await provisionApprovedMembershipForUser({
+            db: tx,
+            applicationId: currentApplication.id,
+            userId: currentUser.id,
+            city: currentApplication.city,
+            approvalPlan,
+            now,
+          });
+        }
+
+        let invitationId: number | null = null;
+        if (invitationDraft) {
+          const [createdInvitation] = await tx
+            .insert(userInvitations)
+            .values({
+              email: invitationDraft.email,
+              role: "member",
+              personId: person.id,
+              invitedByUserId: input.actor.id,
+              tokenHash: invitationDraft.tokenHash,
+              expiresAt: invitationDraft.expiresAt,
+              createdAt: now,
+              updatedAt: now,
+            })
+            .returning({ id: userInvitations.id });
+          invitationId = createdInvitation.id;
+        }
+
+        const nextPayloadJson = {
+          ...currentPayloadJson,
+          approvalPlan,
+          approvalProvisioning,
+          spouseLead: null,
+        };
+
+        await tx.insert(membershipPipelineEvents).values({
+          personId: person.id,
+          actorUserId: input.actor.id,
+          eventType: currentPerson?.status === "member" ? "note" : "status_changed",
+          summary:
+            currentPerson?.status === "member"
+              ? "Membership application approved"
+              : `Status changed from ${currentPerson?.status ?? "lead"} to member`,
+          payloadJson: {
+            applicationId: currentApplication.id,
+            membershipCategory: currentApplication.membershipCategory,
+            applicationType: currentApplication.applicationType,
+            invitationId,
+            reviewNotes: input.reviewNotes,
+            approvalPlan,
+            approvalProvisioning,
+            spouseLead: null,
+            householdSummary: {
+              householdMembersCount: currentApplication.householdMembersJson.length,
+              yahrzeitsCount: currentApplication.yahrzeitsJson.length,
+              volunteerInterestsCount: currentApplication.volunteerInterestsJson.length,
+            },
+          },
+          occurredAt: now,
           createdAt: now,
-          updatedAt: now,
-        })
-        .returning({ id: people.id });
+        });
 
-  await upsertCommunicationDefaults(person.id, now);
-  await upsertContactRecords({ personId: person.id, email: normalizedEmail, phone: application.phone, now });
+        await tx
+          .update(membershipApplications)
+          .set({
+            status: "approved",
+            reviewNotes: input.reviewNotes,
+            reviewedAt: now,
+            reviewedByUserId: input.actor.id,
+            approvedPersonId: person.id,
+            invitationId,
+            payloadJson: nextPayloadJson,
+            updatedAt: now,
+          })
+          .where(eq(membershipApplications.id, currentApplication.id));
 
-  if (existingUser) {
-    await db
-      .update(users)
-      .set({
-        role: "member",
-        displayName,
-        city: application.city,
+        return {
+          application: currentApplication,
+          personId: person.id,
+          invitationId,
+          approvalProvisioning,
+        };
+      });
+
+      const spouseLead = await maybeCreateSpouseLead({
+        application,
+        actor: input.actor,
+        now,
+        createSpouseLead: approvalPlan.createSpouseLead,
+      });
+
+      if (spouseLead) {
+        const latestApplicationPayload = asRecord(application.payloadJson);
+        await db
+          .update(membershipApplications)
+          .set({
+            payloadJson: {
+              ...latestApplicationPayload,
+              approvalPlan,
+              approvalProvisioning: persisted.approvalProvisioning,
+              spouseLead,
+            },
+            updatedAt: new Date(),
+          })
+          .where(eq(membershipApplications.id, persisted.application.id));
+      }
+
+      return {
+        applicationId: persisted.application.id,
+        personId: persisted.personId,
+        invitationId: persisted.invitationId,
+        spouseLeadPersonId: spouseLead?.personId ?? null,
+        duesScheduleId: persisted.approvalProvisioning?.duesScheduleId ?? null,
+        duesInvoiceId: persisted.approvalProvisioning?.duesInvoiceId ?? null,
         membershipStartDate: approvalPlan.membershipStartDate,
         membershipRenewalDate: approvalPlan.membershipRenewalDate,
-        updatedAt: now,
-      })
-      .where(eq(users.id, existingUser.id));
-  }
-
-  let invitationId: number | null = null;
-  let acceptUrl: string | undefined;
-  if (!existingUser) {
-    const invitation = await createMembershipInvitation({
-      email: normalizedEmail,
-      personId: person.id,
-      actorUserId: input.actor.id,
-      siteOrigin: input.siteOrigin,
-      now,
-    });
-    invitationId = invitation.invitationId;
-    acceptUrl = invitation.acceptUrl;
-  }
-
-  const approvalProvisioning = existingUser
-    ? await provisionApprovedMembershipForUser({
-        applicationId: application.id,
-        userId: existingUser.id,
-        city: application.city,
-        approvalPlan,
-        now,
-      })
-    : null;
-  const spouseLead = await maybeCreateSpouseLead({
-    application,
-    actor: input.actor,
-    now,
-    createSpouseLead: approvalPlan.createSpouseLead,
-  });
-
-  const nextPayloadJson = {
-    ...currentPayloadJson,
-    approvalPlan,
-    approvalProvisioning,
-    spouseLead,
-  };
-
-  await db.insert(membershipPipelineEvents).values({
-    personId: person.id,
-    actorUserId: input.actor.id,
-    eventType: existingPerson?.status === "member" ? "note" : "status_changed",
-    summary:
-      existingPerson?.status === "member"
-        ? "Membership application approved"
-        : `Status changed from ${existingPerson?.status ?? "lead"} to member`,
-    payloadJson: {
-      applicationId: application.id,
-      membershipCategory: application.membershipCategory,
-      applicationType: application.applicationType,
-      invitationId,
-      reviewNotes: input.reviewNotes,
-      approvalPlan,
-      approvalProvisioning,
-      spouseLead,
-      householdSummary: {
-        householdMembersCount: application.householdMembersJson.length,
-        yahrzeitsCount: application.yahrzeitsJson.length,
-        volunteerInterestsCount: application.volunteerInterestsJson.length,
-      },
+        billingMode: approvalPlan.billingMode,
+        provisioningStatus: persisted.approvalProvisioning ? "applied" : "pending_invite_acceptance",
+      };
     },
-    occurredAt: now,
-    createdAt: now,
   });
-
-  await db
-    .update(membershipApplications)
-    .set({
-      status: "approved",
-      reviewNotes: input.reviewNotes,
-      reviewedAt: now,
-      reviewedByUserId: input.actor.id,
-      approvedPersonId: person.id,
-      invitationId,
-      payloadJson: nextPayloadJson,
-      updatedAt: now,
-    })
-    .where(eq(membershipApplications.id, application.id));
-
-  try {
-    await sendMembershipApprovalEmail({
-      toEmail: normalizedEmail,
-      firstName: application.firstName,
-      membershipLabel: getMembershipCategoryLabel(application.membershipCategory as "single" | "couple_family" | "student"),
-      loginUrl: `${input.siteOrigin}/login`,
-      acceptUrl,
-    });
-  } catch (error) {
-    if (invitationId) {
-      await db
-        .update(userInvitations)
-        .set({
-          revokedAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .where(eq(userInvitations.id, invitationId));
-    }
-    throw error;
-  }
-
-  return {
-    applicationId: application.id,
-    personId: person.id,
-    invitationId,
-    spouseLeadPersonId: spouseLead?.personId ?? null,
-    duesScheduleId: approvalProvisioning?.duesScheduleId ?? null,
-    duesInvoiceId: approvalProvisioning?.duesInvoiceId ?? null,
-    membershipStartDate: approvalPlan.membershipStartDate,
-    membershipRenewalDate: approvalPlan.membershipRenewalDate,
-    billingMode: approvalPlan.billingMode,
-    provisioningStatus: approvalProvisioning ? "applied" : "pending_invite_acceptance",
-  };
 }
 
 export async function finalizeApprovedMembershipOnboarding(input: {
@@ -667,6 +710,7 @@ export async function finalizeApprovedMembershipOnboarding(input: {
 
   const now = new Date();
   const approvalProvisioning = await provisionApprovedMembershipForUser({
+    db,
     applicationId: application.id,
     userId: input.userId,
     city: application.city,

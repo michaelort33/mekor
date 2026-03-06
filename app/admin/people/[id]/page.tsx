@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
+import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import styles from "./page.module.css";
 
 type PersonStatus = "lead" | "invited" | "visitor" | "member" | "admin" | "super_admin" | "inactive";
@@ -202,7 +203,13 @@ export default function AdminPersonDetailPage() {
         body: quickMessageBody,
       }),
     });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string; recipientCount?: number };
+    const payload = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      recipientCount?: number;
+      successCount?: number;
+      failedCount?: number;
+      skippedCount?: number;
+    };
     setWorking(false);
     if (!response.ok) {
       setError(payload.error || "Unable to send message");
@@ -212,8 +219,18 @@ export default function AdminPersonDetailPage() {
       setNotice(`Preview ready. Recipients: ${payload.recipientCount ?? 0}`);
       return;
     }
-    setNotice("Message sent.");
+    const feedback = buildSendFeedback({
+      label: "Message",
+      successCount: payload.successCount ?? 0,
+      failedCount: payload.failedCount ?? 0,
+      skippedCount: payload.skippedCount ?? 0,
+    });
     await loadPerson();
+    if (feedback.status === "failure") {
+      setError(feedback.message);
+      return;
+    }
+    setNotice(feedback.message);
   }
 
   function updatePerson(patch: Partial<PersonDetail>) {
