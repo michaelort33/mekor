@@ -7,7 +7,7 @@ import { getDb } from "@/db/client";
 import { userInvitations } from "@/db/schema";
 import { sendInvitationEmail } from "@/lib/invitations/email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
-import { persistAfterSuccessfulDelivery } from "@/lib/notifications/persist-after-delivery";
+import { persistThenDeliver } from "@/lib/notifications/persist-after-delivery";
 import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 import { ensurePersonByEmail } from "@/lib/people/service";
 import { normalizeUserEmail } from "@/lib/users/validation";
@@ -118,16 +118,7 @@ export async function POST(request: Request) {
   const origin = new URL(request.url).origin;
   const acceptUrl = `${origin}/invite/accept?token=${encodeURIComponent(token)}`;
   try {
-    return await persistAfterSuccessfulDelivery({
-      deliver: async () => {
-        await sendInvitationEmail({
-      toEmail: email,
-      inviterName: actor.email,
-      role: parsed.data.role,
-      acceptUrl,
-      expiresAt,
-    });
-      },
+    const result = await persistThenDeliver({
       persist: async () => {
         const person = await ensurePersonByEmail({
           email,
@@ -163,18 +154,31 @@ export async function POST(request: Request) {
           },
         });
 
-        return NextResponse.json({
-          invitationId: created.id,
-          expiresAt: created.expiresAt.toISOString(),
+        return created;
+      },
+      deliver: async () => {
+        await sendInvitationEmail({
+          toEmail: email,
+          inviterName: actor.email,
+          role: parsed.data.role,
+          acceptUrl,
+          expiresAt,
         });
       },
+    });
+
+    return NextResponse.json({
+      invitationId: result.persisted.id,
+      expiresAt: result.persisted.expiresAt.toISOString(),
+      emailDelivered: result.delivered,
+      warning: result.delivered ? null : "Invitation created, but the email could not be delivered.",
     });
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Unable to send invitation email",
+        error: error instanceof Error ? error.message : "Unable to create invitation",
       },
-      { status: 502 },
+      { status: 500 },
     );
   }
 }

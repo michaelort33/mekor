@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { NativeShell } from "@/components/navigation/native-shell";
 import { KosherDirectory } from "@/components/kosher/kosher-directory";
 import { KosherHighlightFilters } from "@/components/kosher/kosher-highlight-filters";
@@ -104,10 +106,12 @@ export async function KosherPlacesPage({
           <div className="kosher-places__showcase" aria-label="Featured kosher food spots">
             {showcasePlaces.map((place) => (
               <article key={`showcase-${place.path}`} className="kosher-places__showcase-item">
-                <img
+                <Image
                   src={place.heroImage || KOSHER_FALLBACK_IMAGE_SRC}
                   alt={place.title}
-                  loading="lazy"
+                  width={960}
+                  height={720}
+                  sizes="(max-width: 900px) 100vw, 33vw"
                 />
                 <div className="kosher-places__showcase-caption">
                   <span>{place.neighborhoodLabel}</span>

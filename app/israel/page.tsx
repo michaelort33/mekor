@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
@@ -75,9 +76,12 @@ export default function IsraelPage() {
             />
           </div>
           <div className={styles.sparkImage}>
-            <img
+            <Image
               src="https://static.wixstatic.com/media/92f487_34e64b1fb2e94c56886578290ef2bcd0~mv2.jpeg"
               alt="SparkIL community initiative visual"
+              width={1200}
+              height={900}
+              sizes="(max-width: 900px) 100vw, 40vw"
             />
           </div>
         </div>

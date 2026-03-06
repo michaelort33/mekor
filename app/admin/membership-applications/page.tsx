@@ -181,6 +181,7 @@ export default function AdminMembershipApplicationsPage() {
     });
     const payload = (await response.json().catch(() => ({}))) as {
       error?: string;
+      warning?: string | null;
       billingMode?: MembershipApprovalBillingMode;
       provisioningStatus?: string;
       duesInvoiceId?: number | null;
@@ -192,7 +193,13 @@ export default function AdminMembershipApplicationsPage() {
       setWorkingId(null);
       return;
     }
-    setNotice(action === "approve" ? buildApprovalNotice(payload) : "Application declined.");
+    setNotice(
+      action === "approve"
+        ? payload.warning
+          ? `${buildApprovalNotice(payload)} ${payload.warning}`
+          : buildApprovalNotice(payload)
+        : "Application declined.",
+    );
     setWorkingId(null);
     await loadApplications();
   }

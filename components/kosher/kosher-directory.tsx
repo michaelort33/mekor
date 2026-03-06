@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -242,10 +243,12 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
       <article key={place.path} className="kosher-directory__card">
         <Link href={place.path} className="kosher-directory__card-image-link" aria-label={`Open ${place.title}`}>
           <div className="kosher-directory__card-image">
-            <img
+            <Image
               src={place.heroImage || KOSHER_FALLBACK_IMAGE_SRC}
               alt={place.title}
-              loading="lazy"
+              width={960}
+              height={720}
+              sizes="(max-width: 900px) 100vw, (max-width: 1200px) 50vw, 33vw"
               onError={(event) => {
                 const image = event.currentTarget;
                 if (!image.src.endsWith(KOSHER_FALLBACK_IMAGE_SRC)) {

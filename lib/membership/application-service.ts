@@ -24,7 +24,7 @@ import {
 } from "@/lib/membership/applications";
 import { sendMembershipApprovalEmail } from "@/lib/membership/applications-email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
-import { persistAfterSuccessfulDelivery } from "@/lib/notifications/persist-after-delivery";
+import { persistThenDeliver } from "@/lib/notifications/persist-after-delivery";
 import { ensurePersonByEmail } from "@/lib/people/service";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
@@ -421,18 +421,7 @@ export async function approveMembershipApplication(input: {
     siteOrigin: input.siteOrigin,
   });
 
-  return persistAfterSuccessfulDelivery({
-    deliver: async () => {
-      await sendMembershipApprovalEmail({
-        toEmail: normalizedEmail,
-        firstName: application.firstName,
-        membershipLabel: getMembershipCategoryLabel(
-          application.membershipCategory as "single" | "couple_family" | "student",
-        ),
-        loginUrl: `${input.siteOrigin}/login`,
-        acceptUrl: invitationDraft?.acceptUrl,
-      });
-    },
+  const result = await persistThenDeliver({
     persist: async () => {
       const persisted = await db.transaction(async (tx) => {
         const [currentApplication] = await tx
@@ -652,7 +641,24 @@ export async function approveMembershipApplication(input: {
         provisioningStatus: persisted.approvalProvisioning ? "applied" : "pending_invite_acceptance",
       };
     },
+    deliver: async () => {
+      await sendMembershipApprovalEmail({
+        toEmail: normalizedEmail,
+        firstName: application.firstName,
+        membershipLabel: getMembershipCategoryLabel(
+          application.membershipCategory as "single" | "couple_family" | "student",
+        ),
+        loginUrl: `${input.siteOrigin}/login`,
+        acceptUrl: invitationDraft?.acceptUrl,
+      });
+    },
   });
+
+  return {
+    ...result.persisted,
+    emailDelivered: result.delivered,
+    warning: result.delivered ? null : "Application approved, but the welcome email could not be delivered.",
+  };
 }
 
 export async function finalizeApprovedMembershipOnboarding(input: {

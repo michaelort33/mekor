@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 import { HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
@@ -226,7 +227,7 @@ export default function HomePage() {
           {UPCOMING_EVENTS.map((event) => (
             <article key={event.href} className={styles.eventCard}>
               <div className={styles.eventMedia}>
-                <img src={event.image} alt={event.alt} loading="lazy" decoding="async" />
+                <Image src={event.image} alt={event.alt} width={960} height={720} sizes="(max-width: 900px) 100vw, 33vw" />
               </div>
               <div className={styles.eventBody}>
                 <p className={styles.eventDate}>{event.date}</p>
@@ -253,7 +254,7 @@ export default function HomePage() {
           {RABBI_PROFILES.map((rabbi) => (
             <article key={rabbi.name} className={styles.rabbiCard}>
               <div className={styles.rabbiPortrait}>
-                <img src={rabbi.image} alt={rabbi.alt} loading="lazy" decoding="async" />
+                <Image src={rabbi.image} alt={rabbi.alt} width={960} height={1200} sizes="(max-width: 900px) 100vw, 28vw" />
               </div>
               <div className={styles.rabbiBody}>
                 <p className={styles.rabbiRole}>{rabbi.role}</p>

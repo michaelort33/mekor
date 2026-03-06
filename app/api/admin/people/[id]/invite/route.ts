@@ -7,7 +7,7 @@ import { membershipPipelineEvents, people, userInvitations } from "@/db/schema";
 import { requireSuperAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { sendInvitationEmail } from "@/lib/invitations/email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
-import { persistAfterSuccessfulDelivery } from "@/lib/notifications/persist-after-delivery";
+import { persistThenDeliver } from "@/lib/notifications/persist-after-delivery";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
 type RouteContext = {
@@ -66,16 +66,7 @@ export async function POST(request: Request, context: RouteContext) {
   const origin = new URL(request.url).origin;
   const acceptUrl = `${origin}/invite/accept?token=${encodeURIComponent(token)}`;
   try {
-    const invitation = await persistAfterSuccessfulDelivery({
-      deliver: async () => {
-        await sendInvitationEmail({
-          toEmail: email,
-          inviterName: actor.email,
-          role: parsed.data.role,
-          acceptUrl,
-          expiresAt,
-        });
-      },
+    const result = await persistThenDeliver({
       persist: async () => {
         const [created] = await getDb().transaction(async (tx) => {
           const [currentPerson] = await tx
@@ -132,6 +123,15 @@ export async function POST(request: Request, context: RouteContext) {
 
         return created;
       },
+      deliver: async () => {
+        await sendInvitationEmail({
+          toEmail: email,
+          inviterName: actor.email,
+          role: parsed.data.role,
+          acceptUrl,
+          expiresAt,
+        });
+      },
     });
 
     await writeAdminAuditLog({
@@ -140,23 +140,25 @@ export async function POST(request: Request, context: RouteContext) {
       targetType: "person",
       targetId: String(person.id),
       payload: {
-        invitationId: invitation.id,
+        invitationId: result.persisted.id,
         email,
         role: parsed.data.role,
-        expiresAt: invitation.expiresAt.toISOString(),
+        expiresAt: result.persisted.expiresAt.toISOString(),
       },
     });
 
     return NextResponse.json({
-      invitationId: invitation.id,
-      expiresAt: invitation.expiresAt.toISOString(),
+      invitationId: result.persisted.id,
+      expiresAt: result.persisted.expiresAt.toISOString(),
+      emailDelivered: result.delivered,
+      warning: result.delivered ? null : "Invitation created, but the email could not be delivered.",
     });
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Unable to send invitation email",
+        error: error instanceof Error ? error.message : "Unable to create invitation",
       },
-      { status: 502 },
+      { status: 500 },
     );
   }
 }

@@ -2,10 +2,7 @@ import { asc, desc } from "drizzle-orm";
 
 import { getDb } from "@/db/client";
 import { inTheNews } from "@/db/schema";
-import {
-  loadExtractedInTheNews,
-  type ExtractedInTheNewsArticle,
-} from "@/lib/in-the-news/extract";
+import { loadExtractedInTheNews } from "@/lib/in-the-news/extract";
 import { validateManagedInTheNewsContract } from "@/lib/native/contracts";
 
 export type ManagedInTheNewsArticle = {
@@ -128,51 +125,6 @@ export function filterInTheNews(
 
     return matchesSearch(article, search);
   });
-}
-
-async function syncExtractedInTheNewsToDb(rows: ExtractedInTheNewsArticle[]) {
-  const db = getDb();
-
-  for (const row of rows) {
-    await db
-      .insert(inTheNews)
-      .values({
-        slug: row.slug,
-        path: row.path,
-        title: row.title,
-        publishedLabel: row.publishedLabel,
-        publishedAt: row.publishedAt,
-        year: row.year,
-        author: row.author,
-        publication: row.publication,
-        excerpt: row.excerpt,
-        bodyText: row.bodyText,
-        sourceUrl: row.sourceUrl,
-        sourceCapturedAt: row.capturedAt ? new Date(row.capturedAt) : null,
-        sourceType: "mirror",
-        sourceJson: row.sourceJson,
-        updatedAt: new Date(),
-      })
-      .onConflictDoUpdate({
-        target: inTheNews.path,
-        set: {
-          slug: row.slug,
-          title: row.title,
-          publishedLabel: row.publishedLabel,
-          publishedAt: row.publishedAt,
-          year: row.year,
-          author: row.author,
-          publication: row.publication,
-          excerpt: row.excerpt,
-          bodyText: row.bodyText,
-          sourceUrl: row.sourceUrl,
-          sourceCapturedAt: row.capturedAt ? new Date(row.capturedAt) : null,
-          sourceType: "mirror",
-          sourceJson: row.sourceJson,
-          updatedAt: new Date(),
-        },
-      });
-  }
 }
 
 export async function getManagedInTheNews(filters: InTheNewsFilters = {}) {

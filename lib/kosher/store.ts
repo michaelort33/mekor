@@ -182,57 +182,6 @@ export function filterKosherPlaces(places: ManagedKosherPlace[], filters: Kosher
   });
 }
 
-async function syncExtractedKosherPlacesToDb(rows: ExtractedKosherPlace[]) {
-  const db = getDb();
-
-  for (const row of rows) {
-    await db
-      .insert(kosherPlaces)
-      .values({
-        slug: row.slug,
-        path: row.path,
-        title: row.title,
-        neighborhood: row.neighborhood,
-        neighborhoodLabel: row.neighborhoodLabel,
-        tags: row.tags,
-        categoryPaths: row.categoryPaths,
-        tagPaths: row.tagPaths,
-        address: row.address,
-        phone: row.phone,
-        website: row.website,
-        supervision: row.supervision,
-        summary: row.summary,
-        locationHref: row.locationHref,
-        sourceCapturedAt: row.capturedAt ? new Date(row.capturedAt) : null,
-        sourceType: "mirror",
-        sourceJson: row.sourceJson,
-        updatedAt: new Date(),
-      })
-      .onConflictDoUpdate({
-        target: kosherPlaces.path,
-        set: {
-          slug: row.slug,
-          title: row.title,
-          neighborhood: row.neighborhood,
-          neighborhoodLabel: row.neighborhoodLabel,
-          tags: row.tags,
-          categoryPaths: row.categoryPaths,
-          tagPaths: row.tagPaths,
-          address: row.address,
-          phone: row.phone,
-          website: row.website,
-          supervision: row.supervision,
-          summary: row.summary,
-          locationHref: row.locationHref,
-          sourceCapturedAt: row.capturedAt ? new Date(row.capturedAt) : null,
-          sourceType: "mirror",
-          sourceJson: row.sourceJson,
-          updatedAt: new Date(),
-        },
-      });
-  }
-}
-
 function newestExtractedCapturedAt(
   rows: ExtractedKosherPlace[],
   neighborhood: KosherNeighborhood | "all",

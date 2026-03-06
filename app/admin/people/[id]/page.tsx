@@ -178,13 +178,13 @@ export default function AdminPersonDetailPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role: inviteRole }),
     });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    const payload = (await response.json().catch(() => ({}))) as { error?: string; warning?: string | null };
     setWorking(false);
     if (!response.ok) {
       setError(payload.error || "Unable to send invite");
       return;
     }
-    setNotice("Invitation sent.");
+    setNotice(payload.warning || "Invitation sent.");
     await loadPerson();
   }
 

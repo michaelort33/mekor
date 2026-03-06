@@ -109,14 +109,14 @@ export default function AdminInvitationsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, role }),
     });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    const payload = (await response.json().catch(() => ({}))) as { error?: string; warning?: string | null };
     if (!response.ok) {
       setError(payload.error || "Unable to create invitation");
       setSubmitting(false);
       return;
     }
     setEmail("");
-    setNotice("Invitation created.");
+    setNotice(payload.warning || "Invitation created.");
     setSubmitting(false);
     await loadInvitations({ reset: true });
   }
@@ -138,12 +138,12 @@ export default function AdminInvitationsPage() {
     setError("");
     setNotice("");
     const response = await fetch(`/api/admin/invitations/${id}/resend`, { method: "POST" });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    const payload = (await response.json().catch(() => ({}))) as { error?: string; warning?: string | null };
     if (!response.ok) {
       setError(payload.error || "Unable to resend invitation");
       return;
     }
-    setNotice("Invitation resent.");
+    setNotice(payload.warning || "Invitation resent.");
     await loadInvitations({ reset: true });
   }
 

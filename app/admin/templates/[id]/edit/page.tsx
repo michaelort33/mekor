@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
@@ -6,7 +5,6 @@ import { getDb } from "@/db/client";
 import { newsletterTemplates } from "@/db/schema";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { EditTemplateForm } from "./template-form";
-import styles from "../../new/page.module.css";
 
 type PageProps = {
   params: Promise<{

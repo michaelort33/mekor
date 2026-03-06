@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 import styles from "@/components/marketing/primitives.module.css";
 
@@ -121,12 +122,12 @@ export function HeroSection({
     >
       {image ? (
         <div className={styles.heroMedia}>
-          <img
+          <Image
             src={image.src}
             alt={image.alt}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
+            fill
+            priority
+            sizes="100vw"
             style={{
               objectPosition: image.objectPosition,
               objectFit: image.objectFit,
@@ -170,11 +171,12 @@ export function SplitMediaText({
   return (
     <article className={joinClassNames(styles.split, reverse && styles.splitReverse, className)}>
       <div className={styles.splitMedia}>
-        <img
+        <Image
           src={media.src}
           alt={media.alt}
-          loading="lazy"
-          decoding="async"
+          width={1200}
+          height={960}
+          sizes="(max-width: 900px) 100vw, 50vw"
           style={{
             objectPosition: media.objectPosition,
             objectFit: media.objectFit,

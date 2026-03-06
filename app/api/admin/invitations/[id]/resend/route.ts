@@ -6,7 +6,7 @@ import { userInvitations } from "@/db/schema";
 import { requireSuperAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { sendInvitationEmail } from "@/lib/invitations/email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
-import { persistAfterSuccessfulDelivery } from "@/lib/notifications/persist-after-delivery";
+import { persistThenDeliver } from "@/lib/notifications/persist-after-delivery";
 import { ensurePersonByEmail } from "@/lib/people/service";
 
 type RouteContext = {
@@ -51,16 +51,7 @@ export async function POST(request: Request, context: RouteContext) {
   const origin = new URL(request.url).origin;
   const acceptUrl = `${origin}/invite/accept?token=${encodeURIComponent(token)}`;
   try {
-    const created = await persistAfterSuccessfulDelivery({
-      deliver: async () => {
-        await sendInvitationEmail({
-          toEmail: existing.email,
-          inviterName: actor.email,
-          role: existing.role,
-          acceptUrl,
-          expiresAt,
-        });
-      },
+    const result = await persistThenDeliver({
       persist: async () => {
         const person = await ensurePersonByEmail({
           email: existing.email,
@@ -110,28 +101,42 @@ export async function POST(request: Request, context: RouteContext) {
 
         return replacement;
       },
+      deliver: async () => {
+        await sendInvitationEmail({
+          toEmail: existing.email,
+          inviterName: actor.email,
+          role: existing.role,
+          acceptUrl,
+          expiresAt,
+        });
+      },
     });
 
     await writeAdminAuditLog({
       actorUserId: actor.id,
       action: "invitation.resent",
       targetType: "user_invitation",
-      targetId: String(created.id),
+      targetId: String(result.persisted.id),
       payload: {
         previousInvitationId: invitationId,
         email: existing.email,
         role: existing.role,
-        expiresAt: created.expiresAt.toISOString(),
+        expiresAt: result.persisted.expiresAt.toISOString(),
       },
     });
 
-    return NextResponse.json({ invitationId: created.id, expiresAt: created.expiresAt.toISOString() });
+    return NextResponse.json({
+      invitationId: result.persisted.id,
+      expiresAt: result.persisted.expiresAt.toISOString(),
+      emailDelivered: result.delivered,
+      warning: result.delivered ? null : "Invitation resent, but the email could not be delivered.",
+    });
   } catch (error) {
     return NextResponse.json(
       {
-        error: error instanceof Error ? error.message : "Unable to send invitation email",
+        error: error instanceof Error ? error.message : "Unable to resend invitation",
       },
-      { status: 502 },
+      { status: 500 },
     );
   }
 }
