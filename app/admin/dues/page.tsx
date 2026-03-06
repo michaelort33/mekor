@@ -31,6 +31,8 @@ type Invoice = {
   currency: string;
   dueDate: string;
   status: "open" | "paid" | "void" | "overdue";
+  reminderCount: number;
+  lastReminderSentAt: string | null;
 };
 
 type UserBalance = {
@@ -558,6 +560,10 @@ export default function AdminDuesPage() {
                           {formatMoney(invoice.amountCents, invoice.currency)} · due {invoice.dueDate}
                         </p>
                         <p>Status: {invoice.status}</p>
+                        <p>
+                          Reminders: {invoice.reminderCount}
+                          {invoice.lastReminderSentAt ? ` · last sent ${new Date(invoice.lastReminderSentAt).toLocaleString()}` : ""}
+                        </p>
                       </div>
                       <select
                         value={invoice.status}

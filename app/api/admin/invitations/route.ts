@@ -7,6 +7,7 @@ import { getDb } from "@/db/client";
 import { userInvitations } from "@/db/schema";
 import { sendInvitationEmail } from "@/lib/invitations/email";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
+import { persistAfterSuccessfulDelivery } from "@/lib/notifications/persist-after-delivery";
 import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 import { ensurePersonByEmail } from "@/lib/people/service";
 import { normalizeUserEmail } from "@/lib/users/validation";
@@ -110,50 +111,65 @@ export async function POST(request: Request) {
   }
 
   const email = normalizeUserEmail(parsed.data.email);
-  const person = await ensurePersonByEmail({
-    email,
-    status: "invited",
-    source: "admin_invitation",
-    actorUserId: actor.id,
-  });
   const token = generateInvitationToken();
   const tokenHash = hashInvitationToken(token);
   const expiresAt = invitationExpiryFromNow();
 
-  const [created] = await getDb()
-    .insert(userInvitations)
-    .values({
-      email,
-      role: parsed.data.role,
-      personId: person.personId,
-      invitedByUserId: actor.id,
-      tokenHash,
-      expiresAt,
-    })
-    .returning({
-      id: userInvitations.id,
-      expiresAt: userInvitations.expiresAt,
-    });
-
   const origin = new URL(request.url).origin;
   const acceptUrl = `${origin}/invite/accept?token=${encodeURIComponent(token)}`;
   try {
-    await sendInvitationEmail({
+    return await persistAfterSuccessfulDelivery({
+      deliver: async () => {
+        await sendInvitationEmail({
       toEmail: email,
       inviterName: actor.email,
       role: parsed.data.role,
       acceptUrl,
       expiresAt,
     });
-  } catch (error) {
-    await getDb()
-      .update(userInvitations)
-      .set({
-        revokedAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(eq(userInvitations.id, created.id));
+      },
+      persist: async () => {
+        const person = await ensurePersonByEmail({
+          email,
+          status: "invited",
+          source: "admin_invitation",
+          actorUserId: actor.id,
+        });
 
+        const [created] = await getDb()
+          .insert(userInvitations)
+          .values({
+            email,
+            role: parsed.data.role,
+            personId: person.personId,
+            invitedByUserId: actor.id,
+            tokenHash,
+            expiresAt,
+          })
+          .returning({
+            id: userInvitations.id,
+            expiresAt: userInvitations.expiresAt,
+          });
+
+        await writeAdminAuditLog({
+          actorUserId: actor.id,
+          action: "invitation.created",
+          targetType: "user_invitation",
+          targetId: String(created.id),
+          payload: {
+            email,
+            role: parsed.data.role,
+            expiresAt: created.expiresAt.toISOString(),
+          },
+        });
+
+        return NextResponse.json({
+          invitationId: created.id,
+          expiresAt: created.expiresAt.toISOString(),
+        });
+      },
+    });
+  } catch (error) {
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Unable to send invitation email",
@@ -161,21 +177,4 @@ export async function POST(request: Request) {
       { status: 502 },
     );
   }
-
-  await writeAdminAuditLog({
-    actorUserId: actor.id,
-    action: "invitation.created",
-    targetType: "user_invitation",
-    targetId: String(created.id),
-    payload: {
-      email,
-      role: parsed.data.role,
-      expiresAt: created.expiresAt.toISOString(),
-    },
-  });
-
-  return NextResponse.json({
-    invitationId: created.id,
-    expiresAt: created.expiresAt.toISOString(),
-  });
 }

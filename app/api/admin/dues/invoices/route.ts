@@ -1,11 +1,13 @@
-import { and, desc, eq, lt, or } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, lt, max, or, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getDb } from "@/db/client";
-import { duesInvoices, users } from "@/db/schema";
-import { requireAdminActor } from "@/lib/admin/actor";
+import { duesInvoices, duesPayments, duesReminderLog, users } from "@/db/schema";
+import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
+import { getManualPaymentStatusForInvoiceTransition } from "@/lib/dues/admin-invoices";
+import { sendDuesNotification } from "@/lib/dues/notifications";
 import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 
 const DUES_INVOICE_STATUSES = ["open", "paid", "void", "overdue"] as const;
@@ -82,7 +84,37 @@ export async function GET(request: Request) {
     id: row.id,
   }));
 
-  return NextResponse.json({ items, pageInfo });
+  const invoiceIds = items.map((item) => item.id);
+  const reminderRows =
+    invoiceIds.length === 0
+      ? []
+      : await getDb()
+          .select({
+            invoiceId: duesReminderLog.invoiceId,
+            reminderCount: sql<number>`count(*)::int`,
+            lastReminderSentAt: max(duesReminderLog.sentAt),
+          })
+          .from(duesReminderLog)
+          .where(inArray(duesReminderLog.invoiceId, invoiceIds))
+          .groupBy(duesReminderLog.invoiceId);
+  const remindersByInvoiceId = new Map(
+    reminderRows.map((row) => [
+      row.invoiceId,
+      {
+        reminderCount: Number(row.reminderCount),
+        lastReminderSentAt: row.lastReminderSentAt ? row.lastReminderSentAt.toISOString() : null,
+      },
+    ]),
+  );
+
+  return NextResponse.json({
+    items: items.map((item) => ({
+      ...item,
+      reminderCount: remindersByInvoiceId.get(item.id)?.reminderCount ?? 0,
+      lastReminderSentAt: remindersByInvoiceId.get(item.id)?.lastReminderSentAt ?? null,
+    })),
+    pageInfo,
+  });
 }
 
 export async function PUT(request: Request) {
@@ -90,8 +122,9 @@ export async function PUT(request: Request) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  const adminResult2 = await requireAdminActor();
-  if ("error" in adminResult2) return adminResult2.error;
+  const adminResult = await requireAdminActor();
+  if ("error" in adminResult) return adminResult.error;
+  const actor = adminResult.actor;
 
   const parsed = updateSchema.safeParse(await request.json().catch(() => ({})));
   if (!parsed.success) {
@@ -101,8 +134,22 @@ export async function PUT(request: Request) {
   const now = new Date();
 
   const [current] = await getDb()
-    .select({ status: duesInvoices.status, paidAt: duesInvoices.paidAt })
+    .select({
+      id: duesInvoices.id,
+      userId: duesInvoices.userId,
+      label: duesInvoices.label,
+      amountCents: duesInvoices.amountCents,
+      currency: duesInvoices.currency,
+      dueDate: duesInvoices.dueDate,
+      status: duesInvoices.status,
+      paidAt: duesInvoices.paidAt,
+      stripeCheckoutSessionId: duesInvoices.stripeCheckoutSessionId,
+      stripePaymentIntentId: duesInvoices.stripePaymentIntentId,
+      userEmail: users.email,
+      userDisplayName: users.displayName,
+    })
     .from(duesInvoices)
+    .innerJoin(users, eq(users.id, duesInvoices.userId))
     .where(eq(duesInvoices.id, parsed.data.id))
     .limit(1);
 
@@ -133,6 +180,107 @@ export async function PUT(request: Request) {
   if (!updated) {
     return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
   }
+
+  const nextStatus = parsed.data.status;
+  const manualPaymentStatus = getManualPaymentStatusForInvoiceTransition({
+    previousStatus: current.status,
+    nextStatus,
+  });
+
+  const [latestManualPayment] = await getDb()
+    .select({
+      id: duesPayments.id,
+      status: duesPayments.status,
+    })
+    .from(duesPayments)
+    .where(
+      and(
+        eq(duesPayments.invoiceId, current.id),
+        isNull(duesPayments.stripeCheckoutSessionId),
+        isNull(duesPayments.stripePaymentIntentId),
+      ),
+    )
+    .orderBy(desc(duesPayments.createdAt), desc(duesPayments.id))
+    .limit(1);
+
+  let manualPaymentId: number | null = null;
+  if (manualPaymentStatus === "succeeded") {
+    if (latestManualPayment) {
+      const [savedPayment] = await getDb()
+        .update(duesPayments)
+        .set({
+          amountCents: updated.amountCents,
+          currency: updated.currency,
+          status: "succeeded",
+          stripeReceiptUrl: "",
+          processedAt: now,
+          updatedAt: now,
+        })
+        .where(eq(duesPayments.id, latestManualPayment.id))
+        .returning({ id: duesPayments.id });
+      manualPaymentId = savedPayment?.id ?? latestManualPayment.id;
+    } else {
+      const [createdPayment] = await getDb()
+        .insert(duesPayments)
+        .values({
+          userId: current.userId,
+          invoiceId: current.id,
+          amountCents: updated.amountCents,
+          currency: updated.currency,
+          status: "succeeded",
+          stripeCheckoutSessionId: null,
+          stripePaymentIntentId: null,
+          stripeReceiptUrl: "",
+          processedAt: now,
+          createdAt: now,
+          updatedAt: now,
+        })
+        .returning({ id: duesPayments.id });
+      manualPaymentId = createdPayment.id;
+    }
+
+    await sendDuesNotification({
+      referenceKey: `payment:${manualPaymentId}:payment_succeeded`,
+      userId: current.userId,
+      userEmail: current.userEmail,
+      displayName: current.userDisplayName,
+      notificationType: "payment_succeeded",
+      invoiceId: current.id,
+      paymentId: manualPaymentId,
+      invoiceLabel: updated.label,
+      amountCents: updated.amountCents,
+      currency: updated.currency,
+      dueDate: updated.dueDate,
+    });
+  }
+
+  if (manualPaymentStatus && manualPaymentStatus !== "succeeded" && latestManualPayment) {
+    await getDb()
+      .update(duesPayments)
+      .set({
+        amountCents: updated.amountCents,
+        currency: updated.currency,
+        status: manualPaymentStatus,
+        processedAt: now,
+        updatedAt: now,
+      })
+      .where(eq(duesPayments.id, latestManualPayment.id));
+    manualPaymentId = latestManualPayment.id;
+  }
+
+  await writeAdminAuditLog({
+    actorUserId: actor.id,
+    action: "dues.invoice.updated",
+    targetType: "dues_invoice",
+    targetId: String(updated.id),
+    payload: {
+      previousStatus: current.status,
+      nextStatus: updated.status,
+      amountCents: updated.amountCents,
+      dueDate: updated.dueDate,
+      manualPaymentId,
+    },
+  });
 
   return NextResponse.json({ invoice: updated });
 }

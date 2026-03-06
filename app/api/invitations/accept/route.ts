@@ -9,6 +9,7 @@ import { createUserSession } from "@/lib/auth/session";
 import { writeAdminAuditLog } from "@/lib/admin/actor";
 import { allowWithinWindow } from "@/lib/invitations/rate-limit";
 import { hashInvitationToken } from "@/lib/invitations/token";
+import { finalizeApprovedMembershipOnboarding } from "@/lib/membership/application-service";
 import { attachPersonToUserByEmail } from "@/lib/people/service";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
@@ -167,6 +168,11 @@ export async function POST(request: Request) {
       role: accepted.user.role,
       previousRole: accepted.previousRole,
     },
+  });
+
+  await finalizeApprovedMembershipOnboarding({
+    invitationId: accepted.invitationId,
+    userId: accepted.user.id,
   });
 
   await createUserSession({

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
+import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import styles from "./page.module.css";
 
 type LogItem = {
@@ -155,10 +156,18 @@ export default function AdminMessagesPage() {
       setNotice(`Preview ready for ${payload.recipientCount ?? 0} recipients.`);
       return;
     }
-    setNotice(
-      `Campaign sent. Success: ${payload.successCount ?? 0}, failed: ${payload.failedCount ?? 0}, skipped: ${payload.skippedCount ?? 0}.`,
-    );
+    const feedback = buildSendFeedback({
+      label: "Campaign",
+      successCount: payload.successCount ?? 0,
+      failedCount: payload.failedCount ?? 0,
+      skippedCount: payload.skippedCount ?? 0,
+    });
     await loadLogs({ reset: true });
+    if (feedback.status === "failure") {
+      setError(feedback.message);
+      return;
+    }
+    setNotice(feedback.message);
   }
 
   async function resetFilters() {

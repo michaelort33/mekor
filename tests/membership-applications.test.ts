@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  buildDefaultMembershipApprovalPlan,
   buildApplicantDisplayName,
   calculateMembershipEstimate,
+  membershipApprovalPlanSchema,
   membershipApplicationSchema,
 } from "../lib/membership/applications";
 import { sendMembershipApprovalEmail } from "../lib/membership/applications-email";
@@ -66,6 +68,54 @@ test("membership application schema normalizes repeatable rows", () => {
   assert.equal(parsed.householdMembers.length, 1);
   assert.equal(parsed.yahrzeits.length, 1);
   assert.deepEqual(parsed.volunteerInterests, ["Hospitality and Shabbat meals"]);
+});
+
+test("membership approval workbench defaults to invoice and spouse lead when available", () => {
+  const plan = buildDefaultMembershipApprovalPlan({
+    totalAmountCents: 110_000,
+    spouseEmail: "spouse@example.com",
+    now: new Date("2026-03-06T15:30:00.000Z"),
+  });
+
+  assert.deepEqual(plan, {
+    membershipStartDate: "2026-03-06",
+    membershipRenewalDate: "2027-03-06",
+    billingMode: "invoice",
+    invoiceLabel: "Membership dues",
+    invoiceAmountCents: 110_000,
+    invoiceDueDate: "2026-03-06",
+    scheduleFrequency: "annual",
+    scheduleAmountCents: 110_000,
+    scheduleNextDueDate: "2026-03-06",
+    scheduleNotes: "Created from membership application approval",
+    createSpouseLead: true,
+  });
+});
+
+test("membership approval plan schema requires valid billing details", () => {
+  const result = membershipApprovalPlanSchema.safeParse({
+    membershipStartDate: "2026-03-06",
+    membershipRenewalDate: "2026-03-05",
+    billingMode: "invoice",
+    invoiceLabel: "Membership dues",
+    invoiceAmountCents: 0,
+    invoiceDueDate: "2026-03-05",
+    scheduleFrequency: "annual",
+    scheduleAmountCents: 110_000,
+    scheduleNextDueDate: "2026-03-06",
+    scheduleNotes: "",
+    createSpouseLead: false,
+  });
+
+  assert.equal(result.success, false);
+  if (result.success) {
+    return;
+  }
+
+  const issues = result.error.issues.map((issue) => issue.path.join("."));
+  assert.ok(issues.includes("membershipRenewalDate"));
+  assert.ok(issues.includes("invoiceAmountCents"));
+  assert.ok(issues.includes("invoiceDueDate"));
 });
 
 test("membership approval emails are sent through SendGrid", async () => {
