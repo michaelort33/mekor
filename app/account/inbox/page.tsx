@@ -197,89 +197,6 @@ export default function AccountInboxPage() {
     };
   }, [router]);
 
-  useEffect(() => {
-    async function loadMessages() {
-      if (!selectedThreadId) return;
-      setLoadingMessages(true);
-      const response = await fetch(`/api/inbox/threads/${selectedThreadId}/messages`);
-      const payload = (await response.json().catch(() => ({}))) as ThreadMessagesResponse & { error?: string };
-      if (!response.ok) {
-        setError(payload.error || "Unable to load thread messages.");
-        setLoadingMessages(false);
-        return;
-      }
-      setThreadTitle(payload.thread.subject || `Thread #${payload.thread.id}`);
-      setMessages(payload.messages);
-      setLoadingMessages(false);
-    }
-
-    loadMessages().catch(() => {
-      setError("Unable to load thread messages.");
-      setLoadingMessages(false);
-    });
-  }, [selectedThreadId]);
-
-  async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!selectedThreadId || !messageBody.trim()) return;
-
-    setSending(true);
-    const response = await fetch(`/api/inbox/threads/${selectedThreadId}/messages`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body: messageBody }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to send message.");
-      setSending(false);
-      return;
-    }
-    setMessageBody("");
-    setSending(false);
-    await loadThreads();
-    if (selectedThreadId) {
-      const refreshed = await fetch(`/api/inbox/threads/${selectedThreadId}/messages`);
-      const refreshedPayload = (await refreshed.json().catch(() => ({}))) as ThreadMessagesResponse;
-      if (refreshed.ok) {
-        setMessages(refreshedPayload.messages);
-      }
-    }
-  }
-
-  async function runThreadAction(input: {
-    action: ThreadAction["type"];
-    inviteId?: number;
-    eventId?: number;
-    requestId?: number;
-  }) {
-    if (!selectedThreadId) return;
-    const actionKey = `${selectedThreadId}-${input.action}-${input.inviteId ?? 0}-${input.eventId ?? 0}-${input.requestId ?? 0}`;
-    setRunningAction(actionKey);
-    const response = await fetch(`/api/inbox/threads/${selectedThreadId}/actions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    setRunningAction("");
-    if (!response.ok) {
-      setError(payload.error || "Unable to run action.");
-      return;
-    }
-    await loadThreads();
-    const refreshed = await fetch(`/api/inbox/threads/${selectedThreadId}/messages`);
-    const refreshedPayload = (await refreshed.json().catch(() => ({}))) as ThreadMessagesResponse;
-    if (refreshed.ok) {
-      setMessages(refreshedPayload.messages);
-    }
-  }
-
-  const selectedThread = useMemo(
-    () => threads.find((thread) => thread.threadId === selectedThreadId) ?? null,
-    [threads, selectedThreadId],
-  );
-
   const filteredThreads = useMemo(() => {
     const query = search.trim().toLowerCase();
 
@@ -296,17 +213,99 @@ export default function AccountInboxPage() {
     });
   }, [readFilter, search, threadTypeFilter, threads]);
 
+  const activeThreadId =
+    filteredThreads.length === 0
+      ? null
+      : filteredThreads.some((thread) => thread.threadId === selectedThreadId)
+        ? selectedThreadId
+        : filteredThreads[0]?.threadId ?? null;
+
   useEffect(() => {
-    if (filteredThreads.length === 0) {
-      setSelectedThreadId(null);
-      setMessages([]);
-      return;
+    async function loadMessages() {
+      if (!activeThreadId) {
+        setThreadTitle("");
+        setMessages([]);
+        return;
+      }
+      setLoadingMessages(true);
+      const response = await fetch(`/api/inbox/threads/${activeThreadId}/messages`);
+      const payload = (await response.json().catch(() => ({}))) as ThreadMessagesResponse & { error?: string };
+      if (!response.ok) {
+        setError(payload.error || "Unable to load thread messages.");
+        setLoadingMessages(false);
+        return;
+      }
+      setThreadTitle(payload.thread.subject || `Thread #${payload.thread.id}`);
+      setMessages(payload.messages);
+      setLoadingMessages(false);
     }
 
-    if (!filteredThreads.some((thread) => thread.threadId === selectedThreadId)) {
-      setSelectedThreadId(filteredThreads[0].threadId);
+    loadMessages().catch(() => {
+      setError("Unable to load thread messages.");
+      setLoadingMessages(false);
+    });
+  }, [activeThreadId]);
+
+  async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!activeThreadId || !messageBody.trim()) return;
+
+    setSending(true);
+    const response = await fetch(`/api/inbox/threads/${activeThreadId}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ body: messageBody }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    if (!response.ok) {
+      setError(payload.error || "Unable to send message.");
+      setSending(false);
+      return;
     }
-  }, [filteredThreads, selectedThreadId]);
+    setMessageBody("");
+    setSending(false);
+    await loadThreads();
+    if (activeThreadId) {
+      const refreshed = await fetch(`/api/inbox/threads/${activeThreadId}/messages`);
+      const refreshedPayload = (await refreshed.json().catch(() => ({}))) as ThreadMessagesResponse;
+      if (refreshed.ok) {
+        setMessages(refreshedPayload.messages);
+      }
+    }
+  }
+
+  async function runThreadAction(input: {
+    action: ThreadAction["type"];
+    inviteId?: number;
+    eventId?: number;
+    requestId?: number;
+  }) {
+    if (!activeThreadId) return;
+    const actionKey = `${activeThreadId}-${input.action}-${input.inviteId ?? 0}-${input.eventId ?? 0}-${input.requestId ?? 0}`;
+    setRunningAction(actionKey);
+    const response = await fetch(`/api/inbox/threads/${activeThreadId}/actions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    setRunningAction("");
+    if (!response.ok) {
+      setError(payload.error || "Unable to run action.");
+      return;
+    }
+    await loadThreads();
+    const refreshed = await fetch(`/api/inbox/threads/${activeThreadId}/messages`);
+    const refreshedPayload = (await refreshed.json().catch(() => ({}))) as ThreadMessagesResponse;
+    if (refreshed.ok) {
+      setMessages(refreshedPayload.messages);
+    }
+  }
+
+  const selectedThread = useMemo(
+    () => threads.find((thread) => thread.threadId === activeThreadId) ?? null,
+    [activeThreadId, threads],
+  );
 
   const shellStats = [
     {
@@ -407,7 +406,7 @@ export default function AccountInboxPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedThreadId(thread.threadId)}
-                  className={thread.threadId === selectedThreadId ? styles.threadActive : ""}
+                  className={thread.threadId === activeThreadId ? styles.threadActive : ""}
                 >
                   <strong>{thread.subject || "Conversation"}</strong>
                   <span>{thread.latestMessage?.body || "No messages yet."}</span>
@@ -455,11 +454,11 @@ export default function AccountInboxPage() {
                           }
                           disabled={
                             runningAction ===
-                            `${selectedThreadId}-${action.type}-${actionPayload.kind === "family_invite" ? actionPayload.inviteId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.eventId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.requestId : 0}`
+                            `${activeThreadId}-${action.type}-${actionPayload.kind === "family_invite" ? actionPayload.inviteId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.eventId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.requestId : 0}`
                           }
                         >
                           {runningAction ===
-                          `${selectedThreadId}-${action.type}-${actionPayload.kind === "family_invite" ? actionPayload.inviteId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.eventId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.requestId : 0}`
+                          `${activeThreadId}-${action.type}-${actionPayload.kind === "family_invite" ? actionPayload.inviteId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.eventId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.requestId : 0}`
                             ? "Working..."
                             : action.label}
                         </button>

@@ -205,39 +205,23 @@ export async function PUT(request: Request) {
 
   let manualPaymentId: number | null = null;
   if (manualPaymentStatus === "succeeded") {
-    if (latestManualPayment) {
-      const [savedPayment] = await getDb()
-        .update(duesPayments)
-        .set({
-          amountCents: updated.amountCents,
-          currency: updated.currency,
-          status: "succeeded",
-          stripeReceiptUrl: "",
-          processedAt: now,
-          updatedAt: now,
-        })
-        .where(eq(duesPayments.id, latestManualPayment.id))
-        .returning({ id: duesPayments.id });
-      manualPaymentId = savedPayment?.id ?? latestManualPayment.id;
-    } else {
-      const [createdPayment] = await getDb()
-        .insert(duesPayments)
-        .values({
-          userId: current.userId,
-          invoiceId: current.id,
-          amountCents: updated.amountCents,
-          currency: updated.currency,
-          status: "succeeded",
-          stripeCheckoutSessionId: null,
-          stripePaymentIntentId: null,
-          stripeReceiptUrl: "",
-          processedAt: now,
-          createdAt: now,
-          updatedAt: now,
-        })
-        .returning({ id: duesPayments.id });
-      manualPaymentId = createdPayment.id;
-    }
+    const [createdPayment] = await getDb()
+      .insert(duesPayments)
+      .values({
+        userId: current.userId,
+        invoiceId: current.id,
+        amountCents: updated.amountCents,
+        currency: updated.currency,
+        status: "succeeded",
+        stripeCheckoutSessionId: null,
+        stripePaymentIntentId: null,
+        stripeReceiptUrl: "",
+        processedAt: now,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning({ id: duesPayments.id });
+    manualPaymentId = createdPayment.id;
 
     await sendDuesNotification({
       referenceKey: `payment:${manualPaymentId}:payment_succeeded`,

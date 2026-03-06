@@ -34,6 +34,18 @@ test("send feedback reports partial when some deliveries fail or skip", () => {
   assert.match(skippedOnly.message, /delivered to no one/);
 });
 
+test("send feedback reports partial when no deliveries were attempted", () => {
+  const feedback = buildSendFeedback({
+    label: "Campaign",
+    successCount: 0,
+    failedCount: 0,
+    skippedCount: 0,
+  });
+
+  assert.equal(feedback.status, "partial");
+  assert.match(feedback.message, /delivered to no one/);
+});
+
 test("send feedback reports success when all deliveries succeed", () => {
   const feedback = buildSendFeedback({
     label: "Campaign",

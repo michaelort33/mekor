@@ -7,6 +7,14 @@ export function buildSendFeedback(input: {
   skippedCount?: number;
 }) {
   const skippedCount = input.skippedCount ?? 0;
+  const attemptedCount = input.successCount + input.failedCount + skippedCount;
+
+  if (attemptedCount === 0) {
+    return {
+      status: "partial" as const satisfies SendFeedbackStatus,
+      message: `${input.label} delivered to no one. Success: ${input.successCount}, failed: ${input.failedCount}, skipped: ${skippedCount}.`,
+    };
+  }
 
   if (input.successCount === 0 && input.failedCount > 0) {
     return {
