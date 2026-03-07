@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { AreaSwitcher } from "@/components/navigation/area-switcher";
 import { isNavigationPathActive } from "@/lib/navigation/path";
 import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
@@ -228,14 +227,6 @@ export function MobileDrawer({
       </nav>
 
       <div className="native-nav__mobile-footer">
-        <AreaSwitcher
-          currentPath={currentPath}
-          currentArea="site"
-          role={role}
-          isCheckingAuth={isCheckingAuth}
-          includeSignInLinks
-          variant="mobile"
-        />
         <NavCta isSignedIn={role !== null} isCheckingAuth={isCheckingAuth} />
       </div>
     </div>

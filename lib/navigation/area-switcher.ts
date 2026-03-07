@@ -47,6 +47,11 @@ export function buildAreaSwitcherLinks(input: {
   currentArea?: AppArea;
 }): AreaSwitcherLink[] {
   const currentArea = input.currentArea ?? detectAppArea(input.currentPath);
+  const canAccessMemberArea = isMemberCapableRole(input.role);
+  const canAccessAdminArea = isAdminLevelRole(input.role);
+  const shouldShowMemberArea = canAccessMemberArea || input.includeSignInLinks;
+  const shouldShowAdminArea =
+    currentArea === "admin" && (canAccessAdminArea || input.includeSignInLinks);
   const links: AreaSwitcherLink[] = [
     {
       area: "site",
@@ -57,7 +62,7 @@ export function buildAreaSwitcherLinks(input: {
     },
   ];
 
-  if (isMemberCapableRole(input.role)) {
+  if (canAccessMemberArea) {
     links.push({
       area: "member",
       href: "/account",
@@ -65,7 +70,7 @@ export function buildAreaSwitcherLinks(input: {
       current: currentArea === "member",
       requiresSignIn: false,
     });
-  } else if (input.includeSignInLinks) {
+  } else if (shouldShowMemberArea) {
     links.push({
       area: "member",
       href: "/login?next=%2Faccount",
@@ -75,7 +80,7 @@ export function buildAreaSwitcherLinks(input: {
     });
   }
 
-  if (isAdminLevelRole(input.role)) {
+  if (canAccessAdminArea && shouldShowAdminArea) {
     links.push({
       area: "admin",
       href: "/admin",
@@ -83,7 +88,7 @@ export function buildAreaSwitcherLinks(input: {
       current: currentArea === "admin",
       requiresSignIn: false,
     });
-  } else if (input.includeSignInLinks) {
+  } else if (shouldShowAdminArea) {
     links.push({
       area: "admin",
       href: "/login?next=%2Fadmin",

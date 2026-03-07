@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
-import { AreaSwitcher } from "@/components/navigation/area-switcher";
 import { DesktopNav } from "@/components/navigation/desktop-nav";
 import { MobileDrawer } from "@/components/navigation/mobile-drawer";
 import { NavBrand } from "@/components/navigation/nav-brand";
@@ -107,14 +106,6 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
           />
 
           <div className="native-nav__actions">
-            <AreaSwitcher
-              currentPath={activePath}
-              currentArea="site"
-              role={role}
-              isCheckingAuth={isCheckingAuth}
-              includeSignInLinks
-              variant="compact"
-            />
             <div className="native-nav__cta-wrap">
               <NavCta isSignedIn={role !== null} isCheckingAuth={isCheckingAuth} />
             </div>
