@@ -167,7 +167,7 @@ export default async function DonationsPage() {
         </p>
       </SectionCard>
 
-      <SectionCard tone="blue">
+      <SectionCard className={styles.checkoutSection}>
         <DonationCheckoutForm
           title="Donate inside Mekor"
           description="This intake flow keeps the donation purpose explicit, preserves donor details for receipts, and standardizes classification across sources."

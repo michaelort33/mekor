@@ -1,6 +1,8 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, useState } from "react";
+
+import { usePublicProfilePrefill } from "@/components/forms/use-public-profile-prefill";
 
 const VOLUNTEER_OPPORTUNITY_OPTIONS = [
   "Kiddush Preparation",
@@ -46,25 +48,52 @@ export function buildVolunteerPayload(values: VolunteerFormValues, sourcePath: s
 }
 
 export function VolunteerForm() {
+  const profile = usePublicProfilePrefill();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [form, setForm] = useState<VolunteerFormValues>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    opportunity: "",
+    availabilityDate: "",
+    additionalNote: "",
+  });
+  const [touched, setTouched] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    phone: false,
+  });
+  const resolvedFirstName = touched.firstName ? form.firstName : form.firstName || profile?.firstName || "";
+  const resolvedLastName = touched.lastName ? form.lastName : form.lastName || profile?.lastName || "";
+  const resolvedEmail = touched.email ? form.email : form.email || profile?.email || "";
+  const resolvedPhone = touched.phone ? form.phone : form.phone || profile?.phone || "";
+
+  function update(field: keyof VolunteerFormValues, value: string) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  function onChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    update(event.target.name as keyof VolunteerFormValues, event.target.value);
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const form = event.currentTarget;
-    if (!form.reportValidity()) {
+    const formElement = event.currentTarget;
+    if (!formElement.reportValidity()) {
       return;
     }
 
-    const formData = new FormData(form);
-    const firstName = String(formData.get("firstName") ?? "").trim();
-    const lastName = String(formData.get("lastName") ?? "").trim();
-    const email = String(formData.get("email") ?? "").trim();
-    const phone = String(formData.get("phone") ?? "").trim();
-    const opportunity = String(formData.get("opportunity") ?? "").trim();
-    const availabilityDate = String(formData.get("availabilityDate") ?? "").trim();
-    const additionalNote = String(formData.get("additionalNote") ?? "").trim();
+    const firstName = resolvedFirstName.trim();
+    const lastName = resolvedLastName.trim();
+    const email = resolvedEmail.trim();
+    const phone = resolvedPhone.trim();
+    const opportunity = form.opportunity.trim();
+    const availabilityDate = form.availabilityDate.trim();
+    const additionalNote = form.additionalNote.trim();
 
     if (!firstName || !lastName || !email || !opportunity) {
       return;
@@ -99,7 +128,12 @@ export function VolunteerForm() {
         return;
       }
 
-      form.reset();
+      setForm((current) => ({
+        ...current,
+        opportunity: "",
+        availabilityDate: "",
+        additionalNote: "",
+      }));
       setIsSuccess(true);
     } finally {
       setIsSubmitting(false);
@@ -111,32 +145,71 @@ export function VolunteerForm() {
       <div className="volunteer-form__grid">
         <label className="volunteer-form__field">
           <span>First Name</span>
-          <input name="firstName" type="text" autoComplete="given-name" required />
+          <input
+            name="firstName"
+            type="text"
+            autoComplete="given-name"
+            required
+            value={resolvedFirstName}
+            onChange={(event) => {
+              onChange(event);
+              setTouched((current) => ({ ...current, firstName: true }));
+            }}
+          />
         </label>
 
         <label className="volunteer-form__field">
           <span>Last Name</span>
-          <input name="lastName" type="text" autoComplete="family-name" required />
+          <input
+            name="lastName"
+            type="text"
+            autoComplete="family-name"
+            required
+            value={resolvedLastName}
+            onChange={(event) => {
+              onChange(event);
+              setTouched((current) => ({ ...current, lastName: true }));
+            }}
+          />
         </label>
 
         <label className="volunteer-form__field volunteer-form__field--wide">
           <span>Email</span>
-          <input name="email" type="email" autoComplete="email" required />
+          <input
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={resolvedEmail}
+            onChange={(event) => {
+              onChange(event);
+              setTouched((current) => ({ ...current, email: true }));
+            }}
+          />
         </label>
 
         <label className="volunteer-form__field">
           <span>Phone</span>
-          <input name="phone" type="tel" autoComplete="tel" />
+          <input
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            value={resolvedPhone}
+            onChange={(event) => {
+              onChange(event);
+              setTouched((current) => ({ ...current, phone: true }));
+            }}
+          />
         </label>
 
         <label className="volunteer-form__field">
           <span>Availability Date</span>
-          <input name="availabilityDate" type="date" />
+          <input name="availabilityDate" type="date" value={form.availabilityDate} onChange={onChange} />
         </label>
 
         <label className="volunteer-form__field volunteer-form__field--wide">
           <span>Volunteer Opportunity</span>
-          <select name="opportunity" required defaultValue="">
+          <select name="opportunity" required value={form.opportunity} onChange={onChange}>
             <option value="" disabled>
               Choose an option
             </option>
@@ -150,7 +223,13 @@ export function VolunteerForm() {
 
         <label className="volunteer-form__field volunteer-form__field--wide">
           <span>Additional Note</span>
-          <textarea name="additionalNote" rows={4} placeholder="Optional: yahrzeit date, preferred role, or scheduling notes" />
+          <textarea
+            name="additionalNote"
+            rows={4}
+            placeholder="Optional: yahrzeit date, preferred role, or scheduling notes"
+            value={form.additionalNote}
+            onChange={onChange}
+          />
         </label>
       </div>
 

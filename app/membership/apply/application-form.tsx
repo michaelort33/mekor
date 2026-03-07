@@ -2,6 +2,7 @@
 
 import { type ChangeEvent, type FormEvent, useMemo, useState } from "react";
 
+import { usePublicProfilePrefill } from "@/components/forms/use-public-profile-prefill";
 import {
   buildApplicantDisplayName,
   calculateMembershipEstimate,
@@ -67,7 +68,15 @@ function sanitizeRows<T extends { name: string }>(rows: T[]) {
 }
 
 export function MembershipApplicationForm() {
+  const profile = usePublicProfilePrefill();
   const [form, setForm] = useState<FormState>(initialState);
+  const [prefillTouched, setPrefillTouched] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    phone: false,
+    city: false,
+  });
   const [householdRows, setHouseholdRows] = useState<HouseholdRow[]>([]);
   const [yahrzeitRows, setYahrzeitRows] = useState<YahrzeitRow[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -83,9 +92,15 @@ export function MembershipApplicationForm() {
     [form.includeSecurityDonation, form.membershipCategory],
   );
 
+  const resolvedFirstName = prefillTouched.firstName ? form.firstName : form.firstName || profile?.firstName || "";
+  const resolvedLastName = prefillTouched.lastName ? form.lastName : form.lastName || profile?.lastName || "";
+  const resolvedEmail = prefillTouched.email ? form.email : form.email || profile?.email || "";
+  const resolvedPhone = prefillTouched.phone ? form.phone : form.phone || profile?.phone || "";
+  const resolvedCity = prefillTouched.city ? form.city : form.city === initialState.city ? profile?.city || form.city : form.city;
+
   const displayName = useMemo(
-    () => buildApplicantDisplayName({ firstName: form.firstName, lastName: form.lastName }),
-    [form.firstName, form.lastName],
+    () => buildApplicantDisplayName({ firstName: resolvedFirstName, lastName: resolvedLastName }),
+    [resolvedFirstName, resolvedLastName],
   );
 
   function updateField<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
@@ -97,6 +112,9 @@ export function MembershipApplicationForm() {
     if (type === "checkbox" && event.target instanceof HTMLInputElement) {
       updateField(name as keyof FormState, event.target.checked as never);
       return;
+    }
+    if (name === "firstName" || name === "lastName" || name === "email" || name === "phone" || name === "city") {
+      setPrefillTouched((current) => ({ ...current, [name]: true }));
     }
     updateField(name as keyof FormState, value as never);
   }
@@ -125,6 +143,11 @@ export function MembershipApplicationForm() {
 
     const payload = {
       ...form,
+      firstName: resolvedFirstName,
+      lastName: resolvedLastName,
+      email: resolvedEmail,
+      phone: resolvedPhone,
+      city: resolvedCity,
       householdMembers: sanitizeRows(householdRows),
       yahrzeits: sanitizeRows(yahrzeitRows),
     };
@@ -159,6 +182,13 @@ export function MembershipApplicationForm() {
     setSuccess({ applicationId: data.applicationId });
     setSubmitting(false);
     setForm(initialState);
+    setPrefillTouched({
+      firstName: false,
+      lastName: false,
+      email: false,
+      phone: false,
+      city: false,
+    });
     setHouseholdRows([]);
     setYahrzeitRows([]);
   }
@@ -228,11 +258,11 @@ export function MembershipApplicationForm() {
             <div className={styles.inlineGrid}>
               <label className={styles.field}>
                 <span>First name</span>
-                <input name="firstName" value={form.firstName} onChange={onTextChange} required />
+                <input name="firstName" value={resolvedFirstName} onChange={onTextChange} required />
               </label>
               <label className={styles.field}>
                 <span>Last name</span>
-                <input name="lastName" value={form.lastName} onChange={onTextChange} required />
+                <input name="lastName" value={resolvedLastName} onChange={onTextChange} required />
               </label>
             </div>
             <div className={styles.inlineGrid}>
@@ -242,13 +272,13 @@ export function MembershipApplicationForm() {
               </label>
               <label className={styles.field}>
                 <span>Email</span>
-                <input name="email" type="email" value={form.email} onChange={onTextChange} required />
+                <input name="email" type="email" value={resolvedEmail} onChange={onTextChange} required />
               </label>
             </div>
             <div className={styles.inlineGrid}>
               <label className={styles.field}>
                 <span>Phone</span>
-                <input name="phone" value={form.phone} onChange={onTextChange} required />
+                <input name="phone" value={resolvedPhone} onChange={onTextChange} required />
               </label>
               <label className={styles.field}>
                 <span>Street address</span>
@@ -262,7 +292,7 @@ export function MembershipApplicationForm() {
             <div className={styles.inlineGridTriple}>
               <label className={styles.field}>
                 <span>City</span>
-                <input name="city" value={form.city} onChange={onTextChange} required />
+                <input name="city" value={resolvedCity} onChange={onTextChange} required />
               </label>
               <label className={styles.field}>
                 <span>State</span>

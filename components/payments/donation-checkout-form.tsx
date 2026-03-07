@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { usePublicProfilePrefill } from "@/components/forms/use-public-profile-prefill";
 import { DESIGNATION_OPTIONS } from "@/lib/payments/shared";
 import styles from "./donation-checkout-form.module.css";
 
@@ -22,13 +23,20 @@ export function DonationCheckoutForm({
   kind?: "donation" | "campaign_donation" | "membership_dues";
   returnPath?: string;
 }) {
+  const profile = usePublicProfilePrefill();
   const [amount, setAmount] = useState(String(defaultAmountCents / 100));
   const [designation, setDesignation] = useState(defaultDesignation);
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
   const [donorPhone, setDonorPhone] = useState("");
+  const [hasEditedDonorName, setHasEditedDonorName] = useState(false);
+  const [hasEditedDonorEmail, setHasEditedDonorEmail] = useState(false);
+  const [hasEditedDonorPhone, setHasEditedDonorPhone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const resolvedDonorName = hasEditedDonorName ? donorName : donorName || profile?.displayName || "";
+  const resolvedDonorEmail = hasEditedDonorEmail ? donorEmail : donorEmail || profile?.email || "";
+  const resolvedDonorPhone = hasEditedDonorPhone ? donorPhone : donorPhone || profile?.phone || "";
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,9 +56,9 @@ export function DonationCheckoutForm({
       body: JSON.stringify({
         amountCents,
         designation,
-        donorName,
-        donorEmail,
-        donorPhone,
+        donorName: resolvedDonorName,
+        donorEmail: resolvedDonorEmail,
+        donorPhone: resolvedDonorPhone,
         campaignId,
         kind,
         returnPath,
@@ -71,6 +79,7 @@ export function DonationCheckoutForm({
     <section className={styles.shell}>
       <div className={styles.card}>
         <div className={styles.intro}>
+          <span className={styles.eyebrow}>Secure donation intake</span>
           <h3>{title}</h3>
           <p>{description}</p>
         </div>
@@ -79,43 +88,87 @@ export function DonationCheckoutForm({
           <div className={styles.grid}>
             <label className={styles.field}>
               <span>Donation amount (USD)</span>
-              <input
-                type="number"
-                min="1"
-                step="0.01"
-                value={amount}
-                onChange={(event) => setAmount(event.target.value)}
-                required
-              />
+              <div className={styles.control}>
+                <span className={styles.prefix} aria-hidden="true">
+                  $
+                </span>
+                <input
+                  type="number"
+                  min="1"
+                  step="0.01"
+                  inputMode="decimal"
+                  value={amount}
+                  onChange={(event) => setAmount(event.target.value)}
+                  required
+                />
+              </div>
             </label>
 
             <label className={styles.field}>
               <span>What is this donation for?</span>
-              <select value={designation} onChange={(event) => setDesignation(event.target.value)}>
-                {DESIGNATION_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-                {DESIGNATION_OPTIONS.includes(defaultDesignation as never) ? null : (
-                  <option value={defaultDesignation}>{defaultDesignation}</option>
-                )}
-              </select>
+              <div className={styles.control}>
+                <select value={designation} onChange={(event) => setDesignation(event.target.value)}>
+                  {DESIGNATION_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                  {DESIGNATION_OPTIONS.includes(defaultDesignation as never) ? null : (
+                    <option value={defaultDesignation}>{defaultDesignation}</option>
+                  )}
+                </select>
+                <span className={styles.selectArrow} aria-hidden="true">
+                  <svg viewBox="0 0 20 20" focusable="false">
+                    <path d="M5.25 7.5 10 12.25 14.75 7.5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              </div>
             </label>
 
             <label className={styles.field}>
               <span>Donor name</span>
-              <input value={donorName} onChange={(event) => setDonorName(event.target.value)} required />
+              <div className={styles.control}>
+                <input
+                  value={resolvedDonorName}
+                  onChange={(event) => {
+                    setDonorName(event.target.value);
+                    setHasEditedDonorName(true);
+                  }}
+                  autoComplete="name"
+                  required
+                />
+              </div>
             </label>
 
             <label className={styles.field}>
               <span>Email for receipt</span>
-              <input type="email" value={donorEmail} onChange={(event) => setDonorEmail(event.target.value)} required />
+              <div className={styles.control}>
+                <input
+                  type="email"
+                  value={resolvedDonorEmail}
+                  onChange={(event) => {
+                    setDonorEmail(event.target.value);
+                    setHasEditedDonorEmail(true);
+                  }}
+                  autoComplete="email"
+                  required
+                />
+              </div>
             </label>
 
             <label className={styles.field}>
               <span>Phone</span>
-              <input value={donorPhone} onChange={(event) => setDonorPhone(event.target.value)} />
+              <div className={styles.control}>
+                <input
+                  value={resolvedDonorPhone}
+                  onChange={(event) => {
+                    setDonorPhone(event.target.value);
+                    setHasEditedDonorPhone(true);
+                  }}
+                  autoComplete="tel"
+                  inputMode="tel"
+                />
+              </div>
             </label>
           </div>
 

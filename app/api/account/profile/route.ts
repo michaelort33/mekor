@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { getDb } from "@/db/client";
-import { users } from "@/db/schema";
+import { people, users } from "@/db/schema";
 import { getUserSession } from "@/lib/auth/session";
 import { profileUpdatePayloadSchema } from "@/lib/users/validation";
 
@@ -20,6 +20,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const db = getDb();
   const [profile] = await getDb()
     .select({
       id: users.id,
@@ -39,7 +40,30 @@ export async function GET() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ profile });
+  const [person] = await db
+    .select({
+      firstName: people.firstName,
+      lastName: people.lastName,
+      phone: people.phone,
+      city: people.city,
+    })
+    .from(people)
+    .where(eq(people.userId, session.userId))
+    .limit(1);
+
+  const nameParts = profile.displayName.trim().split(/\s+/).filter(Boolean);
+  const firstName = person?.firstName || nameParts[0] || "";
+  const lastName = person?.lastName || (nameParts.length > 1 ? nameParts.slice(1).join(" ") : "");
+
+  return NextResponse.json({
+    profile: {
+      ...profile,
+      firstName,
+      lastName,
+      phone: person?.phone || "",
+      city: person?.city || profile.city,
+    },
+  });
 }
 
 export async function PUT(request: Request) {

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { usePublicProfilePrefill } from "@/components/forms/use-public-profile-prefill";
+
 type ContactFormProps = {
   sourcePath: string;
 };
@@ -9,18 +11,39 @@ type ContactFormProps = {
 type FormState = "idle" | "submitting" | "success" | "error";
 
 export function ContactForm({ sourcePath }: ContactFormProps) {
+  const profile = usePublicProfilePrefill();
   const [state, setState] = useState<FormState>("idle");
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [touched, setTouched] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    phone: false,
+  });
+
+  const resolvedFirstName = touched.firstName ? form.firstName : form.firstName || profile?.firstName || "";
+  const resolvedLastName = touched.lastName ? form.lastName : form.lastName || profile?.lastName || "";
+  const resolvedEmail = touched.email ? form.email : form.email || profile?.email || "";
+  const resolvedPhone = touched.phone ? form.phone : form.phone || profile?.phone || "";
+
+  function update(field: "firstName" | "lastName" | "email" | "phone" | "message", value: string) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const form = event.currentTarget;
-    const payload = new FormData(form);
-    const firstName = String(payload.get("firstName") || "").trim();
-    const lastName = String(payload.get("lastName") || "").trim();
-    const email = String(payload.get("email") || "").trim();
-    const phone = String(payload.get("phone") || "").trim();
-    const message = String(payload.get("message") || "").trim();
+    const firstName = resolvedFirstName.trim();
+    const lastName = resolvedLastName.trim();
+    const email = resolvedEmail.trim();
+    const phone = resolvedPhone.trim();
+    const message = form.message.trim();
     const name = `${firstName} ${lastName}`.trim();
 
     if (!name || !email || !message) {
@@ -49,7 +72,7 @@ export function ContactForm({ sourcePath }: ContactFormProps) {
       return;
     }
 
-    form.reset();
+    setForm((current) => ({ ...current, message: "" }));
     setState("success");
   }
 
@@ -58,28 +81,77 @@ export function ContactForm({ sourcePath }: ContactFormProps) {
       <div className="medium-contact-form__row">
         <label>
           <span>First name</span>
-          <input name="firstName" type="text" required maxLength={120} autoComplete="given-name" />
+          <input
+            name="firstName"
+            type="text"
+            required
+            maxLength={120}
+            autoComplete="given-name"
+            value={resolvedFirstName}
+            onChange={(event) => {
+              update("firstName", event.target.value);
+              setTouched((current) => ({ ...current, firstName: true }));
+            }}
+          />
         </label>
         <label>
           <span>Last name</span>
-          <input name="lastName" type="text" required maxLength={120} autoComplete="family-name" />
+          <input
+            name="lastName"
+            type="text"
+            required
+            maxLength={120}
+            autoComplete="family-name"
+            value={resolvedLastName}
+            onChange={(event) => {
+              update("lastName", event.target.value);
+              setTouched((current) => ({ ...current, lastName: true }));
+            }}
+          />
         </label>
       </div>
 
       <div className="medium-contact-form__row">
         <label>
           <span>Email</span>
-          <input name="email" type="email" required maxLength={255} autoComplete="email" />
+          <input
+            name="email"
+            type="email"
+            required
+            maxLength={255}
+            autoComplete="email"
+            value={resolvedEmail}
+            onChange={(event) => {
+              update("email", event.target.value);
+              setTouched((current) => ({ ...current, email: true }));
+            }}
+          />
         </label>
         <label>
           <span>Phone (optional)</span>
-          <input name="phone" type="tel" maxLength={60} autoComplete="tel" />
+          <input
+            name="phone"
+            type="tel"
+            maxLength={60}
+            autoComplete="tel"
+            value={resolvedPhone}
+            onChange={(event) => {
+              update("phone", event.target.value);
+              setTouched((current) => ({ ...current, phone: true }));
+            }}
+          />
         </label>
       </div>
 
       <label>
         <span>Message</span>
-        <textarea name="message" required rows={5} />
+        <textarea
+          name="message"
+          required
+          rows={5}
+          value={form.message}
+          onChange={(event) => update("message", event.target.value)}
+        />
       </label>
 
       <button type="submit" disabled={state === "submitting"}>
