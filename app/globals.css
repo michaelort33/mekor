@@ -737,7 +737,7 @@ body.native-nav--mobile-open {
   overflow: hidden;
 }
 
-@media (max-width: 1480px) {
+@media (max-width: 1180px) {
   .native-nav__container {
     padding: 12px 14px;
     gap: 10px;
