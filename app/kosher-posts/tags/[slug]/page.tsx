@@ -1,14 +1,6 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
-import { ArchiveTemplate } from "@/components/templates/archive-template";
-import { BadRequestTemplate } from "@/components/templates/bad-request-template";
-import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
-import { buildDocumentMetadata } from "@/lib/templates/metadata";
-import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
-
-export const dynamicParams = true;
-export const dynamic = "force-static";
+import { buildKosherTagRedirect } from "@/lib/kosher/public-routing";
 
 type PageProps = {
   params: Promise<{
@@ -16,55 +8,7 @@ type PageProps = {
   }>;
 };
 
-function toPath(slug: string) {
-  return "/kosher-posts/tags/" + slug;
-}
-
-export async function generateStaticParams() {
-  const index = await loadNativeContentIndex();
-  const deduped = new Map<string, { slug: string }>();
-
-  for (const item of index) {
-    if (
-      item.type !== "tag" ||
-      item.path.includes("?") ||
-      !/^\/kosher-posts\/tags\/[^/]+$/i.test(item.path)
-    ) {
-      continue;
-    }
-
-    const slug = item.path.slice("/kosher-posts/tags/".length);
-    if (!slug) {
-      continue;
-    }
-
-    deduped.set(slug, { slug });
-  }
-
-  return [...deduped.values()];
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const route = await resolveTemplateRoute(toPath(slug));
-  if (route.status !== "ok" || route.document.type !== "tag") {
-    return buildDocumentMetadata(null);
-  }
-
-  return buildDocumentMetadata(route.document);
-}
-
 export default async function TagArchivePage({ params }: PageProps) {
   const { slug } = await params;
-  const route = await resolveTemplateRoute(toPath(slug));
-
-  if (route.status === "bad-request") {
-    return <BadRequestTemplate />;
-  }
-
-  if (route.status !== "ok" || route.document.type !== "tag" || route.template.kind !== "archive") {
-    notFound();
-  }
-
-  return <ArchiveTemplate data={route.template.data} />;
+  permanentRedirect(buildKosherTagRedirect(slug));
 }

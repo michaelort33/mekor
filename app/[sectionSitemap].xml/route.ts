@@ -13,7 +13,6 @@ export async function GET(
   const sectionSitemap = Array.isArray(rawSection) ? rawSection[0] ?? "" : rawSection ?? "";
 
   const allowed = new Set([
-    "blog-categories-sitemap",
     "blog-posts-sitemap",
     "event-pages-sitemap",
     "dynamic-news-sitemap",
@@ -26,7 +25,6 @@ export async function GET(
 
   const selected = await listRoutesBySection(
     sectionSitemap as
-      | "blog-categories-sitemap"
       | "blog-posts-sitemap"
       | "event-pages-sitemap"
       | "dynamic-news-sitemap"

@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-static";
 
 const sections = [
-  "blog-categories-sitemap.xml",
   "blog-posts-sitemap.xml",
   "event-pages-sitemap.xml",
   "dynamic-news-sitemap.xml",

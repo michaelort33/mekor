@@ -14,15 +14,9 @@ export default async function CenterCityKosherPage() {
   return (
     <KosherPlacesPage
       currentPath="/center-city"
-      heading="Kosher Restaurants"
+      heading="Kosher Guide"
       kicker="Philadelphia Area"
-      description="Find kosher dining across all neighborhoods. Filter by location, category, or search by name."
-      highlights={[
-        { label: "Restaurant favorites across all neighborhoods", tag: "restaurants" },
-        { label: "Bakery and dessert spots", tag: "bakery" },
-        { label: "Cafe picks and family-friendly options", tag: "cafe" },
-        { label: "Community-verified supervision and map links", tag: "all" },
-      ]}
+      description="Find kosher dining across Philadelphia in one clear guide. Search by name, narrow by neighborhood, and browse categories without leaving the page."
       designTone="food"
       defaultNeighborhood="all"
       lastUpdatedKey="center-city"

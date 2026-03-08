@@ -7,6 +7,18 @@
 :root {
   --native-font-body: var(--font-body), "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
   --native-font-heading: var(--font-heading), "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  --color-background: #f8f3eb;
+  --color-background-strong: #f1e9dc;
+  --color-surface: rgba(255, 255, 255, 0.88);
+  --color-surface-soft: rgba(255, 255, 255, 0.7);
+  --color-surface-strong: #f6efe4;
+  --color-foreground: #1d2c3f;
+  --color-muted: #5f6d7e;
+  --color-accent: #234d78;
+  --color-accent-strong: #183753;
+  --color-border: rgba(43, 63, 89, 0.12);
+  --color-border-strong: rgba(39, 69, 109, 0.22);
+  --color-ring: #2f6ba1;
   --native-shell-bg: #f7f3eb;
   --native-shell-gradient: linear-gradient(176deg, #f8f4ed 0%, #f4f6f4 34%, #ebf1f8 100%);
   --native-nav-bg: #f7f3eb;
@@ -47,6 +59,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
   max-width: 100%;
   overflow-x: clip;
+}
+
+body {
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at top left, rgba(35, 77, 120, 0.09), transparent 34%),
+    radial-gradient(circle at 90% 0%, rgba(181, 134, 70, 0.09), transparent 26%);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 html:has(.mirror-root),

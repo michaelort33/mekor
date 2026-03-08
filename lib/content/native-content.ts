@@ -26,6 +26,10 @@ const routeData = routesData as NativeGeneratedRouteData;
 const searchRecords = searchData as NativeSearchIndexRecord[];
 const templateRecords = templatesData as NativeTemplateRecord[];
 
+function isRetiredKosherBrowsePath(pathValue: string) {
+  return pathValue.startsWith("/kosher-posts/categories/") || pathValue.startsWith("/kosher-posts/tags/");
+}
+
 export function normalizePath(rawPath: string) {
   if (!rawPath || rawPath === "") {
     return "/";
@@ -163,13 +167,15 @@ export async function getArticleBySlug(type: NativeDocumentType, slug: string) {
 }
 
 export async function listArticles(type: NativeDocumentType) {
-  return templateRecords.filter((record) => record.document.type === type);
+  return templateRecords.filter(
+    (record) => record.document.type === type && !isRetiredKosherBrowsePath(record.document.path),
+  );
 }
 
 function matchesSection(pathValue: string, section: NativeSectionSitemap) {
   switch (section) {
     case "blog-categories-sitemap":
-      return pathValue === "/kosher-posts" || pathValue.startsWith("/kosher-posts/categories/");
+      return false;
     case "blog-posts-sitemap":
       return pathValue.startsWith("/post/");
     case "event-pages-sitemap":
@@ -191,12 +197,12 @@ function matchesSection(pathValue: string, section: NativeSectionSitemap) {
 export async function listRoutesBySection(section: NativeSectionSitemap) {
   return routeData.canonical
     .map((record) => record.path)
-    .filter((pathValue) => matchesSection(pathValue, section))
+    .filter((pathValue) => !isRetiredKosherBrowsePath(pathValue) && matchesSection(pathValue, section))
     .sort((a, b) => a.localeCompare(b));
 }
 
 export async function buildSearchDocuments() {
-  return searchRecords;
+  return searchRecords.filter((record) => !isRetiredKosherBrowsePath(record.path));
 }
 
 export async function loadContentIndex() {

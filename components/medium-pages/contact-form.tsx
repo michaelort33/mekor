@@ -3,6 +3,9 @@
 import { useState } from "react";
 
 import { usePublicProfilePrefill } from "@/components/forms/use-public-profile-prefill";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 type ContactFormProps = {
   sourcePath: string;
@@ -77,11 +80,11 @@ export function ContactForm({ sourcePath }: ContactFormProps) {
   }
 
   return (
-    <form className="medium-contact-form" onSubmit={handleSubmit}>
-      <div className="medium-contact-form__row">
-        <label>
-          <span>First name</span>
-          <input
+    <form className="grid gap-5" onSubmit={handleSubmit}>
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">First name</span>
+          <Input
             name="firstName"
             type="text"
             required
@@ -94,9 +97,9 @@ export function ContactForm({ sourcePath }: ContactFormProps) {
             }}
           />
         </label>
-        <label>
-          <span>Last name</span>
-          <input
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Last name</span>
+          <Input
             name="lastName"
             type="text"
             required
@@ -111,10 +114,10 @@ export function ContactForm({ sourcePath }: ContactFormProps) {
         </label>
       </div>
 
-      <div className="medium-contact-form__row">
-        <label>
-          <span>Email</span>
-          <input
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Email</span>
+          <Input
             name="email"
             type="email"
             required
@@ -127,9 +130,9 @@ export function ContactForm({ sourcePath }: ContactFormProps) {
             }}
           />
         </label>
-        <label>
-          <span>Phone (optional)</span>
-          <input
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Phone (optional)</span>
+          <Input
             name="phone"
             type="tel"
             maxLength={60}
@@ -143,9 +146,9 @@ export function ContactForm({ sourcePath }: ContactFormProps) {
         </label>
       </div>
 
-      <label>
-        <span>Message</span>
-        <textarea
+      <label className="grid gap-2">
+        <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Message</span>
+        <Textarea
           name="message"
           required
           rows={5}
@@ -154,14 +157,16 @@ export function ContactForm({ sourcePath }: ContactFormProps) {
         />
       </label>
 
-      <button type="submit" disabled={state === "submitting"}>
+      <div className="flex flex-wrap items-center gap-4 pt-1">
+        <Button type="submit" disabled={state === "submitting"}>
         {state === "submitting" ? "Sending..." : "Submit"}
-      </button>
+        </Button>
 
-      {state === "success" ? <p className="medium-contact-form__status is-success">Thanks for submitting!</p> : null}
-      {state === "error" ? (
-        <p className="medium-contact-form__status is-error">Unable to submit right now. Please try again.</p>
-      ) : null}
+        {state === "success" ? <p className="text-sm font-medium text-emerald-700">Thanks for submitting!</p> : null}
+        {state === "error" ? (
+          <p className="text-sm font-medium text-rose-700">Unable to submit right now. Please try again.</p>
+        ) : null}
+      </div>
     </form>
   );
 }

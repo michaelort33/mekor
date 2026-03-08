@@ -7,6 +7,7 @@ import { DesktopNav } from "@/components/navigation/desktop-nav";
 import { MobileDrawer } from "@/components/navigation/mobile-drawer";
 import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
+import { Button } from "@/components/ui/button";
 import type { UserSessionRole } from "@/lib/auth/session";
 import { normalizeNavigationPath } from "@/lib/navigation/path";
 import { SITE_MENU } from "@/lib/navigation/site-menu";
@@ -94,8 +95,8 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
 
   return (
     <>
-      <header className="native-nav" data-native-nav-root="true">
-        <div className="native-nav__container">
+      <header className="sticky top-0 z-40 px-4 pt-4 sm:px-6 lg:px-8" data-native-nav-root="true">
+        <div className="mx-auto flex w-full max-w-[84rem] items-center justify-between gap-3">
           <NavBrand />
 
           <DesktopNav
@@ -105,23 +106,25 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
             setOpenGroupId={setOpenDesktopGroupId}
           />
 
-          <div className="native-nav__actions">
-            <div className="native-nav__cta-wrap">
+          <div className="flex items-center gap-2">
+            <div className="hidden xl:flex">
               <NavCta isSignedIn={role !== null} isCheckingAuth={isCheckingAuth} />
             </div>
-            <button
+            <Button
               ref={mobileTriggerRef}
               type="button"
-              className="native-nav__mobile-toggle"
+              variant="secondary"
+              size="icon"
+              className="xl:hidden"
               onClick={() => setMobileOpen(true)}
               aria-expanded={mobileOpen}
               aria-controls="native-mobile-drawer"
               aria-haspopup="dialog"
               aria-label="Open main menu"
             >
-              <span className="native-nav__sr-only">Open menu</span>
+              <span className="sr-only">Open menu</span>
               <span aria-hidden="true">☰</span>
-            </button>
+            </Button>
           </div>
         </div>
       </header>

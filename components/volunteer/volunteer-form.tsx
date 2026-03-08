@@ -3,6 +3,10 @@
 import { type ChangeEvent, type FormEvent, useState } from "react";
 
 import { usePublicProfilePrefill } from "@/components/forms/use-public-profile-prefill";
+import { Button } from "@/components/ui/button";
+import { Input, inputClassName } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 const VOLUNTEER_OPPORTUNITY_OPTIONS = [
   "Kiddush Preparation",
@@ -141,11 +145,11 @@ export function VolunteerForm() {
   };
 
   return (
-    <form className="volunteer-form" onSubmit={handleSubmit}>
-      <div className="volunteer-form__grid">
-        <label className="volunteer-form__field">
-          <span>First Name</span>
-          <input
+    <form className="grid gap-6" onSubmit={handleSubmit}>
+      <div className="grid gap-4 md:grid-cols-2">
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">First Name</span>
+          <Input
             name="firstName"
             type="text"
             autoComplete="given-name"
@@ -158,9 +162,9 @@ export function VolunteerForm() {
           />
         </label>
 
-        <label className="volunteer-form__field">
-          <span>Last Name</span>
-          <input
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Last Name</span>
+          <Input
             name="lastName"
             type="text"
             autoComplete="family-name"
@@ -173,9 +177,9 @@ export function VolunteerForm() {
           />
         </label>
 
-        <label className="volunteer-form__field volunteer-form__field--wide">
-          <span>Email</span>
-          <input
+        <label className="grid gap-2 md:col-span-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Email</span>
+          <Input
             name="email"
             type="email"
             autoComplete="email"
@@ -188,9 +192,9 @@ export function VolunteerForm() {
           />
         </label>
 
-        <label className="volunteer-form__field">
-          <span>Phone</span>
-          <input
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Phone</span>
+          <Input
             name="phone"
             type="tel"
             autoComplete="tel"
@@ -202,28 +206,41 @@ export function VolunteerForm() {
           />
         </label>
 
-        <label className="volunteer-form__field">
-          <span>Availability Date</span>
-          <input name="availabilityDate" type="date" value={form.availabilityDate} onChange={onChange} />
+        <label className="grid gap-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Availability Date</span>
+          <Input name="availabilityDate" type="date" value={form.availabilityDate} onChange={onChange} />
         </label>
 
-        <label className="volunteer-form__field volunteer-form__field--wide">
-          <span>Volunteer Opportunity</span>
-          <select name="opportunity" required value={form.opportunity} onChange={onChange}>
-            <option value="" disabled>
-              Choose an option
-            </option>
-            {VOLUNTEER_OPPORTUNITY_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
+        <label className="grid gap-2 md:col-span-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Volunteer Opportunity</span>
+          <div className="relative">
+            <select
+              name="opportunity"
+              required
+              value={form.opportunity}
+              onChange={onChange}
+              className={cn(inputClassName, "appearance-none pr-12")}
+            >
+              <option value="" disabled>
+                Choose an option
               </option>
-            ))}
-          </select>
+              {VOLUNTEER_OPPORTUNITY_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)]" aria-hidden="true">
+              <svg viewBox="0 0 20 20" className="h-4 w-4">
+                <path d="M5.25 7.5 10 12.25 14.75 7.5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </div>
         </label>
 
-        <label className="volunteer-form__field volunteer-form__field--wide">
-          <span>Additional Note</span>
-          <textarea
+        <label className="grid gap-2 md:col-span-2">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Additional Note</span>
+          <Textarea
             name="additionalNote"
             rows={4}
             placeholder="Optional: yahrzeit date, preferred role, or scheduling notes"
@@ -233,12 +250,12 @@ export function VolunteerForm() {
         </label>
       </div>
 
-      <div className="volunteer-form__actions">
-        <button type="submit" disabled={isSubmitting} aria-disabled={isSubmitting ? "true" : "false"}>
+      <div className="flex flex-wrap items-center gap-4 border-t border-[var(--color-border)] pt-4">
+        <Button type="submit" disabled={isSubmitting} aria-disabled={isSubmitting ? "true" : "false"}>
           Submit
-        </button>
+        </Button>
         <p
-          className="volunteer-form__success"
+          className="text-sm font-medium text-emerald-700"
           data-mekor-form-success={isSuccess ? "true" : "false"}
           hidden={!isSuccess}
           aria-live="polite"

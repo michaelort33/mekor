@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
+import { Badge } from "@/components/ui/badge";
 import type { NavItem } from "@/lib/navigation/site-menu";
+import { cn } from "@/lib/utils";
 import { isNavigationPathActive } from "@/lib/navigation/path";
 import { isNavGroup } from "@/lib/navigation/site-menu";
 
@@ -77,7 +79,7 @@ export function DesktopNav({
 
   return (
     <div
-      className="native-nav__desktop"
+      className="hidden xl:block"
       ref={rootRef}
       onBlur={(event) => {
         const nextTarget = event.relatedTarget;
@@ -87,17 +89,20 @@ export function DesktopNav({
         }
       }}
     >
-      <ul className="native-nav__desktop-list">
+      <ul className="flex items-center gap-1 rounded-full border border-white/40 bg-white/72 px-2 py-2 shadow-[0_18px_44px_-32px_rgba(15,23,42,0.44)] backdrop-blur">
         {items.map((item) => {
           const active = isNavigationPathActive(currentPath, item.href);
 
           if (!isNavGroup(item)) {
             return (
-              <li key={item.label} className="native-nav__desktop-item">
+              <li key={item.label}>
                 <Link
                   href={item.href}
                   prefetch={false}
-                  className={`native-nav__desktop-link${active ? " is-active" : ""}`}
+                  className={cn(
+                    "inline-flex items-center rounded-full px-4 py-2 text-[15px] font-medium tracking-[0.01em] text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]",
+                    active && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
+                  )}
                   onClick={() => setOpenGroupId(null)}
                   aria-current={active ? "page" : undefined}
                 >
@@ -114,18 +119,22 @@ export function DesktopNav({
           return (
             <li
               key={item.label}
-              className={`native-nav__desktop-item native-nav__desktop-item--group${isOpen ? " is-open" : ""}`}
+              className="relative"
               onMouseEnter={() => {
                 clearCloseTimer();
                 setOpenGroupId(groupId);
               }}
               onMouseLeave={scheduleClose}
             >
-              <div className="native-nav__desktop-group-trigger">
+              <div className="flex items-center rounded-full">
                 <Link
                   href={item.href}
                   prefetch={false}
-                  className={`native-nav__desktop-link${active ? " is-active" : ""}`}
+                  className={cn(
+                    "inline-flex items-center rounded-full px-4 py-2 text-[15px] font-medium tracking-[0.01em] text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]",
+                    active && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
+                    isOpen && "text-[var(--color-foreground)]",
+                  )}
                   onFocus={() => {
                     clearCloseTimer();
                     setOpenGroupId(groupId);
@@ -146,7 +155,7 @@ export function DesktopNav({
                     groupButtonRefs.current[groupId] = node;
                   }}
                   type="button"
-                  className="native-nav__desktop-chevron"
+                  className="mr-1 inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]"
                   aria-expanded={isOpen}
                   aria-controls={submenuId}
                   aria-haspopup="true"
@@ -169,15 +178,24 @@ export function DesktopNav({
                     }
                   }}
                 >
-                  <span className="native-nav__sr-only">Toggle {item.label} submenu</span>
+                  <span className="sr-only">Toggle {item.label} submenu</span>
                   <span aria-hidden="true">▾</span>
                 </button>
               </div>
               <div
                 id={submenuId}
-                className={`native-nav__submenu${isOpen ? " is-open" : ""}`}
+                className={cn(
+                  "absolute left-0 top-[calc(100%+0.85rem)] z-40 min-w-[18rem] rounded-[28px] border border-[var(--color-border)] bg-[rgba(255,255,255,0.96)] p-3 shadow-[0_30px_80px_-36px_rgba(15,23,42,0.52)] backdrop-blur transition",
+                  isOpen ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0",
+                )}
               >
-                <ul className="native-nav__submenu-list">
+                <div className="mb-3 flex items-center justify-between gap-3 px-2 pt-1">
+                  <Badge>Explore</Badge>
+                  <Link href={item.href} className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">
+                    View All
+                  </Link>
+                </div>
+                <ul className="grid gap-1">
                   {item.children.map((child) => {
                     const childActive = isNavigationPathActive(currentPath, child.href);
                     return (
@@ -185,7 +203,10 @@ export function DesktopNav({
                         <Link
                           href={child.href}
                           prefetch={false}
-                          className={`native-nav__submenu-link${childActive ? " is-active" : ""}`}
+                          className={cn(
+                            "block rounded-[20px] px-4 py-3 text-sm font-medium text-[var(--color-muted)] transition hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
+                            childActive && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)]",
+                          )}
                           aria-current={childActive ? "page" : undefined}
                           onClick={() => setOpenGroupId(null)}
                           onKeyDown={(event) => {
