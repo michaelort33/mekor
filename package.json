@@ -27,7 +27,10 @@
     "visual:parity:gate": "npm run visual:candidate:capture && npm run visual:parity:report",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "content:generate": "tsx scripts/content/generate-native-content.ts",
+    "db:backfill:events": "tsx scripts/db/backfill-events.ts",
+    "db:backfill:in-the-news": "tsx scripts/db/backfill-in-the-news.ts"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.1",

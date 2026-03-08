@@ -3,10 +3,9 @@ import { notFound } from "next/navigation";
 
 import { BadRequestTemplate } from "@/components/templates/bad-request-template";
 import { ProfileTemplate } from "@/components/templates/profile-template";
+import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
-import { buildProfileTemplateData } from "@/lib/templates/template-data";
-import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
@@ -22,7 +21,7 @@ function toPath(parts?: string[]) {
     return "/profile";
   }
 
-  return `/profile/${parts.join("/")}`;
+  return "/profile/" + parts.join("/");
 }
 
 export async function generateStaticParams() {
@@ -30,11 +29,7 @@ export async function generateStaticParams() {
   const deduped = new Map<string, { parts: string[] }>();
 
   for (const item of index) {
-    if (
-      item.type !== "profile" ||
-      !item.path.startsWith("/profile/") ||
-      item.path.includes("?")
-    ) {
+    if (item.type !== "profile" || !item.path.startsWith("/profile/") || item.path.includes("?")) {
       continue;
     }
 
@@ -67,10 +62,9 @@ export default async function ProfileTemplatePage({ params }: PageProps) {
     return <BadRequestTemplate />;
   }
 
-  if (route.status !== "ok" || route.document.type !== "profile") {
+  if (route.status !== "ok" || route.document.type !== "profile" || route.template.kind !== "profile") {
     notFound();
   }
 
-  const data = await buildProfileTemplateData(route.document);
-  return <ProfileTemplate data={data} />;
+  return <ProfileTemplate data={route.template.data} />;
 }

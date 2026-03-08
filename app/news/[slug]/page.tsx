@@ -5,7 +5,6 @@ import { ArticleTemplate } from "@/components/templates/article-template";
 import { BadRequestTemplate } from "@/components/templates/bad-request-template";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
-import { buildArticleTemplateData } from "@/lib/templates/template-data";
 import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
 
 export const dynamicParams = true;
@@ -18,7 +17,7 @@ type PageProps = {
 };
 
 function toPath(slug: string) {
-  return `/news/${slug}`;
+  return "/news/" + slug;
 }
 
 export async function generateStaticParams() {
@@ -59,9 +58,9 @@ export default async function NewsTemplatePage({ params }: PageProps) {
     return <BadRequestTemplate />;
   }
 
-  if (route.status !== "ok" || route.document.type !== "news") {
+  if (route.status !== "ok" || route.document.type !== "news" || route.template.kind !== "article") {
     notFound();
   }
 
-  return <ArticleTemplate data={buildArticleTemplateData(route.document)} />;
+  return <ArticleTemplate data={route.template.data} />;
 }

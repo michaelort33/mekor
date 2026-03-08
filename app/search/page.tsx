@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Search | Mekor Habracha",
-  description: "Search public content mirrored from mekorhabracha.org.",
+  description: "Search public content across Mekor Habracha pages, posts, news, and directories.",
 };
 
 type SearchProps = {

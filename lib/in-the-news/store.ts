@@ -2,7 +2,6 @@ import { asc, desc } from "drizzle-orm";
 
 import { getDb } from "@/db/client";
 import { inTheNews } from "@/db/schema";
-import { loadExtractedInTheNews } from "@/lib/in-the-news/extract";
 import { validateManagedInTheNewsContract } from "@/lib/native/contracts";
 
 export type ManagedInTheNewsArticle = {
@@ -27,7 +26,7 @@ export type InTheNewsFilters = {
 };
 
 function normalizeWhitespace(value: string) {
-  return value.replace(/\s+/g, " ").trim();
+  return value.replace(/s+/g, " ").trim();
 }
 
 function normalizeSearchValue(value: string | null | undefined) {
@@ -128,50 +127,28 @@ export function filterInTheNews(
 }
 
 export async function getManagedInTheNews(filters: InTheNewsFilters = {}) {
-  const extracted = await loadExtractedInTheNews();
-  const extractedManaged = extracted.map((row) =>
-    toManagedInTheNewsArticle({
-      ...row,
-      sourceCapturedAt: row.capturedAt ? new Date(row.capturedAt) : null,
-    }),
-  );
-  const extractedFiltered = filterInTheNews(extractedManaged, filters);
-
-  if (!process.env.DATABASE_URL || process.env.IN_THE_NEWS_DIRECTORY_USE_DB !== "1") {
-    return validateManagedInTheNewsContract(
-      extractedFiltered,
-      "getManagedInTheNews: extracted mirror fallback",
-    );
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL is required for in-the-news content");
   }
 
-  let managed: ManagedInTheNewsArticle[];
-  try {
-    const rows = await getDb()
-      .select({
-        slug: inTheNews.slug,
-        path: inTheNews.path,
-        title: inTheNews.title,
-        publishedLabel: inTheNews.publishedLabel,
-        publishedAt: inTheNews.publishedAt,
-        year: inTheNews.year,
-        author: inTheNews.author,
-        publication: inTheNews.publication,
-        excerpt: inTheNews.excerpt,
-        bodyText: inTheNews.bodyText,
-        sourceUrl: inTheNews.sourceUrl,
-        sourceCapturedAt: inTheNews.sourceCapturedAt,
-      })
-      .from(inTheNews)
-      .orderBy(desc(inTheNews.publishedAt), desc(inTheNews.year), asc(inTheNews.title));
+  const rows = await getDb()
+    .select({
+      slug: inTheNews.slug,
+      path: inTheNews.path,
+      title: inTheNews.title,
+      publishedLabel: inTheNews.publishedLabel,
+      publishedAt: inTheNews.publishedAt,
+      year: inTheNews.year,
+      author: inTheNews.author,
+      publication: inTheNews.publication,
+      excerpt: inTheNews.excerpt,
+      bodyText: inTheNews.bodyText,
+      sourceUrl: inTheNews.sourceUrl,
+      sourceCapturedAt: inTheNews.sourceCapturedAt,
+    })
+    .from(inTheNews)
+    .orderBy(desc(inTheNews.publishedAt), desc(inTheNews.year), asc(inTheNews.title));
 
-    managed = rows.map((row) => toManagedInTheNewsArticle(row));
-    if (managed.length === 0) {
-      managed = extractedManaged;
-    }
-  } catch {
-    managed = extractedManaged;
-  }
-
-  const filtered = filterInTheNews(managed, filters);
-  return validateManagedInTheNewsContract(filtered, "getManagedInTheNews: final output");
+  const filtered = filterInTheNews(rows.map((row) => toManagedInTheNewsArticle(row)), filters);
+  return validateManagedInTheNewsContract(filtered, "getManagedInTheNews: db output");
 }

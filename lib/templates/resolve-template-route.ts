@@ -1,10 +1,11 @@
-import type { NativePageDocument } from "@/lib/native-content/content-loader";
-import { resolveNativeTemplatePath } from "@/lib/native-content/content-loader";
+import type { NativeContentDocument, NativeTemplateRecord } from "@/lib/content/types";
+import { resolveContentPath } from "@/lib/content/native-content";
 
 export type TemplateRouteResolution =
   | {
       status: "ok";
-      document: NativePageDocument;
+      document: NativeContentDocument;
+      template: NativeTemplateRecord;
       requestPath: string;
       resolvedPath: string;
     }
@@ -16,7 +17,7 @@ export type TemplateRouteResolution =
     };
 
 export async function resolveTemplateRoute(pathValue: string): Promise<TemplateRouteResolution> {
-  const route = await resolveNativeTemplatePath(pathValue);
+  const route = await resolveContentPath(pathValue);
 
   if (route.overrideStatus === 400) {
     return {
@@ -24,7 +25,7 @@ export async function resolveTemplateRoute(pathValue: string): Promise<TemplateR
     };
   }
 
-  if (route.overrideStatus === 404 || !route.isKnownRoute || !route.document) {
+  if (route.overrideStatus === 404 || !route.isKnownRoute || !route.document || !route.template) {
     return {
       status: "not-found",
     };
@@ -33,6 +34,7 @@ export async function resolveTemplateRoute(pathValue: string): Promise<TemplateR
   return {
     status: "ok",
     document: route.document,
+    template: route.template,
     requestPath: route.requestPath,
     resolvedPath: route.resolvedPath,
   };

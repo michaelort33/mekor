@@ -6,11 +6,10 @@ import { BadRequestTemplate } from "@/components/templates/bad-request-template"
 import { EventTemplate } from "@/components/templates/event-template";
 import { getDb } from "@/db/client";
 import { events } from "@/db/schema";
+import { ensureManagedEventRecordByPath } from "@/lib/events/store";
+import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
-import { buildEventTemplateData } from "@/lib/templates/template-data";
-import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
-import { ensureManagedEventRecordByPath } from "@/lib/events/store";
 
 export const dynamicParams = true;
 export const dynamic = "force-dynamic";
@@ -22,7 +21,7 @@ type PageProps = {
 };
 
 function toPath(slug: string) {
-  return `/events-1/${slug}`;
+  return "/events-1/" + slug;
 }
 
 export async function generateStaticParams() {
@@ -64,7 +63,7 @@ export default async function EventTemplatePage({ params }: PageProps) {
     return <BadRequestTemplate />;
   }
 
-  if (route.status !== "ok" || route.document.type !== "event") {
+  if (route.status !== "ok" || route.document.type !== "event" || route.template.kind !== "event") {
     notFound();
   }
 
@@ -74,5 +73,5 @@ export default async function EventTemplatePage({ params }: PageProps) {
     eventId = eventRow?.id ?? (await ensureManagedEventRecordByPath(path));
   }
 
-  return <EventTemplate data={buildEventTemplateData(route.document, { eventId })} />;
+  return <EventTemplate data={{ ...route.template.data, eventId }} />;
 }

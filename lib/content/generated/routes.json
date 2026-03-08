@@ -1,0 +1,2457 @@
+{
+  "canonical": [
+    {
+      "path": "/",
+      "sourceUrl": "https://www.mekorhabracha.org/"
+    },
+    {
+      "path": "/about-5",
+      "sourceUrl": "https://www.mekorhabracha.org/about-5"
+    },
+    {
+      "path": "/about-us",
+      "sourceUrl": "https://www.mekorhabracha.org/about-us"
+    },
+    {
+      "path": "/auxiliary-membership",
+      "sourceUrl": "https://www.mekorhabracha.org/auxiliary-membership"
+    },
+    {
+      "path": "/center-city",
+      "sourceUrl": "https://www.mekorhabracha.org/center-city"
+    },
+    {
+      "path": "/center-city-beit-midrash",
+      "sourceUrl": "https://www.mekorhabracha.org/center-city-beit-midrash"
+    },
+    {
+      "path": "/center-city-south-philly-er",
+      "sourceUrl": "https://www.mekorhabracha.org/center-city-south-philly-er"
+    },
+    {
+      "path": "/centercity-southphillyeruvupdate-old",
+      "sourceUrl": "https://www.mekorhabracha.org/centercity-southphillyeruvupdate-old"
+    },
+    {
+      "path": "/cherry-hill",
+      "sourceUrl": "https://www.mekorhabracha.org/cherry-hill"
+    },
+    {
+      "path": "/contact-us",
+      "sourceUrl": "https://www.mekorhabracha.org/contact-us"
+    },
+    {
+      "path": "/copy-of-center-city-beit-midrash",
+      "sourceUrl": "https://www.mekorhabracha.org/copy-of-center-city-beit-midrash"
+    },
+    {
+      "path": "/copy-of-pesach-at-mekor",
+      "sourceUrl": "https://www.mekorhabracha.org/copy-of-pesach-at-mekor"
+    },
+    {
+      "path": "/davening",
+      "sourceUrl": "https://www.mekorhabracha.org/davening"
+    },
+    {
+      "path": "/donation-thank-you-page",
+      "sourceUrl": "https://www.mekorhabracha.org/donation-thank-you-page"
+    },
+    {
+      "path": "/donations",
+      "sourceUrl": "https://www.mekorhabracha.org/donations"
+    },
+    {
+      "path": "/events",
+      "sourceUrl": "https://www.mekorhabracha.org/events"
+    },
+    {
+      "path": "/events-1/mekor-pesach-seders",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/mekor-pesach-seders"
+    },
+    {
+      "path": "/events-1/mekor-shabbat-with-the-sachers",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/mekor-shabbat-with-the-sachers"
+    },
+    {
+      "path": "/events-1/mekor-shabbat-with-the-sachers-1",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/mekor-shabbat-with-the-sachers-1"
+    },
+    {
+      "path": "/events-1/mekor-shabbat-with-the-sachers-2",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/mekor-shabbat-with-the-sachers-2"
+    },
+    {
+      "path": "/events-1/mekors-tot-shabbat",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/mekors-tot-shabbat"
+    },
+    {
+      "path": "/events-1/pesach-at-mekor",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/pesach-at-mekor"
+    },
+    {
+      "path": "/events-1/purim-at-mekor",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/purim-at-mekor"
+    },
+    {
+      "path": "/events-1/scholar-in-residence-shabbat-with-rabbi-aaron-goldscheider",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/scholar-in-residence-shabbat-with-rabbi-aaron-goldscheider"
+    },
+    {
+      "path": "/events-1/shabbat-dinner-and-conversation-with-moshe-shamah",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/shabbat-dinner-and-conversation-with-moshe-shamah"
+    },
+    {
+      "path": "/events-1/shabbat-shuva-dinner-kumzitz",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/shabbat-shuva-dinner-kumzitz"
+    },
+    {
+      "path": "/events-1/special-discussion-with-mark-trencher-of-nishma-research",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/special-discussion-with-mark-trencher-of-nishma-research"
+    },
+    {
+      "path": "/events-page",
+      "sourceUrl": "https://www.mekorhabracha.org/events-page"
+    },
+    {
+      "path": "/from-the-rabbi-s-desk",
+      "sourceUrl": "https://www.mekorhabracha.org/from-the-rabbi-s-desk"
+    },
+    {
+      "path": "/general-5",
+      "sourceUrl": "https://www.mekorhabracha.org/general-5"
+    },
+    {
+      "path": "/in-the-news",
+      "sourceUrl": "https://www.mekorhabracha.org/in-the-news"
+    },
+    {
+      "path": "/israel",
+      "sourceUrl": "https://www.mekorhabracha.org/israel"
+    },
+    {
+      "path": "/kiddush",
+      "sourceUrl": "https://www.mekorhabracha.org/kiddush"
+    },
+    {
+      "path": "/kosher-map",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-map"
+    },
+    {
+      "path": "/kosher-posts",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts"
+    },
+    {
+      "path": "/kosher-posts/categories/center-city",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/center-city"
+    },
+    {
+      "path": "/kosher-posts/categories/cherry-hill",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/cherry-hill"
+    },
+    {
+      "path": "/kosher-posts/categories/main-line-manyunk",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk"
+    },
+    {
+      "path": "/kosher-posts/categories/old-york-road-northeast",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/old-york-road-northeast"
+    },
+    {
+      "path": "/letterfromisrael",
+      "sourceUrl": "https://www.mekorhabracha.org/letterfromisrael"
+    },
+    {
+      "path": "/main-line-manyunk",
+      "sourceUrl": "https://www.mekorhabracha.org/main-line-manyunk"
+    },
+    {
+      "path": "/mekor-bulletin-board",
+      "sourceUrl": "https://www.mekorhabracha.org/mekor-bulletin-board"
+    },
+    {
+      "path": "/mekorcouples",
+      "sourceUrl": "https://www.mekorhabracha.org/mekorcouples"
+    },
+    {
+      "path": "/membership",
+      "sourceUrl": "https://www.mekorhabracha.org/membership"
+    },
+    {
+      "path": "/membership-old",
+      "sourceUrl": "https://www.mekorhabracha.org/membership-old"
+    },
+    {
+      "path": "/news/a-night-of-megillah-and-music-at-mekor-habracha",
+      "sourceUrl": "https://www.mekorhabracha.org/news/a-night-of-megillah-and-music-at-mekor-habracha"
+    },
+    {
+      "path": "/news/activists-prepare-for-climate-march",
+      "sourceUrl": "https://www.mekorhabracha.org/news/activists-prepare-for-climate-march"
+    },
+    {
+      "path": "/news/american-rabbis-brush-off-being-named-on-chief-rabbinate%E2%80%99s-%E2%80%98blacklist%E2%80%99",
+      "sourceUrl": "https://www.mekorhabracha.org/news/american-rabbis-brush-off-being-named-on-chief-rabbinate%E2%80%99s-%E2%80%98blacklist%E2%80%99"
+    },
+    {
+      "path": "/news/annual-jewish-heritage-night-fills-phillies-game",
+      "sourceUrl": "https://www.mekorhabracha.org/news/annual-jewish-heritage-night-fills-phillies-game"
+    },
+    {
+      "path": "/news/back-to-jewish-day-school",
+      "sourceUrl": "https://www.mekorhabracha.org/news/back-to-jewish-day-school"
+    },
+    {
+      "path": "/news/calling-attention-to-plight-of-chained-women",
+      "sourceUrl": "https://www.mekorhabracha.org/news/calling-attention-to-plight-of-chained-women"
+    },
+    {
+      "path": "/news/creating-modern-orthodox-community",
+      "sourceUrl": "https://www.mekorhabracha.org/news/creating-modern-orthodox-community"
+    },
+    {
+      "path": "/news/crockpot-crapshoot",
+      "sourceUrl": "https://www.mekorhabracha.org/news/crockpot-crapshoot"
+    },
+    {
+      "path": "/news/etz-chaim-and-minyan-outgrowth-decide-to-go-their-separate-ways",
+      "sourceUrl": "https://www.mekorhabracha.org/news/etz-chaim-and-minyan-outgrowth-decide-to-go-their-separate-ways"
+    },
+    {
+      "path": "/news/federation-chosen-for-prestigious-leadership-program",
+      "sourceUrl": "https://www.mekorhabracha.org/news/federation-chosen-for-prestigious-leadership-program"
+    },
+    {
+      "path": "/news/first-ever-hava-nagrilla-barbecue-contest-attracts-thousands",
+      "sourceUrl": "https://www.mekorhabracha.org/news/first-ever-hava-nagrilla-barbecue-contest-attracts-thousands"
+    },
+    {
+      "path": "/news/focusing-on-kids-makes-sense-but-what-about-singles",
+      "sourceUrl": "https://www.mekorhabracha.org/news/focusing-on-kids-makes-sense-but-what-about-singles"
+    },
+    {
+      "path": "/news/graduate-level-matchmaking",
+      "sourceUrl": "https://www.mekorhabracha.org/news/graduate-level-matchmaking"
+    },
+    {
+      "path": "/news/its-all-about-location-when-it-comes-to-eruvin",
+      "sourceUrl": "https://www.mekorhabracha.org/news/its-all-about-location-when-it-comes-to-eruvin"
+    },
+    {
+      "path": "/news/jewish-weddings-are-blending-connubiality-with-individuality",
+      "sourceUrl": "https://www.mekorhabracha.org/news/jewish-weddings-are-blending-connubiality-with-individuality"
+    },
+    {
+      "path": "/news/keeping-jewish-heritage-alive-in-center-city",
+      "sourceUrl": "https://www.mekorhabracha.org/news/keeping-jewish-heritage-alive-in-center-city"
+    },
+    {
+      "path": "/news/leavens-fate-what-to-do-with-your-chametz",
+      "sourceUrl": "https://www.mekorhabracha.org/news/leavens-fate-what-to-do-with-your-chametz"
+    },
+    {
+      "path": "/news/local-rabbis-in-it-for-the-long-run",
+      "sourceUrl": "https://www.mekorhabracha.org/news/local-rabbis-in-it-for-the-long-run"
+    },
+    {
+      "path": "/news/locals-react-to-us-abstention-from-un-vote",
+      "sourceUrl": "https://www.mekorhabracha.org/news/locals-react-to-us-abstention-from-un-vote"
+    },
+    {
+      "path": "/news/making-carrying-shabbat-friendly",
+      "sourceUrl": "https://www.mekorhabracha.org/news/making-carrying-shabbat-friendly"
+    },
+    {
+      "path": "/news/marriage-equality-supporters-applaud-state-bill",
+      "sourceUrl": "https://www.mekorhabracha.org/news/marriage-equality-supporters-applaud-state-bill"
+    },
+    {
+      "path": "/news/mekor-habracha-scholar-in-residence-shabbaton-with-rabbi-saul-berman",
+      "sourceUrl": "https://www.mekorhabracha.org/news/mekor-habracha-scholar-in-residence-shabbaton-with-rabbi-saul-berman"
+    },
+    {
+      "path": "/news/moshav-band-and-moments-of-wrong-ready-to-rock-union-transfer",
+      "sourceUrl": "https://www.mekorhabracha.org/news/moshav-band-and-moments-of-wrong-ready-to-rock-union-transfer"
+    },
+    {
+      "path": "/news/moshav-band-presents-mekor-habracha-benefit-concert",
+      "sourceUrl": "https://www.mekorhabracha.org/news/moshav-band-presents-mekor-habracha-benefit-concert"
+    },
+    {
+      "path": "/news/music-bonfire-light-up-kensington-for-lag-bomer",
+      "sourceUrl": "https://www.mekorhabracha.org/news/music-bonfire-light-up-kensington-for-lag-bomer"
+    },
+    {
+      "path": "/news/philadelphia-jews-celebrate-lag-bomer-with-bonfire-and-music-fest",
+      "sourceUrl": "https://www.mekorhabracha.org/news/philadelphia-jews-celebrate-lag-bomer-with-bonfire-and-music-fest"
+    },
+    {
+      "path": "/news/purim-stressing-gods-role-in-evil-of-world",
+      "sourceUrl": "https://www.mekorhabracha.org/news/purim-stressing-gods-role-in-evil-of-world"
+    },
+    {
+      "path": "/news/rabbiscanrun",
+      "sourceUrl": "https://www.mekorhabracha.org/news/rabbiscanrun"
+    },
+    {
+      "path": "/news/ring-in-5773",
+      "sourceUrl": "https://www.mekorhabracha.org/news/ring-in-5773"
+    },
+    {
+      "path": "/news/speaking-their-minds-rabbis-address-israel-at-the-high-holidays",
+      "sourceUrl": "https://www.mekorhabracha.org/news/speaking-their-minds-rabbis-address-israel-at-the-high-holidays"
+    },
+    {
+      "path": "/news/understanding-yom-kippurs-focus-on-atonement-and-forgiveness",
+      "sourceUrl": "https://www.mekorhabracha.org/news/understanding-yom-kippurs-focus-on-atonement-and-forgiveness"
+    },
+    {
+      "path": "/news/us-rabbis-sign-letter-opposing-nuclear-agreement",
+      "sourceUrl": "https://www.mekorhabracha.org/news/us-rabbis-sign-letter-opposing-nuclear-agreement"
+    },
+    {
+      "path": "/news/waxman-and-snyder-to-challenge-sims-for-the-182nd-district",
+      "sourceUrl": "https://www.mekorhabracha.org/news/waxman-and-snyder-to-challenge-sims-for-the-182nd-district"
+    },
+    {
+      "path": "/news/what-message-are-we-sending-to-mourners",
+      "sourceUrl": "https://www.mekorhabracha.org/news/what-message-are-we-sending-to-mourners"
+    },
+    {
+      "path": "/news/why-i-cook-for-strangers",
+      "sourceUrl": "https://www.mekorhabracha.org/news/why-i-cook-for-strangers"
+    },
+    {
+      "path": "/old-kosher-restaurants",
+      "sourceUrl": "https://www.mekorhabracha.org/old-kosher-restaurants"
+    },
+    {
+      "path": "/old-yorkroad-northeast",
+      "sourceUrl": "https://www.mekorhabracha.org/old-yorkroad-northeast"
+    },
+    {
+      "path": "/our-communities",
+      "sourceUrl": "https://www.mekorhabracha.org/our-communities"
+    },
+    {
+      "path": "/our-leadership",
+      "sourceUrl": "https://www.mekorhabracha.org/our-leadership"
+    },
+    {
+      "path": "/our-rabbi",
+      "sourceUrl": "https://www.mekorhabracha.org/our-rabbi"
+    },
+    {
+      "path": "/philly-jewish-community",
+      "sourceUrl": "https://www.mekorhabracha.org/philly-jewish-community"
+    },
+    {
+      "path": "/post/_luhv",
+      "sourceUrl": "https://www.mekorhabracha.org/post/_luhv"
+    },
+    {
+      "path": "/post/_luhv-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/_luhv-1"
+    },
+    {
+      "path": "/post/_luhv-2",
+      "sourceUrl": "https://www.mekorhabracha.org/post/_luhv-2"
+    },
+    {
+      "path": "/post/bar-bombon",
+      "sourceUrl": "https://www.mekorhabracha.org/post/bar-bombon"
+    },
+    {
+      "path": "/post/barbara-and-harvey-brodsky-enrichment-center-of-jewish-family-and-children-services",
+      "sourceUrl": "https://www.mekorhabracha.org/post/barbara-and-harvey-brodsky-enrichment-center-of-jewish-family-and-children-services"
+    },
+    {
+      "path": "/post/ben-jerry-s-ice-cream",
+      "sourceUrl": "https://www.mekorhabracha.org/post/ben-jerry-s-ice-cream"
+    },
+    {
+      "path": "/post/best-cake-kosher-bakery",
+      "sourceUrl": "https://www.mekorhabracha.org/post/best-cake-kosher-bakery"
+    },
+    {
+      "path": "/post/c-r-kitchen",
+      "sourceUrl": "https://www.mekorhabracha.org/post/c-r-kitchen"
+    },
+    {
+      "path": "/post/c-r-kitchen-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/c-r-kitchen-1"
+    },
+    {
+      "path": "/post/cafe-613-at-temple-hillel",
+      "sourceUrl": "https://www.mekorhabracha.org/post/cafe-613-at-temple-hillel"
+    },
+    {
+      "path": "/post/charlie-was-a-sinner",
+      "sourceUrl": "https://www.mekorhabracha.org/post/charlie-was-a-sinner"
+    },
+    {
+      "path": "/post/cinnaholic",
+      "sourceUrl": "https://www.mekorhabracha.org/post/cinnaholic"
+    },
+    {
+      "path": "/post/copy-of-ben-jerry-s-ice-cream",
+      "sourceUrl": "https://www.mekorhabracha.org/post/copy-of-ben-jerry-s-ice-cream"
+    },
+    {
+      "path": "/post/diane-s-patisserie",
+      "sourceUrl": "https://www.mekorhabracha.org/post/diane-s-patisserie"
+    },
+    {
+      "path": "/post/dining-commons-at-penn-hillel",
+      "sourceUrl": "https://www.mekorhabracha.org/post/dining-commons-at-penn-hillel"
+    },
+    {
+      "path": "/post/dottie-s-donuts",
+      "sourceUrl": "https://www.mekorhabracha.org/post/dottie-s-donuts"
+    },
+    {
+      "path": "/post/dottie-s-donuts-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/dottie-s-donuts-1"
+    },
+    {
+      "path": "/post/dottie-s-donuts-2",
+      "sourceUrl": "https://www.mekorhabracha.org/post/dottie-s-donuts-2"
+    },
+    {
+      "path": "/post/dottie-s-donuts-3",
+      "sourceUrl": "https://www.mekorhabracha.org/post/dottie-s-donuts-3"
+    },
+    {
+      "path": "/post/espresso-cafe-sushi-bar",
+      "sourceUrl": "https://www.mekorhabracha.org/post/espresso-cafe-sushi-bar"
+    },
+    {
+      "path": "/post/fitz-on-4th",
+      "sourceUrl": "https://www.mekorhabracha.org/post/fitz-on-4th"
+    },
+    {
+      "path": "/post/giant",
+      "sourceUrl": "https://www.mekorhabracha.org/post/giant"
+    },
+    {
+      "path": "/post/giant-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/giant-1"
+    },
+    {
+      "path": "/post/goldie",
+      "sourceUrl": "https://www.mekorhabracha.org/post/goldie"
+    },
+    {
+      "path": "/post/goldie-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/goldie-1"
+    },
+    {
+      "path": "/post/goldie-2",
+      "sourceUrl": "https://www.mekorhabracha.org/post/goldie-2"
+    },
+    {
+      "path": "/post/goldie-3",
+      "sourceUrl": "https://www.mekorhabracha.org/post/goldie-3"
+    },
+    {
+      "path": "/post/goldie-4",
+      "sourceUrl": "https://www.mekorhabracha.org/post/goldie-4"
+    },
+    {
+      "path": "/post/hipcityveg",
+      "sourceUrl": "https://www.mekorhabracha.org/post/hipcityveg"
+    },
+    {
+      "path": "/post/hipcityveg-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/hipcityveg-1"
+    },
+    {
+      "path": "/post/house-of-kosher",
+      "sourceUrl": "https://www.mekorhabracha.org/post/house-of-kosher"
+    },
+    {
+      "path": "/post/insomnia-cookies-bala-cynwyd",
+      "sourceUrl": "https://www.mekorhabracha.org/post/insomnia-cookies-bala-cynwyd"
+    },
+    {
+      "path": "/post/insomnia-cookies-upenn-hup",
+      "sourceUrl": "https://www.mekorhabracha.org/post/insomnia-cookies-upenn-hup"
+    },
+    {
+      "path": "/post/insomnia-cookies-upenn-hup-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/insomnia-cookies-upenn-hup-1"
+    },
+    {
+      "path": "/post/joy-cafe",
+      "sourceUrl": "https://www.mekorhabracha.org/post/joy-cafe"
+    },
+    {
+      "path": "/post/judah-mediterranean-grill",
+      "sourceUrl": "https://www.mekorhabracha.org/post/judah-mediterranean-grill"
+    },
+    {
+      "path": "/post/kosher-corner-at-temple-university",
+      "sourceUrl": "https://www.mekorhabracha.org/post/kosher-corner-at-temple-university"
+    },
+    {
+      "path": "/post/kosher-experience",
+      "sourceUrl": "https://www.mekorhabracha.org/post/kosher-experience"
+    },
+    {
+      "path": "/post/kosher-experience-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/kosher-experience-1"
+    },
+    {
+      "path": "/post/la-chic-n-sweet",
+      "sourceUrl": "https://www.mekorhabracha.org/post/la-chic-n-sweet"
+    },
+    {
+      "path": "/post/luhv-factory-vegan-bistro",
+      "sourceUrl": "https://www.mekorhabracha.org/post/luhv-factory-vegan-bistro"
+    },
+    {
+      "path": "/post/magical-sweet-shop",
+      "sourceUrl": "https://www.mekorhabracha.org/post/magical-sweet-shop"
+    },
+    {
+      "path": "/post/mama-s-vegetarian-falafel",
+      "sourceUrl": "https://www.mekorhabracha.org/post/mama-s-vegetarian-falafel"
+    },
+    {
+      "path": "/post/mia-s-meals",
+      "sourceUrl": "https://www.mekorhabracha.org/post/mia-s-meals"
+    },
+    {
+      "path": "/post/mike-s-chicken",
+      "sourceUrl": "https://www.mekorhabracha.org/post/mike-s-chicken"
+    },
+    {
+      "path": "/post/miss-rachel-s-pantry",
+      "sourceUrl": "https://www.mekorhabracha.org/post/miss-rachel-s-pantry"
+    },
+    {
+      "path": "/post/moore-bakery-i-want-moore",
+      "sourceUrl": "https://www.mekorhabracha.org/post/moore-bakery-i-want-moore"
+    },
+    {
+      "path": "/post/nana-s-kitchen",
+      "sourceUrl": "https://www.mekorhabracha.org/post/nana-s-kitchen"
+    },
+    {
+      "path": "/post/new-york-bagel",
+      "sourceUrl": "https://www.mekorhabracha.org/post/new-york-bagel"
+    },
+    {
+      "path": "/post/new-york-bagel-bakery",
+      "sourceUrl": "https://www.mekorhabracha.org/post/new-york-bagel-bakery"
+    },
+    {
+      "path": "/post/nothing-bundt-cakes-cherry-hill",
+      "sourceUrl": "https://www.mekorhabracha.org/post/nothing-bundt-cakes-cherry-hill"
+    },
+    {
+      "path": "/post/nothing-bundt-cakes-marlton",
+      "sourceUrl": "https://www.mekorhabracha.org/post/nothing-bundt-cakes-marlton"
+    },
+    {
+      "path": "/post/nothing-bundt-cakes-springfield",
+      "sourceUrl": "https://www.mekorhabracha.org/post/nothing-bundt-cakes-springfield"
+    },
+    {
+      "path": "/post/nothing-bundt-cakes-wynnewood",
+      "sourceUrl": "https://www.mekorhabracha.org/post/nothing-bundt-cakes-wynnewood"
+    },
+    {
+      "path": "/post/picture-barbara-and-harvey-brodsky-enrichment-center",
+      "sourceUrl": "https://www.mekorhabracha.org/post/picture-barbara-and-harvey-brodsky-enrichment-center"
+    },
+    {
+      "path": "/post/plnt-burger",
+      "sourceUrl": "https://www.mekorhabracha.org/post/plnt-burger"
+    },
+    {
+      "path": "/post/plnt-burger-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/plnt-burger-1"
+    },
+    {
+      "path": "/post/primo-water-ice",
+      "sourceUrl": "https://www.mekorhabracha.org/post/primo-water-ice"
+    },
+    {
+      "path": "/post/ps-co",
+      "sourceUrl": "https://www.mekorhabracha.org/post/ps-co"
+    },
+    {
+      "path": "/post/rita-s-south-street-west",
+      "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-south-street-west"
+    },
+    {
+      "path": "/post/rita-s-water-ice",
+      "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-water-ice"
+    },
+    {
+      "path": "/post/rita-s-water-ice-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-water-ice-1"
+    },
+    {
+      "path": "/post/rita-s-water-ice-2",
+      "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-water-ice-2"
+    },
+    {
+      "path": "/post/rita-s-water-ice-3",
+      "sourceUrl": "https://www.mekorhabracha.org/post/rita-s-water-ice-3"
+    },
+    {
+      "path": "/post/rollings-bakery",
+      "sourceUrl": "https://www.mekorhabracha.org/post/rollings-bakery"
+    },
+    {
+      "path": "/post/say-she-ate-caf%C3%A9",
+      "sourceUrl": "https://www.mekorhabracha.org/post/say-she-ate-caf%C3%A9"
+    },
+    {
+      "path": "/post/shalom-pizza",
+      "sourceUrl": "https://www.mekorhabracha.org/post/shalom-pizza"
+    },
+    {
+      "path": "/post/shevy-s-babka-paradise",
+      "sourceUrl": "https://www.mekorhabracha.org/post/shevy-s-babka-paradise"
+    },
+    {
+      "path": "/post/shevy-s-babka-paradise-1",
+      "sourceUrl": "https://www.mekorhabracha.org/post/shevy-s-babka-paradise-1"
+    },
+    {
+      "path": "/post/shtetl-kosher-restaurant",
+      "sourceUrl": "https://www.mekorhabracha.org/post/shtetl-kosher-restaurant"
+    },
+    {
+      "path": "/post/slices-and-rolls-pizza-shop",
+      "sourceUrl": "https://www.mekorhabracha.org/post/slices-and-rolls-pizza-shop"
+    },
+    {
+      "path": "/post/star-of-david-kosher-grill",
+      "sourceUrl": "https://www.mekorhabracha.org/post/star-of-david-kosher-grill"
+    },
+    {
+      "path": "/post/stephen-s-cafe",
+      "sourceUrl": "https://www.mekorhabracha.org/post/stephen-s-cafe"
+    },
+    {
+      "path": "/post/sweet-box-bakery",
+      "sourceUrl": "https://www.mekorhabracha.org/post/sweet-box-bakery"
+    },
+    {
+      "path": "/post/sweet-trading-company",
+      "sourceUrl": "https://www.mekorhabracha.org/post/sweet-trading-company"
+    },
+    {
+      "path": "/post/tasty-twisters-soft-pretzel-factory",
+      "sourceUrl": "https://www.mekorhabracha.org/post/tasty-twisters-soft-pretzel-factory"
+    },
+    {
+      "path": "/post/that-sushi-spot-lkwd-nj-lakewood",
+      "sourceUrl": "https://www.mekorhabracha.org/post/that-sushi-spot-lkwd-nj-lakewood"
+    },
+    {
+      "path": "/post/the-bagel-spot",
+      "sourceUrl": "https://www.mekorhabracha.org/post/the-bagel-spot"
+    },
+    {
+      "path": "/post/the-brazilian-bbq",
+      "sourceUrl": "https://www.mekorhabracha.org/post/the-brazilian-bbq"
+    },
+    {
+      "path": "/post/the-brazillan-bbq",
+      "sourceUrl": "https://www.mekorhabracha.org/post/the-brazillan-bbq"
+    },
+    {
+      "path": "/post/the-chilly-banana",
+      "sourceUrl": "https://www.mekorhabracha.org/post/the-chilly-banana"
+    },
+    {
+      "path": "/post/the-kosher-grill",
+      "sourceUrl": "https://www.mekorhabracha.org/post/the-kosher-grill"
+    },
+    {
+      "path": "/post/unit-su-vege",
+      "sourceUrl": "https://www.mekorhabracha.org/post/unit-su-vege"
+    },
+    {
+      "path": "/post/whole-foods-fresh-fish-counter",
+      "sourceUrl": "https://www.mekorhabracha.org/post/whole-foods-fresh-fish-counter"
+    },
+    {
+      "path": "/post/z-candy-bar",
+      "sourceUrl": "https://www.mekorhabracha.org/post/z-candy-bar"
+    },
+    {
+      "path": "/post/zevi-s-bakery",
+      "sourceUrl": "https://www.mekorhabracha.org/post/zevi-s-bakery"
+    },
+    {
+      "path": "/s-projects-side-by-side",
+      "sourceUrl": "https://www.mekorhabracha.org/s-projects-side-by-side"
+    },
+    {
+      "path": "/team-4",
+      "sourceUrl": "https://www.mekorhabracha.org/team-4"
+    },
+    {
+      "path": "/testimonials",
+      "sourceUrl": "https://www.mekorhabracha.org/testimonials"
+    },
+    {
+      "path": "/thank-you",
+      "sourceUrl": "https://www.mekorhabracha.org/thank-you"
+    },
+    {
+      "path": "/visit-us",
+      "sourceUrl": "https://www.mekorhabracha.org/visit-us"
+    }
+  ],
+  "reachable": [
+    {
+      "path": "/_files/ugd/92f487_029f5b27646741478d7dc993e6614c54.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_029f5b27646741478d7dc993e6614c54.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_07ebe47c2be44c538b46e55d6b18b359.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_07ebe47c2be44c538b46e55d6b18b359.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_19066816f85142bb94e30b3d0ff2bb26.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_19066816f85142bb94e30b3d0ff2bb26.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_22e91bacbdec42c8a51de6a7d9fbf543.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_22e91bacbdec42c8a51de6a7d9fbf543.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_2e3a3bb8c89a4b71a9d969c2e63a9194.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_2e3a3bb8c89a4b71a9d969c2e63a9194.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_32a7346134f74e52999548e74e71d62d.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_32a7346134f74e52999548e74e71d62d.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_3cac2947e6fa4d3c97d1cdf15c1e8aff.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_3cac2947e6fa4d3c97d1cdf15c1e8aff.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_5d2b145c7a374f899781be7397d2555c.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_5d2b145c7a374f899781be7397d2555c.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_6256c0711f044f5086c72a471120db61.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_6256c0711f044f5086c72a471120db61.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_649e9ef91ce343ab81f0cd94411298e2.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_649e9ef91ce343ab81f0cd94411298e2.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_684ccb3386b143cda31c32d40cb5ad9d.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_684ccb3386b143cda31c32d40cb5ad9d.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_7adc763c94504c369dee8f1f7bec3152.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_7adc763c94504c369dee8f1f7bec3152.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_7d1ad51d2b304825aca6b3b42c2dbabc.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_7d1ad51d2b304825aca6b3b42c2dbabc.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_802ba8eef01b4d7eb9dc6077d0e07b8d.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_802ba8eef01b4d7eb9dc6077d0e07b8d.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_8ba968ae1c454c25b23c21cfc3b3205d.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_8ba968ae1c454c25b23c21cfc3b3205d.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_8e6b3ce48a494894bda8781da89d4dba.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_8e6b3ce48a494894bda8781da89d4dba.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_9009fa71d9cd444b902bf329e41393d5.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_9009fa71d9cd444b902bf329e41393d5.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_91b88906884045f991abcce1b5784625.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_91b88906884045f991abcce1b5784625.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_ae86830cb9be46d6865f3d7a3f670227.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_ae86830cb9be46d6865f3d7a3f670227.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_b3b329efd6574d5896a34bea5f5978b2.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_b3b329efd6574d5896a34bea5f5978b2.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_b61b524b0c414ccd94a380ae180e514f.docx?dn=mekor_pesach_at_home_services_2024.docx",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_b61b524b0c414ccd94a380ae180e514f.docx?dn=mekor_pesach_at_home_services_2024.docx"
+    },
+    {
+      "path": "/_files/ugd/92f487_bb3242f2f5014d31953bdf80df638dab.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_bb3242f2f5014d31953bdf80df638dab.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_bf80037612a34ea7a91efe76a16f0657.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_bf80037612a34ea7a91efe76a16f0657.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_c10e2f973aef4778bbcc641f5d20c70c.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_c10e2f973aef4778bbcc641f5d20c70c.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_cec3fd1c5cb443c5b7f5bf130a5de4b5.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_cec3fd1c5cb443c5b7f5bf130a5de4b5.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_cf7bf9402701480d87be7b738d8af24d.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_cf7bf9402701480d87be7b738d8af24d.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_d73124bb583d48a6bf7cf9df0577a866.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_d73124bb583d48a6bf7cf9df0577a866.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_e0e555d164594029bc6e823fdf553bab.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_e0e555d164594029bc6e823fdf553bab.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_e78520be4c7541ff87261250e96bd464.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_e78520be4c7541ff87261250e96bd464.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_eeb8885c1b164f69bedd7e6a39fc1d68.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_eeb8885c1b164f69bedd7e6a39fc1d68.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_f14fd1b9d4c64370a84ccaf01d666050.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_f14fd1b9d4c64370a84ccaf01d666050.pdf"
+    },
+    {
+      "path": "/_files/ugd/92f487_f35dcab2ce1d42079b9d33eb330edc7a.pdf",
+      "sourceUrl": "https://www.mekorhabracha.org/_files/ugd/92f487_f35dcab2ce1d42079b9d33eb330edc7a.pdf"
+    },
+    {
+      "path": "/blog-feed.xml",
+      "sourceUrl": "https://www.mekorhabracha.org/blog-feed.xml"
+    },
+    {
+      "path": "/events-1/1008",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/1008"
+    },
+    {
+      "path": "/events-1/1024",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/1024"
+    },
+    {
+      "path": "/events-1/1236",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/1236"
+    },
+    {
+      "path": "/events-1/1600",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/1600"
+    },
+    {
+      "path": "/events-1/2447",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/2447"
+    },
+    {
+      "path": "/events-1/768",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/768"
+    },
+    {
+      "path": "/events-1/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/events-1/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/kosher-posts/categories/center-city/page/2",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/center-city/page/2"
+    },
+    {
+      "path": "/kosher-posts/categories/main-line-manyunk/page/2",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk/page/2"
+    },
+    {
+      "path": "/kosher-posts/page/2",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/page/2"
+    },
+    {
+      "path": "/kosher-posts/page/3",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/page/3"
+    },
+    {
+      "path": "/kosher-posts/page/4",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/page/4"
+    },
+    {
+      "path": "/kosher-posts/page/5",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/page/5"
+    },
+    {
+      "path": "/kosher-posts/page/6",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/page/6"
+    },
+    {
+      "path": "/kosher-posts/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/kosher-posts/page/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/page/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/kosher-posts/search/.hash.4",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/search/.hash.4"
+    },
+    {
+      "path": "/kosher-posts/search/2447",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/search/2447"
+    },
+    {
+      "path": "/kosher-posts/search/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/search/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/kosher-posts/search/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/search/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/kosher-posts/search/noindex",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/search/noindex"
+    },
+    {
+      "path": "/kosher-posts/tags/bakery",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/bakery"
+    },
+    {
+      "path": "/kosher-posts/tags/bakery/page/2",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/bakery/page/2"
+    },
+    {
+      "path": "/kosher-posts/tags/cafe",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/cafe"
+    },
+    {
+      "path": "/kosher-posts/tags/ice-cream",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/ice-cream"
+    },
+    {
+      "path": "/kosher-posts/tags/restaurants",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/restaurants"
+    },
+    {
+      "path": "/kosher-posts/tags/restaurants/page/2",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/restaurants/page/2"
+    },
+    {
+      "path": "/kosher-posts/tags/restaurants/page/3",
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/restaurants/page/3"
+    },
+    {
+      "path": "/post/20th-street-pizza",
+      "sourceUrl": "https://www.mekorhabracha.org/post/20th-street-pizza"
+    },
+    {
+      "path": "/post/Cinnaholic",
+      "sourceUrl": "https://www.mekorhabracha.org/post/Cinnaholic"
+    },
+    {
+      "path": "/post/HipCityVeg",
+      "sourceUrl": "https://www.mekorhabracha.org/post/HipCityVeg"
+    },
+    {
+      "path": "/post/_blog",
+      "sourceUrl": "https://www.mekorhabracha.org/post/_blog"
+    },
+    {
+      "path": "/post/casa-borinque%C3%B1a",
+      "sourceUrl": "https://www.mekorhabracha.org/post/casa-borinque%C3%B1a"
+    },
+    {
+      "path": "/post/moore-bakery---i-want-moore",
+      "sourceUrl": "https://www.mekorhabracha.org/post/moore-bakery---i-want-moore"
+    },
+    {
+      "path": "/profile/rabbiehirsch/profile",
+      "sourceUrl": "https://www.mekorhabracha.org/profile/rabbiehirsch/profile"
+    },
+    {
+      "path": "/profile/rabbiehirsch/profile?disableScrollToTop=true",
+      "sourceUrl": "https://www.mekorhabracha.org/profile/rabbiehirsch/profile?disableScrollToTop=true"
+    },
+    {
+      "path": "/search?q=%7Bsearch_term%7D",
+      "sourceUrl": "https://www.mekorhabracha.org/search?q=%7Bsearch_term%7D"
+    }
+  ],
+  "statusOverrides": [
+    {
+      "path": "/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/2447"
+    },
+    {
+      "path": "/alumni-auxiliary-membership.html",
+      "status": 400,
+      "sourceUrl": "https://www.mekorhabracha.org/alumni-auxiliary-membership.html"
+    },
+    {
+      "path": "/from-the-rabbis-desk.html",
+      "status": 400,
+      "sourceUrl": "https://www.mekorhabracha.org/from-the-rabbis-desk.html"
+    },
+    {
+      "path": "/kosher-posts/categories/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/2447"
+    },
+    {
+      "path": "/kosher-posts/categories/center-city/page/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/center-city/page/2447"
+    },
+    {
+      "path": "/kosher-posts/categories/center-city/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/center-city/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/kosher-posts/categories/center-city/page/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/center-city/page/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/kosher-posts/categories/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/kosher-posts/categories/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/kosher-posts/categories/main-line-manyunk/page/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk/page/2447"
+    },
+    {
+      "path": "/kosher-posts/categories/main-line-manyunk/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/kosher-posts/categories/main-line-manyunk/page/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/categories/main-line-manyunk/page/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/kosher-posts/hashtags/1",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/hashtags/1"
+    },
+    {
+      "path": "/kosher-posts/hashtags/4",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/hashtags/4"
+    },
+    {
+      "path": "/kosher-posts/page/2447",
+      "status": 400,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/page/2447"
+    },
+    {
+      "path": "/kosher-posts/tags/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/2447"
+    },
+    {
+      "path": "/kosher-posts/tags/bakery/page/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/bakery/page/2447"
+    },
+    {
+      "path": "/kosher-posts/tags/bakery/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/bakery/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/kosher-posts/tags/bakery/page/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/bakery/page/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/kosher-posts/tags/bakery/page/noindex",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/bakery/page/noindex"
+    },
+    {
+      "path": "/kosher-posts/tags/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/kosher-posts/tags/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/kosher-posts/tags/noindex",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/noindex"
+    },
+    {
+      "path": "/kosher-posts/tags/restaurants/page/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/restaurants/page/2447"
+    },
+    {
+      "path": "/kosher-posts/tags/restaurants/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/restaurants/page/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/kosher-posts/tags/restaurants/page/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/restaurants/page/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/kosher-posts/tags/restaurants/page/noindex",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/kosher-posts/tags/restaurants/page/noindex"
+    },
+    {
+      "path": "/news/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/news/2447"
+    },
+    {
+      "path": "/news/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/news/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/news/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/news/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/news/ie%3Dedge",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/news/ie%3Dedge"
+    },
+    {
+      "path": "/noindex",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/noindex"
+    },
+    {
+      "path": "/our-rabbis.html",
+      "status": 400,
+      "sourceUrl": "https://www.mekorhabracha.org/our-rabbis.html"
+    },
+    {
+      "path": "/post/1073",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/1073"
+    },
+    {
+      "path": "/post/1080",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/1080"
+    },
+    {
+      "path": "/post/1088",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/1088"
+    },
+    {
+      "path": "/post/1196",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/1196"
+    },
+    {
+      "path": "/post/1280",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/1280"
+    },
+    {
+      "path": "/post/1360",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/1360"
+    },
+    {
+      "path": "/post/138",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/138"
+    },
+    {
+      "path": "/post/1440",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/1440"
+    },
+    {
+      "path": "/post/202",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/202"
+    },
+    {
+      "path": "/post/2025-01-24T17:54:35.461Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-24T17:54:35.461Z"
+    },
+    {
+      "path": "/post/2025-01-24T17:59:08.945Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-24T17:59:08.945Z"
+    },
+    {
+      "path": "/post/2025-01-24T18:08:09.824Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-24T18:08:09.824Z"
+    },
+    {
+      "path": "/post/2025-01-24T18:13:29.688Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-24T18:13:29.688Z"
+    },
+    {
+      "path": "/post/2025-01-24T18:16:33.767Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-24T18:16:33.767Z"
+    },
+    {
+      "path": "/post/2025-01-26T13:41:31.775Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-26T13:41:31.775Z"
+    },
+    {
+      "path": "/post/2025-01-27T13:42:23.994Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T13:42:23.994Z"
+    },
+    {
+      "path": "/post/2025-01-27T13:45:51.589Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T13:45:51.589Z"
+    },
+    {
+      "path": "/post/2025-01-27T13:51:57.580Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T13:51:57.580Z"
+    },
+    {
+      "path": "/post/2025-01-27T14:11:22.608Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T14:11:22.608Z"
+    },
+    {
+      "path": "/post/2025-01-27T14:22:42.178Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T14:22:42.178Z"
+    },
+    {
+      "path": "/post/2025-01-27T14:27:42.464Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T14:27:42.464Z"
+    },
+    {
+      "path": "/post/2025-01-27T14:31:14.588Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T14:31:14.588Z"
+    },
+    {
+      "path": "/post/2025-01-27T14:46:34.303Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T14:46:34.303Z"
+    },
+    {
+      "path": "/post/2025-01-27T15:31:56.598Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T15:31:56.598Z"
+    },
+    {
+      "path": "/post/2025-01-27T15:43:11.672Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T15:43:11.672Z"
+    },
+    {
+      "path": "/post/2025-01-27T15:46:43.182Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T15:46:43.182Z"
+    },
+    {
+      "path": "/post/2025-01-27T15:51:26.638Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T15:51:26.638Z"
+    },
+    {
+      "path": "/post/2025-01-27T15:55:08.552Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T15:55:08.552Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:10:37.901Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:10:37.901Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:15:09.193Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:15:09.193Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:20:02.965Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:20:02.965Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:23:28.557Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:23:28.557Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:29:46.379Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:29:46.379Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:35:34.414Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:35:34.414Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:41:33.461Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:41:33.461Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:50:29.468Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:50:29.468Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:54:03.918Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:54:03.918Z"
+    },
+    {
+      "path": "/post/2025-01-27T16:57:48.764Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T16:57:48.764Z"
+    },
+    {
+      "path": "/post/2025-01-27T17:01:28.047Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T17:01:28.047Z"
+    },
+    {
+      "path": "/post/2025-01-27T17:04:18.561Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T17:04:18.561Z"
+    },
+    {
+      "path": "/post/2025-01-27T17:12:12.493Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T17:12:12.493Z"
+    },
+    {
+      "path": "/post/2025-01-27T17:17:41.918Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T17:17:41.918Z"
+    },
+    {
+      "path": "/post/2025-01-27T17:20:11.501Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T17:20:11.501Z"
+    },
+    {
+      "path": "/post/2025-01-27T17:24:36.228Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T17:24:36.228Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:18:50.656Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:18:50.656Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:21:48.150Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:21:48.150Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:27:29.148Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:27:29.148Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:33:04.795Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:33:04.795Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:35:46.964Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:35:46.964Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:38:16.888Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:38:16.888Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:41:56.375Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:41:56.375Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:47:31.145Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:47:31.145Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:52:45.353Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:52:45.353Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:56:22.543Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:56:22.543Z"
+    },
+    {
+      "path": "/post/2025-01-27T19:58:33.255Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T19:58:33.255Z"
+    },
+    {
+      "path": "/post/2025-01-27T20:01:15.155Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T20:01:15.155Z"
+    },
+    {
+      "path": "/post/2025-01-27T20:11:15.470Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T20:11:15.470Z"
+    },
+    {
+      "path": "/post/2025-01-27T20:15:11.854Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T20:15:11.854Z"
+    },
+    {
+      "path": "/post/2025-01-27T20:18:35.632Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T20:18:35.632Z"
+    },
+    {
+      "path": "/post/2025-01-27T20:21:39.247Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T20:21:39.247Z"
+    },
+    {
+      "path": "/post/2025-01-27T20:24:41.023Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T20:24:41.023Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:10:17.447Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:10:17.447Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:13:52.573Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:13:52.573Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:16:41.858Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:16:41.858Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:17:37.240Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:17:37.240Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:20:43.864Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:20:43.864Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:23:31.250Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:23:31.250Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:26:34.729Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:26:34.729Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:29:35.996Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:29:35.996Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:32:39.138Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:32:39.138Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:35:36.916Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:35:36.916Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:41:59.484Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:41:59.484Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:44:44.257Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:44:44.257Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:50:34.277Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:50:34.277Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:55:01.440Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:55:01.440Z"
+    },
+    {
+      "path": "/post/2025-01-27T21:56:02.501Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T21:56:02.501Z"
+    },
+    {
+      "path": "/post/2025-01-27T22:02:00.092Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T22:02:00.092Z"
+    },
+    {
+      "path": "/post/2025-01-27T22:05:05.408Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T22:05:05.408Z"
+    },
+    {
+      "path": "/post/2025-01-27T22:07:42.256Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T22:07:42.256Z"
+    },
+    {
+      "path": "/post/2025-01-27T22:09:51.407Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-27T22:09:51.407Z"
+    },
+    {
+      "path": "/post/2025-01-28T12:24:53.233Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-28T12:24:53.233Z"
+    },
+    {
+      "path": "/post/2025-01-28T12:32:21.594Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-28T12:32:21.594Z"
+    },
+    {
+      "path": "/post/2025-01-28T13:00:41.873Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-28T13:00:41.873Z"
+    },
+    {
+      "path": "/post/2025-01-28T13:03:04.761Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-28T13:03:04.761Z"
+    },
+    {
+      "path": "/post/2025-01-28T13:03:26.268Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-28T13:03:26.268Z"
+    },
+    {
+      "path": "/post/2025-01-28T13:22:23.660Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-01-28T13:22:23.660Z"
+    },
+    {
+      "path": "/post/2025-02-12T17:40:49.096Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-02-12T17:40:49.096Z"
+    },
+    {
+      "path": "/post/2025-02-12T17:41:32.496Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-02-12T17:41:32.496Z"
+    },
+    {
+      "path": "/post/2025-03-30T16:04:53.633Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-03-30T16:04:53.633Z"
+    },
+    {
+      "path": "/post/2025-03-30T18:40:25.116Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-03-30T18:40:25.116Z"
+    },
+    {
+      "path": "/post/2025-03-30T18:46:02.209Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-03-30T18:46:02.209Z"
+    },
+    {
+      "path": "/post/2025-03-30T18:53:23.952Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-03-30T18:53:23.952Z"
+    },
+    {
+      "path": "/post/2025-03-30T18:59:10.970Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-03-30T18:59:10.970Z"
+    },
+    {
+      "path": "/post/2025-03-30T19:01:37.069Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-03-30T19:01:37.069Z"
+    },
+    {
+      "path": "/post/2025-03-30T19:04:53.140Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-03-30T19:04:53.140Z"
+    },
+    {
+      "path": "/post/2025-03-30T19:15:44.088Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-03-30T19:15:44.088Z"
+    },
+    {
+      "path": "/post/2025-04-08T13:25:15.541Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T13:25:15.541Z"
+    },
+    {
+      "path": "/post/2025-04-08T13:43:37.260Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T13:43:37.260Z"
+    },
+    {
+      "path": "/post/2025-04-08T13:44:22.747Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T13:44:22.747Z"
+    },
+    {
+      "path": "/post/2025-04-08T13:45:17.136Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T13:45:17.136Z"
+    },
+    {
+      "path": "/post/2025-04-08T13:47:50.343Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T13:47:50.343Z"
+    },
+    {
+      "path": "/post/2025-04-08T13:59:16.315Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T13:59:16.315Z"
+    },
+    {
+      "path": "/post/2025-04-08T14:06:36.652Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T14:06:36.652Z"
+    },
+    {
+      "path": "/post/2025-04-08T14:10:00.193Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T14:10:00.193Z"
+    },
+    {
+      "path": "/post/2025-04-08T14:23:21.405Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T14:23:21.405Z"
+    },
+    {
+      "path": "/post/2025-04-08T14:30:40.092Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T14:30:40.092Z"
+    },
+    {
+      "path": "/post/2025-04-08T15:07:12.144Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T15:07:12.144Z"
+    },
+    {
+      "path": "/post/2025-04-08T16:40:46.129Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T16:40:46.129Z"
+    },
+    {
+      "path": "/post/2025-04-08T16:52:48.006Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T16:52:48.006Z"
+    },
+    {
+      "path": "/post/2025-04-08T17:35:39.184Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T17:35:39.184Z"
+    },
+    {
+      "path": "/post/2025-04-08T17:37:46.725Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T17:37:46.725Z"
+    },
+    {
+      "path": "/post/2025-04-08T17:53:32.537Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-08T17:53:32.537Z"
+    },
+    {
+      "path": "/post/2025-04-10T05:14:08.186Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-10T05:14:08.186Z"
+    },
+    {
+      "path": "/post/2025-04-10T05:16:47.320Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-10T05:16:47.320Z"
+    },
+    {
+      "path": "/post/2025-04-24T23:48:38.696Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-04-24T23:48:38.696Z"
+    },
+    {
+      "path": "/post/2025-05-13T10:29:48.010Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-13T10:29:48.010Z"
+    },
+    {
+      "path": "/post/2025-05-19T13:11:23.966Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-19T13:11:23.966Z"
+    },
+    {
+      "path": "/post/2025-05-27T09:06:46.667Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-27T09:06:46.667Z"
+    },
+    {
+      "path": "/post/2025-05-27T17:24:33.071Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-27T17:24:33.071Z"
+    },
+    {
+      "path": "/post/2025-05-28T08:13:25.130Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-28T08:13:25.130Z"
+    },
+    {
+      "path": "/post/2025-05-29T17:44:21.485Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-29T17:44:21.485Z"
+    },
+    {
+      "path": "/post/2025-05-29T18:00:38.119Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-29T18:00:38.119Z"
+    },
+    {
+      "path": "/post/2025-05-29T18:01:14.829Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-29T18:01:14.829Z"
+    },
+    {
+      "path": "/post/2025-05-29T18:15:44.977Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-29T18:15:44.977Z"
+    },
+    {
+      "path": "/post/2025-05-29T18:16:35.935Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-29T18:16:35.935Z"
+    },
+    {
+      "path": "/post/2025-05-29T18:22:00.709Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-29T18:22:00.709Z"
+    },
+    {
+      "path": "/post/2025-05-29T18:29:01.446Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-29T18:29:01.446Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:30:35.751Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:30:35.751Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:31:26.824Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:31:26.824Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:32:05.604Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:32:05.604Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:40:39.093Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:40:39.093Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:41:18.786Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:41:18.786Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:42:13.243Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:42:13.243Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:43:30.200Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:43:30.200Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:49:39.101Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:49:39.101Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:54:28.935Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:54:28.935Z"
+    },
+    {
+      "path": "/post/2025-05-31T19:57:16.281Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T19:57:16.281Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:00:59.759Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:00:59.759Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:05:32.250Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:05:32.250Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:07:00.332Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:07:00.332Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:08:33.168Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:08:33.168Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:10:13.874Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:10:13.874Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:14:47.829Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:14:47.829Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:16:14.155Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:16:14.155Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:21:06.689Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:21:06.689Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:22:16.815Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:22:16.815Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:23:12.786Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:23:12.786Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:27:38.030Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:27:38.030Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:31:01.692Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:31:01.692Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:34:27.402Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:34:27.402Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:38:42.489Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:38:42.489Z"
+    },
+    {
+      "path": "/post/2025-05-31T20:39:53.949Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-05-31T20:39:53.949Z"
+    },
+    {
+      "path": "/post/2025-06-01T09:56:14.251Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-06-01T09:56:14.251Z"
+    },
+    {
+      "path": "/post/2025-06-01T10:05:12.865Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-06-01T10:05:12.865Z"
+    },
+    {
+      "path": "/post/2025-06-01T10:08:21.995Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-06-01T10:08:21.995Z"
+    },
+    {
+      "path": "/post/2025-06-06T08:53:58.517Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-06-06T08:53:58.517Z"
+    },
+    {
+      "path": "/post/2025-07-03T04:34:49.373Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-07-03T04:34:49.373Z"
+    },
+    {
+      "path": "/post/2025-07-04T09:04:38.724Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-07-04T09:04:38.724Z"
+    },
+    {
+      "path": "/post/2025-07-04T09:21:35.346Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-07-04T09:21:35.346Z"
+    },
+    {
+      "path": "/post/2025-07-31T19:38:25.022Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-07-31T19:38:25.022Z"
+    },
+    {
+      "path": "/post/2025-08-13T09:20:52.430Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-08-13T09:20:52.430Z"
+    },
+    {
+      "path": "/post/2025-08-13T09:21:47.705Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-08-13T09:21:47.705Z"
+    },
+    {
+      "path": "/post/2025-08-13T09:22:30.553Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-08-13T09:22:30.553Z"
+    },
+    {
+      "path": "/post/2025-08-28T11:39:36.243Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-08-28T11:39:36.243Z"
+    },
+    {
+      "path": "/post/2025-08-29T17:10:22.411Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-08-29T17:10:22.411Z"
+    },
+    {
+      "path": "/post/2025-09-04T21:54:13.775Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-09-04T21:54:13.775Z"
+    },
+    {
+      "path": "/post/2025-11-16T22:04:31.459Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-11-16T22:04:31.459Z"
+    },
+    {
+      "path": "/post/2025-11-16T22:08:26.716Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2025-11-16T22:08:26.716Z"
+    },
+    {
+      "path": "/post/2026-01-08T03:03:41.253Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2026-01-08T03:03:41.253Z"
+    },
+    {
+      "path": "/post/2026-02-05T20:28:57.206Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2026-02-05T20:28:57.206Z"
+    },
+    {
+      "path": "/post/2026-02-05T20:34:53.741Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2026-02-05T20:34:53.741Z"
+    },
+    {
+      "path": "/post/2026-02-19T10:32:39.907Z",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2026-02-19T10:32:39.907Z"
+    },
+    {
+      "path": "/post/224",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/224"
+    },
+    {
+      "path": "/post/225",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/225"
+    },
+    {
+      "path": "/post/226",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/226"
+    },
+    {
+      "path": "/post/229",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/229"
+    },
+    {
+      "path": "/post/238",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/238"
+    },
+    {
+      "path": "/post/240",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/240"
+    },
+    {
+      "path": "/post/243",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/243"
+    },
+    {
+      "path": "/post/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/2447"
+    },
+    {
+      "path": "/post/249",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/249"
+    },
+    {
+      "path": "/post/266",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/266"
+    },
+    {
+      "path": "/post/267",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/267"
+    },
+    {
+      "path": "/post/270",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/270"
+    },
+    {
+      "path": "/post/281",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/281"
+    },
+    {
+      "path": "/post/290",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/290"
+    },
+    {
+      "path": "/post/297",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/297"
+    },
+    {
+      "path": "/post/298",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/298"
+    },
+    {
+      "path": "/post/300",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/300"
+    },
+    {
+      "path": "/post/304",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/304"
+    },
+    {
+      "path": "/post/306",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/306"
+    },
+    {
+      "path": "/post/338",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/338"
+    },
+    {
+      "path": "/post/363",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/363"
+    },
+    {
+      "path": "/post/370",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/370"
+    },
+    {
+      "path": "/post/375",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/375"
+    },
+    {
+      "path": "/post/381",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/381"
+    },
+    {
+      "path": "/post/387",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/387"
+    },
+    {
+      "path": "/post/397",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/397"
+    },
+    {
+      "path": "/post/400",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/400"
+    },
+    {
+      "path": "/post/406",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/406"
+    },
+    {
+      "path": "/post/407",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/407"
+    },
+    {
+      "path": "/post/408",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/408"
+    },
+    {
+      "path": "/post/417",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/417"
+    },
+    {
+      "path": "/post/426",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/426"
+    },
+    {
+      "path": "/post/435",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/435"
+    },
+    {
+      "path": "/post/438",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/438"
+    },
+    {
+      "path": "/post/451",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/451"
+    },
+    {
+      "path": "/post/480",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/480"
+    },
+    {
+      "path": "/post/508",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/508"
+    },
+    {
+      "path": "/post/515",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/515"
+    },
+    {
+      "path": "/post/516",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/516"
+    },
+    {
+      "path": "/post/529",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/529"
+    },
+    {
+      "path": "/post/542",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/542"
+    },
+    {
+      "path": "/post/544",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/544"
+    },
+    {
+      "path": "/post/553",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/553"
+    },
+    {
+      "path": "/post/561",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/561"
+    },
+    {
+      "path": "/post/563",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/563"
+    },
+    {
+      "path": "/post/596",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/596"
+    },
+    {
+      "path": "/post/597",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/597"
+    },
+    {
+      "path": "/post/613",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/613"
+    },
+    {
+      "path": "/post/616",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/616"
+    },
+    {
+      "path": "/post/638",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/638"
+    },
+    {
+      "path": "/post/640",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/640"
+    },
+    {
+      "path": "/post/644",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/644"
+    },
+    {
+      "path": "/post/677",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/677"
+    },
+    {
+      "path": "/post/707",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/707"
+    },
+    {
+      "path": "/post/720",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/720"
+    },
+    {
+      "path": "/post/725",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/725"
+    },
+    {
+      "path": "/post/740",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/740"
+    },
+    {
+      "path": "/post/747",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/747"
+    },
+    {
+      "path": "/post/765",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/765"
+    },
+    {
+      "path": "/post/800",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/800"
+    },
+    {
+      "path": "/post/803",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/803"
+    },
+    {
+      "path": "/post/806",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/806"
+    },
+    {
+      "path": "/post/852",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/852"
+    },
+    {
+      "path": "/post/905",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/905"
+    },
+    {
+      "path": "/post/article",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/article"
+    },
+    {
+      "path": "/post/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/post/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/post/noindex",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/noindex"
+    },
+    {
+      "path": "/post/rabbiehirsch",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/post/rabbiehirsch"
+    },
+    {
+      "path": "/profile/rabbiehirsch/2447",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/profile/rabbiehirsch/2447"
+    },
+    {
+      "path": "/profile/rabbiehirsch/e0b7a2b2-1782-4b0f-9b31-0691f453bd36",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/profile/rabbiehirsch/e0b7a2b2-1782-4b0f-9b31-0691f453bd36"
+    },
+    {
+      "path": "/profile/rabbiehirsch/e1e8124f-530b-4ebb-aad4-a37696ce66af",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/profile/rabbiehirsch/e1e8124f-530b-4ebb-aad4-a37696ce66af"
+    },
+    {
+      "path": "/profile/rabbiehirsch/summary",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/profile/rabbiehirsch/summary"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/bar_bombon_2024.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/bar_bombon_2024.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/blackbird_20thst_certificate_2024.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/blackbird_20thst_certificate_2024.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/charlie_2024_certificate.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/charlie_2024_certificate.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/dottiesdonuts_manayunk_certificate-website.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/dottiesdonuts_manayunk_certificate-website.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/face_masks_and_a_mohel__parents_figure_out_how_to_host_a_bris_during_coronavirus_-_wsj.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/face_masks_and_a_mohel__parents_figure_out_how_to_host_a_bris_during_coronavirus_-_wsj.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/fitz_on_4th_2024.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/fitz_on_4th_2024.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/goldie_fishtown_certificate-_2024.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/goldie_fishtown_certificate-_2024.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/hipcityvegrittenhouse_2024.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/hipcityvegrittenhouse_2024.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/kilwins_certificate_2024_-_website.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/kilwins_certificate_2024_-_website.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/luhv_vegan_deli_at_reading_terminal_2024.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/luhv_vegan_deli_at_reading_terminal_2024.pdf"
+    },
+    {
+      "path": "/uploads/1/2/1/5/121515787/rachels_pantry_certificate_2024.pdf",
+      "status": 404,
+      "sourceUrl": "https://www.mekorhabracha.org/uploads/1/2/1/5/121515787/rachels_pantry_certificate_2024.pdf"
+    }
+  ],
+  "aliases": [
+    {
+      "from": "/post/Cinnaholic",
+      "to": "/post/cinnaholic",
+      "reason": "case-or-encoding-variant"
+    },
+    {
+      "from": "/post/HipCityVeg",
+      "to": "/post/hipcityveg",
+      "reason": "case-or-encoding-variant"
+    }
+  ]
+}

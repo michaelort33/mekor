@@ -1,10 +1,11 @@
+import { config as loadEnv } from "dotenv";
 import assert from "node:assert/strict";
-import test from "node:test";
+import test, { after } from "node:test";
 
 import { getManagedEvents } from "../lib/events/store";
+import { getNativeSearchIndex } from "../lib/native-content/content-loader";
 import { getManagedInTheNews } from "../lib/in-the-news/store";
 import { getManagedKosherPlaces } from "../lib/kosher/store";
-import { loadSearchIndex } from "../lib/mirror/loaders";
 import {
   MIRROR_ONLY_FIELD_LIFECYCLE,
   NATIVE_CONTRACT_MATRIX,
@@ -14,6 +15,14 @@ import {
   validateManagedKosherPlacesContract,
   validateSearchIndexContract,
 } from "../lib/native/contracts";
+
+loadEnv({ path: ".env.local" });
+loadEnv({ path: ".env", override: false });
+
+after(async () => {
+  await global.postgresSql?.end();
+  global.postgresSql = undefined;
+});
 
 test("native contract matrix matches native-enabled route list", () => {
   const matrixRoutes = new Set(NATIVE_CONTRACT_MATRIX.map((row) => row.routePath));
@@ -31,7 +40,7 @@ test("native model contracts validate live managed payloads", async () => {
     getManagedEvents(),
     getManagedInTheNews(),
     getManagedKosherPlaces(),
-    loadSearchIndex(),
+    getNativeSearchIndex(),
   ]);
 
   const validatedEvents = validateManagedEventsContract(events, "test: events");

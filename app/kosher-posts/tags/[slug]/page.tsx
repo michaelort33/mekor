@@ -6,7 +6,6 @@ import { BadRequestTemplate } from "@/components/templates/bad-request-template"
 import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
-import { buildArchiveTemplateData } from "@/lib/templates/template-data";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
@@ -18,7 +17,7 @@ type PageProps = {
 };
 
 function toPath(slug: string) {
-  return `/kosher-posts/tags/${slug}`;
+  return "/kosher-posts/tags/" + slug;
 }
 
 export async function generateStaticParams() {
@@ -63,10 +62,9 @@ export default async function TagArchivePage({ params }: PageProps) {
     return <BadRequestTemplate />;
   }
 
-  if (route.status !== "ok" || route.document.type !== "tag") {
+  if (route.status !== "ok" || route.document.type !== "tag" || route.template.kind !== "archive") {
     notFound();
   }
 
-  const data = await buildArchiveTemplateData(route.document);
-  return <ArchiveTemplate data={data} />;
+  return <ArchiveTemplate data={route.template.data} />;
 }
