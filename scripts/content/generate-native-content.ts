@@ -52,13 +52,13 @@ function toDocumentRecord(document: NativePageDocument): NativeContentDocument {
   };
 }
 
-function sortByPath(rows) {
+function sortByPath<T extends { path: string }>(rows: T[]): T[] {
   return rows.slice().sort((a, b) => a.path.localeCompare(b.path));
 }
 
 async function loadAllDocuments() {
   const records = await Promise.all(DOCUMENT_TYPES.map((type) => listDocumentsByType(type)));
-  const map = new Map();
+  const map = new Map<string, PageDocument>();
 
   for (const batch of records) {
     for (const document of batch) {

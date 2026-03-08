@@ -7,8 +7,8 @@ import {
   getPathVariants,
   loadNativeContentIndex,
   type NativeDocumentType,
-  type NativePageDocument,
 } from "@/lib/native-content/content-loader";
+import type { PageDocument } from "@/lib/mirror/types";
 
 const FOOTER_PHONE = "+12155254246";
 const PHONE_PATTERN = /(?:\+?1[\s\-().]*)?(?:\(?\d{3}\)?[\s\-().]*)\d{3}[\s\-().]*\d{4}/;
@@ -379,7 +379,7 @@ const loadArchivePathSet = cache(async (type: NativeDocumentType) => {
   );
 });
 
-export function buildArticleTemplateData(document: NativePageDocument): ArticleTemplateData {
+export function buildArticleTemplateData(document: PageDocument): ArticleTemplateData {
   const $ = load(document.bodyHtml || document.renderHtml || "");
   const root =
     document.type === "post"
@@ -658,7 +658,7 @@ export function buildArticleTemplateData(document: NativePageDocument): ArticleT
   };
 }
 
-export function buildEventTemplateData(document: NativePageDocument, options?: { eventId?: number | null }): EventTemplateData {
+export function buildEventTemplateData(document: PageDocument, options?: { eventId?: number | null }): EventTemplateData {
   const $ = load(document.bodyHtml || document.renderHtml || "");
 
   const title =
@@ -714,7 +714,7 @@ export function buildEventTemplateData(document: NativePageDocument, options?: {
 }
 
 export async function buildProfileTemplateData(
-  document: NativePageDocument,
+  document: PageDocument,
 ): Promise<ProfileTemplateData> {
   const $ = load(document.bodyHtml || document.renderHtml || "");
   const h1 = cleanText($("h1").first().text());
@@ -758,7 +758,7 @@ export async function buildProfileTemplateData(
 }
 
 export async function buildArchiveTemplateData(
-  document: NativePageDocument,
+  document: PageDocument,
 ): Promise<ArchiveTemplateData> {
   const normalizedPath = normalizePath(document.path);
   const type = normalizedPath.includes("/kosher-posts/categories/") ? "category" : "tag";
