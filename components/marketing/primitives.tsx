@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -67,15 +68,17 @@ function isHttpLink(href: string) {
 function RenderLink({
   href,
   className,
+  style,
   children,
 }: {
   href: string;
   className?: string;
+  style?: CSSProperties;
   children: ReactNode;
 }) {
   if (href.startsWith("/") && !href.startsWith("//")) {
     return (
-      <Link href={href} className={className}>
+      <Link href={href} className={className} style={style}>
         {children}
       </Link>
     );
@@ -85,6 +88,7 @@ function RenderLink({
     <a
       href={href}
       className={className}
+      style={style}
       target={isHttpLink(href) ? "_blank" : undefined}
       rel={isHttpLink(href) ? "noreferrer noopener" : undefined}
     >
@@ -187,8 +191,9 @@ export function HeroSection({
                 asChild
                 variant={index === 0 ? "default" : tone === "dark" ? "outline" : "secondary"}
                 className={cn(
-                  tone === "dark" && index !== 0 && "border-white/20 bg-white/10 text-white hover:bg-white/18",
+                  tone === "dark" && index !== 0 && "border-white/20 bg-white/10 hover:bg-white/18",
                 )}
+                style={tone === "dark" && index !== 0 ? { color: "#f8fbff" } : undefined}
               >
                 <RenderLink href={action.href}>{action.label}</RenderLink>
               </Button>

@@ -63,6 +63,7 @@ export type EventTemplateData = {
   location: string;
   timeLabel: string;
   isClosed: boolean;
+  isPast: boolean;
   about: string[];
   seeOtherEventsHref: string;
 };
@@ -708,6 +709,7 @@ export function buildEventTemplateData(document: PageDocument, options?: { event
     location,
     timeLabel,
     isClosed,
+    isPast: false,
     about: aboutLines.length > 0 ? aboutLines : [cleanText(document.description)].filter(Boolean),
     seeOtherEventsHref: "/events",
   };

@@ -18,6 +18,9 @@ type SignupData = {
     title: string;
     path: string;
     isClosed: boolean;
+    isPast: boolean;
+    startAt: string | null;
+    endAt: string | null;
   };
   settings: {
     id: number;
@@ -63,9 +66,10 @@ function toMoney(cents: number, currency: string) {
 type EventSignupPanelProps = {
   eventId: number | null;
   isClosed: boolean;
+  isPast?: boolean;
 };
 
-export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
+export function EventSignupPanel({ eventId, isClosed, isPast = false }: EventSignupPanelProps) {
   const [loading, setLoading] = useState(Boolean(eventId));
   const [feedLoading, setFeedLoading] = useState(Boolean(eventId));
   const [saving, setSaving] = useState(false);
@@ -85,7 +89,10 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
     [signupData?.tiers, tierId],
   );
   const registrationUnavailableReason = useMemo(() => {
-    if (isClosed) {
+    if (isPast || signupData?.event.isPast) {
+      return "This event has passed.";
+    }
+    if (isClosed || signupData?.event.isClosed) {
       return "Registration is closed for this event.";
     }
     if (!signupData?.settings) {
@@ -101,7 +108,7 @@ export function EventSignupPanel({ eventId, isClosed }: EventSignupPanelProps) {
       }
     }
     return "";
-  }, [isClosed, signupData?.settings]);
+  }, [isClosed, isPast, signupData?.event.isClosed, signupData?.event.isPast, signupData?.settings]);
 
   async function loadSignup() {
     if (!eventId) {

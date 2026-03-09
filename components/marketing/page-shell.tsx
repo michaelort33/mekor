@@ -129,7 +129,13 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS }: MarketingFooterP
               <Button asChild size="sm">
                 <Link href="/donations">Support Mekor</Link>
               </Button>
-              <Button asChild size="sm" variant="outline" className="border-white/25 bg-white/10 text-white hover:bg-white/18">
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="border-white/25 bg-white/10 hover:bg-white/18"
+                style={{ color: "#f8fbff" }}
+              >
                 <Link href="/visit-us">Plan a Visit</Link>
               </Button>
             </div>

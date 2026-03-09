@@ -4,11 +4,12 @@ import Image from "next/image";
 
 import { HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
+import { getManagedEvents } from "@/lib/events/store";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "@/app/page.module.css";
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 const HOME_SIGNALS = [
   {
@@ -25,25 +26,6 @@ const HOME_SIGNALS = [
     eyebrow: "Connect",
     title: "Rabbi Hirsch and Rabbi Gotlib",
     text: "Our rabbis, Rabbi Hirsch and Rabbi Gotlib, are always happy to connect.",
-  },
-] as const;
-
-const UPCOMING_EVENTS = [
-  {
-    title: "Purim at Mekor",
-    date: "Mon, Mar 02",
-    place: "1500 Walnut St #206, Philadelphia, PA",
-    href: "/events-1/purim-at-mekor",
-    image: "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg",
-    alt: "Purim at Mekor event poster",
-  },
-  {
-    title: "Mekor's Tot Shabbat",
-    date: "Monthly",
-    place: "Philadelphia",
-    href: "/events-1/mekors-tot-shabbat",
-    image: "https://static.wixstatic.com/media/92f487_a7ee1919f498484d90fb90f912123602~mv2.png",
-    alt: "Mekor Tot Shabbat event graphic",
   },
 ] as const;
 
@@ -90,12 +72,41 @@ const SUPPORT_LINKS = [
 
 const INTRO_VIDEO_URL = "https://www.youtube.com/embed/aieR-a2z1RY";
 
+function formatHomeEventDate(value: string | null, shortDate: string) {
+  if (!value) {
+    return shortDate;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return shortDate;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "2-digit",
+  }).format(date);
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getNativeDocumentByPath("/");
   return buildDocumentMetadata(document);
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const upcomingEvents = (await getManagedEvents())
+    .filter((event) => !event.isPast)
+    .slice(0, 2)
+    .map((event) => ({
+      image: event.heroImage,
+      alt: `${event.title} event graphic`,
+      title: event.title,
+      date: formatHomeEventDate(event.startAt, event.shortDate),
+      place: event.location || "Philadelphia",
+      href: event.path,
+    }));
+
   return (
     <MarketingPageShell currentPath="/" className={styles.page} contentClassName={styles.stack}>
       <HeroSection
@@ -224,7 +235,7 @@ export default function HomePage() {
           <Link href="/events" className={styles.textLink}>See all events</Link>
         </div>
         <div className={styles.eventsGrid}>
-          {UPCOMING_EVENTS.map((event) => (
+          {upcomingEvents.map((event) => (
             <article key={event.href} className={styles.eventCard}>
               <div className={styles.eventMedia}>
                 <Image src={event.image} alt={event.alt} width={960} height={720} sizes="(max-width: 900px) 100vw, 33vw" />

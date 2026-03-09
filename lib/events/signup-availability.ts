@@ -1,3 +1,11 @@
-export function canShowEventSignupAction(input: { isClosed: boolean; signupEnabled: boolean }) {
-  return !input.isClosed && input.signupEnabled;
+import { canAcceptEventSignup } from "@/lib/events/status";
+
+export function canShowEventSignupAction(input: {
+  startAt?: string | null;
+  endAt?: string | null;
+  isClosed: boolean;
+  signupEnabled: boolean;
+  registrationDeadline?: string | null;
+}) {
+  return canAcceptEventSignup(input);
 }

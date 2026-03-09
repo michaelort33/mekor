@@ -87,7 +87,7 @@ export async function KosherPlacesPage({
 
   return (
     <NativeShell currentPath={currentPath} className="kosher-places-page" contentClassName="gap-8">
-      <section className="relative isolate overflow-hidden rounded-[40px] border border-[var(--color-border)] bg-[linear-gradient(135deg,rgba(17,35,59,0.95),rgba(44,70,100,0.92))] px-6 py-8 text-white shadow-[0_42px_100px_-60px_rgba(15,23,42,0.6)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
+      <section className="relative isolate overflow-hidden rounded-[40px] border border-[var(--color-border)] bg-[linear-gradient(135deg,rgba(17,35,59,0.95),rgba(44,70,100,0.92))] px-6 py-8 [color:#f8fbff] shadow-[0_42px_100px_-60px_rgba(15,23,42,0.6)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(192,155,96,0.26),transparent_30%)]" />
         <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-end">
           <div className="space-y-5">
@@ -108,21 +108,22 @@ export async function KosherPlacesPage({
                 asChild
                 size="sm"
                 variant="outline"
-                className="border-white/20 bg-white/10 text-white hover:bg-white/18"
+                className="border-white/20 bg-white/10 hover:bg-white/18"
+                style={{ color: "#f8fbff" }}
               >
                 <a href="#map">Open the map</a>
               </Button>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <Card className="border-white/12 bg-white/10 px-3 py-3 text-white shadow-none sm:px-4 sm:py-4">
+              <Card className="border-white/12 bg-white/10 px-3 py-3 [color:#f8fbff] shadow-none sm:px-4 sm:py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.6)]">Listings</p>
                 <p className="mt-2 font-[family-name:var(--font-heading)] text-4xl">{places.length}</p>
               </Card>
-              <Card className="border-white/12 bg-white/10 px-3 py-3 text-white shadow-none sm:px-4 sm:py-4">
+              <Card className="border-white/12 bg-white/10 px-3 py-3 [color:#f8fbff] shadow-none sm:px-4 sm:py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.6)]">Neighborhoods</p>
                 <p className="mt-2 font-[family-name:var(--font-heading)] text-4xl">{neighborhoodCount}</p>
               </Card>
-              <Card className="col-span-2 border-white/12 bg-white/10 px-3 py-3 text-white shadow-none sm:col-span-1 sm:px-4 sm:py-4">
+              <Card className="col-span-2 border-white/12 bg-white/10 px-3 py-3 [color:#f8fbff] shadow-none sm:col-span-1 sm:px-4 sm:py-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.6)]">Categories</p>
                 <p className="mt-2 font-[family-name:var(--font-heading)] text-4xl">{categoryCount}</p>
               </Card>

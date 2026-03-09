@@ -6,6 +6,7 @@ import { BadRequestTemplate } from "@/components/templates/bad-request-template"
 import { EventTemplate } from "@/components/templates/event-template";
 import { getDb } from "@/db/client";
 import { events } from "@/db/schema";
+import { isEventClosed, isEventPast } from "@/lib/events/status";
 import { ensureManagedEventRecordByPath } from "@/lib/events/store";
 import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
@@ -68,10 +69,25 @@ export default async function EventTemplatePage({ params }: PageProps) {
   }
 
   let eventId: number | null = null;
+  let effectiveIsClosed = route.template.data.isClosed;
+  let isPast = route.template.data.isPast;
   if (process.env.DATABASE_URL) {
-    const [eventRow] = await getDb().select({ id: events.id }).from(events).where(eq(events.path, path)).limit(1);
+    const [eventRow] = await getDb()
+      .select({
+        id: events.id,
+        startAt: events.startAt,
+        endAt: events.endAt,
+        isClosed: events.isClosed,
+      })
+      .from(events)
+      .where(eq(events.path, path))
+      .limit(1);
     eventId = eventRow?.id ?? (await ensureManagedEventRecordByPath(path));
+    if (eventRow) {
+      isPast = isEventPast(eventRow);
+      effectiveIsClosed = isEventClosed(eventRow);
+    }
   }
 
-  return <EventTemplate data={{ ...route.template.data, eventId }} />;
+  return <EventTemplate data={{ ...route.template.data, eventId, isClosed: effectiveIsClosed, isPast }} />;
 }

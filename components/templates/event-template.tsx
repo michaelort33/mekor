@@ -61,7 +61,7 @@ export function EventTemplate({ data }: EventTemplateProps) {
           {data.isClosed ? (
             <div>
               <dt>Status</dt>
-              <dd>Registration is closed</dd>
+              <dd>{data.isPast ? "This event has passed" : "Registration is closed"}</dd>
             </div>
           ) : null}
         </dl>
@@ -72,7 +72,7 @@ export function EventTemplate({ data }: EventTemplateProps) {
           ))}
         </section>
 
-        <EventSignupPanel eventId={data.eventId} isClosed={data.isClosed} />
+        <EventSignupPanel eventId={data.eventId} isClosed={data.isClosed} isPast={data.isPast} />
 
         <div className="template-card__source template-card__source--actions">
           <Link href={data.seeOtherEventsHref}>See other events</Link>

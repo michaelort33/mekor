@@ -9,6 +9,7 @@ import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features
 import { eventSignupErrorResponse } from "@/lib/events/http";
 import { countActiveEventSpots } from "@/lib/events/registrations";
 import { normalizeEventSignupSettings } from "@/lib/events/signup-settings";
+import { canAcceptEventSignup, isEventClosed, isEventPast } from "@/lib/events/status";
 
 type Params = {
   params: Promise<{ eventId: string }>;
@@ -26,6 +27,7 @@ async function resolveEventContext(eventId: number) {
       title: events.title,
       path: events.path,
       startAt: events.startAt,
+      endAt: events.endAt,
       isClosed: events.isClosed,
     })
     .from(events)
@@ -72,7 +74,11 @@ async function resolveEventContext(eventId: number) {
     .orderBy(asc(eventTicketTiers.sortOrder), asc(eventTicketTiers.id));
 
   return {
-    eventRow,
+    eventRow: {
+      ...eventRow,
+      isPast: isEventPast(eventRow),
+      isClosed: isEventClosed(eventRow),
+    },
     settings: normalizeEventSignupSettings(settings),
     tiers,
   };
@@ -163,11 +169,16 @@ export async function POST(request: Request, { params }: Params) {
     if (!context) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
-    if (!context.settings.enabled || context.eventRow.isClosed) {
+    if (
+      !canAcceptEventSignup({
+        startAt: context.eventRow.startAt,
+        endAt: context.eventRow.endAt,
+        isClosed: context.eventRow.isClosed,
+        signupEnabled: context.settings.enabled,
+        registrationDeadline: context.settings.registrationDeadline,
+      })
+    ) {
       return NextResponse.json({ error: "Registration unavailable" }, { status: 400 });
-    }
-    if (context.settings.registrationDeadline && new Date(context.settings.registrationDeadline) < new Date()) {
-      return NextResponse.json({ error: "Registration deadline has passed" }, { status: 400 });
     }
 
     const db = getDb();

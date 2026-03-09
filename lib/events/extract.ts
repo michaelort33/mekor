@@ -1,5 +1,6 @@
 import { load } from "cheerio";
 
+import { getTemplateContentByPath } from "@/lib/content/native-content";
 import { listDocumentsByType } from "@/lib/mirror/loaders";
 import type { PageDocument } from "@/lib/mirror/types";
 
@@ -61,7 +62,7 @@ function parseEventDateRange(text: string) {
   };
 }
 
-function extractEvent(document: PageDocument): ExtractedEvent | null {
+async function extractEvent(document: PageDocument): Promise<ExtractedEvent | null> {
   if (!document.path.startsWith(EVENT_PATH_PREFIX)) {
     return null;
   }
@@ -80,6 +81,11 @@ function extractEvent(document: PageDocument): ExtractedEvent | null {
 
   const { startAt, endAt, timeLabel } = parseEventDateRange(document.text);
   const slug = getSlugFromPath(document.path);
+  const template = await getTemplateContentByPath(document.path);
+  const heroImage =
+    template?.kind === "event"
+      ? template.data.heroImage || template.document.ogImage || ""
+      : "";
 
   return {
     slug,
@@ -98,14 +104,14 @@ function extractEvent(document: PageDocument): ExtractedEvent | null {
       canonical: document.canonical,
       links: document.links,
       textHash: document.textHash,
+      heroImage,
     },
   };
 }
 
 export async function loadExtractedEvents() {
   const docs = await listDocumentsByType("event");
-  const extracted = docs
-    .map((doc) => extractEvent(doc))
+  const extracted = (await Promise.all(docs.map((doc) => extractEvent(doc))))
     .filter((row): row is ExtractedEvent => Boolean(row));
 
   // Mirror has duplicate historical numeric event pages. Keep one representative per title + date.

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
@@ -13,46 +12,145 @@ const MINYAN_WHATSAPP_URL = "https://chat.whatsapp.com/INZrPssTZeHK5xrx5ghECF";
 
 const DAVENING_IMAGES = {
   hero: "/images/davening/hero.jpg",
-  banner: "/images/davening/banner.jpg",
 } as const;
 
-const SHABBAT_SERVICES = [
+type ScheduleEntry = {
+  label: string;
+  time: string;
+  detail?: string;
+  tone?: "daybreak" | "midday" | "evening";
+};
+
+type ScheduleDay = {
+  day: string;
+  kind: "weekday" | "friday" | "shabbat";
+  entries: readonly ScheduleEntry[];
+  notes?: readonly string[];
+};
+
+const WEEKLY_SCHEDULE: readonly ScheduleDay[] = [
   {
-    title: "Friday Evening",
-    details: [
-      "Mincha / Kabbalat Shabbat / Ma'ariv",
-      "Summer: 7:00 PM",
-      "Winter: around candle-lighting",
+    day: "Sunday",
+    kind: "weekday",
+    entries: [
+      {
+        label: "Shacharit",
+        time: "8:30 AM",
+        detail: "followed by BLT: Bagels, Lox, and Torah",
+        tone: "daybreak",
+      },
+      {
+        label: "Mincha followed by Ma'ariv",
+        time: "around 15 minutes before sunset",
+        detail: "Summer",
+        tone: "evening",
+      },
+      {
+        label: "Ma'ariv only",
+        time: "6:30 PM",
+        detail: "Winter",
+        tone: "evening",
+      },
     ],
-    note: "RSVP by Friday afternoon is appreciated, but you can still come even without RSVP.",
+    notes: ["Weekday Mincha/Ma'ariv runs when there is sufficient interest"],
   },
   {
-    title: "Shabbat Morning",
-    details: ["Shacharit: 9:15 AM", "Hot Kiddush around 11:30 AM"],
-    note: "Visitors are always welcome.",
+    day: "Monday",
+    kind: "weekday",
+    entries: [
+      { label: "Shacharit", time: "6:45 AM", detail: "Mon / Thu / Rosh Chodesh / Fast days", tone: "daybreak" },
+      {
+        label: "Mincha followed by Ma'ariv",
+        time: "around 15 minutes before sunset",
+        detail: "Summer",
+        tone: "evening",
+      },
+      { label: "Ma'ariv only", time: "6:30 PM", detail: "Winter", tone: "evening" },
+    ],
+    notes: ["Weekday Mincha/Ma'ariv runs when there is sufficient interest"],
   },
   {
-    title: "Shabbat Afternoon",
-    details: [
-      "Shabbat class: ~30 min before Mincha (summer)",
-      "Mincha + Seudah Shlishit: ~30 min before sundown",
-      "Early Mincha (winter only): 12:20 PM after Kiddush",
+    day: "Tuesday",
+    kind: "weekday",
+    entries: [
+      { label: "Shacharit", time: "6:55 AM", detail: "Tue / Wed / Fri", tone: "daybreak" },
+      {
+        label: "Mincha followed by Ma'ariv",
+        time: "around 15 minutes before sunset",
+        detail: "Summer",
+        tone: "evening",
+      },
+      { label: "Ma'ariv only", time: "6:30 PM", detail: "Winter", tone: "evening" },
     ],
-    note: "Early Mincha is in addition to the later Mincha before sundown.",
+    notes: ["Weekday Mincha/Ma'ariv runs when there is sufficient interest"],
+  },
+  {
+    day: "Wednesday",
+    kind: "weekday",
+    entries: [
+      { label: "Shacharit", time: "6:55 AM", detail: "Tue / Wed / Fri", tone: "daybreak" },
+      {
+        label: "Mincha followed by Ma'ariv",
+        time: "around 15 minutes before sunset",
+        detail: "Summer",
+        tone: "evening",
+      },
+      { label: "Ma'ariv only", time: "6:30 PM", detail: "Winter", tone: "evening" },
+    ],
+    notes: ["Weekday Mincha/Ma'ariv runs when there is sufficient interest"],
+  },
+  {
+    day: "Thursday",
+    kind: "weekday",
+    entries: [
+      { label: "Shacharit", time: "6:45 AM", detail: "Mon / Thu / Rosh Chodesh / Fast days", tone: "daybreak" },
+      {
+        label: "Mincha followed by Ma'ariv",
+        time: "around 15 minutes before sunset",
+        detail: "Summer",
+        tone: "evening",
+      },
+      { label: "Ma'ariv only", time: "6:30 PM", detail: "Winter", tone: "evening" },
+    ],
+    notes: ["Weekday Mincha/Ma'ariv runs when there is sufficient interest"],
+  },
+  {
+    day: "Friday",
+    kind: "friday",
+    entries: [
+      { label: "Shacharit", time: "6:55 AM", detail: "Tue / Wed / Fri", tone: "daybreak" },
+      {
+        label: "Mincha / Kabbalat Shabbat / Ma'ariv",
+        time: "7:00 PM",
+        detail: "Summer",
+        tone: "evening",
+      },
+      {
+        label: "Mincha / Kabbalat Shabbat / Ma'ariv",
+        time: "around candle-lighting",
+        detail: "Winter",
+        tone: "evening",
+      },
+    ],
+    notes: ["RSVP by Friday afternoon is appreciated, but you can still come even without RSVP."],
+  },
+  {
+    day: "Shabbat",
+    kind: "shabbat",
+    entries: [
+      { label: "Shacharit", time: "9:15 AM", tone: "daybreak" },
+      { label: "Hot Kiddush", time: "around 11:30 AM", tone: "midday" },
+      { label: "Shabbat class", time: "~30 min before Mincha (summer)", tone: "midday" },
+      { label: "Early Mincha (winter only)", time: "12:20 PM after Kiddush", tone: "midday" },
+      { label: "Mincha + Seudah Shlishit", time: "~30 min before sundown", tone: "evening" },
+    ],
+    notes: ["Visitors are always welcome.", "Early Mincha is in addition to the later Mincha before sundown."],
   },
 ] as const;
 
-const WEEKDAY_SHACHARIT = [
-  "Sunday: 8:30 AM (followed by BLT: Bagels, Lox, and Torah)",
-  "Mon / Thu / Rosh Chodesh / Fast days: 6:45 AM",
-  "Tue / Wed / Fri: 6:55 AM",
+const WEEKDAY_NOTES = [
   "Major secular holidays: 8:30 AM",
-] as const;
-
-const WEEKDAY_EVENING = [
-  "Summer: Mincha followed by Ma'ariv around 15 minutes before sunset",
-  "Winter: Ma'ariv only at 6:30 PM",
-  "Weekday Mincha/Ma'ariv runs when there is sufficient interest",
+  "Weekday morning and evening services are often followed by a brief halachic insight from Rabbi Hirsch or Rabbi Gotlib. Amud Yomi follows most morning services.",
 ] as const;
 
 export const dynamic = "force-static";
@@ -91,64 +189,86 @@ export default async function DaveningPage() {
         ]}
       />
 
-      <SectionCard className={styles.bannerCard}>
-        <Image
-          src={DAVENING_IMAGES.banner}
-          alt="Decorative davening schedule banner"
-          loading="lazy"
-          className={styles.bannerImage}
-          width={1366}
-          height={241}
-          sizes="(max-width: 768px) 100vw, 1200px"
-        />
-        <div className={styles.bannerBody}>
-          <p className={styles.bannerTitle}>Weekly Schedule Updates</p>
-          <p className={styles.bannerText}>
+      <SectionCard className={styles.calendarSection}>
+        <div className={styles.scheduleIntro}>
+          <div>
+            <p className={styles.scheduleEyebrow}>Shabbat Services</p>
+            <h2 className={styles.scheduleTitle}>Weekly Schedule Updates</h2>
+          </div>
+          <p className={styles.scheduleLead}>
             Exact zmanim can shift each week. For the most current service timing, use the minyan WhatsApp and email
             confirmation.
           </p>
         </div>
-      </SectionCard>
 
-      <SectionCard title="Shabbat Services">
-        <div className={styles.scheduleGrid}>
-          {SHABBAT_SERVICES.map((service) => (
-            <article key={service.title} className={styles.scheduleCard}>
-              <h3>{service.title}</h3>
-              <ul>
-                {service.details.map((detail) => (
-                  <li key={detail}>{detail}</li>
+        <div className={styles.infoBand}>
+          <p>Please notify us if you plan to attend weekday minyanim.</p>
+          <p>Weekday and Friday evening participation is coordinated with the minyan group.</p>
+        </div>
+
+        <div className={styles.desktopCalendar} aria-label="Seven-day davening calendar">
+          {WEEKLY_SCHEDULE.map((scheduleDay) => (
+            <article key={scheduleDay.day} className={styles.dayColumn} data-kind={scheduleDay.kind}>
+              <header className={styles.dayHeader}>
+                <p className={styles.dayName}>{scheduleDay.day}</p>
+              </header>
+              <div className={styles.entryStack}>
+                {scheduleDay.entries.map((entry) => (
+                  <div key={`${scheduleDay.day}-${entry.label}-${entry.time}`} className={styles.entryCard} data-tone={entry.tone ?? "midday"}>
+                    <p className={styles.entryLabel}>{entry.label}</p>
+                    <p className={styles.entryTime}>{entry.time}</p>
+                    {entry.detail ? <p className={styles.entryDetail}>{entry.detail}</p> : null}
+                  </div>
                 ))}
-              </ul>
-              <p>{service.note}</p>
+              </div>
+              {scheduleDay.notes?.length ? (
+                <div className={styles.dayNotes}>
+                  {scheduleDay.notes.map((note) => (
+                    <p key={`${scheduleDay.day}-${note}`}>{note}</p>
+                  ))}
+                </div>
+              ) : null}
+            </article>
+          ))}
+        </div>
+
+        <div className={styles.mobileCalendar}>
+          {WEEKLY_SCHEDULE.map((scheduleDay) => (
+            <article key={`mobile-${scheduleDay.day}`} className={styles.mobileDayCard} data-kind={scheduleDay.kind}>
+              <header className={styles.mobileDayHeader}>
+                <p className={styles.dayName}>{scheduleDay.day}</p>
+              </header>
+              <div className={styles.mobileEntryList}>
+                {scheduleDay.entries.map((entry) => (
+                  <div key={`mobile-${scheduleDay.day}-${entry.label}-${entry.time}`} className={styles.mobileEntryRow}>
+                    <div>
+                      <p className={styles.entryLabel}>{entry.label}</p>
+                      {entry.detail ? <p className={styles.entryDetail}>{entry.detail}</p> : null}
+                    </div>
+                    <p className={styles.mobileEntryTime}>{entry.time}</p>
+                  </div>
+                ))}
+              </div>
+              {scheduleDay.notes?.length ? (
+                <div className={styles.dayNotes}>
+                  {scheduleDay.notes.map((note) => (
+                    <p key={`mobile-${scheduleDay.day}-${note}`}>{note}</p>
+                  ))}
+                </div>
+              ) : null}
             </article>
           ))}
         </div>
       </SectionCard>
 
       <SectionCard title="Weekday Services" description="Please notify us if you plan to attend weekday minyanim.">
-        <div className={styles.weekdayGrid}>
-          <article className={styles.weekdayCard}>
-            <h3>Shacharit</h3>
-            <ul>
-              {WEEKDAY_SHACHARIT.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          </article>
-          <article className={styles.weekdayCard}>
-            <h3>Mincha / Ma&apos;ariv</h3>
-            <ul>
-              {WEEKDAY_EVENING.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          </article>
+        <div className={styles.noteGrid}>
+          {WEEKDAY_NOTES.map((note) => (
+            <article key={note} className={styles.noteCard}>
+              <p>{note}</p>
+            </article>
+          ))}
         </div>
-        <p className={styles.noteText}>
-          Weekday morning and evening services are often followed by a brief halachic insight from Rabbi Hirsch or
-          Rabbi Gotlib. Amud Yomi follows most morning services.
-        </p>
       </SectionCard>
 
       <SectionCard title="Nearby Weekday Minyanim">

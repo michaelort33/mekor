@@ -218,9 +218,14 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                   className={cn(
                     "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] transition",
                     selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
-                      ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white"
+                      ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
                       : "border-[var(--color-border-strong)] bg-white/70 text-[var(--color-muted)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
                   )}
+                  style={
+                    selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
+                      ? { color: "#f8fbff" }
+                      : undefined
+                  }
                   onClick={() =>
                     setSelectedCategory((current) => (normalize(current) === normalize(tag) ? "all" : tag))
                   }
@@ -307,9 +312,10 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                       className={cn(
                         "rounded-full border px-4 py-2.5 text-sm font-semibold tracking-[0.01em] transition",
                         selectedNeighborhood === option.value
-                          ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white"
+                          ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
                           : "border-[var(--color-border-strong)] bg-white/78 text-[var(--color-muted)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
                       )}
+                      style={selectedNeighborhood === option.value ? { color: "#f8fbff" } : undefined}
                       onClick={() => setSelectedNeighborhood(option.value)}
                     >
                       {option.label}
@@ -331,9 +337,14 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                           className={cn(
                             "rounded-full border px-4 py-2.5 text-sm font-semibold tracking-[0.01em] transition",
                             selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
-                              ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white"
+                              ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
                               : "border-[var(--color-border-strong)] bg-white/78 text-[var(--color-muted)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
                           )}
+                          style={
+                            selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
+                              ? { color: "#f8fbff" }
+                              : undefined
+                          }
                           onClick={() =>
                             setSelectedCategory((current) => (normalize(current) === normalize(tag) ? "all" : tag))
                           }

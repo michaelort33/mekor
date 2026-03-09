@@ -10,107 +10,244 @@
   gap: 16px;
 }
 
-.bannerCard {
-  overflow: hidden;
-  padding: 0;
-  border-color: #c9dced;
+.calendarSection {
+  border-color: #c8d8e6;
+  background:
+    radial-gradient(120% 120% at 50% -10%, rgba(210, 227, 241, 0.38) 0%, rgba(210, 227, 241, 0) 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(246, 248, 252, 0.96) 100%);
 }
 
-.bannerImage {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-bottom: 1px solid #d8e3ee;
-}
-
-.bannerBody {
-  padding: 14px 16px 16px;
+.scheduleIntro {
   display: grid;
-  gap: 6px;
+  gap: 14px;
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.86fr);
 }
 
-.bannerTitle {
+.scheduleEyebrow {
+  margin: 0 0 10px;
+  color: #587393;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.scheduleTitle {
   margin: 0;
-  color: #1e3f65;
-  font-size: 1.02rem;
+  color: #14293f;
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 3.4vw, 3.3rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+}
+
+.scheduleLead {
+  margin: 0;
+  color: #4c6178;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.infoBand {
+  margin-top: 22px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.infoBand p {
+  margin: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(95, 124, 155, 0.16);
+  background: rgba(248, 250, 253, 0.9);
+  padding: 14px 16px;
+  color: #485f76;
+  line-height: 1.65;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.desktopCalendar {
+  margin-top: 22px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.dayColumn {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  border-radius: 28px;
+  border: 1px solid #d7e2ec;
+  background: linear-gradient(180deg, rgba(252, 253, 255, 0.98) 0%, rgba(244, 247, 251, 0.94) 100%);
+  padding: 16px 14px 14px;
+  min-height: 100%;
+}
+
+.dayColumn[data-kind="friday"] {
+  border-color: #d8d4c8;
+  background: linear-gradient(180deg, rgba(255, 251, 241, 0.98) 0%, rgba(249, 243, 229, 0.96) 100%);
+}
+
+.dayColumn[data-kind="shabbat"] {
+  border-color: #c7d7e8;
+  background:
+    radial-gradient(120% 120% at 50% -10%, rgba(206, 225, 243, 0.54) 0%, rgba(206, 225, 243, 0) 45%),
+    linear-gradient(180deg, rgba(243, 248, 254, 0.99) 0%, rgba(232, 240, 249, 0.97) 100%);
+}
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dayName {
+  margin: 0;
+  color: #183450;
+  font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
 
-.bannerText {
-  margin: 0;
-  color: #4a5a6e;
-  line-height: 1.6;
-}
-
-.scheduleGrid {
+.entryStack {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
 }
 
-.scheduleCard {
-  border-radius: 14px;
-  border: 1px solid #d7e1ed;
-  background: linear-gradient(152deg, #f8fbff 0%, #edf4fc 100%);
-  padding: 14px;
-  display: grid;
-  gap: 8px;
-  min-height: 206px;
+.entryCard {
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(120, 146, 174, 0.15);
+  box-shadow: 0 18px 38px -34px rgba(16, 34, 54, 0.46);
 }
 
-.scheduleCard h3 {
+.entryCard[data-tone="daybreak"] {
+  background: linear-gradient(180deg, rgba(248, 251, 255, 0.98) 0%, rgba(239, 245, 251, 0.96) 100%);
+}
+
+.entryCard[data-tone="midday"] {
+  background: linear-gradient(180deg, rgba(255, 252, 245, 0.98) 0%, rgba(249, 242, 230, 0.96) 100%);
+}
+
+.entryCard[data-tone="evening"] {
+  background: linear-gradient(180deg, rgba(241, 246, 252, 0.98) 0%, rgba(228, 237, 247, 0.96) 100%);
+}
+
+.entryLabel {
   margin: 0;
-  color: #1f3f64;
-  font-size: 1rem;
-  line-height: 1.3;
+  color: #18334d;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
-.scheduleCard ul {
-  margin: 0;
-  padding-left: 1.14rem;
-  color: #3f5063;
-  line-height: 1.58;
-  display: grid;
-  gap: 4px;
+.entryTime {
+  margin: 6px 0 0;
+  color: #0f2740;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
-.scheduleCard p {
-  margin: 0;
-  color: #4b5d72;
-  line-height: 1.56;
-  font-size: 0.92rem;
+.entryDetail {
+  margin: 6px 0 0;
+  color: #566a80;
+  font-size: 0.8rem;
+  line-height: 1.5;
 }
 
-.weekdayGrid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
-
-.weekdayCard {
-  border-radius: 14px;
-  border: 1px solid #d6e1ec;
-  background: linear-gradient(145deg, #f9fbfe 0%, #f1f6fc 100%);
-  padding: 14px;
+.dayNotes {
   display: grid;
   gap: 8px;
 }
 
-.weekdayCard h3 {
+.dayNotes p {
   margin: 0;
-  color: #1e3f65;
-  font-size: 1rem;
-  line-height: 1.3;
+  color: #5d6d80;
+  font-size: 0.8rem;
+  line-height: 1.52;
 }
 
-.weekdayCard ul {
-  margin: 0;
-  padding-left: 1.14rem;
-  color: #425366;
-  line-height: 1.62;
+.mobileCalendar {
+  display: none;
+}
+
+.mobileDayCard {
   display: grid;
-  gap: 4px;
+  gap: 12px;
+  border-radius: 24px;
+  border: 1px solid #d7e2ec;
+  background: linear-gradient(180deg, rgba(252, 253, 255, 0.98) 0%, rgba(244, 247, 251, 0.94) 100%);
+  padding: 16px;
+}
+
+.mobileDayCard[data-kind="friday"] {
+  border-color: #d8d4c8;
+  background: linear-gradient(180deg, rgba(255, 251, 241, 0.98) 0%, rgba(249, 243, 229, 0.96) 100%);
+}
+
+.mobileDayCard[data-kind="shabbat"] {
+  border-color: #c7d7e8;
+  background:
+    radial-gradient(120% 120% at 50% -10%, rgba(206, 225, 243, 0.54) 0%, rgba(206, 225, 243, 0) 45%),
+    linear-gradient(180deg, rgba(243, 248, 254, 0.99) 0%, rgba(232, 240, 249, 0.97) 100%);
+}
+
+.mobileDayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mobileEntryList {
+  display: grid;
+  gap: 10px;
+}
+
+.mobileEntryRow {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  border-radius: 18px;
+  border: 1px solid rgba(120, 146, 174, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12px;
+}
+
+.mobileEntryTime {
+  margin: 0;
+  color: #102941;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  text-align: right;
+}
+
+.noteGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.noteCard {
+  border-radius: 20px;
+  border: 1px solid #d8e2ec;
+  background: linear-gradient(180deg, rgba(251, 252, 254, 0.98) 0%, rgba(244, 247, 251, 0.96) 100%);
+  padding: 16px;
+}
+
+.noteCard p {
+  margin: 0;
+  color: #46586d;
+  line-height: 1.7;
 }
 
 .noteText {
@@ -126,17 +263,55 @@
     #fcfdff;
 }
 
+@media (max-width: 1180px) {
+  .desktopCalendar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .scheduleIntro {
+    grid-template-columns: 1fr;
+  }
+
+  .infoBand,
+  .noteGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .desktopCalendar {
+    display: none;
+  }
+
+  .mobileCalendar {
+    margin-top: 20px;
+    display: grid;
+    gap: 12px;
+  }
+}
+
 @media (max-width: 760px) {
   .stack {
     gap: 14px;
   }
 
-  .bannerBody {
-    padding: 12px 13px 14px;
+  .calendarSection {
+    padding-left: 0;
+    padding-right: 0;
   }
 
-  .scheduleCard,
-  .weekdayCard {
-    padding: 12px;
+  .scheduleIntro,
+  .infoBand,
+  .mobileCalendar,
+  .noteGrid {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .scheduleLead,
+  .infoBand p,
+  .noteCard p,
+  .noteText {
+    font-size: 0.96rem;
   }
 }

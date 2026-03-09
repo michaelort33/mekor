@@ -224,14 +224,18 @@ export function EventsCalendar({ events }: EventsCalendarProps) {
             <div className="events-hub__event-meta">
               <span>{event.shortDate || dayNumber(event.startAt)}</span>
               {event.location ? <span>{event.location}</span> : null}
-              {event.isClosed ? <span className="events-hub__closed-badge">Closed</span> : null}
+              {event.isPast ? (
+                <span className="events-hub__closed-badge">Past</span>
+              ) : event.isClosed ? (
+                <span className="events-hub__closed-badge">Closed</span>
+              ) : null}
             </div>
             <h3>{event.title}</h3>
             {event.timeLabel ? <p>{event.timeLabel}</p> : null}
             <Link href={event.path} className="events-hub__event-link">
               View event
             </Link>
-            {canShowEventSignupAction({ isClosed: event.isClosed, signupEnabled: event.signupEnabled }) ? (
+            {canShowEventSignupAction(event) ? (
               <Link href={`${event.path}#signup`} className="events-hub__event-link">
                 Sign up
               </Link>
