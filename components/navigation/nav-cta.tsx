@@ -17,7 +17,7 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   const signOutAction = { label: "Sign Out", href: "/logout", variant: "signout" as const };
 
   const links = [
-    { ...JOIN_US_LINK, label: "Join Chat", variant: "join" as const },
+    { ...JOIN_US_LINK, label: "Join WhatsApp", variant: "join" as const },
     authAction,
     ...(isSignedIn && !isCheckingAuth ? [signOutAction] : []),
   ];
