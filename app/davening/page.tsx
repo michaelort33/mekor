@@ -150,7 +150,10 @@ const WEEKLY_SCHEDULE: readonly ScheduleDay[] = [
 
 const WEEKDAY_NOTES = [
   "Major secular holidays: 8:30 AM",
-  "Weekday morning and evening services are often followed by a brief halachic insight from Rabbi Hirsch or Rabbi Gotlib. Amud Yomi follows most morning services.",
+  "Weekday morning and evening services are followed by a brief halachic insight from Rabbi Hirsch or Rabbi Gotlib. Amud Yomi follows most morning services.",
+  "If you are interested in participating in the weekday morning or evening minyan, kindly email admin@mekorhabracha.org and specify the day(s) you are signing up for.",
+  "We will send you an email confirmation if the minyan will take place. You can also join the minyan WhatsApp group to stay up to date on everything.",
+  "On occasion, you may find the building door locked. If so, please call the shul at (215) 525-4246 and leave a message to gain access, or wait by the door for one of our members to arrive with a building key.",
 ] as const;
 
 export const dynamic = "force-static";
@@ -180,8 +183,8 @@ export default async function DaveningPage() {
           objectPosition: "50% 38%",
         }}
         description={[
-          "Service times vary seasonally. Weekday and Friday evening participation is coordinated with the minyan group.",
-          "Join the WhatsApp thread and email us to help confirm attendance so every tefillah can run smoothly.",
+          "Service times vary seasonally. It is preferred that you RSVP by Friday afternoon by emailing admin@mekorhabracha.org.",
+          "However, an RSVP is not required, and you can safely assume there will be a minyan even if you arrive without having RSVP'd. Join the WhatsApp thread and email us to help confirm weekday attendance.",
         ]}
         actions={[
           { label: "Join Minyan WhatsApp", href: MINYAN_WHATSAPP_URL },
@@ -202,8 +205,8 @@ export default async function DaveningPage() {
         </div>
 
         <div className={styles.infoBand}>
-          <p>Please notify us if you plan to attend weekday minyanim.</p>
-          <p>Weekday and Friday evening participation is coordinated with the minyan group.</p>
+          <p>RSVP by afternoon on Friday to mekorhabracha@gmail.com.</p>
+          <p>At this time, weekday Mincha and Ma&apos;ariv will only be held if there is sufficient interest.</p>
         </div>
 
         <div className={styles.desktopCalendar} aria-label="Seven-day davening calendar">
@@ -286,8 +289,8 @@ export default async function DaveningPage() {
 
       <SectionCard title="Participate in Davening" className={styles.participateCard}>
         <p className={styles.noteText}>
-          Interested in leining Torah or Haftorah, leading davening, or adding a yahrzeit? Reach out and we will help
-          coordinate.
+          Interested in reading Torah or Haftorah, or leading davening? Have an upcoming yahrzeit? Reach out and we
+          will help coordinate.
         </p>
         <CTACluster
           items={[

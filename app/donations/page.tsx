@@ -131,8 +131,8 @@ export default async function DonationsPage() {
           objectPosition: "center center",
         }}
         description={[
-          "The generosity of members and visitors is vital to our shul and the wider Jewish community in Philadelphia.",
-          "Donations are a meaningful way to celebrate milestones, honor loved ones, and keep our community growing.",
+          "The generosity of members and visitors who make donations to our shul are vital to help us continue serving our congregation as well as members of the wider Jewish community.",
+          "Making a donation is a wonderful way to celebrate special occasions, honor your friends and family, or commemorate the yahrtzeit of your loved ones.",
         ]}
         actions={[
           { label: "Donate by Credit / ACH / Apple Pay", href: STRIPE_DONATION_URL },
@@ -162,8 +162,8 @@ export default async function DonationsPage() {
           ))}
         </div>
         <p className={styles.copyText}>
-          By check: make checks payable to <strong>Mekor Habracha</strong> and mail to{" "}
-          <strong>1500 Walnut St #206, Philadelphia, PA 19102</strong>, c/o Ellen Geller.
+          By check: please send any checks payable to <strong>Mekor Habracha</strong> to <strong>Ellen Geller</strong>,
+          <strong> 3 Saint James Ct., Philadelphia, PA 19106</strong>.
         </p>
       </SectionCard>
 
@@ -188,9 +188,9 @@ export default async function DonationsPage() {
             objectPosition: "center center",
           }}
           paragraphs={[
-            "Celebrate simchas with your Mekor community through Shabbat Kiddush sponsorships and Yom Tov support.",
-            "Honor and memorialize impactful people in your life through dedication opportunities throughout the shul.",
-            "All contributions are tax-deductible and are acknowledged with a letter for tax purposes.",
+            "Celebrate simchas with your Mekor community through Shabbat Kiddush sponsorships or honoring and memorializing those impactful individuals in one's life through sponsorship opportunities.",
+            "All contributions are fully tax-deductible and will be acknowledged in a letter that may be used for tax purposes.",
+            "Donations may be made online, through our website by credit card, or by sending a check payable to Mekor Habracha. Please email the shul to let us know about your donation and any dedication you'd like to make.",
           ]}
           links={[
             { label: "Kiddush Donation Page", href: "/kiddush" },
@@ -205,7 +205,7 @@ export default async function DonationsPage() {
             <li key={item}>{item}</li>
           ))}
         </ul>
-        <p className={styles.copyText}>General contributions of any amount are always appreciated.</p>
+        <p className={styles.copyText}>General contributions -- any amount is appreciated!</p>
       </SectionCard>
 
       <SectionCard>
@@ -220,7 +220,7 @@ export default async function DonationsPage() {
             objectPosition: "center center",
           }}
           paragraphs={[
-            "Major dedication opportunities remain available for donors who want to make a long-term impact on Mekor's physical home.",
+            "Building spaces still available for dedication.",
             SPACE_DEDICATIONS.join(" · "),
           ]}
           links={[

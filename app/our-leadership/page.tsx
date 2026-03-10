@@ -26,25 +26,25 @@ const LEADERSHIP_MEMBERS = [
     name: "Bruce Taubman",
     role: "President",
     image: LEADERSHIP_IMAGES.bruce,
-    bio: "Dr. Bruce Taubman is a pediatrician with a Cherry Hill practice. He has lived in Center City since 1972 and serves as synagogue president.",
+    bio: "Dr. Bruce Taubman is a pediatrician with a practice in Cherry Hill, New Jersey. He has lived in Center City since 1972 and is the synagogue's president.",
   },
   {
     name: "Ellen B. Geller",
     role: "Treasurer",
     image: LEADERSHIP_IMAGES.ellen,
-    bio: "Ellen Geller retired in 2020 after years of leadership in medical research organizations and has been a long-standing Center City community member.",
+    bio: "Ellen Geller retired in 2020 from her positions as the Director of the Executive Office of The College on Problems of Drug Dependence, and Scientific Coordinator for the Center on Substance Abuse Research at Temple Medical School. Ellen has lived in Center City since 1972 and is the synagogue's treasurer.",
   },
   {
     name: "Yoella Epstein, Esq.",
     role: "Board Member",
     image: LEADERSHIP_IMAGES.yoella,
-    bio: "Yoella Epstein is a litigation attorney at Blank Rome LLP and a dedicated builder of Mekor community life with her family.",
+    bio: "Yoella Epstein is a litigation associate at Blank Rome LLP. She was born and raised in the Philadelphia area. After graduating from University of Southern California, Gould School of Law, she moved to Center City in 2008 with her husband, Jeremy Kriger. Yoella and Jeremy are the proud parents of four girls: Neli, Neima, Adel and Kassia.",
   },
   {
     name: "Chana Strauss",
     role: "Board Member",
     image: LEADERSHIP_IMAGES.chana,
-    bio: "Chana Strauss is a Midwife and Women's Health Nurse Practitioner at AtlantiCare Regional Medical Center and active Mekor member.",
+    bio: "Chana Strauss is a Midwife and Women's Health Nurse Practitioner at AtlantiCare Regional Medical Center. Originally from Central Jersey, she moved to Center City in April of 2021 with her husband Steven to complete her Masters degree in nursing. She loves the Jewish community in Center City and is a proud member of Mekor.",
   },
   {
     name: "Ethan Lewis",
@@ -56,13 +56,13 @@ const LEADERSHIP_MEMBERS = [
     name: "Jonathan Goldstein",
     role: "Board Member",
     image: LEADERSHIP_IMAGES.jonathan,
-    bio: "Jonathan Goldstein is an e-commerce specialist and chazzan, deeply involved in communal leadership and member engagement.",
+    bio: "Jonathan Goldstein is an E-commerce Specialist and Chazzan. He moved to Center City from the Main Line for college and currently lives in Philadelphia with his wife Gwenn. He is a passionate and proud member of Mekor Habracha.",
   },
   {
     name: "David Margules",
     role: "Board Member",
     image: LEADERSHIP_IMAGES.david,
-    bio: "David Margules is a partner at Ballard Spahr and has served in national and local Jewish leadership roles.",
+    bio: "David Margules is a partner in the Ballard Spahr law firm, where he heads the Delaware Chancery Court/Corporate Governance practice group. He is a graduate of Columbia College and NYU School of Law. David and his wife Michelle are recent transplants from Wilmington, Delaware, having come to Center City to be close to their children Andrew, Elliot, Sam and Will and granddaughter Margot. David has served in leadership positions in numerous national and local Jewish organizations including the Jewish Federation of Delaware, AIPAC and JNF.",
   },
   {
     name: "Ralph Shapira",
@@ -100,7 +100,7 @@ export default async function OurLeadershipPage() {
         }}
         description={[
           "Mekor Habracha's board is composed of volunteers committed to building vibrant Jewish life in Center City.",
-          "For board matters, contact us directly and we will respond promptly.",
+          "To contact the board of Mekor Habracha with any questions, please email mekorboard@gmail.com.",
         ]}
         actions={[
           { label: "Email the Board", href: "mailto:mekorboard@gmail.com" },

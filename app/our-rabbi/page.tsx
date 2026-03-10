@@ -30,10 +30,15 @@ export default function OurRabbiPage() {
               alt: "Rabbi Eliezer Hirsch",
             }}
             paragraphs={[
-              "Rabbi Eliezer Hirsch is the founding rabbi and spiritual leader of Mekor Habracha/Center City Synagogue. Since its inception, Mekor has grown remarkably and contributed significantly to flourishing Jewish life in downtown Philadelphia.",
-              "Under Rabbi Hirsch's leadership, Mekor has fostered a dynamic community with vibrant Shabbat and holiday services and daily morning and evening minyanim in the Rittenhouse neighborhood.",
-              "He serves as Director and local halachic advisor for the Center City Eruv and rabbinic administrator of IKC Kosher Certification, helping fuel growth of kosher establishments in Center City.",
-              "Rabbi Hirsch has made unwavering support for Israel a cornerstone of Mekor and was honored in 2019 with the Guardian of Israel Award from the Philadelphia Chapter of the Zionist Organization of America.",
+              "Rabbi Eliezer Hirsch is the founding rabbi and spiritual leader of Mekor Habracha/Center City Synagogue. Since its inception, Mekor has experienced remarkable growth and has contributed significantly to the flourishing Jewish life in downtown Philadelphia.",
+              "Under Rabbi Hirsch's leadership, Mekor has helped foster a dynamic community, providing vibrant Shabbat and holiday services and daily morning and evening minyanim in the Rittenhouse neighborhood.",
+              "Rabbi Hirsch serves as the Director and local halachic advisor for the expansive Center City Eruv and is the rabbinic administrator of IKC Kosher Certification in Center City, which has facilitated the substantial growth of kosher establishments in this area.",
+              "He has also served as the sponsoring rabbi for dozens of geirei tzedek through the Philadelphia Beis Din under HaRav Dov Aaron Brisman zt\"l, as well as through several RCA-affiliated batei dinim. In addition, Rabbi Hirsch and the Mekor congregation played a key role in bringing our community mikvah to fruition.",
+              "Rabbi Hirsch has made unwavering support for Israel a cornerstone of Mekor, articulating a fervent voice for Israel, and celebrating the many Mekor congregants who have made aliyah. In recognition of his pro-Israel advocacy efforts across the Philadelphia region, Rabbi Hirsch was honored in 2019 with the Guardian of Israel Award from the Philadelphia Chapter of the Zionist Organization of America.",
+              "In addition to leading Congregation Mekor Habracha, Rabbi Hirsch serves as Dean of Jewish philosophy at Genesis University, a distance-learning college based in Suffern, New York.",
+              "Rabbi Hirsch received rabbinic ordination from Ner Israel Rabbinical College in Baltimore, Maryland, and Yeshivas Ohr Reuven in Monsey, New York. During his almost two decades of study in yeshiva, he forged close relationships with prominent rabbinic leaders and received years of training from renowned halachic authorities.",
+              "In 2010, Rabbi Hirsch was diagnosed with young-onset Parkinson's Disease, an incurable and progressive neurological condition. Since publicly sharing his diagnosis, Rabbi Hirsch has welcomed inquiries from individuals across the globe seeking halachic and spiritual guidance to cope with significant personal hardships.",
+              "Through his writing and teaching, Rabbi Hirsch illuminates the Torah's enduring relevance for Jews of all backgrounds. Rabbi Hirsch and his wife Miriam have made Center City their home, finding deep meaning in building Jewish life and serving their beloved community.",
               "You can reach Rabbi Hirsch at rabbiehirsch@mekorhabracha.org.",
             ]}
             links={[
@@ -80,11 +85,11 @@ export default function OurRabbiPage() {
               alt: "Rabbi Steven Gotlib",
             }}
             paragraphs={[
-              "Rabbi Steven Gotlib is Associate Rabbi at Mekor Habracha/Center City Synagogue and Director of the Center City Beit Midrash.",
-              "Rabbi Gotlib studied Communication, Jewish Studies, and Philosophy at Rutgers University before receiving rabbinic ordination from RIETS and additional training in mental health counseling and spiritual entrepreneurship.",
-              "He has served congregations in Ottawa, Toronto, and New York City, and his writings have appeared in The Lehrhaus, Jewish Action, Tradition Online, 18Forty, and more.",
-              "Rabbi Gotlib is committed to making Jewish theology, philosophy, and law accessible to all who seek guidance and comfort within our tradition.",
-              "He can be reached at rabbisgotlib@mekorhabracha.org.",
+              "Rabbi Steven Gotlib is Associate Rabbi at Mekor Habracha/Center City Synagogue and Director of the Center City Beit Midrash. Rabbi Gotlib studied Communication, Jewish Studies, and Philosophy at Rutgers University before receiving rabbinic ordination from the Rabbi Isaac Elchanan Theological Seminary at Yeshiva University, a Certificate in Mental Health Counseling from the Ferkauf Graduate School of Psychology in partnership with RIETS, and a START Certificate in Spiritual Entrepreneurship from the Glean Network in partnership with Columbia Business School.",
+              "Rabbi Gotlib previously served as Interim Rabbi at Young Israel of Ottawa, Assistant Rabbi at the Village Shul/Aish HaTorah Learning Centre in Toronto, a Community Scholar at Beit Midrash Zichron Dov of Toronto, and Head of the Beit Midrash Program at Congregation Shearith Israel: The Spanish and Portuguese Synagogue in New York City.",
+              "As a RIETS student, he held rabbinic internships at Congregation Beth Abraham-Jacob of Albany and at Yeshiva University's Zahava and Moshael Straus Center for Torah and Western Thought while working as Webmaster and Social Media Manager for The Lehrhaus.",
+              "A popular guest speaker throughout the United States and Canada, Rabbi Gotlib's writings can be read in The Lehrhaus, Jewish Action, Tradition Online, 18Forty, and more. He has contributed to several volumes, including Who by Plague: High Holy Days Sermons from COVID19 Times, Nothing so Whole as a Broken Heart: Reflections for the Days of Awe, A Quest for Our Times: The Louis Jacobs Haggadah, and The Oxford Handbook of Jewish Law.",
+              "Rabbi Gotlib strongly believes in making Jewish theology, philosophy, and law as accessible as possible to all who seek guidance and comfort within our tradition. He can be reached at rabbisgotlib@mekorhabracha.org.",
             ]}
             links={[
               { label: "Email Rabbi Gotlib", href: "mailto:rabbisgotlib@mekorhabracha.org" },
