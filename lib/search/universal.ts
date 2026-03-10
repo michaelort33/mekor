@@ -23,6 +23,20 @@ let cacheBuiltAt = 0;
 
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 31;
 const INTERNAL_HREF_PATTERN = /href\s*[:=]\s*["'`]([^"'`]+)["'`]/g;
+const LEGACY_TITLE_SUFFIX_PATTERN = /\s*\|\s*(mekor\s*3|mekor habracha(?:[^|]*)?)$/i;
+const FORM_NOISE_PATTERN =
+  /\b(first name|last name|email|message|submit|register now|register|rsvp|contact us|learn more|more info)\b/gi;
+const SPACE_COLLAPSE_PATTERN = /\s+/g;
+const TITLE_SEGMENT_NOISE = [
+  /^mekor\s*3$/i,
+  /^mekor habracha$/i,
+  /^center city synagogue$/i,
+];
+const TITLE_OVERRIDES: Record<string, string> = {
+  "/": "Home",
+  "/donations": "Donations",
+  "/membership": "Membership",
+};
 
 function normalizeQuery(raw: string) {
   return raw.toLowerCase().replace(/[^a-z0-9/\-\s]/g, " ").replace(/\s+/g, " ").trim();
@@ -50,8 +64,117 @@ function cleanExcerpt(input: string) {
     .replace(/Skip to Main Content/gi, "")
     .replace(/Membership\s+Events\s+Donate\s+Kiddush\s+Center City Beit Midrash/gi, "")
     .replace(/Join Us\s+Davening\s+Who We Are\s+Kosher Restaurants\s+More\s+Support Mekor/gi, "")
-    .replace(/\s+/g, " ")
+    .replace(SPACE_COLLAPSE_PATTERN, " ")
     .trim();
+}
+
+function titleCaseFromSlug(value: string) {
+  return value
+    .split("-")
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1).toLowerCase()}`)
+    .join(" ");
+}
+
+function titleCaseWords(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
+}
+
+function normalizeTitle(raw: string) {
+  const normalized = raw.replace(LEGACY_TITLE_SUFFIX_PATTERN, "").replace(SPACE_COLLAPSE_PATTERN, " ").trim();
+  if (!normalized) {
+    return "";
+  }
+
+  const segments = normalized
+    .split("|")
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+    .filter((segment) => !TITLE_SEGMENT_NOISE.some((pattern) => pattern.test(segment)));
+
+  const uniqueSegments = [...new Set(segments)];
+  return uniqueSegments.join(" | ");
+}
+
+function buildMenuLabelMap() {
+  const map = new Map<string, string>();
+  for (const item of SITE_MENU) {
+    const itemPath = normalizePathname(item.href);
+    if (itemPath && !map.has(itemPath)) {
+      map.set(itemPath, item.label);
+    }
+    if (!isNavGroup(item)) {
+      continue;
+    }
+    for (const child of item.children) {
+      const childPath = normalizePathname(child.href);
+      if (childPath && !map.has(childPath)) {
+        map.set(childPath, child.label);
+      }
+    }
+  }
+  return map;
+}
+
+function deriveTitleFromPath(pathname: string) {
+  if (pathname === "/") {
+    return "Home";
+  }
+  const lastSegment = pathname.split("/").filter(Boolean).at(-1);
+  return lastSegment ? titleCaseFromSlug(lastSegment) : pathname;
+}
+
+function pickPublicTitle(pathname: string, rawTitle: string, menuLabelMap: Map<string, string>) {
+  const override = TITLE_OVERRIDES[pathname];
+  if (override) {
+    return override;
+  }
+
+  const normalized = normalizeTitle(rawTitle);
+  if (normalized) {
+    if (normalized === normalized.toLowerCase()) {
+      return titleCaseWords(normalized);
+    }
+    return normalized;
+  }
+
+  const directMenuLabel = menuLabelMap.get(pathname);
+  if (directMenuLabel) {
+    return directMenuLabel;
+  }
+
+  return deriveTitleFromPath(pathname);
+}
+
+function pickPublicDescription(rawDescription: string, cleanValue: string) {
+  const normalizedDescription = cleanExcerpt(rawDescription);
+  if (normalizedDescription) {
+    return normalizedDescription;
+  }
+
+  return cleanValue;
+}
+
+function pickPublicExcerpt(rawExcerpt: string, rawDescription: string, fallback: string) {
+  const cleaned = cleanExcerpt(rawExcerpt || rawDescription || "");
+  if (!cleaned) {
+    return fallback;
+  }
+
+  const sanitized = cleaned.replace(FORM_NOISE_PATTERN, "").replace(SPACE_COLLAPSE_PATTERN, " ").trim();
+  if (!sanitized) {
+    return fallback;
+  }
+
+  if (sanitized.length <= 180) {
+    return sanitized;
+  }
+
+  return `${sanitized.slice(0, 177).trimEnd()}...`;
 }
 
 function flattenMenuKeywords() {
@@ -160,6 +283,7 @@ async function buildAllowedPaths() {
 async function buildUniversalDocuments() {
   const records = await getNativeSearchIndex();
   const menuKeywords = flattenMenuKeywords();
+  const menuLabelMap = buildMenuLabelMap();
   const allowedPaths = await buildAllowedPaths();
 
   return records.map((record) => {
@@ -183,12 +307,17 @@ async function buildUniversalDocuments() {
       keywords.add("homepage");
     }
 
+    const publicTitle = pickPublicTitle(record.path, record.title || "", menuLabelMap);
+    const fallbackDescription = `Open ${publicTitle}`;
+    const publicExcerpt = pickPublicExcerpt(record.excerpt || "", record.description || "", fallbackDescription);
+    const publicDescription = pickPublicDescription(record.description || "", fallbackDescription);
+
     return {
       path: record.path,
       type: record.type,
-      title: record.title || record.path,
-      description: record.description || "",
-      excerpt: cleanExcerpt(record.excerpt || record.description || ""),
+      title: publicTitle,
+      description: publicDescription,
+      excerpt: publicExcerpt,
       keywords: [...keywords],
     } satisfies UniversalSearchDocument;
   }).filter(Boolean) as UniversalSearchDocument[];

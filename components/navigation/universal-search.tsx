@@ -19,6 +19,13 @@ type UniversalSearchResult = {
   score: number;
 };
 
+const TYPE_LABELS: Record<string, string> = {
+  page: "Page",
+  event: "Event",
+  post: "Post",
+  news: "News",
+};
+
 type UniversalSearchProps = {
   compact?: boolean;
 };
@@ -217,7 +224,9 @@ export function UniversalSearch({ compact = false }: UniversalSearchProps) {
                   >
                     <div className="flex items-center justify-between gap-4">
                       <strong className="text-base text-[var(--color-foreground)]">{result.title}</strong>
-                      <span className="text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">{result.type}</span>
+                      <span className="text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">
+                        {TYPE_LABELS[result.type] ?? "Page"}
+                      </span>
                     </div>
                     <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-muted)]">{result.path}</div>
                     <div className="text-sm leading-6 text-[var(--color-muted)]">
