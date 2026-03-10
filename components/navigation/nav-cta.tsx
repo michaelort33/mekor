@@ -24,7 +24,7 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-none items-center gap-2 whitespace-nowrap">
       {links.map((link) => {
         const external = /^https?:\/\//i.test(link.href);
         const variant =
@@ -49,7 +49,7 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
               asChild
               size="sm"
               variant={variant}
-              className={className}
+              className={`${className} whitespace-nowrap`}
               aria-label={link.label}
             >
               <Link href={link.href}>
@@ -65,7 +65,7 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
             asChild
             size="sm"
             variant={variant}
-            className={className}
+            className={`${className} whitespace-nowrap`}
             aria-label={link.label}
           >
             <a href={link.href} target="_blank" rel="noreferrer noopener">

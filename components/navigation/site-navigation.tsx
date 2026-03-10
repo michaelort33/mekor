@@ -107,9 +107,12 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
             setOpenGroupId={setOpenDesktopGroupId}
           />
 
-          <div className="flex items-center gap-2">
-            <div className="hidden md:flex">
+          <div className="flex flex-none items-center gap-2">
+            <div className="hidden 2xl:flex">
               <UniversalSearch />
+            </div>
+            <div className="hidden md:flex 2xl:hidden">
+              <UniversalSearch compact />
             </div>
             <div className="md:hidden">
               <UniversalSearch compact />

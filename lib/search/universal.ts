@@ -1,3 +1,6 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+
 import { getNativeSearchIndex } from "@/lib/native-content/content-loader";
 import { SITE_MENU, isNavGroup } from "@/lib/navigation/site-menu";
 
@@ -18,9 +21,27 @@ let cachedDocuments: UniversalSearchDocument[] | null = null;
 let cacheBuiltAt = 0;
 
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 31;
+const INTERNAL_HREF_PATTERN = /href\s*[:=]\s*["'`]([^"'`]+)["'`]/g;
 
 function normalizeQuery(raw: string) {
   return raw.toLowerCase().replace(/[^a-z0-9/\-\s]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function normalizePathname(raw: string) {
+  if (!raw || !raw.startsWith("/")) {
+    return "";
+  }
+
+  const [pathname] = raw.split(/[?#]/);
+  if (!pathname) {
+    return "";
+  }
+
+  if (pathname === "/") {
+    return "/";
+  }
+
+  return pathname.replace(/\/+$/, "") || "/";
 }
 
 function cleanExcerpt(input: string) {
@@ -55,11 +76,97 @@ function flattenMenuKeywords() {
   return map;
 }
 
+function getCoreRootPaths() {
+  const roots = new Set<string>(["/"]);
+
+  for (const item of SITE_MENU) {
+    const normalized = normalizePathname(item.href);
+    if (normalized) {
+      roots.add(normalized);
+    }
+
+    if (!isNavGroup(item)) {
+      continue;
+    }
+
+    for (const child of item.children) {
+      const childPath = normalizePathname(child.href);
+      if (childPath) {
+        roots.add(childPath);
+      }
+    }
+  }
+
+  return roots;
+}
+
+function resolveAppPageFile(routePath: string) {
+  if (routePath === "/") {
+    return path.join(process.cwd(), "app/page.tsx");
+  }
+
+  const pathname = normalizePathname(routePath);
+  if (!pathname) {
+    return null;
+  }
+
+  return path.join(process.cwd(), "app", pathname.slice(1), "page.tsx");
+}
+
+async function extractOneHopLinks(routePath: string) {
+  const filePath = resolveAppPageFile(routePath);
+  if (!filePath) {
+    return [];
+  }
+
+  try {
+    const source = await fs.readFile(filePath, "utf8");
+    const links = new Set<string>();
+
+    for (const match of source.matchAll(INTERNAL_HREF_PATTERN)) {
+      const href = normalizePathname(match[1] ?? "");
+      if (!href || !href.startsWith("/")) {
+        continue;
+      }
+      if (href.startsWith("/api/")) {
+        continue;
+      }
+      links.add(href);
+    }
+
+    return [...links];
+  } catch {
+    return [];
+  }
+}
+
+async function buildAllowedPaths() {
+  const rootPaths = getCoreRootPaths();
+  const allowed = new Set<string>(rootPaths);
+
+  await Promise.all(
+    [...rootPaths].map(async (rootPath) => {
+      const oneHopLinks = await extractOneHopLinks(rootPath);
+      for (const link of oneHopLinks) {
+        allowed.add(link);
+      }
+    }),
+  );
+
+  return allowed;
+}
+
 async function buildUniversalDocuments() {
   const records = await getNativeSearchIndex();
   const menuKeywords = flattenMenuKeywords();
+  const allowedPaths = await buildAllowedPaths();
 
   return records.map((record) => {
+    const normalizedPath = normalizePathname(record.path);
+    if (!allowedPaths.has(normalizedPath)) {
+      return null;
+    }
+
     const keywords = new Set<string>(record.terms);
     const menuTerms = menuKeywords.get(record.path);
     if (menuTerms) {
@@ -83,7 +190,7 @@ async function buildUniversalDocuments() {
       excerpt: cleanExcerpt(record.excerpt || record.description || ""),
       keywords: [...keywords],
     } satisfies UniversalSearchDocument;
-  });
+  }).filter((record): record is UniversalSearchDocument => Boolean(record));
 }
 
 export async function getUniversalSearchDocuments(input?: { refresh?: boolean }) {
