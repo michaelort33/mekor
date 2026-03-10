@@ -60,8 +60,8 @@ export default async function MekorCouplesPage() {
           objectPosition: "50% 28%",
         }}
         description={[
-          "This page honors couples who met at Mekor or through Mekor community events.",
-          "We wish each couple lasting joy, blessing, and a strong shared future.",
+          "We celebrate our Mekor couples.",
+          "We wish them endless happiness and blessings as they prepare to build their lives together.",
         ]}
         actions={[
           { label: "Share an Update", href: "mailto:admin@mekorhabracha.org?subject=Mekor%20Couples%20Update" },
@@ -83,8 +83,8 @@ export default async function MekorCouplesPage() {
 
       <SectionCard title="Engagements">
         <p className={styles.bodyText}>
-          Love blooms and promises are made. We celebrate the joy of Mekor couples&apos; engagements and wish each
-          family endless happiness.
+          Love blooms, promises made. We celebrate the joy of Mekor couples&apos; engagements and wish them endless
+          happiness and blessings as they prepare to build their lives together.
         </p>
       </SectionCard>
 
@@ -95,7 +95,7 @@ export default async function MekorCouplesPage() {
           ))}
         </ol>
         <p className={styles.footnote}>
-          A &quot;Mekor Couple&quot; is a married (or soon to be married) couple who initially met at Mekor or at a
+          A &quot;Mekor Couple&quot; is a married, or soon to be married, couple who initially met at Mekor or at a
           Mekor community event.
         </p>
       </SectionCard>

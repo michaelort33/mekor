@@ -25,19 +25,19 @@ const MAP_EMBED_SRC =
 const WHATSAPP_GROUPS = [
   {
     title: "Community Updates",
-    description: "General updates, announcements, and weekly community information.",
+    description: "General chats and community updates to help you stay connected with what is happening in the shul and neighborhood.",
     href: "https://chat.whatsapp.com/G7JTiUN3aPN1V09lbBLC7G",
     icon: VISIT_IMAGES.whatsappGeneral,
   },
   {
     title: "Social and Events",
-    description: "Shul events, social opportunities, and volunteer announcements.",
+    description: "Social events and community happenings for people looking to connect beyond services and classes.",
     href: "https://chat.whatsapp.com/G7JTiUN3aPN1V09lbBLC7G",
     icon: VISIT_IMAGES.whatsappEvents,
   },
   {
     title: "Meal Matching and Hospitality",
-    description: "Meal hosting and hospitality coordination for members and visitors.",
+    description: "Meal matching, hospitality, and practical coordination for members, guests, and visitors.",
     href: "https://chat.whatsapp.com/G7JTiUN3aPN1V09lbBLC7G",
     icon: VISIT_IMAGES.whatsappMeals,
   },
@@ -70,8 +70,8 @@ export default async function VisitUsPage() {
           objectPosition: "50% 34%",
         }}
         description={[
-          "If this is your first visit, send us a quick message and we will help you get oriented.",
-          "We welcome members, out-of-town guests, and anyone looking for a warm Orthodox community.",
+          "Contact us if this is your first visit and we will help you get oriented.",
+          "We welcome members, out-of-town guests, and anyone looking for a warm Orthodox community in Center City.",
         ]}
         actions={[
           { label: "Email admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org" },
@@ -136,7 +136,10 @@ export default async function VisitUsPage() {
         <ContactForm sourcePath={PATH} />
       </SectionCard>
 
-      <SectionCard title="Mekor Community WhatsApp">
+      <SectionCard
+        title="Mekor Community WhatsApp"
+        description="Click the WhatsApp logo to join one of our community groups. Whether you're looking for social events, meal matching, general chats, or updates on minyanim, there's a group for you."
+      >
         <div className={styles.whatsAppGrid}>
           {WHATSAPP_GROUPS.map((group) => (
             <a key={group.title} href={group.href} target="_blank" rel="noreferrer noopener" className={styles.groupCard}>

@@ -14,12 +14,14 @@ export default async function CenterCityKosherPage() {
   return (
     <KosherPlacesPage
       currentPath="/center-city"
-      heading="Kosher Guide"
-      kicker="Philadelphia Area"
-      description="Find kosher dining across Philadelphia in one clear guide. Search by name, narrow by neighborhood, and browse categories without leaving the page."
+      heading="Center City & Vicinity"
+      kicker="Kosher Restaurants"
+      description="Center City, Main Line, Old York Road, and Cherry Hill listings are all available in one guide. Search by name, narrow by neighborhood, and browse categories without leaving the page."
       designTone="food"
       defaultNeighborhood="all"
       lastUpdatedKey="center-city"
+      contactTitle="Get in Touch About Local Kashrut"
+      contactDescription="Have questions, updates, or suggestions regarding our list of kosher-certified establishments? Send us a message-we'd love to hear from you!"
     />
   );
 }

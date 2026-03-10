@@ -1,34 +1,24 @@
-import { permanentRedirect } from "next/navigation";
+import type { Metadata } from "next";
 
-type LegacyKosherPageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+import { KosherPlacesPage } from "@/components/kosher/kosher-places-page";
+
+export const metadata: Metadata = {
+  title: "Old York Road/Northeast | Mekor Habracha",
+  description: "Browse kosher listings for Old York Road and Northeast Philadelphia through Mekor Habracha's neighborhood guide.",
 };
 
-function buildRedirectUrl(searchParams: Record<string, string | string[] | undefined>) {
-  const params = new URLSearchParams();
-  params.set("neighborhood", "old-yorkroad-northeast");
+export const dynamic = "force-static";
+export const revalidate = 3600;
 
-  for (const [key, value] of Object.entries(searchParams)) {
-    if (!value || key === "neighborhood") {
-      continue;
-    }
-
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        if (item) {
-          params.append(key, item);
-        }
-      }
-      continue;
-    }
-
-    params.set(key, value);
-  }
-
-  const query = params.toString();
-  return query ? `/center-city?${query}#kosher-directory` : "/center-city#kosher-directory";
-}
-
-export default async function OldYorkRoadNortheastKosherPage({ searchParams }: LegacyKosherPageProps) {
-  permanentRedirect(buildRedirectUrl(await searchParams));
+export default async function OldYorkRoadNortheastKosherPage() {
+  return (
+    <KosherPlacesPage
+      currentPath="/old-yorkroad-northeast"
+      heading="Northeast Philly / Old York Road"
+      kicker="Kosher Restaurants"
+      description="Browse the Northeast Philly and Old York Road neighborhood listings in our kosher guide."
+      defaultNeighborhood="old-yorkroad-northeast"
+      neighborhoodLead="Get in Touch About Local Kashrut. Have questions, updates, or suggestions regarding our list of kosher-certified establishments? Send us a message-we'd love to hear from you!"
+    />
+  );
 }

@@ -18,43 +18,42 @@ const TESTIMONIAL_IMAGES = {
 const TESTIMONIALS = [
   {
     quote:
-      "Thank you, Rabbi Hirsch, for being a role model, teacher, and friend. With incredible care and wisdom, you guide and support the community through life's challenges.",
+      "This donation to your discretionary fund is in honor of the publication of your insightful guide, Bringing Order to the Seder. Kol Hakavod, Rabbi Eliezer. Keep writing. Your work is excellent.",
+    by: "Family of alum",
+  },
+  {
+    quote:
+      "Thank you, Rabbi Hirsch, for being a role model, teacher, and a friend. With your incredible care, wisdom and brilliance, you guide and support each member of the community through life's greatest challenges.",
     by: "Member",
   },
   {
-    quote: "We're sponsoring Kiddush to thank the Mekor community for a warm welcome.",
+    quote: "We are new members, and we're sponsoring Kiddush to thank the Mekor community for their warm welcome.",
     by: "Members",
   },
   {
-    quote:
-      "Mekor Habracha will always hold a special place in our hearts; we will forever feel part of the family.",
+    quote: "Mekor Habracha will always hold a special place in our hearts, and we will forever feel part of the family there.",
     by: "Alum",
   },
   {
-    quote: "You made us feel like we were long-time members of your congregation.",
+    quote: "You made us feel like we were long time members of your congregation.",
     by: "Visitor",
   },
   {
-    quote:
-      "Thank you for the vibrant community over my years in Philly. I wanted to express my deep appreciation.",
-    by: "Former Community Member",
-  },
-  {
-    quote: "Mekor has been a source of social connection, support, and spirituality for years. We love this kehilla.",
+    quote: "We are sponsoring kiddush to thank the Mekor Habracha community for being a source of socializing, support, and spirituality for over 7 years.",
     by: "Member",
   },
   {
-    quote: "It's a wonderful kehilla. I am impressed with your dedication, intellect, and humanity.",
+    quote: "Dear Rabbi Hirsch, I enjoyed speaking with you and davening at Mekor this past Shabbat. It's a wonderful kehilla and I am impressed with your maverick approaches, your intellect and humanity, and your dedication.",
     by: "Visitor",
   },
   {
-    quote: "Thank you for creating a community where I can daven every Shabbat.",
+    quote: "Dear Rabbi Hirsch and Mekor Habracha, thank you so much for the books you gave me for my Bat Mitzvah. I love that you have created a community where I can go daven every Shabbat.",
     by: "Bat Mitzvah Girl",
   },
   {
     quote:
-      "Your insightful guide, Bringing Order to the Seder, was deeply appreciated. Keep writing, your work is excellent.",
-    by: "Community Supporter",
+      "Thank you so much for the amazing, vibrant shul and community you provided over my last 5+ years in Philly. I wanted to express my appreciation.",
+    by: "Former community member",
   },
 ] as const;
 

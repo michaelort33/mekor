@@ -65,12 +65,18 @@ export default async function OurCommunitiesPage() {
 
       <SectionCard title="Our History">
         <p className={styles.bodyText}>
-          Mekor Habracha emerged from an independent chavura in the 1990s in the Rittenhouse area. From 1999 to 2001
-          the group met under Etz Chaim, then continued as a lay-led community until Rabbi Eliezer Hirsch began
-          leading the congregation in 2006.
+          Becoming a Community
         </p>
         <p className={styles.bodyText}>
-          Since then, Mekor has grown into an independent synagogue and a major force in Jewish life in Center City.
+          Mekor Habracha emerged from a 1990s independent chavura in the Rittenhouse Square area of Philadelphia. From
+          1999 to 2001 the group met under the auspices of Etz Chaim, currently Aish Chaim, and reverted to being mainly
+          lay-led until 2006, when Etz Chaim recruited Rabbi Eliezer Hirsch from New York to lead the group. Since Rabbi
+          Hirsch&apos;s arrival, the congregation has grown and flourished, eventually becoming an independent synagogue in
+          2007, and is now a critical contributing organization to the advancement of Jewish life in Center City.
+        </p>
+        <p className={styles.bodyText}>
+          You can read more about Mekor&apos;s origins and subsequent growth here, and a recent article about our
+          community here.
         </p>
         <div className={styles.linkRow}>
           <a href="https://aishchaim.com/" target="_blank" rel="noreferrer noopener">
@@ -98,19 +104,27 @@ export default async function OurCommunitiesPage() {
           <article className={styles.valueCard}>
             <h3>Mission</h3>
             <p>
-              Serve the spiritual, social, and educational needs of Center City&apos;s diverse Jewish community.
+              Serve the Center City Jewish Community. The mission of Mekor Habracha is to serve the spiritual, social,
+              and educational needs of Center City&apos;s diverse Jewish community. We aspire to provide an environment
+              where people of all ages and religious backgrounds are welcome to participate in the synagogue&apos;s
+              activities and Orthodox services.
             </p>
           </article>
           <article className={styles.valueCard}>
             <h3>Who We Are</h3>
             <p>
-              An inclusive Orthodox congregation where people of all ages and backgrounds can connect, learn, and grow.
+              Mekor Habracha is a vibrant and inclusive congregation located in Center City, Philadelphia. Our
+              membership is diverse, drawing people from all across the city, and visitors, whether local residents or
+              out-of-towners, are always welcome.
             </p>
           </article>
           <article className={styles.valueCard}>
             <h3>Participation</h3>
             <p>
-              Members take active roles in volunteering, hospitality, programming, and leadership across the year.
+              Since it was founded, the shul has attracted a dynamic group of students, young professionals, newlyweds,
+              families, and empty nesters. We offer a range of religious, educational, and social activities, as well
+              as plenty of opportunities for community members to get involved. We are especially proud that a number of
+              wonderfully matched married couples first met at Mekor.
             </p>
           </article>
         </div>

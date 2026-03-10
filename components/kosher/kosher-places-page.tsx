@@ -21,6 +21,9 @@ type KosherPlacesPageProps = {
   lastUpdatedKey?: KosherDirectoryFreshnessKey;
   kicker?: string;
   designTone?: "default" | "food";
+  contactTitle?: string;
+  contactDescription?: string;
+  neighborhoodLead?: string;
 };
 
 const KOSHER_FALLBACK_IMAGE_SRC = "/images/kosher/fallback-food.svg";
@@ -72,6 +75,9 @@ export async function KosherPlacesPage({
   defaultNeighborhood,
   lastUpdatedKey,
   kicker,
+  contactTitle = "Get in Touch About Local Kashrut",
+  contactDescription = "Have questions, updates, or suggestions regarding our list of kosher-certified establishments? Send us a message-we'd love to hear from you!",
+  neighborhoodLead,
 }: KosherPlacesPageProps) {
   const places = await getManagedKosherPlaces();
   const showcasePlaces =
@@ -99,6 +105,9 @@ export async function KosherPlacesPage({
               <p className="max-w-2xl text-base leading-7 text-[rgba(255,255,255,0.8)] sm:text-lg sm:leading-8">
                 {description}
               </p>
+              {neighborhoodLead ? (
+                <p className="max-w-2xl text-sm leading-6 text-[rgba(255,255,255,0.72)]">{neighborhoodLead}</p>
+              ) : null}
             </div>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="sm">
@@ -160,6 +169,16 @@ export async function KosherPlacesPage({
       </section>
 
       <KosherDirectory places={places} defaultNeighborhood={defaultNeighborhood} />
+
+      <Card className="px-6 py-6 sm:px-7">
+        <div className="space-y-3">
+          <Badge>Local Kashrut</Badge>
+          <h2 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.03em] text-[var(--color-foreground)]">
+            {contactTitle}
+          </h2>
+          <p className="max-w-3xl text-base leading-7 text-[var(--color-muted)]">{contactDescription}</p>
+        </div>
+      </Card>
 
       <section id="map" className="grid gap-6 lg:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)] lg:items-start">
         <Card className="h-full px-6 py-6 sm:px-7">

@@ -31,20 +31,28 @@ const MEMBERSHIP_RATES = [
 
 const COMMUNITY_BENEFITS = [
   "A warm, inviting community that welcomes people of all ages and levels of observance.",
-  "Shabbat, holiday, and weekday services for you and visiting family.",
+  "Shabbat, holiday, and weekday services for you and your visiting family, in a beautiful, handicapped accessible space in the heart of Center City.",
   "Shabbat and Yom Tov Kiddushim.",
   "Community Shabbat and Yom Tov meals.",
   "Special programming and holiday festivities for both children and adults.",
   "Torah study and classes at all levels, from beginner to advanced.",
   "Halachic, spiritual, and life guidance.",
-  "And the countless other ways Mekor Habracha enriches Jewish life.",
+  "A plethora of Kosher eateries under responsible supervision.",
+  "A fully functioning Eruv that covers all of Center City and adjoining neighborhoods.",
+  "And the countless other ways Mekor Habracha enriches Jewish life in Center City and beyond!",
 ] as const;
 
 const MEMBER_BENEFITS = [
   "Free High Holiday seats and discounted guest rates.",
   "Meaningful Jewish-oriented children's programming.",
-  "Community support for life-cycle events and shared moments.",
+  "Community-wide announcements of life cycle events.",
+  "A warm, caring community to celebrate your joyful occasions and support you during difficult times.",
+  "Mekor's meal train to help during those events.",
+  "For life cycle ceremonies and celebrations, use of shul at no charge, conditions apply.",
   "Discounts on Kiddush sponsorships and private event rentals.",
+  "Discounts on certain special programs and meals.",
+  "Invitation to Annual Mekor Habracha Meeting.",
+  "Classes to assist potential converts become productive members of the Jewish community.",
   "And much, much more.",
 ] as const;
 
@@ -74,8 +82,8 @@ export default async function MembershipPage() {
           objectPosition: "50% 44%",
         }}
         description={[
-          "We offer 2 simple ways to join or renew and become part of a synagogue community that keeps Jewish life vibrant in Center City.",
-          "Choose from annual membership options below and connect directly for payment support.",
+          "We offer 2 simple ways to join or renew.",
+          "Choose from annual membership options below or connect directly by email for payment support.",
         ]}
         actions={[
           { label: "Apply for membership", href: MEMBERSHIP_FORM_URL },
@@ -87,7 +95,7 @@ export default async function MembershipPage() {
         <div className={styles.overviewGrid}>
           <div className={styles.overviewCopy}>
             <p className={styles.sectionEyebrow}>Join or renew</p>
-            <h2 className={styles.panelTitle}>Membership keeps Mekor present for ordinary weeks and major moments.</h2>
+            <h2 className={styles.panelTitle}>We offer 2 simple ways to join or renew:</h2>
             <p className={styles.leadText}>
               We try to make everyone, member and nonmember alike, feel welcome in our community. Visitors to our shul
               speak glowingly about the way we assist them in so many ways.
@@ -95,16 +103,16 @@ export default async function MembershipPage() {
             <p className={styles.bodyText}>
               Mekor Habracha cannot exist and provide so many services without paying members and the generosity of
               donors. The Center City Jewish life that you enjoy depends on Mekor Habracha, and Mekor Habracha depends
-              on membership dues. When you join, you become part of a shul community that is committed to its loyal
-              members.
+              on membership dues. When you join, you become part of a shul community which will always feel great
+              devotion to its loyal members.
             </p>
           </div>
 
           <aside className={styles.overviewAside}>
             <p className={styles.sectionEyebrow}>At a glance</p>
             <ul className={styles.factList}>
-              <li>Three annual membership categories with direct join links.</li>
-              <li>Flexible payment support by Venmo, PayPal, personal check, and more.</li>
+              <li>Choose one of the membership options below.</li>
+              <li>Email the shul directly if you prefer to join or renew via email.</li>
               <li>Auxiliary membership available outside Center City.</li>
               <li>No one is turned away for lack of funds.</li>
             </ul>
@@ -139,12 +147,15 @@ export default async function MembershipPage() {
         <div className={styles.storyGrid}>
           <div className={styles.storyCopy}>
             <p className={styles.sectionEyebrow}>Why join</p>
-            <h2 className={styles.panelTitle}>A community with real presence, not just a mailing list.</h2>
+            <h2 className={styles.panelTitle}>Why Join?</h2>
             <p className={styles.bodyText}>
-              Mekor membership supports the day-to-day infrastructure that makes Center City Jewish life possible: a warm place to daven, learn, gather, host, celebrate, and ask for help when it matters.
+              We try to make everyone, member &amp; nonmember alike, feel welcome in our community. Visitors to our
+              shul speak glowingly about the way we assist them in so many ways.
             </p>
             <p className={styles.bodyText}>
-              Joining also signals commitment to the community you want to exist next year and the year after that. It turns regular attendance into real shared responsibility.
+              But our shul can&apos;t live on love alone. Mekor Habracha cannot exist and provide so many services
+              without paying members and the generosity of donors. The Center City Jewish life that you enjoy depends on
+              Mekor Habracha, and Mekor Habracha depends on membership dues.
             </p>
           </div>
           <div className={styles.imageFrame}>
@@ -195,9 +206,10 @@ export default async function MembershipPage() {
         <div className={styles.joinGrid}>
           <div className={styles.joinCopy}>
             <p className={styles.sectionEyebrow}>How to join or renew</p>
-            <h2 className={styles.panelTitle}>Choose the quickest path, then tell us how you want to pay.</h2>
+            <h2 className={styles.panelTitle}>How to Join or Renew</h2>
             <p className={styles.bodyText}>
-              Use our form or email us directly. Please tell us if you are renewing or joining for the first time and include your preferred membership type and payment method (Venmo, PayPal, personal check, etc.).
+              Use our form or email us directly. Please tell us if you are renewing or joining for the first time and
+              include your preferred membership type and payment method such as Venmo, PayPal, or personal check.
             </p>
             <ul className={styles.checkList}>
               <li>Tell us whether you are joining for the first time or renewing.</li>

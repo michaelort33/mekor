@@ -71,7 +71,7 @@ export default async function CenterCityBeitMidrashPage() {
         <div className={styles.bannerBody}>
           <p className={styles.bannerTitle}>Summer Classes at Mekor</p>
           <p className={styles.bannerText}>
-            Structured, consistent classes with room for discussion and practical takeaways.
+            Summer classes at Mekor with room for discussion, growth, and meaningful engagement with Jewish learning.
           </p>
         </div>
       </SectionCard>
@@ -88,23 +88,28 @@ export default async function CenterCityBeitMidrashPage() {
           ))}
         </div>
         <p className={styles.note}>
-          Contact Rabbi Gotlib for Zoom details and any current schedule updates.
+          Contact Rabbi Gotlib for Zoom info.
         </p>
       </SectionCard>
 
       <SectionCard title="Daily Amud Yomi (With Cereal)">
         <ul className={styles.bulletList}>
+          <li>Join us each weekday morning after Shacharis for a brief and engaging Amud Yomi shiur, led by Rabbi Gotlib.</li>
+          <li>The class is under 20 minutes and open to all levels.</li>
+          <li>Cold cereal breakfast is served during the shiur.</li>
           <li>Sunday: follows 8:30 AM Shacharit.</li>
-          <li>Monday-Friday: starts around 7:40 AM and concludes by 8:00 AM.</li>
-          <li>Open to all levels, with practical guidance and approachable pace.</li>
+          <li>Monday-Friday: begins 7:40 AM and ends 8:00 AM.</li>
         </ul>
       </SectionCard>
 
       <SectionCard title="Mission">
         <p className={styles.bodyText}>
-          CCBM provides high-quality educational opportunities for people seeking meaningful engagement with Jewish
-          learning. Through classes, shiurim, and Shabbat programming, participants deepen connection to Torah and
-          community.
+          The Center City Beit Midrash is an inclusive, learning-centered organization committed to providing
+          high-quality educational experiences for those seeking meaningful engagement with Jewish texts and traditions.
+        </p>
+        <p className={styles.bodyText}>
+          Through weekly classes and Shabbat programming, CCBM helps participants deepen their connection to Jewish
+          learning and integrate it into their personal and communal lives.
         </p>
       </SectionCard>
 

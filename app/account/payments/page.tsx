@@ -108,20 +108,20 @@ export default function AccountPaymentsPage() {
                 ))}
               </select>
             </label>
-            <a className={styles.linkButton} href="/api/account/payments/export?format=csv">
+            <Link className={styles.linkButton} href="/api/account/payments/export?format=csv">
               Export CSV
-            </a>
-            <a className={styles.linkButton} href="/api/account/payments/export?format=pdf">
+            </Link>
+            <Link className={styles.linkButton} href="/api/account/payments/export?format=pdf">
               Export PDF
-            </a>
+            </Link>
             {data?.familyAdmin ? (
-              <a className={styles.linkButton} href="/api/account/payments/export?format=csv&scope=family">
+              <Link className={styles.linkButton} href="/api/account/payments/export?format=csv&scope=family">
                 Export household CSV
-              </a>
+              </Link>
             ) : null}
-            <a className={styles.linkButton} href={`/api/account/payments/year-end-letter?taxYear=${encodeURIComponent(taxYear)}`}>
+            <Link className={styles.linkButton} href={`/api/account/payments/year-end-letter?taxYear=${encodeURIComponent(taxYear)}`}>
               Year-end letter
-            </a>
+            </Link>
           </div>
           {error ? <p>{error}</p> : null}
           <p className={styles.metric}>{formatMoney(data?.taxSummary?.totalDeductibleAmountCents ?? 0)}</p>

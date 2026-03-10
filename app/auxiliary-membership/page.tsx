@@ -51,8 +51,8 @@ export default async function AuxiliaryMembershipPage() {
           objectPosition: "center center",
         }}
         description={[
-          "Every Mekor alumnus has a share in the zechut of our shul's accomplishments.",
-          "Auxiliary membership is available for alumni and others living outside the Philadelphia region.",
+          "Every Mekor alumnus has a unique share in the zechut of our shul's accomplishments.",
+          "We invite you to engage with us on a deeper level by becoming an official Mekor member or auxiliary member.",
         ]}
         actions={[
           { label: "Email to Join", href: "mailto:admin@mekorhabracha.org?subject=Auxiliary%20Membership" },
@@ -63,7 +63,7 @@ export default async function AuxiliaryMembershipPage() {
 
       <SectionCard title="Auxiliary Membership Rates (5785)">
         <p className={styles.copy}>
-          Auxiliary membership is intended for alumni and supporters outside the Philadelphia region.
+          This is available to alumni and others who live outside the Philadelphia region, at the following rates.
         </p>
         <div className={styles.rateGrid}>
           {AUXILIARY_RATES.map(([label, amount]) => (
@@ -91,15 +91,17 @@ export default async function AuxiliaryMembershipPage() {
 
       <SectionCard title="How to Join">
         <ol className={styles.steps}>
-          <li>Email the shul to request auxiliary or full membership.</li>
-          <li>Submit payment online (Venmo, PayPal Giving Fund, or PayPal) or mail a check.</li>
-          <li>For check payments, make checks payable to Mekor Habracha.</li>
+          <li>Email the shul to request membership.</li>
+          <li>Make payment online by Venmo, PayPal Giving Fund, or regular PayPal.</li>
+          <li>Or mail a check payable to Mekor Habracha.</li>
         </ol>
         <p className={styles.copy}>
-          Mailing address: Mekor Habracha, c/o Ellen Geller, 1500 Walnut St #206, Philadelphia, PA 19102.
+          Many people join Mekor as students or early in their professional careers, sometimes with limited financial
+          means. We therefore rely on the generosity and lasting commitment of our alumni population to ensure that our
+          shul will continue to thrive.
         </p>
         <p className={styles.note}>
-          Please email the shul after donating and include any dedication details you would like to add.
+          Please email the shul to let us know about your donation and any dedication you&apos;d like to make.
         </p>
         <Image
           src={PAGE_IMAGES.community}

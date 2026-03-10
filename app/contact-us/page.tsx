@@ -46,8 +46,8 @@ export default async function ContactUsPage() {
           objectPosition: "50% 33%",
         }}
         description={[
+          "We'd love to hear from you.",
           "Reach out for membership questions, scheduling details, event inquiries, or general community support.",
-          "Our team responds quickly and can point you to the right person.",
         ]}
         actions={[
           { label: "Email mekorhabracha@gmail.com", href: "mailto:mekorhabracha@gmail.com" },
@@ -106,7 +106,10 @@ export default async function ContactUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Quick Links">
+      <SectionCard
+        title="Mekor Community WhatsApp"
+        description="Click the WhatsApp logo to join our Mekor Community group and stay up to date with everything happening in our shul and community."
+      >
         <CTACluster
           items={[
             { label: "Join Mekor WhatsApp", href: "https://chat.whatsapp.com/INZrPssTZeHK5xrx5ghECF" },

@@ -24,13 +24,14 @@ export default async function EventsHubPage() {
       <Card className="overflow-hidden px-6 py-7 sm:px-8 sm:py-8">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-end">
           <div className="space-y-4">
-            <Badge>Community Calendar</Badge>
+            <Badge>what&apos;s happening?</Badge>
             <div className="space-y-3">
               <h1 className="font-[family-name:var(--font-heading)] text-5xl leading-[0.94] tracking-[-0.04em] text-[var(--color-foreground)] sm:text-6xl">
-                Community Events
+                Discover Our Events
               </h1>
               <p className="max-w-2xl text-base leading-7 text-[var(--color-muted)] sm:text-lg sm:leading-8">
-                Synagogue-managed events appear first, followed by member-hosted events below.
+                Synagogue-managed events appear first, followed by member-hosted events below. Take a look at our
+                calendar below, or add our Google Calendar to yours.
               </p>
             </div>
           </div>

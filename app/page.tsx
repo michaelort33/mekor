@@ -148,7 +148,8 @@ export default async function HomePage() {
               Mekor Habracha / Center City Synagogue is a vibrant, inclusive Modern Orthodox community located in the heart of Center City, Philadelphia.
             </p>
             <p className={styles.introText}>
-              We offer a wide range of religious, educational, and social opportunities for a diverse and growing membership. Visitors, whether from across the street or across the world, are always warmly welcomed.
+              We offer a wide range of religious, educational, and social opportunities for a diverse and growing
+              membership. Visitors, whether from across the street or across the world, are always warmly welcomed.
             </p>
             <p className={styles.introText}>
               Our rabbis, Rabbi Hirsch and Rabbi Gotlib, are always happy to connect. You can reach them <Link href="/our-rabbi">here</Link>.
@@ -212,7 +213,8 @@ export default async function HomePage() {
           <div className={styles.supportTextBlock}>
             <h2 className={styles.supportTitle}>Support Mekor while buying wine and Judaica!</h2>
             <p className={styles.supportText}>
-              Use the Mekor-specific links below when ordering from Kosherwine.com and Judaica.com, and Mekor will earn <strong>5% back</strong> on every purchase.
+              If you use the following Mekor-specific links when ordering from Kosherwine.com and Judaica.com, Mekor
+              will earn <strong>5% back</strong>.
             </p>
           </div>
           <div className={styles.supportButtons}>

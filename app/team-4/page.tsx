@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const VOLUNTEER_SECTIONS = [
   {
     title: "Kiddush Preparation",
-    body: "Our weekly Kiddush is one of Mekor's most loved community touchpoints. Volunteers help prepare cholent before candle-lighting and assist with setup and cleanup on Shabbat and Yom Tov.",
+    body: "We are famous for our wonderful kiddush every Shabbat, but it doesn't happen by itself. Thanks to our community volunteers, we enjoy an amazing kiddush week after week. Volunteering to set up kiddush is a great way to give back to the community. Please consider signing up to make cholent before candle lighting or to set up and take down kiddush on Shabbat and Yom Tov.",
     links: [
       { label: "Volunteer by email", href: "mailto:mekorhabracha@gmail.com?subject=Kiddush%20Volunteer" },
       { label: "Kiddush page", href: "/kiddush" },
@@ -34,7 +34,7 @@ const VOLUNTEER_SECTIONS = [
   },
   {
     title: "Torah and Haftorah Reading",
-    body: "If you can lain, we would love to hear your voice. If you are rusty or want to learn, reach out and we can help you get prepared for an upcoming Shabbat or Yom Tov.",
+    body: "In order to provide the community with quality Torah and haftarah reading, we need capable people from the community to provide this invaluable service. If you know how to read Torah or haftarah and would like to volunteer to lain, we would love to hear some new voices. If you are a little rusty or would like to learn, please reach out.",
     links: [
       { label: "Laining coordinator", href: "mailto:mekorlaining@gmail.com" },
       { label: "General volunteer sign-up", href: "#volunteer-signup" },
@@ -42,7 +42,7 @@ const VOLUNTEER_SECTIONS = [
   },
   {
     title: "Meal Train and Shabbat Hospitality",
-    body: "Support families after major life events and help welcome members and visitors with warm Shabbat and holiday meals. The hospitality committee coordinates each request by email.",
+    body: "Join the Meal Train. Our Meal Train volunteers provide meals to help families who recently had a baby or have undergone some other significant life event. Volunteer to host a meal. The Mekor community is very proud to be able to welcome new members, existing members, and visitors for Shabbat and holiday meals.",
     links: [
       { label: "Hospitality committee", href: "mailto:mekorhospitality@gmail.com" },
       { label: "Request hospitality", href: "mailto:mekorhospitality@gmail.com?subject=Hospitality%20Request" },
@@ -50,7 +50,7 @@ const VOLUNTEER_SECTIONS = [
   },
   {
     title: "Eruv Checking and Mashgichim",
-    body: "We rely on trained volunteers to help inspect the eruv and support expanding kosher supervision in Center City. Training is provided, and even occasional availability is valuable.",
+    body: "Become an Eruv Checker. If you have a bicycle or car, and you could help out once every 6 weeks or even less often, please sign up. Training will be provided. Become a Volunteer Mashgiach. Our list of Center City kosher establishments keeps expanding, but we rely on volunteers to help in this process. No experience necessary. Rabbi Hirsch will provide onsite training.",
     links: [
       { label: "Eruv (Andres)", href: "mailto:andres.catalan@gmail.com" },
       { label: "Eruv (Jon)", href: "mailto:jzgradman@gmail.com" },
@@ -101,8 +101,7 @@ export default async function Team4Page() {
         <div className={styles.bannerBody}>
           <p className={styles.bannerTitle}>Every Role Strengthens the Community</p>
           <p className={styles.bannerText}>
-            A little time from many people creates meaningful impact for members, guests, and families across the
-            year.
+            A little time from many people creates meaningful impact for members, guests, and families across the year.
           </p>
         </div>
       </SectionCard>
@@ -130,15 +129,15 @@ export default async function Team4Page() {
         </div>
       </SectionCard>
 
-      <SectionCard title="How It Works">
+      <SectionCard title="A new volunteer opportunity is coming soon...">
         <ol className={styles.stepsList}>
+          <li>Look out. This space will contain a new and special volunteer opportunity soon.</li>
           <li>Choose an opportunity in the sign-up form below.</li>
           <li>Share your availability date and contact details.</li>
-          <li>Our coordinators follow up with scheduling and next steps.</li>
         </ol>
         <p className={styles.noteText}>
-          If you have an upcoming yahrzeit or would like to read Torah/Haftorah on a specific date, mention it in the
-          additional notes field.
+          If you have an upcoming yahrzeit or would like to read Torah or Haftorah on a specific date, mention it in
+          the additional notes field.
         </p>
       </SectionCard>
 

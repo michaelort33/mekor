@@ -29,7 +29,7 @@ const COMMUNITY_UPDATES: BulletinCard[] = [
     title: "Become an Eruv Checker",
     paragraphs: [
       "Several of our eruv checkers have left the area, and we need new volunteers.",
-      "If you have a bicycle or car and can help once every 6 weeks (or even less often), please sign up. Training is provided.",
+      "If you have a bicycle or car, and you could help out once every 6 weeks, or even less often, please sign up. Training will be provided.",
     ],
     links: [
       { label: "Harry Schley", href: "mailto:harry@schley.com" },
@@ -39,8 +39,8 @@ const COMMUNITY_UPDATES: BulletinCard[] = [
   {
     title: "Seeking Volunteer Mashgiachs",
     paragraphs: [
-      "Our list of Center City kosher restaurants is expanding again, and we rely on volunteers to help in this process.",
-      "No experience is necessary. Rabbi Hirsch provides training.",
+      "It is exciting that our list of Center City kosher restaurants is expanding once again, but we rely on volunteers to help in this process.",
+      "No experience is necessary. Rabbi Hirsch will provide training.",
     ],
     links: [
       { label: "Email the Shul", href: "mailto:mekorhabracha@gmail.com?subject=Mashgiach%20Volunteers" },
@@ -50,8 +50,8 @@ const COMMUNITY_UPDATES: BulletinCard[] = [
   {
     title: "Center City Mikvah Is Open",
     paragraphs: [
-      "Mei Shalva Center City Community Mikvah, located at 509 Pine Street, is now open. Women's mikvah, men's mikvah, and keilim mikvah are operational.",
-      "Volunteers are needed to help staff the keilim mikvah.",
+      "We're excited to announce that the Mei Shalva Center City Community Mikvah, located at 509 Pine Street, is now open. The women's mikvah, men's mikvah, and keilim mikvah are all operational.",
+      "We are currently seeking volunteers to help staff the keilim mikvah. Mazal Tov to the entire Center City Jewish community on this meaningful milestone.",
     ],
     links: [
       { label: "Mikvah Schedule", href: "https://philamikvah.org/" },
@@ -62,15 +62,15 @@ const COMMUNITY_UPDATES: BulletinCard[] = [
     title: "Notary Service to Benefit Mekor",
     paragraphs: [
       "Need something notarized in Philadelphia after work hours? Mekor member Chesky Kopel is a licensed Pennsylvania notary public.",
-      "Notarial services are provided in exchange for a small donation to the shul.",
+      "He will provide notarial services in exchange for a small donation to the shul.",
     ],
     links: [{ label: "Contact Chesky", href: "mailto:ckopel@gmail.com" }],
   },
   {
     title: "The Center City Eruv Needs Your Financial Support",
     paragraphs: [
-      "The Eruv is vital to Center City Jewish community life. Repairs, materials, and liability insurance cost more than $10,000 per year.",
-      "If your family benefits from the Eruv, please consider a recurring monthly donation of at least $18.",
+      "The Eruv plays a vital role in our vibrant Center City Jewish community life, but is often taken for granted. Repairs, materials, and liability insurance total over $10,000 per year.",
+      "If you and your family benefit from our Eruv, we respectfully ask that you make a recurring monthly donation of at least $18.",
     ],
     links: [
       { label: "Donate to the Eruv", href: ERUV_DONATION_LINK },
@@ -80,15 +80,16 @@ const COMMUNITY_UPDATES: BulletinCard[] = [
   {
     title: "Orthodox Union Tehillim",
     paragraphs: [
-      "Daily at 1:00 pm. Join for recitation of Tehillim (chapters 20, 27, and 130) and divrei chizuk from rabbanim.",
+      "Daily at 1 pm; to participate, dial (773) 377-9170.",
+      "Please join the Orthodox Union community for the recitation of Tehillim, chapters 20, 27 and 130, and divrei chizuk from our rabbanim each afternoon at 1:00 PM EDT.",
     ],
     links: [{ label: "Dial (773) 377-9170", href: "tel:+17733779170" }],
   },
   {
     title: "Weekly Online Parsha Shiur",
     paragraphs: [
-      "Live on Thursdays at 1:00 pm EST and available on-demand.",
-      "Mekor member Dr. Saundra Sterling Epstein (Sunnie) gives a weekly Parsha shiur on MBIEE's Facebook page.",
+      "Live on Thursdays at 1:00 pm EST; online on-demand.",
+      "Mekor member Dr. Saundra Sterling Epstein, Sunnie, gives a weekly Parsha shiur on Melrose B'nai Israel Emanu El's Facebook page.",
     ],
     links: [{ label: "Watch on Facebook", href: "https://www.facebook.com/groups/mbiee.org" }],
   },
@@ -98,8 +99,8 @@ const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
   {
     title: "East-of-Broad Home Listing",
     paragraphs: [
-      "A ~2,000 sq ft East-of-Broad home (3 beds, 2 baths) is available, with turn-of-the-century details and modern updates.",
-      "Finished basement is not included in listed square footage. Owners are moving only one block away.",
+      "We are selling our East of Broad ~2,000 square foot home in the spring, 3 bedrooms and 2 baths, on a beautiful quiet side street right off of Bainbridge.",
+      "The home is bright and combines turn-of-the-century architectural details with modern urban living features. We will still be your neighbor, as we are only moving a block away.",
     ],
     links: [{ label: "Inquire by Email", href: "mailto:yoella.epstein@gmail.com" }],
   },
@@ -107,6 +108,7 @@ const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
     title: "Akiladelphia Contractor Offer",
     paragraphs: [
       "Akiladelphia Creative Contracting will donate 5% of your job cost to Mekor. Senior discount also available.",
+      "For more info, contact (215) 589-5405 or akiladelphia@gmail.com.",
     ],
     links: [
       { label: "Website", href: "http://akiladelphia.com/" },
@@ -117,16 +119,16 @@ const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
   {
     title: "Health and Wellness Offer",
     paragraphs: [
-      "Mekor member David Parvey offers a 20% member discount with code MEKORMEMBER through wefreeco.",
-      "Products are vegan, third-party tested, and proceeds are split with the shul.",
+      "Mekor member David Parvey has launched a health and wellness company utilizing unique CBD formulas to assist in balancing out your day. He is offering a 20% discount to Mekor members using discount code MEKORMEMBER.",
+      "All products are vegan, third-party tested, and all proceeds will be split with the shul.",
     ],
     links: [{ label: "Visit wefreeco.com", href: "http://www.wefreeco.com/" }],
   },
   {
     title: "Free Career Guidance at JEVS",
     paragraphs: [
-      "JEVS supports resumes, interview prep, and job transitions.",
-      "For congregants referred by Rabbi Hirsch, first visit is free. Additional visits are sliding scale or free depending on income.",
+      "JEVS provides assistance with resumes, practice mock interviews, and more to those who are seeking a job or looking to change jobs.",
+      "For congregants referred by Rabbi Hirsch, there will be no charge for the first visit. Other visits are on a sliding fee scale or free depending on income.",
     ],
     links: [
       {
@@ -141,14 +143,14 @@ const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
     title: "Kiyum Initiative",
     paragraphs: [
       "Kiyum partners with institutions in Jerusalem to help Haredi individuals enter the labor pool through stipends, education, and job placement.",
-      "Funds are being raised to support 55 students in the upcoming academic year.",
+      "We are raising funds and building awareness for the upcoming academic year to consist of 55 students, and so we are seeking donations to Sponsor-A-Scholar.",
     ],
     links: [{ label: "Learn More", href: "http://www.kiyuminitiative.org/" }],
   },
   {
     title: "Jewish Matchmaking -- Shiduch.org",
     paragraphs: [
-      "Shiduch.org is a Jewish matchmaking site for marriage-minded singles worldwide with free profiles and matchmaker support.",
+      "We are a Jewish matchmaking site for marriage-minded singles worldwide. Singles can create a free profile on the site, and matchmakers will search through the database for compatible matches.",
     ],
     links: [
       { label: "Visit shiduch.org", href: "https://shiduch.org" },
@@ -185,7 +187,7 @@ export default async function BulletinBoardPage() {
         }}
         description={[
           "This board brings together the latest community notices, volunteer opportunities, support resources, and practical contacts.",
-          "Every section below is native React/TypeScript and includes the contact details from the original bulletin board.",
+          "Every section below keeps the original bulletin board contacts and wording while preserving the new page design.",
         ]}
         actions={[
           { label: "View Updates", href: "#community-updates" },
@@ -276,8 +278,8 @@ export default async function BulletinBoardPage() {
       <SectionCard title="Support Mekor" className={styles.supportCard}>
         <div id="support-mekor" className={styles.anchor} />
         <p className={styles.supportLead}>
-          If you use Mekor-specific affiliate links when ordering from Kosherwine.com and Judaica.com, Mekor earns 5%
-          back.
+          If you use the following Mekor-specific links when ordering from Kosherwine.com and Judaica.com, Mekor will
+          earn 5% back.
         </p>
         <p className={styles.supportNote}>
           You can also support the Center City Eruv directly and donate to Mekor through our donations page.

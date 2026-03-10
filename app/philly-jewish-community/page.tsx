@@ -42,8 +42,8 @@ export default async function PhillyJewishCommunityPage() {
           objectPosition: "center center",
         }}
         description={[
-          "We are fortunate to be part of a warm, caring, and growing Jewish community in Center City and South Philadelphia.",
-          "Below are core resources for eruv boundaries, kosher establishments, and mikvah access.",
+          "We're fortunate to be part of a warm, caring, and growing community, thanks in large part to the efforts of the Mekor community.",
+          "Below are just a few of the incredible Jewish establishments and resources that have taken root here.",
         ]}
       />
 
@@ -56,9 +56,9 @@ export default async function PhillyJewishCommunityPage() {
             alt: "Center City community streetscape near eruv area",
           }}
           paragraphs={[
-            "The Center City Eruv includes most of Center City and South Philadelphia, roughly between the Schuylkill and Delaware Rivers.",
+            "The Center City Eruv includes most of Center City and South Philadelphia, roughly between the Schuylkill and Delaware Rivers. It is maintained weekly and was originally constructed under the halachic guidance of Rav Dov Aaron Brisman zt\"l, former Av Beit Din of Philadelphia.",
             "Please note that the map is not perfectly to scale and should be used together with weekly status updates and published boundary notes.",
-            "Carrying is permitted over the South Street Bridge when the bridge extension is up; if that extension is down, the rest of the Center City Eruv remains valid.",
+            "Carrying is permitted over the South Street Bridge, which connects the Center City Eruv with the University City Eruv. If this bridge extension is down, the rest of the Center City Eruv remains valid.",
           ]}
           links={[
             { label: "Center City Eruv Website", href: "http://www.centercityeruv.org/map.asp" },
@@ -77,10 +77,10 @@ export default async function PhillyJewishCommunityPage() {
         </div>
         <ul className={styles.guidelineList}>
           <li>Western border: The Schuylkill River Trail is no longer included.</li>
-          <li>Southwest corner: South of Washington Ave, areas west of 25th St are outside the eruv.</li>
+          <li>Southwest corner: South of Washington Avenue, areas west of 25th Street are no longer included. North of Washington, the eruv follows the train overpass.</li>
           <li>Northern border: The eruv remains bounded by the south side of Poplar Street.</li>
-          <li>Eastern border: Runs approximately along I-95; Columbus Boulevard waterfront is outside.</li>
-          <li>Southern border: Continues to follow I-76.</li>
+          <li>Eastern border: The eruv runs approximately along I-95. Columbus Boulevard and the waterfront are outside the eruv.</li>
+          <li>Southern border: The eruv continues to follow I-76.</li>
         </ul>
       </SectionCard>
 
@@ -94,8 +94,8 @@ export default async function PhillyJewishCommunityPage() {
             alt: "Jewish community gathering in Philadelphia",
           }}
           paragraphs={[
-            "Center City and surrounding neighborhoods now include a growing number of kosher restaurants, cafes, bakeries, and specialty options.",
-            "This growth has been supported by dedicated community members and ongoing supervision efforts.",
+            "We are so lucky to have so many kosher options in and around Center City Philly with a special thank you to Rabbi Hirsch and his mashgiach volunteers that have greatly expanded the kosher options.",
+            "Browse the map of kosher establishments and the neighborhood directories for more local detail.",
           ]}
           links={[
             { label: "Map of Kosher Establishments", href: "/kosher-map" },
@@ -113,8 +113,8 @@ export default async function PhillyJewishCommunityPage() {
             alt: "Center City community mikvah",
           }}
           paragraphs={[
-            "The Mei Shalva Center City Community Mikvah at 509 Pine Street provides a fully operational women’s mikvah, men’s mikvah, and keilim mikvah.",
-            "For scheduling and appointments, please visit philamikvah.org or call/text 267-225-2651.",
+            "A mikvah is a natural body of water or a gathering of water that has a designated connection to a pool designed specifically for immersion according to the rules and customs of Jewish law.",
+            "The Mei Shalva Center City Community Mikvah at 509 Pine Street offers a fully operational women's mikvah, men's mikvah, and keilim mikvah. Volunteers are welcome to assist with staffing the keilim mikvah. For scheduling or appointments, please visit philamikvah.org or call or text 267-225-2651.",
           ]}
           links={[
             { label: "Mikvah Website", href: "https://philamikvah.org/" },
