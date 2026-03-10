@@ -6,7 +6,7 @@ import {
   KOSHER_NEIGHBORHOOD_LABELS,
   KOSHER_NEIGHBORHOODS,
   type KosherNeighborhood,
-} from "@/lib/kosher/extract";
+} from "@/lib/kosher/neighborhoods";
 import { validateManagedKosherPlacesContract } from "@/lib/native/contracts";
 
 type NeighborhoodFilter = KosherNeighborhood | "all";

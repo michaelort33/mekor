@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { KosherInquiryForm } from "@/components/forms/kosher-inquiry-form";
-import type { KosherNeighborhood } from "@/lib/kosher/extract";
+import type { KosherNeighborhood } from "@/lib/kosher/neighborhoods";
 import {
   type KosherDirectoryFreshnessKey,
   getKosherDirectoryLastUpdated,

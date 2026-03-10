@@ -2,24 +2,15 @@ import { load } from "cheerio";
 
 import { listDocumentsByType } from "@/lib/mirror/loaders";
 import type { PageDocument } from "@/lib/mirror/types";
-
-export const KOSHER_NEIGHBORHOODS = [
-  "center-city",
-  "main-line-manyunk",
-  "old-yorkroad-northeast",
-  "cherry-hill",
-  "unknown",
-] as const;
-
-export type KosherNeighborhood = (typeof KOSHER_NEIGHBORHOODS)[number];
-
-export const KOSHER_NEIGHBORHOOD_LABELS: Record<KosherNeighborhood, string> = {
-  "center-city": "Center City & Vicinity",
-  "main-line-manyunk": "Main Line / Manyunk",
-  "old-yorkroad-northeast": "Old York Road / Northeast",
-  "cherry-hill": "Cherry Hill",
-  unknown: "Other",
-};
+import {
+  KOSHER_NEIGHBORHOOD_LABELS,
+  type KosherNeighborhood,
+} from "@/lib/kosher/neighborhoods";
+export {
+  KOSHER_NEIGHBORHOOD_LABELS,
+  KOSHER_NEIGHBORHOODS,
+  type KosherNeighborhood,
+} from "@/lib/kosher/neighborhoods";
 
 export const KOSHER_TAG_LABELS: Record<string, string> = {
   bakery: "Bakery",

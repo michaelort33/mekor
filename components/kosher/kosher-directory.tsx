@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type { KosherNeighborhood } from "@/lib/kosher/extract";
+import type { KosherNeighborhood } from "@/lib/kosher/neighborhoods";
 import type { ManagedKosherPlace } from "@/lib/kosher/store";
 
 type KosherDirectoryProps = {

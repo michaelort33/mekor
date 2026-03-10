@@ -19,6 +19,8 @@ import {
 loadEnv({ path: ".env.local" });
 loadEnv({ path: ".env", override: false });
 
+const hasDatabaseUrl = Boolean(process.env.DATABASE_URL);
+
 after(async () => {
   await global.postgresSql?.end();
   global.postgresSql = undefined;
@@ -35,38 +37,46 @@ test("native contract matrix matches native-enabled route list", () => {
   }
 });
 
-test("native model contracts validate live managed payloads", async () => {
-  const [events, inTheNews, kosherPlaces, searchIndex] = await Promise.all([
-    getManagedEvents(),
-    getManagedInTheNews(),
-    getManagedKosherPlaces(),
-    getNativeSearchIndex(),
-  ]);
+test(
+  "native model contracts validate live managed payloads",
+  !hasDatabaseUrl ? { skip: "DATABASE_URL is required for managed payload contract validation" } : {},
+  async () => {
+    const [events, inTheNews, kosherPlaces, searchIndex] = await Promise.all([
+      getManagedEvents(),
+      getManagedInTheNews(),
+      getManagedKosherPlaces(),
+      getNativeSearchIndex(),
+    ]);
 
-  const validatedEvents = validateManagedEventsContract(events, "test: events");
-  const validatedArticles = validateManagedInTheNewsContract(inTheNews, "test: in-the-news");
-  const validatedPlaces = validateManagedKosherPlacesContract(kosherPlaces, "test: kosher places");
-  const validatedSearch = validateSearchIndexContract(searchIndex, "test: search index");
+    const validatedEvents = validateManagedEventsContract(events, "test: events");
+    const validatedArticles = validateManagedInTheNewsContract(inTheNews, "test: in-the-news");
+    const validatedPlaces = validateManagedKosherPlacesContract(kosherPlaces, "test: kosher places");
+    const validatedSearch = validateSearchIndexContract(searchIndex, "test: search index");
 
-  assert.ok(validatedEvents.length >= 1, "expected at least one event for native events route");
-  assert.ok(validatedArticles.length >= 20, "expected healthy in-the-news sample size");
-  assert.ok(validatedPlaces.length >= 20, "expected healthy kosher place sample size");
-  assert.ok(validatedSearch.length >= 50, "expected healthy search index size");
-});
+    assert.ok(validatedEvents.length >= 1, "expected at least one event for native events route");
+    assert.ok(validatedArticles.length >= 20, "expected healthy in-the-news sample size");
+    assert.ok(validatedPlaces.length >= 20, "expected healthy kosher place sample size");
+    assert.ok(validatedSearch.length >= 50, "expected healthy search index size");
+  },
+);
 
-test("native kosher routes have neighborhood coverage", async () => {
-  const places = validateManagedKosherPlacesContract(
-    await getManagedKosherPlaces(),
-    "test: kosher neighborhood coverage",
-  );
+test(
+  "native kosher routes have neighborhood coverage",
+  !hasDatabaseUrl ? { skip: "DATABASE_URL is required for kosher neighborhood coverage" } : {},
+  async () => {
+    const places = validateManagedKosherPlacesContract(
+      await getManagedKosherPlaces(),
+      "test: kosher neighborhood coverage",
+    );
 
-  const neighborhoods = new Set(places.map((row) => row.neighborhood));
+    const neighborhoods = new Set(places.map((row) => row.neighborhood));
 
-  assert.equal(neighborhoods.has("center-city"), true);
-  assert.equal(neighborhoods.has("cherry-hill"), true);
-  assert.equal(neighborhoods.has("main-line-manyunk"), true);
-  assert.equal(neighborhoods.has("old-yorkroad-northeast"), true);
-});
+    assert.equal(neighborhoods.has("center-city"), true);
+    assert.equal(neighborhoods.has("cherry-hill"), true);
+    assert.equal(neighborhoods.has("main-line-manyunk"), true);
+    assert.equal(neighborhoods.has("old-yorkroad-northeast"), true);
+  },
+);
 
 test("mirror-only field lifecycle is fully tracked", () => {
   const lifecycleKeys = new Set(MIRROR_ONLY_FIELD_LIFECYCLE.map((row) => `${row.dataset}:${row.field}`));

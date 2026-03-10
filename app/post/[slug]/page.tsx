@@ -23,6 +23,7 @@ function toPath(slug: string) {
 export async function generateStaticParams() {
   const index = await loadNativeContentIndex();
   const deduped = new Map<string, { slug: string }>();
+  const seenNormalizedSlugs = new Set<string>();
 
   for (const item of index) {
     if (item.type !== "post" || !item.path.startsWith("/post/") || item.path.includes("?")) {
@@ -34,6 +35,12 @@ export async function generateStaticParams() {
       continue;
     }
 
+    const normalizedSlug = decodeURIComponent(slug).trim().toLowerCase();
+    if (seenNormalizedSlugs.has(normalizedSlug)) {
+      continue;
+    }
+
+    seenNormalizedSlugs.add(normalizedSlug);
     deduped.set(slug, { slug });
   }
 
