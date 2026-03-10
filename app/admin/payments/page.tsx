@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { PAYMENT_KIND_OPTIONS, PAYMENT_SOURCE_OPTIONS } from "@/lib/payments/shared";
@@ -63,21 +63,41 @@ export default function AdminPaymentsPage() {
   const [searchTerms, setSearchTerms] = useState<Record<number, string>>({});
   const [matchesByPayment, setMatchesByPayment] = useState<Record<number, PersonSearchResult[]>>({});
 
-  async function loadPayments() {
+  async function fetchPayments() {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
     if (classificationStatus) params.set("classificationStatus", classificationStatus);
-    const response = await fetch(`/api/admin/payments?${params.toString()}`);
+    const response = await fetch(`/api/admin/payments?${params.toString()}`).catch(() => null);
+    if (!response) {
+      return { payments: [] as PaymentRow[], error: "Unable to load payments" };
+    }
     const payload = (await response.json().catch(() => ({}))) as { payments?: PaymentRow[]; error?: string };
     if (!response.ok) {
-      setError(payload.error || "Unable to load payments");
+      return { payments: [] as PaymentRow[], error: payload.error || "Unable to load payments" };
+    }
+    return { payments: payload.payments ?? [], error: "" };
+  }
+
+  const loadPaymentsForEffect = useEffectEvent(async () => {
+    const payload = await fetchPayments();
+    if (payload.error) {
+      setError(payload.error);
       return;
     }
-    setPayments(payload.payments ?? []);
+    setPayments(payload.payments);
+  });
+
+  async function refreshPayments() {
+    const payload = await fetchPayments();
+    if (payload.error) {
+      setError(payload.error);
+      return;
+    }
+    setPayments(payload.payments);
   }
 
   useEffect(() => {
-    loadPayments().catch(() => setError("Unable to load payments"));
+    void loadPaymentsForEffect();
   }, [classificationStatus, q]);
 
   const stats = useMemo(
@@ -110,7 +130,7 @@ export default function AdminPaymentsPage() {
       return;
     }
     setForm(initialForm);
-    await loadPayments();
+    await refreshPayments();
   }
 
   async function searchPeople(paymentId: number) {
@@ -132,7 +152,7 @@ export default function AdminPaymentsPage() {
       setError(payload.error || "Unable to reassign payment");
       return;
     }
-    await loadPayments();
+    await refreshPayments();
   }
 
   return (

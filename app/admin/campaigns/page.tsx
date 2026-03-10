@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import styles from "./page.module.css";
@@ -35,18 +35,38 @@ export default function AdminCampaignsPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
-  async function loadCampaigns() {
-    const response = await fetch("/api/admin/campaigns");
+  async function fetchCampaigns() {
+    const response = await fetch("/api/admin/campaigns").catch(() => null);
+    if (!response) {
+      return { campaigns: [] as Campaign[], error: "Unable to load campaigns" };
+    }
     const payload = (await response.json().catch(() => ({}))) as { campaigns?: Campaign[]; error?: string };
     if (!response.ok) {
-      setError(payload.error || "Unable to load campaigns");
+      return { campaigns: [] as Campaign[], error: payload.error || "Unable to load campaigns" };
+    }
+    return { campaigns: payload.campaigns ?? [], error: "" };
+  }
+
+  const loadCampaignsForEffect = useEffectEvent(async () => {
+    const payload = await fetchCampaigns();
+    if (payload.error) {
+      setError(payload.error);
       return;
     }
-    setCampaigns(payload.campaigns ?? []);
+    setCampaigns(payload.campaigns);
+  });
+
+  async function refreshCampaigns() {
+    const payload = await fetchCampaigns();
+    if (payload.error) {
+      setError(payload.error);
+      return;
+    }
+    setCampaigns(payload.campaigns);
   }
 
   useEffect(() => {
-    loadCampaigns().catch(() => setError("Unable to load campaigns"));
+    void loadCampaignsForEffect();
   }, []);
 
   const stats = useMemo(
@@ -83,7 +103,7 @@ export default function AdminCampaignsPage() {
     }
     setForm(initialForm);
     setNotice("Campaign saved.");
-    await loadCampaigns();
+    await refreshCampaigns();
   }
 
   async function updateStatus(campaign: Campaign, status: Campaign["status"]) {
@@ -105,7 +125,7 @@ export default function AdminCampaignsPage() {
       setError(payload.error || "Unable to update campaign");
       return;
     }
-    await loadCampaigns();
+    await refreshCampaigns();
   }
 
   return (
