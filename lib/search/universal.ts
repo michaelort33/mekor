@@ -2,11 +2,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { getNativeSearchIndex } from "@/lib/native-content/content-loader";
+import type { NativeDocumentType } from "@/lib/content/types";
 import { SITE_MENU, isNavGroup } from "@/lib/navigation/site-menu";
 
 export type UniversalSearchDocument = {
   path: string;
-  type: string;
+  type: NativeDocumentType;
   title: string;
   description: string;
   excerpt: string;
@@ -190,7 +191,7 @@ async function buildUniversalDocuments() {
       excerpt: cleanExcerpt(record.excerpt || record.description || ""),
       keywords: [...keywords],
     } satisfies UniversalSearchDocument;
-  }).filter((record): record is UniversalSearchDocument => Boolean(record));
+  }).filter(Boolean) as UniversalSearchDocument[];
 }
 
 export async function getUniversalSearchDocuments(input?: { refresh?: boolean }) {
