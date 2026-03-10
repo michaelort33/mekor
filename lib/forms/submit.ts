@@ -3,9 +3,17 @@ import { z } from "zod";
 
 import { getDb } from "@/db/client";
 import { formDeliveryLog, formSubmissions } from "@/db/schema";
-import { sendFormNotification } from "@/lib/forms/email";
+import {
+  buildInboxSummary,
+  createAdminInboxEvent,
+  getCategoryForForm,
+  getFormLabel,
+  type PublicFormType,
+} from "@/lib/admin/inbox";
+import { sendFormConfirmation } from "@/lib/forms/email";
+import { sendAdminInboxAlerts } from "@/lib/notifications/admin-alerts";
 
-type FormType = "contact" | "kosher-inquiry" | "volunteer";
+export type FormType = PublicFormType;
 
 export const baseFormSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -43,7 +51,71 @@ async function findRecentDuplicateSubmission(
   return existing ?? null;
 }
 
-async function deliverFormNotification(
+async function deliverAdminInboxNotification(
+  submissionId: number,
+  payload: {
+    formType: FormType;
+    name: string;
+    email: string;
+    phone: string;
+    message: string;
+    sourcePath: string;
+  },
+  options: {
+    siteOrigin: string;
+  },
+) {
+  const category = getCategoryForForm({
+    formType: payload.formType,
+    sourcePath: payload.sourcePath,
+  });
+
+  try {
+    const inboxEvent = await createAdminInboxEvent({
+      sourceType: "form_submission",
+      category,
+      sourceId: String(submissionId),
+      title: getFormLabel(payload.formType),
+      submitterName: payload.name,
+      submitterEmail: payload.email,
+      submitterPhone: payload.phone,
+      summary: buildInboxSummary({
+        message: payload.message,
+        sourcePath: payload.sourcePath,
+      }),
+      payloadJson: {
+        submissionId,
+        formType: payload.formType,
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        message: payload.message,
+        sourcePath: payload.sourcePath,
+      },
+    });
+    const alertResult = await sendAdminInboxAlerts({
+      event: inboxEvent,
+      category,
+      siteOrigin: options.siteOrigin,
+    });
+
+    await getDb().insert(formDeliveryLog).values({
+      submissionId,
+      provider: "sendgrid_admin_alert",
+      status: alertResult.recipientCount > 0 ? "sent" : "skipped",
+      errorMessage: alertResult.recipientCount > 0 ? "" : "No opted-in super admins for this category",
+    });
+  } catch (error) {
+    await getDb().insert(formDeliveryLog).values({
+      submissionId,
+      provider: "sendgrid_admin_alert",
+      status: "failed",
+      errorMessage: String(error).slice(0, 512),
+    });
+  }
+}
+
+async function deliverFormConfirmation(
   submissionId: number,
   payload: {
     formType: FormType;
@@ -55,28 +127,34 @@ async function deliverFormNotification(
   },
 ) {
   try {
-    await sendFormNotification({
+    await sendFormConfirmation({
       ...payload,
       submissionId,
     });
 
     await getDb().insert(formDeliveryLog).values({
       submissionId,
-      provider: "resend",
+      provider: "resend_submitter_confirmation",
       status: "sent",
       errorMessage: "",
     });
   } catch (error) {
     await getDb().insert(formDeliveryLog).values({
       submissionId,
-      provider: "resend",
+      provider: "resend_submitter_confirmation",
       status: "failed",
       errorMessage: String(error).slice(0, 512),
     });
   }
 }
 
-export async function submitForm(formType: FormType, payload: unknown) {
+export async function submitForm(
+  formType: FormType,
+  payload: unknown,
+  options: {
+    siteOrigin: string;
+  },
+) {
   const parsed = baseFormSchema.safeParse(payload);
   if (!parsed.success) {
     return {
@@ -115,7 +193,20 @@ export async function submitForm(formType: FormType, payload: unknown) {
     throw new Error("Insert failed");
   }
 
-  await deliverFormNotification(inserted.id, {
+  await deliverAdminInboxNotification(
+    inserted.id,
+    {
+      formType,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message,
+      sourcePath: data.sourcePath,
+    },
+    options,
+  );
+
+  await deliverFormConfirmation(inserted.id, {
     formType,
     name: data.name,
     email: data.email,

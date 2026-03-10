@@ -6,6 +6,7 @@ import { NativeShell } from "@/components/navigation/native-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { KosherInquiryForm } from "@/components/forms/kosher-inquiry-form";
 import type { KosherNeighborhood } from "@/lib/kosher/extract";
 import {
   type KosherDirectoryFreshnessKey,
@@ -178,6 +179,10 @@ export async function KosherPlacesPage({
           </h2>
           <p className="max-w-3xl text-base leading-7 text-[var(--color-muted)]">{contactDescription}</p>
         </div>
+        <KosherInquiryForm
+          sourcePath={currentPath}
+          defaultNeighborhoodLabel={defaultNeighborhood === "all" ? "" : showcasePlaces[0]?.neighborhoodLabel}
+        />
       </Card>
 
       <section id="map" className="grid gap-6 lg:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)] lg:items-start">

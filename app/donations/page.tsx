@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
@@ -209,25 +210,41 @@ export default async function DonationsPage() {
       </SectionCard>
 
       <SectionCard>
-        <SplitMediaText
-          reverse
-          title="Building and Space Dedications"
-          kicker="Legacy Giving"
-          media={{
-            src: DONATION_IMAGES.dedication,
-            alt: "Hands reaching out in support and community giving",
-            objectFit: "cover",
-            objectPosition: "center center",
-          }}
-          paragraphs={[
-            "Building spaces still available for dedication.",
-            SPACE_DEDICATIONS.join(" · "),
-          ]}
-          links={[
-            { label: "Speak with Leadership", href: "mailto:admin@mekorhabracha.org?subject=Dedication%20Opportunity" },
-            { label: "Call (215) 525-4246", href: "tel:+12155254246" },
-          ]}
-        />
+        <div className={styles.dedicationSection}>
+          <div className={styles.dedicationCopy}>
+            <p className={styles.dedicationKicker}>Legacy Giving</p>
+            <h2 className={styles.dedicationTitle}>Building and Space Dedications</h2>
+            <p className={styles.copyText}>
+              Major dedication opportunities are still available for families looking to honor loved ones, mark a milestone,
+              or make a lasting investment in Mekor&apos;s physical home.
+            </p>
+            <p className={styles.copyText}>
+              These gifts help shape the spaces where our community davens, learns, celebrates, and welcomes new people into Jewish life.
+            </p>
+            <div className={styles.dedicationActions}>
+              <a href="mailto:admin@mekorhabracha.org?subject=Dedication%20Opportunity" className={styles.dedicationButton}>
+                Speak with Leadership
+              </a>
+              <a href="tel:+12155254246" className={styles.dedicationButtonSecondary}>
+                Call (215) 525-4246
+              </a>
+            </div>
+          </div>
+          <div className={styles.dedicationVisual}>
+            <Image
+              src={DONATION_IMAGES.dedication}
+              alt="Hands reaching out in support and community giving"
+              width={1200}
+              height={960}
+              className={styles.dedicationImage}
+            />
+          </div>
+          <ul className={styles.dedicationList}>
+            {SPACE_DEDICATIONS.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
       </SectionCard>
 
       <SectionCard tone="blue" className={styles.affiliateCard}>

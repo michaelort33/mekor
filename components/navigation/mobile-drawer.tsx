@@ -12,6 +12,7 @@ import type { UserSessionRole } from "@/lib/auth/session";
 import type { NavItem } from "@/lib/navigation/site-menu";
 import { cn } from "@/lib/utils";
 import { isNavGroup } from "@/lib/navigation/site-menu";
+import { openUniversalSearch } from "@/components/navigation/universal-search";
 
 type MobileDrawerProps = {
   items: NavItem[];
@@ -173,6 +174,19 @@ export function MobileDrawer({
         </nav>
 
         <div className="border-t border-[var(--color-border)] pt-5">
+          <div className="mb-3">
+            <button
+              type="button"
+              className="flex w-full items-center justify-between rounded-[22px] border border-[var(--color-border)] bg-white/78 px-4 py-4 text-left text-sm font-semibold text-[var(--color-foreground)] shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]"
+              onClick={() => {
+                onClose();
+                openUniversalSearch();
+              }}
+            >
+              <span>Search the site</span>
+              <span className="text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">Command K</span>
+            </button>
+          </div>
           <NavCta isSignedIn={role !== null} isCheckingAuth={isCheckingAuth} />
         </div>
       </SheetContent>

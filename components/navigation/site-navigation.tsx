@@ -7,6 +7,7 @@ import { DesktopNav } from "@/components/navigation/desktop-nav";
 import { MobileDrawer } from "@/components/navigation/mobile-drawer";
 import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
+import { UniversalSearch } from "@/components/navigation/universal-search";
 import { Button } from "@/components/ui/button";
 import type { UserSessionRole } from "@/lib/auth/session";
 import { normalizeNavigationPath } from "@/lib/navigation/path";
@@ -107,6 +108,12 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
           />
 
           <div className="flex items-center gap-2">
+            <div className="hidden md:flex">
+              <UniversalSearch />
+            </div>
+            <div className="md:hidden">
+              <UniversalSearch compact />
+            </div>
             <div className="hidden xl:flex">
               <NavCta isSignedIn={role !== null} isCheckingAuth={isCheckingAuth} />
             </div>

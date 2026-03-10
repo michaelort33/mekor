@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { KiddushSponsorshipForm } from "@/components/forms/kiddush-sponsorship-form";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import { KiddushPaymentSection } from "@/components/payments/kiddush-payment-section";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
@@ -19,21 +21,25 @@ const SPONSOR_OPTIONS = [
   {
     title: "Shabbat & Yom Tov Kiddush",
     rate: "$295 member · $360 non-member",
+    amountCents: 29500,
     body: "Celebrate simchas with your Mekor community by sponsoring a Shabbat Kiddush. Whether you're marking a special anniversary, a new baby, graduation, or honoring the memory of someone impactful in your life, a Kiddush sponsorship is a meaningful way to bring people together.",
   },
   {
     title: "Birthday Kiddush",
     rate: "$36",
+    amountCents: 3600,
     body: "Let's celebrate our shul birthdays every month with Birthday Kiddush. Sponsor Kiddush in honor of your loved one's birthday month. Special birthday treats will be served, and singing may occur.",
   },
   {
     title: "Third Meal Sponsorship",
     rate: "$100 member · $125 non-member",
+    amountCents: 10000,
     body: "Join us in making the Shabbat experience complete by sponsoring our beloved Third Meal. Served between Mincha and Maariv, Seudah Shlishit is a time for community, singing, and words of Torah as we savor the last moments of Shabbat together.",
   },
   {
     title: "Bagel Brunch Kiddush",
     rate: "$720 member · $775 non-member",
+    amountCents: 72000,
     body: "Our Bagel Brunch Kiddush features the standard Shabbat Kiddush spread, plus a delicious assortment of fresh bagels, a lox and whitefish tray, tuna and egg salads, cheeses, cream cheese, and a tomato-and-onion tray.",
   },
 ] as const;
@@ -69,25 +75,12 @@ export default async function KiddushPage() {
           "Whether you're marking a special occasion, honoring a loved one, or commemorating a yahrtzeit, your sponsorship helps us create a warm and welcoming Shabbat experience for all.",
         ]}
         actions={[
-          { label: "Sponsor via PayPal", href: PAYPAL_SPONSOR_URL },
+          { label: "Pay for Kiddush", href: "#kiddush-payment" },
           { label: "General Donations", href: "/donations" },
         ]}
       />
 
-      <SectionCard title="Kiddush Sponsorship Options">
-        <div className={styles.optionGrid}>
-          {SPONSOR_OPTIONS.map((option) => (
-            <article className={styles.optionCard} key={option.title}>
-              <p className={styles.optionTitle}>{option.title}</p>
-              <p className={styles.optionRate}>{option.rate}</p>
-              <p className={styles.optionBody}>{option.body}</p>
-              <a href={PAYPAL_SPONSOR_URL} target="_blank" rel="noreferrer noopener" className={styles.optionAction}>
-                Sponsor now
-              </a>
-            </article>
-          ))}
-        </div>
-      </SectionCard>
+      <KiddushPaymentSection options={SPONSOR_OPTIONS} returnPath={PATH} />
 
       <SectionCard>
         <SplitMediaText
@@ -110,6 +103,10 @@ export default async function KiddushPage() {
             { label: "Contact the Shul Office", href: "mailto:admin@mekorhabracha.org?subject=Kiddush%20Sponsorship" },
           ]}
         />
+      </SectionCard>
+
+      <SectionCard title="Request a Kiddush Sponsorship" description="Send the sponsorship details here so the office can confirm the date, dedication, and payment plan with you.">
+        <KiddushSponsorshipForm sourcePath={PATH} />
       </SectionCard>
 
       <SectionCard title="Quick Links">

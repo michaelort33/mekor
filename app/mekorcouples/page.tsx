@@ -12,7 +12,7 @@ const PATH = "/mekorcouples" as const;
 
 const COUPLES_IMAGES = {
   hero: "/images/mekor-couples/hero.jpg",
-  banner: "/images/mekor-couples/banner.jpg",
+  banner: "/images/mekor-couples/banner.svg",
 } as const;
 
 const MARRIAGES = [
@@ -72,7 +72,7 @@ export default async function MekorCouplesPage() {
       <SectionCard className={styles.bannerCard}>
         <Image
           src={COUPLES_IMAGES.banner}
-          alt="Mekor couples moment"
+          alt="Mazel tov banner for Mekor couples"
           width={1366}
           height={355}
           sizes="(max-width: 768px) 100vw, 1200px"

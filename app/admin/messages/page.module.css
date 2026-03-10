@@ -92,6 +92,43 @@
   gap: 10px;
 }
 
+.preferences {
+  border: 1px solid #d6dce5;
+  border-radius: 10px;
+  background: #fffdf8;
+  padding: 18px;
+  margin-bottom: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+.preferences h2 {
+  margin: 0 0 6px;
+}
+
+.preferences p {
+  margin: 0;
+  color: #5a6777;
+}
+
+.preferenceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.preferenceItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #dce3eb;
+  border-radius: 10px;
+  background: #ffffff;
+  font-weight: 600;
+}
+
 .composeActions button {
   min-height: 38px;
   border-radius: 8px;
@@ -148,6 +185,14 @@
   font-weight: 700;
 }
 
+.table tbody tr {
+  cursor: pointer;
+}
+
+.selectedRow {
+  background: #eef5ff;
+}
+
 .error {
   color: #b3261e;
   margin: 0 0 14px;
@@ -173,8 +218,88 @@
   cursor: pointer;
 }
 
+.detailCard {
+  margin-top: 16px;
+  border: 1px solid #d6dce5;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.detailHeader h2 {
+  margin: 0 0 6px;
+}
+
+.detailHeader p {
+  margin: 0;
+  color: #5a6777;
+}
+
+.detailActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.detailActions button {
+  min-height: 38px;
+  border-radius: 8px;
+  border: 1px solid #245f9c;
+  background: #ffffff;
+  color: #245f9c;
+  padding: 0 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.detailGrid p,
+.detailError p {
+  margin: 6px 0 0;
+}
+
+.detailError {
+  padding: 14px;
+  border: 1px solid #edd2cf;
+  border-radius: 10px;
+  background: #fff5f4;
+  color: #7e2b22;
+}
+
+.payloadBlock {
+  padding: 14px;
+  border: 1px solid #dfe6ee;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.payloadBlock pre {
+  margin: 10px 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 @media (max-width: 900px) {
   .composeGrid {
     grid-template-columns: 1fr;
+  }
+
+  .detailHeader {
+    flex-direction: column;
   }
 }

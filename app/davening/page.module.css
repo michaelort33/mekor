@@ -177,6 +177,38 @@
   display: none;
 }
 
+.zmanimEmbedWrap {
+  overflow: hidden;
+  border-radius: 26px;
+  border: 1px solid #d6e0ea;
+  background: linear-gradient(180deg, rgba(252, 253, 255, 0.98) 0%, rgba(243, 247, 252, 0.96) 100%);
+  box-shadow: 0 24px 54px rgba(31, 57, 88, 0.1);
+}
+
+.zmanimEmbed {
+  display: block;
+  width: 100%;
+  min-height: 720px;
+  border: 0;
+  background: #ffffff;
+}
+
+.zmanimFallback {
+  display: grid;
+  gap: 18px;
+}
+
+.zmanimFallback p {
+  margin: 0;
+  color: #46586d;
+  line-height: 1.72;
+}
+
+.zmanimFallback code {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.95em;
+}
+
 .mobileDayCard {
   display: grid;
   gap: 12px;
@@ -288,6 +320,10 @@
     display: grid;
     gap: 12px;
   }
+
+  .zmanimEmbed {
+    min-height: 640px;
+  }
 }
 
 @media (max-width: 760px) {
@@ -313,5 +349,9 @@
   .noteCard p,
   .noteText {
     font-size: 0.96rem;
+  }
+
+  .zmanimEmbed {
+    min-height: 560px;
   }
 }

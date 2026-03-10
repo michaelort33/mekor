@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { getNativeSearchIndex } from "@/lib/native-content/content-loader";
-import { validateSearchIndexContract } from "@/lib/native/contracts";
+import { cleanExcerpt, normalizeQuery, searchUniversalDocuments } from "@/lib/search/universal";
 
 export const dynamic = "force-dynamic";
 
@@ -20,53 +19,12 @@ type SearchProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-function normalizeQuery(raw: string) {
-  return raw.toLowerCase().replace(/[^a-z0-9\s]/g, " ").trim();
-}
-
-function cleanExcerpt(input: string) {
-  return input
-    .replace(/Skip to Main Content/gi, "")
-    .replace(/Membership\s+Events\s+Donate\s+Kiddush\s+Center City Beit Midrash/gi, "")
-    .replace(/Join Us\s+Davening\s+Who We Are\s+Kosher Restaurants\s+More\s+Support Mekor/gi, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 export default async function SearchPage({ searchParams }: SearchProps) {
   const params = await searchParams;
   const queryRaw = Array.isArray(params.q) ? params.q[0] ?? "" : params.q ?? "";
   const query = normalizeQuery(queryRaw);
-
-  const records = validateSearchIndexContract(
-    await getNativeSearchIndex(),
-    "Search page: getNativeSearchIndex",
-  );
   const queryTerms = query.split(/\s+/).filter(Boolean);
-
-  const results =
-    queryTerms.length === 0
-      ? []
-      : records
-          .map((record) => {
-            const score = queryTerms.reduce((acc, term) => {
-              if (record.terms.includes(term)) {
-                return acc + 3;
-              }
-              if (record.title.toLowerCase().includes(term)) {
-                return acc + 2;
-              }
-              if (record.excerpt.toLowerCase().includes(term)) {
-                return acc + 1;
-              }
-              return acc;
-            }, 0);
-
-            return { record, score };
-          })
-          .filter((entry) => entry.score > 0)
-          .sort((a, b) => b.score - a.score || a.record.path.localeCompare(b.record.path))
-          .slice(0, 60);
+  const results = queryTerms.length === 0 ? [] : await searchUniversalDocuments(queryRaw, 60);
 
   return (
     <NativeShell currentPath="/search" className="search-page" contentClassName="gap-6">
@@ -117,7 +75,7 @@ export default async function SearchPage({ searchParams }: SearchProps) {
             {results.length} result{results.length === 1 ? "" : "s"} for “{queryRaw}”
           </p>
           <div className="grid gap-4">
-            {results.map(({ record }) => (
+            {results.map((record) => (
               <Card key={record.path} className="px-5 py-5">
                 <div className="space-y-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">

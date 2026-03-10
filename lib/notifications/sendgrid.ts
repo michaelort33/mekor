@@ -6,6 +6,7 @@ export type SendGridEmailInput = {
   text?: string;
   html?: string;
   from?: string;
+  replyTo?: string;
 };
 
 function getSendGridApiKey() {
@@ -50,6 +51,7 @@ export async function sendSendGridEmail(input: SendGridEmailInput) {
         },
       ],
       from: { email: input.from || getSendGridFromEmail() },
+      reply_to: input.replyTo ? { email: input.replyTo } : undefined,
       subject: input.subject,
       content,
     }),

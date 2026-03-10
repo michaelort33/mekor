@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { getDb } from "@/db/client";
 import {
+  adminInboxEvents,
   automatedMessageLog,
   duesNotificationLog,
   messageCampaigns,
@@ -14,6 +15,7 @@ import {
   users,
 } from "@/db/schema";
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
+import { getCategoryLabel, type AdminNotificationCategory } from "@/lib/admin/inbox";
 import { MESSAGE_SEGMENT_LABELS, MESSAGE_SEGMENTS } from "@/lib/messages/segments";
 import { sendMessageCampaign } from "@/lib/messages/service";
 import { decodeCursor, parsePageLimit } from "@/lib/pagination/cursor";
@@ -34,20 +36,26 @@ const sendPayloadSchema = z.object({
 
 type UnifiedMessageLogItem = {
   id: string;
-  source: "manual" | "newsletter" | "automated" | "dues";
+  direction: "inbound" | "outbound";
+  source: "manual" | "newsletter" | "automated" | "dues" | "form_submission" | "mailchimp_signup";
   channel: "email";
+  status: "new" | "read" | "archived" | "sent" | "failed" | "skipped";
   recipientName: string;
   recipientEmail: string;
   subject: string;
   provider: string;
   providerMessageId: string;
-  status: "sent" | "failed" | "skipped";
   errorMessage: string;
   createdAt: string;
   sentAt: string | null;
   actorEmail: string;
   campaignName: string;
   segmentLabel: string;
+  category: string;
+  summary: string;
+  payloadJson: Record<string, unknown>;
+  sourceRecordLabel: string;
+  sourceRecordHref: string;
 };
 
 function sortByCreatedAtDesc(items: UnifiedMessageLogItem[]) {
@@ -79,6 +87,9 @@ export async function GET(request: Request) {
   const q = searchParams.get("q")?.trim() ?? "";
   const source = searchParams.get("source")?.trim() ?? "";
   const status = searchParams.get("status")?.trim() ?? "";
+  const direction = searchParams.get("direction")?.trim() ?? "";
+  const category = searchParams.get("category")?.trim() ?? "";
+  const selectedInboundId = searchParams.get("id")?.trim() ?? "";
   const limit = parsePageLimit(searchParams.get("limit"));
   const parsedCursor = decodeCursor(searchParams.get("cursor"), messagesCursorSchema);
   if (parsedCursor.error) {
@@ -88,8 +99,52 @@ export async function GET(request: Request) {
   const beforeDate = cursor ? new Date(cursor.createdAt) : null;
   const perSourceLimit = Math.max(30, limit * 3);
 
+  const inboundRows =
+    direction === "outbound"
+      ? []
+      : await getDb()
+          .select({
+            id: adminInboxEvents.id,
+            sourceType: adminInboxEvents.sourceType,
+            category: adminInboxEvents.category,
+            sourceId: adminInboxEvents.sourceId,
+            title: adminInboxEvents.title,
+            submitterName: adminInboxEvents.submitterName,
+            submitterEmail: adminInboxEvents.submitterEmail,
+            submitterPhone: adminInboxEvents.submitterPhone,
+            summary: adminInboxEvents.summary,
+            payloadJson: adminInboxEvents.payloadJson,
+            status: adminInboxEvents.status,
+            createdAt: adminInboxEvents.createdAt,
+            updatedAt: adminInboxEvents.updatedAt,
+          })
+          .from(adminInboxEvents)
+          .where(
+            and(
+              source === "form_submission" || source === "mailchimp_signup"
+                ? eq(adminInboxEvents.sourceType, source as "form_submission" | "mailchimp_signup")
+                : undefined,
+              status === "new" || status === "read" || status === "archived"
+                ? eq(adminInboxEvents.status, status)
+                : undefined,
+              category ? eq(adminInboxEvents.category, category as AdminNotificationCategory) : undefined,
+              selectedInboundId ? eq(adminInboxEvents.id, Number(selectedInboundId)) : undefined,
+              q
+                ? or(
+                    ilike(adminInboxEvents.title, `%${q}%`),
+                    ilike(adminInboxEvents.submitterName, `%${q}%`),
+                    ilike(adminInboxEvents.submitterEmail, `%${q}%`),
+                    ilike(adminInboxEvents.summary, `%${q}%`),
+                  )
+                : undefined,
+              beforeDate ? lt(adminInboxEvents.createdAt, beforeDate) : undefined,
+            ),
+          )
+          .orderBy(desc(adminInboxEvents.createdAt), desc(adminInboxEvents.id))
+          .limit(perSourceLimit);
+
   const manualRows =
-    source && source !== "manual"
+    direction === "inbound" || (source && source !== "manual")
       ? []
       : await getDb()
           .select({
@@ -129,7 +184,7 @@ export async function GET(request: Request) {
           .limit(perSourceLimit);
 
   const newsletterRows =
-    source && source !== "newsletter"
+    direction === "inbound" || (source && source !== "newsletter")
       ? []
       : await getDb()
           .select({
@@ -168,7 +223,7 @@ export async function GET(request: Request) {
           .limit(perSourceLimit);
 
   const automatedRows =
-    source && source !== "automated"
+    direction === "inbound" || (source && source !== "automated")
       ? []
       : await getDb()
           .select({
@@ -203,7 +258,7 @@ export async function GET(request: Request) {
           .limit(perSourceLimit);
 
   const duesRows =
-    source && source !== "dues"
+    direction === "inbound" || (source && source !== "dues")
       ? []
       : await getDb()
           .select({
@@ -237,80 +292,130 @@ export async function GET(request: Request) {
           .limit(perSourceLimit);
 
   const merged: UnifiedMessageLogItem[] = [
+    ...inboundRows.map((row) => ({
+      id: `inbound:${row.id}`,
+      direction: "inbound" as const,
+      source: row.sourceType,
+      channel: "email" as const,
+      status: row.status,
+      recipientName: row.submitterName,
+      recipientEmail: row.submitterEmail,
+      subject: row.title,
+      provider: "inbound",
+      providerMessageId: row.sourceId,
+      errorMessage: "",
+      createdAt: row.createdAt.toISOString(),
+      sentAt: null,
+      actorEmail: "public",
+      campaignName: getCategoryLabel(row.category),
+      segmentLabel: row.sourceType,
+      category: row.category,
+      summary: row.summary,
+      payloadJson: row.payloadJson,
+      sourceRecordLabel: `${row.sourceType} #${row.sourceId}`,
+      sourceRecordHref: `/admin/messages?direction=inbound&id=${row.id}`,
+    })),
     ...manualRows.map((row) => ({
       id: `manual:${row.id}`,
+      direction: "outbound" as const,
       source: "manual" as const,
       channel: "email" as const,
+      status: normalizeManualStatus(row.status),
       recipientName: row.recipientName,
       recipientEmail: row.recipientEmail,
       subject: row.subject,
       provider: row.provider,
       providerMessageId: row.providerMessageId,
-      status: normalizeManualStatus(row.status),
       errorMessage: row.errorMessage,
       createdAt: row.createdAt.toISOString(),
       sentAt: row.sentAt ? row.sentAt.toISOString() : null,
       actorEmail: row.actorEmail,
       campaignName: row.campaignName,
       segmentLabel: getSegmentLabel(row.segmentKey),
+      category: "outbound",
+      summary: row.subject,
+      payloadJson: {},
+      sourceRecordLabel: `manual #${row.id}`,
+      sourceRecordHref: "/admin/messages?direction=outbound&source=manual",
     })),
     ...newsletterRows.map((row) => ({
       id: `newsletter:${row.id}`,
+      direction: "outbound" as const,
       source: "newsletter" as const,
       channel: "email" as const,
+      status: normalizeSentFailedStatus(row.status),
       recipientName: row.recipientName,
       recipientEmail: row.recipientEmail,
       subject: row.subject,
       provider: row.provider,
       providerMessageId: row.providerMessageId,
-      status: normalizeSentFailedStatus(row.status),
       errorMessage: row.errorMessage,
       createdAt: row.createdAt.toISOString(),
       sentAt: row.sentAt ? row.sentAt.toISOString() : null,
       actorEmail: row.actorEmail,
       campaignName: `Newsletter: ${row.campaignName}`,
       segmentLabel: row.campaignName,
+      category: "outbound",
+      summary: row.subject,
+      payloadJson: {},
+      sourceRecordLabel: `newsletter #${row.id}`,
+      sourceRecordHref: "/admin/messages?direction=outbound&source=newsletter",
     })),
     ...automatedRows.map((row) => ({
       id: `automated:${row.id}`,
+      direction: "outbound" as const,
       source: "automated" as const,
       channel: "email" as const,
+      status: normalizeSentFailedStatus(row.status),
       recipientName: row.displayName,
       recipientEmail: row.recipientEmail,
       subject: row.subject,
       provider: row.provider,
       providerMessageId: row.providerMessageId,
-      status: normalizeSentFailedStatus(row.status),
       errorMessage: row.errorMessage,
       createdAt: row.createdAt.toISOString(),
       sentAt: row.sentAt ? row.sentAt.toISOString() : null,
       actorEmail: "system",
       campaignName: "Automated reminder",
       segmentLabel: "Automated",
+      category: "outbound",
+      summary: row.subject,
+      payloadJson: {},
+      sourceRecordLabel: `automated #${row.id}`,
+      sourceRecordHref: "/admin/messages?direction=outbound&source=automated",
     })),
     ...duesRows.map((row) => ({
       id: `dues:${row.id}`,
+      direction: "outbound" as const,
       source: "dues" as const,
       channel: "email" as const,
+      status: normalizeSentFailedStatus(row.status),
       recipientName: row.displayName,
       recipientEmail: row.recipientEmail,
       subject: `[Dues] ${row.type}`,
       provider: row.provider,
       providerMessageId: row.providerMessageId,
-      status: normalizeSentFailedStatus(row.status),
       errorMessage: row.errorMessage,
       createdAt: row.createdAt.toISOString(),
       sentAt: row.createdAt.toISOString(),
       actorEmail: "system",
       campaignName: "Dues notification",
       segmentLabel: row.type,
+      category: "outbound",
+      summary: row.type,
+      payloadJson: {},
+      sourceRecordLabel: `dues #${row.id}`,
+      sourceRecordHref: "/admin/messages?direction=outbound&source=dues",
     })),
   ];
 
   const sorted = sortByCreatedAtDesc(merged);
   const items = sorted.slice(0, limit);
   const hasNextPage = sorted.length > limit;
-  const nextCursor = hasNextPage && items.length > 0 ? Buffer.from(JSON.stringify({ createdAt: items[items.length - 1]!.createdAt })).toString("base64url") : null;
+  const nextCursor =
+    hasNextPage && items.length > 0
+      ? Buffer.from(JSON.stringify({ createdAt: items[items.length - 1]!.createdAt })).toString("base64url")
+      : null;
 
   return NextResponse.json({
     items,

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 
+import { AuxiliaryMembershipForm } from "@/components/forms/auxiliary-membership-form";
 import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/primitives";
 import { MarketingPageShell } from "@/components/marketing/page-shell";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
@@ -110,6 +111,10 @@ export default async function AuxiliaryMembershipPage() {
           height={900}
           className={styles.illustration}
         />
+      </SectionCard>
+
+      <SectionCard title="Request Auxiliary Membership" description="Send your membership request here and we will follow up with confirmation and payment coordination.">
+        <AuxiliaryMembershipForm sourcePath={PATH} />
       </SectionCard>
 
       <SectionCard title="Contact">

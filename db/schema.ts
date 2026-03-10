@@ -144,6 +144,27 @@ export const messageCampaignChannelEnum = pgEnum("message_campaign_channel", ["e
 export const messageCampaignSourceEnum = pgEnum("message_campaign_source", ["manual", "newsletter", "automated"]);
 export const messageCampaignStatusEnum = pgEnum("message_campaign_status", ["sending", "completed", "partial", "failed"]);
 export const messageDeliveryStatusEnum = pgEnum("message_delivery_status", ["queued", "sent", "failed", "skipped"]);
+export const adminNotificationCategoryEnum = pgEnum("admin_notification_category", [
+  "general_forms",
+  "volunteer",
+  "kosher",
+  "davening",
+  "kiddush",
+  "auxiliary_membership",
+  "newsletter_signup",
+]);
+export const adminInboxEventSourceTypeEnum = pgEnum("admin_inbox_event_source_type", [
+  "form_submission",
+  "mailchimp_signup",
+]);
+export const adminInboxEventStatusEnum = pgEnum("admin_inbox_event_status", ["new", "read", "archived"]);
+export const mailchimpSignupEventTypeEnum = pgEnum("mailchimp_signup_event_type", [
+  "subscribe",
+  "profile",
+  "upemail",
+  "cleaned",
+  "unsubscribe",
+]);
 
 export const formSubmissions = pgTable("form_submissions", {
   id: serial("id").primaryKey(),
@@ -165,6 +186,61 @@ export const formDeliveryLog = pgTable("form_delivery_log", {
   errorMessage: varchar("error_message", { length: 512 }).notNull().default(""),
   deliveredAt: timestamp("delivered_at").defaultNow().notNull(),
 });
+
+export const adminInboxEvents = pgTable(
+  "admin_inbox_events",
+  {
+    id: serial("id").primaryKey(),
+    sourceType: adminInboxEventSourceTypeEnum("source_type").notNull(),
+    category: adminNotificationCategoryEnum("category").notNull(),
+    sourceId: varchar("source_id", { length: 80 }).notNull(),
+    title: varchar("title", { length: 255 }).notNull(),
+    submitterName: varchar("submitter_name", { length: 120 }).notNull().default(""),
+    submitterEmail: varchar("submitter_email", { length: 255 }).notNull().default(""),
+    submitterPhone: varchar("submitter_phone", { length: 60 }).notNull().default(""),
+    summary: text("summary").notNull().default(""),
+    payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    status: adminInboxEventStatusEnum("status").notNull().default("new"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    categoryStatusCreatedIdx: index("admin_inbox_events_category_status_created_idx").on(
+      table.category,
+      table.status,
+      table.createdAt,
+    ),
+    sourceTypeSourceIdIdx: uniqueIndex("admin_inbox_events_source_type_source_id_unique_idx").on(
+      table.sourceType,
+      table.sourceId,
+    ),
+    statusCreatedIdx: index("admin_inbox_events_status_created_idx").on(table.status, table.createdAt),
+  }),
+);
+
+export const mailchimpSignupEvents = pgTable(
+  "mailchimp_signup_events",
+  {
+    id: serial("id").primaryKey(),
+    eventKey: varchar("event_key", { length: 255 }).notNull().unique(),
+    listId: varchar("list_id", { length: 120 }).notNull().default(""),
+    eventType: mailchimpSignupEventTypeEnum("event_type").notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
+    firstName: varchar("first_name", { length: 120 }).notNull().default(""),
+    lastName: varchar("last_name", { length: 120 }).notNull().default(""),
+    payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    occurredAt: timestamp("occurred_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    listEventOccurredIdx: index("mailchimp_signup_events_list_event_occurred_idx").on(
+      table.listId,
+      table.eventType,
+      table.occurredAt,
+    ),
+    emailOccurredIdx: index("mailchimp_signup_events_email_occurred_idx").on(table.email, table.occurredAt),
+  }),
+);
 
 export const events = pgTable("events", {
   id: serial("id").primaryKey(),
@@ -296,6 +372,27 @@ export const passwordResetTokens = pgTable(
     tokenHashUniqueIdx: uniqueIndex("password_reset_tokens_token_hash_unique_idx").on(table.tokenHash),
     userStateExpiresIdx: index("password_reset_tokens_user_used_expires_idx").on(table.userId, table.usedAt, table.expiresAt),
     expiresAtIdx: index("password_reset_tokens_expires_at_idx").on(table.expiresAt),
+  }),
+);
+
+export const adminNotificationPreferences = pgTable(
+  "admin_notification_preferences",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id),
+    category: adminNotificationCategoryEnum("category").notNull(),
+    enabled: boolean("enabled").notNull().default(true),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    userCategoryUniqueIdx: uniqueIndex("admin_notification_preferences_user_category_unique_idx").on(
+      table.userId,
+      table.category,
+    ),
+    categoryEnabledIdx: index("admin_notification_preferences_category_enabled_idx").on(table.category, table.enabled),
   }),
 );
 

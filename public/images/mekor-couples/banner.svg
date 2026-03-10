@@ -1,0 +1,49 @@
+<svg width="1600" height="420" viewBox="0 0 1600 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="140" y1="40" x2="1470" y2="390" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8EFE0"/>
+      <stop offset="0.5" stop-color="#F7F3EA"/>
+      <stop offset="1" stop-color="#E9F0F8"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="324" y1="86" x2="1268" y2="333" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C79744"/>
+      <stop offset="1" stop-color="#B98435"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="1600" height="420" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#294867" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="420" rx="34" fill="url(#bg)"/>
+  <circle cx="136" cy="82" r="84" fill="#DCE8F5" fill-opacity="0.65"/>
+  <circle cx="1470" cy="324" r="110" fill="#F3DFC0" fill-opacity="0.7"/>
+  <circle cx="1248" cy="72" r="32" fill="#E8F0F9"/>
+  <circle cx="296" cy="334" r="42" fill="#F6E4C9"/>
+
+  <g filter="url(#shadow)">
+    <rect x="258" y="62" width="1084" height="296" rx="30" fill="white" fill-opacity="0.82"/>
+  </g>
+
+  <path d="M324 136C324 114.909 341.091 97.8182 362.182 97.8182H1237.82C1258.91 97.8182 1276 114.909 1276 136V138.182C1276 159.273 1258.91 176.364 1237.82 176.364H362.182C341.091 176.364 324 159.273 324 138.182V136Z" fill="url(#accent)"/>
+  <text x="800" y="151" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="700" fill="#FFF9F1">Mazel Tov to Our Mekor Couples</text>
+
+  <text x="800" y="224" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="26" fill="#4E6278">Celebrating the joy, blessing, and shared future of the couples who met through Mekor.</text>
+  <text x="800" y="266" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="24" fill="#5D7187">May every home be filled with simcha, warmth, and lasting companionship.</text>
+
+  <g transform="translate(424 234)">
+    <circle cx="0" cy="0" r="34" stroke="#C49441" stroke-width="10"/>
+    <circle cx="54" cy="0" r="34" stroke="#D0A24D" stroke-width="10"/>
+    <circle cx="27" cy="0" r="6" fill="#F1C977"/>
+  </g>
+
+  <g transform="translate(1118 238)">
+    <path d="M0 32C28 12 52 8 78 8C104 8 126 14 146 26" stroke="#7EA4C8" stroke-width="8" stroke-linecap="round"/>
+    <path d="M22 46C42 28 62 22 84 22C104 22 122 28 138 40" stroke="#B7833C" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="150" cy="28" r="10" fill="#E8B960"/>
+  </g>
+
+  <g opacity="0.7">
+    <path d="M146 206C171 184 196 172 221 172C246 172 271 184 296 206" stroke="#C99A4B" stroke-width="6" stroke-linecap="round"/>
+    <path d="M1312 196C1337 174 1362 162 1387 162C1412 162 1437 174 1462 196" stroke="#8CAFD0" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

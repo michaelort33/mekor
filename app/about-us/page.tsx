@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { ContactForm } from "@/components/medium-pages/contact-form";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
@@ -115,6 +116,10 @@ export default function AboutUsPage() {
             { label: "Email admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org?subject=Join%20Us" },
           ]}
         />
+      </SectionCard>
+
+      <SectionCard title="Send an Inquiry" description="Questions about membership, programs, or community life can be sent here directly from the About Us page.">
+        <ContactForm sourcePath="/about-us" />
       </SectionCard>
 
       <SectionCard>

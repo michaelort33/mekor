@@ -16,9 +16,6 @@ const CONTACT_IMAGES = {
   banner: "/images/contact-us/banner.jpg",
 } as const;
 
-const MAP_EMBED_SRC =
-  "https://www.google.com/maps?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102&output=embed";
-
 export const dynamic = "force-static";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -95,14 +92,46 @@ export default async function ContactUsPage() {
       </SectionCard>
 
       <SectionCard title="Visit the Shul">
-        <div className={styles.mapShell}>
-          <iframe
-            src={MAP_EMBED_SRC}
-            title="Mekor Habracha location map"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className={styles.mapFrame}
-          />
+        <div className={styles.visitGrid}>
+          <div className={styles.visitCard}>
+            <h3>Address</h3>
+            <p>1500 Walnut St, Suite 206</p>
+            <p>Philadelphia, PA 19102</p>
+
+            <h3>When to Come</h3>
+            <p>Reach out before visiting for weekday minyan details, class timing, or to coordinate building access.</p>
+
+            <h3>Getting Here</h3>
+            <p>We are in Center City, a short walk from SEPTA regional rail, PATCO, and multiple bus lines.</p>
+
+            <h3>Parking and Access</h3>
+            <p>Nearby garages and street parking are available throughout the neighborhood. Contact us if you need help planning your visit.</p>
+
+            <CTACluster
+              items={[
+                { label: "Open in Google Maps", href: "https://maps.google.com/?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102" },
+                { label: "Email for Visiting Info", href: "mailto:mekorhabracha@gmail.com?subject=Visiting%20Mekor" },
+              ]}
+            />
+          </div>
+          <div className={styles.locationPanel}>
+            <p className={styles.locationEyebrow}>Center City Philadelphia</p>
+            <h3 className={styles.locationTitle}>1500 Walnut Street, Suite 206</h3>
+            <p className={styles.locationCopy}>
+              Mekor is located in the heart of Center City, close to transit, neighborhood parking, restaurants, and the Rittenhouse area.
+            </p>
+            <div className={styles.locationHighlights}>
+              <span>Near SEPTA regional rail and PATCO</span>
+              <span>Walkable from Rittenhouse Square</span>
+              <span>Best to coordinate ahead for weekday access</span>
+            </div>
+            <CTACluster
+              items={[
+                { label: "Open in Google Maps", href: "https://maps.google.com/?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102" },
+                { label: "Call the Shul", href: "tel:+12155254246" },
+              ]}
+            />
+          </div>
         </div>
       </SectionCard>
 

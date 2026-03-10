@@ -48,3 +48,54 @@
   color: #4f5b69;
   line-height: 1.62;
 }
+
+.profileLayout {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: minmax(240px, 0.72fr) minmax(0, 1.28fr);
+  align-items: start;
+}
+
+.profilePhotoWrap {
+  overflow: hidden;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #edf4fb 0%, #e3ecf6 100%);
+  border: 1px solid #d5e0ec;
+}
+
+.profilePhoto {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.profileBody {
+  display: grid;
+  gap: 16px;
+}
+
+.profileTitle {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: #22364b;
+}
+
+.profileText {
+  display: grid;
+  gap: 14px;
+}
+
+.profileText p {
+  margin: 0;
+  color: #4f5b69;
+  line-height: 1.68;
+}
+
+@media (max-width: 960px) {
+  .profileLayout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

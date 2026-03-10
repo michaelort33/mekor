@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { DaveningRsvpForm } from "@/components/forms/davening-rsvp-form";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
@@ -9,6 +10,7 @@ import styles from "./page.module.css";
 
 const PATH = "/davening" as const;
 const MINYAN_WHATSAPP_URL = "https://chat.whatsapp.com/INZrPssTZeHK5xrx5ghECF";
+const MYZMANIM_WIDGET_URL = process.env.MYZMANIM_WIDGET_URL || process.env.NEXT_PUBLIC_MYZMANIM_WIDGET_URL || "";
 
 const DAVENING_IMAGES = {
   hero: "/images/davening/hero.jpg",
@@ -264,6 +266,37 @@ export default async function DaveningPage() {
         </div>
       </SectionCard>
 
+      <SectionCard
+        title="Live Zmanim"
+        description="For up-to-the-minute daily zmanim, use the MyZmanim widget below when available. The Mekor service schedule above remains the primary davening schedule."
+      >
+        {MYZMANIM_WIDGET_URL ? (
+          <div className={styles.zmanimEmbedWrap}>
+            <iframe
+              src={MYZMANIM_WIDGET_URL}
+              title="MyZmanim live zmanim"
+              className={styles.zmanimEmbed}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        ) : (
+          <div className={styles.zmanimFallback}>
+            <p>
+              A MyZmanim widget slot has been restored on this page. To activate the live embed, set
+              <code> MYZMANIM_WIDGET_URL</code> or <code> NEXT_PUBLIC_MYZMANIM_WIDGET_URL</code> to your issued
+              MyZmanim widget URL.
+            </p>
+            <CTACluster
+              items={[
+                { label: "Open MyZmanim", href: "https://www.myzmanim.com/" },
+                { label: "Join Minyan WhatsApp", href: MINYAN_WHATSAPP_URL },
+              ]}
+            />
+          </div>
+        )}
+      </SectionCard>
+
       <SectionCard title="Weekday Services" description="Please notify us if you plan to attend weekday minyanim.">
         <div className={styles.noteGrid}>
           {WEEKDAY_NOTES.map((note) => (
@@ -272,6 +305,13 @@ export default async function DaveningPage() {
             </article>
           ))}
         </div>
+      </SectionCard>
+
+      <SectionCard
+        title="RSVP or Participate"
+        description="Use this intake for weekday minyan interest, Shabbat attendance coordination, leining, leading davening, or yahrzeit-related requests."
+      >
+        <DaveningRsvpForm sourcePath={PATH} />
       </SectionCard>
 
       <SectionCard title="Nearby Weekday Minyanim">
