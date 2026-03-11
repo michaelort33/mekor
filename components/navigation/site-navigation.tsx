@@ -109,7 +109,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
 
           <div className="flex flex-none items-center gap-2">
             <div className="hidden 2xl:flex">
-              <UniversalSearch />
+              <UniversalSearch compact />
             </div>
             <div className="hidden md:flex 2xl:hidden">
               <UniversalSearch compact />
