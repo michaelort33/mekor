@@ -89,14 +89,12 @@ export async function KosherPlacesPage({
   const rawLastUpdated =
     derivedLastUpdated ?? (lastUpdatedKey ? await getKosherDirectoryLastUpdated(lastUpdatedKey) : null);
   const lastUpdatedDate = formatLastUpdatedDate(rawLastUpdated);
-  const neighborhoodCount = new Set(places.map((place) => place.neighborhood)).size;
-  const categoryCount = new Set(places.flatMap((place) => place.tags.map((tag) => tag.toLowerCase()))).size;
 
   return (
     <NativeShell currentPath={currentPath} className="kosher-places-page" contentClassName="gap-8">
       <section className="relative isolate overflow-hidden rounded-[40px] border border-[var(--color-border)] bg-[linear-gradient(135deg,rgba(17,35,59,0.95),rgba(44,70,100,0.92))] px-6 py-8 [color:#f8fbff] shadow-[0_42px_100px_-60px_rgba(15,23,42,0.6)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(192,155,96,0.26),transparent_30%)]" />
-        <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-end">
+        <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
           <div className="space-y-5">
             {kicker ? <Badge className="border-white/15 bg-white/10 text-[rgba(255,255,255,0.78)]">{kicker}</Badge> : null}
             <div className="space-y-4">
@@ -124,23 +122,19 @@ export async function KosherPlacesPage({
                 <a href="#map">Open the map</a>
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <Card className="border-white/12 bg-white/10 px-3 py-3 [color:#f8fbff] shadow-none sm:px-4 sm:py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.6)]">Listings</p>
-                <p className="mt-2 font-[family-name:var(--font-heading)] text-4xl">{places.length}</p>
-              </Card>
-              <Card className="border-white/12 bg-white/10 px-3 py-3 [color:#f8fbff] shadow-none sm:px-4 sm:py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.6)]">Neighborhoods</p>
-                <p className="mt-2 font-[family-name:var(--font-heading)] text-4xl">{neighborhoodCount}</p>
-              </Card>
-              <Card className="col-span-2 border-white/12 bg-white/10 px-3 py-3 [color:#f8fbff] shadow-none sm:col-span-1 sm:px-4 sm:py-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.6)]">Categories</p>
-                <p className="mt-2 font-[family-name:var(--font-heading)] text-4xl">{categoryCount}</p>
-              </Card>
+            <div className="rounded-[24px] border border-white/14 bg-white/8 px-4 py-4 sm:px-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.62)]">
+                How to use this guide
+              </p>
+              <ul className="mt-3 grid gap-2 text-sm leading-6 text-[rgba(255,255,255,0.78)] sm:text-[15px]">
+                <li>Search by restaurant name, supervision keyword, or address details.</li>
+                <li>Filter by neighborhood and category to narrow options quickly.</li>
+                <li>Use map + listings together to plan where to eat next.</li>
+              </ul>
             </div>
             <p className="text-sm leading-6 text-[rgba(255,255,255,0.66)]">
-              {lastUpdatedDate ? `Last updated ${lastUpdatedDate}. ` : null}
-              Listings include community-tracked supervision notes, location details, and direct links for planning.
+              {lastUpdatedDate ? `Guide last refreshed ${lastUpdatedDate}. ` : null}
+              Each listing includes supervision notes, location details, and direct planning links.
             </p>
           </div>
 
