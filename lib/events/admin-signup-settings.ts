@@ -1,4 +1,5 @@
 import { normalizeEventSignupSettings } from "@/lib/events/signup-settings";
+import { isEventPast } from "@/lib/events/status";
 
 export type AdminEventSignupSettingsTier = {
   id: number;
@@ -15,6 +16,8 @@ export type AdminEventSignupSettingsRow = {
   eventId: number;
   eventTitle: string;
   eventPath: string;
+  startAt: Date | null;
+  endAt: Date | null;
   enabled: boolean | null;
   capacity: number | null;
   waitlistEnabled: boolean | null;
@@ -29,12 +32,17 @@ export function toAdminEventSignupSettings(
   tiersBySetting: Map<number, AdminEventSignupSettingsTier[]>,
 ) {
   const normalized = normalizeEventSignupSettings(row);
+  const startAt = row.startAt ? row.startAt.toISOString() : null;
+  const endAt = row.endAt ? row.endAt.toISOString() : null;
 
   return {
     id: normalized.id,
     eventId: row.eventId,
     eventTitle: row.eventTitle,
     eventPath: row.eventPath,
+    startAt,
+    endAt,
+    isPast: isEventPast({ startAt, endAt }),
     enabled: normalized.enabled,
     capacity: normalized.capacity,
     waitlistEnabled: normalized.waitlistEnabled,

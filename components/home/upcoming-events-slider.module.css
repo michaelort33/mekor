@@ -1,0 +1,136 @@
+.root {
+  align-items: start;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1fr);
+}
+
+.media {
+  border-radius: 30px;
+  border: 1px solid rgba(30, 50, 73, 0.1);
+  overflow: hidden;
+  background: linear-gradient(180deg, #f4f4f1 0%, #f7f8fb 100%);
+}
+
+.media img {
+  width: 100%;
+  height: 100%;
+  min-height: 20rem;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.body {
+  align-content: center;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.kicker {
+  align-items: center;
+  border: 1px solid #c3ceda;
+  border-radius: 999px;
+  color: #607488;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  margin: 0;
+  max-width: fit-content;
+  padding: 0.35rem 0.8rem;
+  text-transform: uppercase;
+}
+
+.title {
+  color: #1c2f45;
+  font-family: var(--native-font-heading);
+  font-size: clamp(2rem, 3.4vw, 3.2rem);
+  line-height: 0.96;
+  margin: 0;
+}
+
+.meta {
+  margin: 0;
+  color: #7f5b2c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.description {
+  margin: 0;
+  color: #556779;
+  line-height: 1.72;
+}
+
+.controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.navButton {
+  align-items: center;
+  background: #f3f8fd;
+  border: 1px solid #b4c9dd;
+  border-radius: 999px;
+  color: #1f4d76;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1rem;
+  font-weight: 800;
+  height: 34px;
+  justify-content: center;
+  padding: 0;
+  width: 34px;
+}
+
+.navButton:hover {
+  background: #e7f2fb;
+  border-color: #2d6ca1;
+}
+
+.counter {
+  color: #5b6d7f;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-right: 2px;
+  text-transform: uppercase;
+}
+
+.dots {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.dot {
+  background: #d0dbe6;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  height: 8px;
+  padding: 0;
+  width: 8px;
+}
+
+.dotActive {
+  background: #2f6ea9;
+}
+
+@media (max-width: 1100px) {
+  .root {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .media img {
+    min-height: 240px;
+  }
+}

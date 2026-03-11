@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
+import { UpcomingEventsSlider } from "@/components/home/upcoming-events-slider";
 import { getManagedEvents } from "@/lib/events/store";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
@@ -71,6 +72,7 @@ const SUPPORT_LINKS = [
 ] as const;
 
 const INTRO_VIDEO_URL = "https://www.youtube.com/embed/aieR-a2z1RY";
+const DEFAULT_EVENT_IMAGE = "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg";
 
 function formatHomeEventDate(value: string | null, shortDate: string) {
   if (!value) {
@@ -95,11 +97,21 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const upcomingEvents = (await getManagedEvents())
-    .filter((event) => !event.isPast)
+  const upcomingManagedEvents = (await getManagedEvents()).filter((event) => !event.isPast);
+  const sliderEvents = upcomingManagedEvents
+    .slice(0, 6)
+    .map((event) => ({
+      image: event.heroImage || DEFAULT_EVENT_IMAGE,
+      alt: `${event.title} event graphic`,
+      title: event.title,
+      date: formatHomeEventDate(event.startAt, event.shortDate),
+      place: event.location || "Philadelphia",
+      href: event.path,
+    }));
+  const upcomingEvents = upcomingManagedEvents
     .slice(0, 2)
     .map((event) => ({
-      image: event.heroImage,
+      image: event.heroImage || DEFAULT_EVENT_IMAGE,
       alt: `${event.title} event graphic`,
       title: event.title,
       date: formatHomeEventDate(event.startAt, event.shortDate),
@@ -174,21 +186,7 @@ export default async function HomePage() {
 
       <div className={styles.featureGrid}>
         <SectionCard className={styles.featureCard}>
-          <SplitMediaText
-            title="Purim at Mekor"
-            kicker="Featured Event"
-            className={styles.featureStory}
-            media={{
-              src: "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg",
-              alt: "Purim community celebration",
-            }}
-            paragraphs={[
-              "Join us for Megillah readings, tefillot, and our festive Purim celebration.",
-            ]}
-            links={[
-              { label: "Event Details", href: "/events-1/purim-at-mekor" },
-            ]}
-          />
+          <UpcomingEventsSlider events={sliderEvents} />
         </SectionCard>
 
         <SectionCard className={styles.featureCard}>
@@ -237,21 +235,32 @@ export default async function HomePage() {
           <Link href="/events" className={styles.textLink}>See all events</Link>
         </div>
         <div className={styles.eventsGrid}>
-          {upcomingEvents.map((event) => (
-            <article key={event.href} className={styles.eventCard}>
-              <div className={styles.eventMedia}>
-                <Image src={event.image} alt={event.alt} width={960} height={720} sizes="(max-width: 900px) 100vw, 33vw" />
-              </div>
+          {upcomingEvents.length > 0 ? (
+            upcomingEvents.map((event) => (
+              <article key={event.href} className={styles.eventCard}>
+                <div className={styles.eventMedia}>
+                  <Image src={event.image} alt={event.alt} width={960} height={720} sizes="(max-width: 900px) 100vw, 33vw" />
+                </div>
+                <div className={styles.eventBody}>
+                  <p className={styles.eventDate}>{event.date}</p>
+                  <h3>{event.title}</h3>
+                  <p className={styles.eventPlace}>{event.place}</p>
+                  <Link className={styles.eventLink} href={event.href}>
+                    More info / RSVP
+                  </Link>
+                </div>
+              </article>
+            ))
+          ) : (
+            <article className={styles.eventCard}>
               <div className={styles.eventBody}>
-                <p className={styles.eventDate}>{event.date}</p>
-                <h3>{event.title}</h3>
-                <p className={styles.eventPlace}>{event.place}</p>
-                <Link className={styles.eventLink} href={event.href}>
-                  RSVP
+                <p className={styles.eventPlace}>No upcoming events are currently scheduled.</p>
+                <Link className={styles.eventLink} href="/events">
+                  Browse events
                 </Link>
               </div>
             </article>
-          ))}
+          )}
         </div>
       </SectionCard>
 

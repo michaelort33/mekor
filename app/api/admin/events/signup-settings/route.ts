@@ -50,6 +50,8 @@ export async function GET(request: Request) {
       eventId: events.id,
       eventTitle: events.title,
       eventPath: events.path,
+      startAt: events.startAt,
+      endAt: events.endAt,
       enabled: eventSignupSettings.enabled,
       capacity: eventSignupSettings.capacity,
       waitlistEnabled: eventSignupSettings.waitlistEnabled,

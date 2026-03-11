@@ -8,6 +8,9 @@ import { canShowEventSignupAction } from "@/lib/events/signup-availability";
 
 type EventsCalendarProps = {
   events: ManagedEvent[];
+  title?: string;
+  emptyMessage?: string;
+  allowSignup?: boolean;
 };
 
 type MonthBucket = {
@@ -114,7 +117,12 @@ function buildMonthBuckets(events: ManagedEvent[]): MonthBucket[] {
   return [...byKey.values()].sort((a, b) => a.firstDay.getTime() - b.firstDay.getTime());
 }
 
-export function EventsCalendar({ events }: EventsCalendarProps) {
+export function EventsCalendar({
+  events,
+  title = "Events",
+  emptyMessage = "No event dates are currently available.",
+  allowSignup = true,
+}: EventsCalendarProps) {
   const months = useMemo(() => buildMonthBuckets(events), [events]);
   const [selectedMonthKey, setSelectedMonthKey] = useState("");
   const defaultMonthIndex = useMemo(() => closestMonthIndex(months, new Date()), [months]);
@@ -150,7 +158,7 @@ export function EventsCalendar({ events }: EventsCalendarProps) {
   };
 
   if (!selectedMonth) {
-    return <p className="events-hub__empty">No event dates are currently available.</p>;
+    return <p className="events-hub__empty">{emptyMessage}</p>;
   }
 
   const leadingEmptyCells = Array.from({ length: selectedMonth.startsOn }, (_, index) => (
@@ -173,6 +181,7 @@ export function EventsCalendar({ events }: EventsCalendarProps) {
 
   return (
     <section className="events-hub__calendar-block" aria-label="Events calendar">
+      <h2 className="events-hub__section-title">{title}</h2>
       <div className="events-hub__month-nav">
         <button
           type="button"
@@ -235,7 +244,7 @@ export function EventsCalendar({ events }: EventsCalendarProps) {
             <Link href={event.path} className="events-hub__event-link">
               View event
             </Link>
-            {canShowEventSignupAction(event) ? (
+            {allowSignup && canShowEventSignupAction(event) ? (
               <Link href={`${event.path}#signup`} className="events-hub__event-link">
                 Sign up
               </Link>

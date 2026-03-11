@@ -57,6 +57,127 @@
   color: #4b5563;
 }
 
+.listActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.listActions button {
+  min-height: 34px;
+  border: 1px solid #c9d7e3;
+  border-radius: 10px;
+  background: #f7fbff;
+  color: #1f4d76;
+  font-weight: 700;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.listActions button:hover {
+  border-color: #2f6ea9;
+  background: #edf5fc;
+}
+
+.manageLayout {
+  display: grid;
+  gap: 1rem;
+}
+
+.manageHeader {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.managePicker {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 700;
+  color: #33485e;
+  font-size: 0.85rem;
+}
+
+.managePicker select {
+  min-height: 42px;
+  border: 1px solid #bdd0e0;
+  border-radius: 12px;
+  background: #fcfdff;
+  color: #19324a;
+  padding: 0 12px;
+  font: inherit;
+}
+
+.manageMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.8rem;
+  align-items: center;
+  color: #546676;
+  font-size: 0.9rem;
+}
+
+.manageMeta a {
+  color: #1f4d76;
+  font-weight: 700;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  border: 1px solid transparent;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.statusBadgeUpcoming {
+  background: #e9f4ff;
+  border-color: #bad6ee;
+  color: #1f4d76;
+}
+
+.statusBadgePast {
+  background: #f5eae6;
+  border-color: #e6c9be;
+  color: #8d4d3d;
+}
+
+.manageForm {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.manageForm label {
+  display: grid;
+  gap: 0.38rem;
+  font-weight: 700;
+  color: #33485e;
+  font-size: 0.82rem;
+}
+
+.manageForm input,
+.manageForm select {
+  min-height: 42px;
+  border: 1px solid #bdd0e0;
+  border-radius: 12px;
+  background: #fcfdff;
+  color: #19324a;
+  padding: 0 12px;
+  font: inherit;
+}
+
+.manageActions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .error {
   background: #fef2f2;
   border: 1px solid #fecaca;
@@ -90,5 +211,9 @@
   .listItem {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .listActions {
+    justify-content: flex-start;
   }
 }

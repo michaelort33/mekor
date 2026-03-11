@@ -1499,6 +1499,13 @@ body.native-nav--mobile-open {
   padding: 16px;
 }
 
+.events-hub__section-title {
+  margin: 0 0 12px;
+  color: var(--native-page-heading);
+  font-family: var(--native-font-heading);
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+}
+
 .events-hub__month-tabs {
   display: flex;
   gap: 8px;
