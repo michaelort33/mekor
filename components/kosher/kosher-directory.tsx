@@ -188,7 +188,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
   function renderPlaceCard(place: ManagedKosherPlace) {
     return (
       <article key={place.path}>
-        <Card className="h-full overflow-hidden bg-[linear-gradient(160deg,rgba(255,255,255,0.98),rgba(248,243,235,0.95))]">
+        <Card className="h-full overflow-hidden rounded-[8px] border-[#d2d9e0] bg-[#fcfbf7] shadow-none">
           <Link href={place.path} className="block" aria-label={`Open ${place.title}`}>
             <div className="overflow-hidden">
               <Image
@@ -197,7 +197,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                 width={960}
                 height={720}
                 sizes="(max-width: 900px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="h-56 w-full object-cover transition duration-300 hover:scale-[1.03]"
+                className="h-52 w-full object-cover transition duration-300 hover:scale-[1.02] sm:h-56"
                 onError={(event) => {
                   const image = event.currentTarget;
                   if (!image.src.endsWith(KOSHER_FALLBACK_IMAGE_SRC)) {
@@ -208,18 +208,18 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
             </div>
           </Link>
 
-          <div className="space-y-4 px-5 py-5">
+          <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge>{place.neighborhoodLabel}</Badge>
+              <Badge className="border-[#cad2dc] bg-[#eff2f6] text-[#36465a]">{place.neighborhoodLabel}</Badge>
               {place.tags.map((tag) => (
                 <button
                   key={`${place.path}-${tag}`}
                   type="button"
                   className={cn(
-                    "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] transition",
+                    "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition",
                     selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
                       ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                      : "border-[var(--color-border-strong)] bg-white/70 text-[var(--color-muted)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
+                      : "border-[#c4ced9] bg-[#f4f5f7] text-[#4e5f72] hover:border-[#b3c0ce] hover:bg-[#ebeff3] hover:text-[#2e4259]",
                   )}
                   style={
                     selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
@@ -236,11 +236,11 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
             </div>
 
             <div className="space-y-3">
-              <h3 className="font-[family-name:var(--font-heading)] text-3xl leading-none tracking-[-0.03em] text-[var(--color-foreground)]">
+              <h3 className="font-[family-name:var(--font-heading)] text-3xl leading-[1.02] tracking-[-0.02em] text-[#24374d]">
                 {place.title}
               </h3>
-              {place.summary ? <p className="text-sm leading-7 text-[var(--color-muted)]">{place.summary}</p> : null}
-              <div className="space-y-2 text-sm leading-6 text-[var(--color-muted)]">
+              {place.summary ? <p className="text-sm leading-7 text-[#445365]">{place.summary}</p> : null}
+              <div className="space-y-2 text-sm leading-6 text-[#526173]">
                 {place.address ? <p>{place.address}</p> : null}
                 {place.supervision ? <p>{place.supervision}</p> : null}
                 {place.phone ? <p>{formatPhone(place.phone)}</p> : null}
@@ -248,18 +248,18 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
             </div>
 
             <div className="flex flex-wrap gap-2 pt-1">
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="bg-[#2f4d6d] text-[#f8fbff] hover:bg-[#284462]">
                 <Link href={place.path}>Details</Link>
               </Button>
               {place.locationHref ? (
-                <Button asChild size="sm" variant="outline">
+                <Button asChild size="sm" variant="outline" className="border-[#b8c4d1] bg-[#f4f6f8] text-[#2c4664] hover:bg-[#eceff3]">
                   <a href={place.locationHref} target="_blank" rel="noreferrer noopener">
                     Map
                   </a>
                 </Button>
               ) : null}
               {place.website ? (
-                <Button asChild size="sm" variant="ghost">
+                <Button asChild size="sm" variant="ghost" className="text-[#2c4664] hover:bg-[#edf1f4]">
                   <a href={place.website} target="_blank" rel="noreferrer noopener">
                     {normalizeWebsiteLabel(place.website)}
                   </a>
@@ -276,22 +276,22 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
     <>
       <div id="kosher-directory" className="sr-only" />
       <section id="directory" className="grid gap-6" aria-label="Kosher places directory">
-        <Card className="overflow-hidden px-5 py-5 sm:px-6 sm:py-6">
+        <Card className="overflow-hidden rounded-[8px] border-[#cfd6dd] bg-[#fcfbf7] px-4 py-5 shadow-none sm:px-6 sm:py-6">
           <div className="grid gap-5">
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end">
               <div className="space-y-3">
-                <Badge>Filter the guide</Badge>
+                <Badge className="border-[#cad2dc] bg-[#eff2f6] text-[#36465a]">Filter the guide</Badge>
                 <div className="space-y-2">
-                  <h2 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.03em] text-[var(--color-foreground)] sm:text-5xl">
+                  <h2 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.02em] text-[#23374d] sm:text-4xl">
                     One kosher directory, all neighborhoods
                   </h2>
-                  <p className="max-w-2xl text-base leading-7 text-[var(--color-muted)]">
+                  <p className="max-w-2xl text-base leading-7 text-[#445365]">
                     Search by name, filter by neighborhood, and narrow by category without jumping between separate archive pages.
                   </p>
                 </div>
               </div>
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Search the guide</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5a6777]">Search the guide</span>
                 <Input
                   type="search"
                   value={search}
@@ -303,7 +303,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
 
             <div className="grid gap-5">
               <div className="grid gap-3">
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Neighborhood</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5a6777]">Neighborhood</span>
                 <div className="flex flex-wrap gap-2" role="tablist" aria-label="Neighborhood filter">
                   {NEIGHBORHOOD_OPTIONS.map((option) => (
                     <button
@@ -313,7 +313,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                         "rounded-full border px-4 py-2.5 text-sm font-semibold tracking-[0.01em] transition",
                         selectedNeighborhood === option.value
                           ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                          : "border-[var(--color-border-strong)] bg-white/78 text-[var(--color-muted)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
+                          : "border-[#c4ced9] bg-[#f4f5f7] text-[#4e5f72] hover:border-[#b3c0ce] hover:bg-[#ebeff3] hover:text-[#2e4259]",
                       )}
                       style={selectedNeighborhood === option.value ? { color: "#f8fbff" } : undefined}
                       onClick={() => setSelectedNeighborhood(option.value)}
@@ -326,7 +326,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
 
               {tagOptions.length > 1 ? (
                 <div className="grid gap-3">
-                  <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Category</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5a6777]">Category</span>
                   <div className="flex flex-wrap gap-2" role="tablist" aria-label="Category filter">
                     {tagOptions
                       .filter((tag) => tag !== "all")
@@ -338,7 +338,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                             "rounded-full border px-4 py-2.5 text-sm font-semibold tracking-[0.01em] transition",
                             selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
                               ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                              : "border-[var(--color-border-strong)] bg-white/78 text-[var(--color-muted)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
+                              : "border-[#c4ced9] bg-[#f4f5f7] text-[#4e5f72] hover:border-[#b3c0ce] hover:bg-[#ebeff3] hover:text-[#2e4259]",
                           )}
                           style={
                             selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
@@ -356,8 +356,8 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                 </div>
               ) : null}
 
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-4">
-                <p className="text-sm leading-6 text-[var(--color-muted)]">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d4dbe2] pt-4">
+                <p className="text-sm leading-6 text-[#4f5f72]">
                   Showing {filteredPlaces.length} of {places.length} listings
                   {selectedNeighborhood !== "all" ? ` in ${NEIGHBORHOOD_FULL_LABELS[selectedNeighborhood]}` : ""}.
                 </p>
@@ -379,8 +379,8 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
         </Card>
 
         {filteredPlaces.length === 0 ? (
-          <Card className="px-6 py-8 text-center">
-            <p className="text-base leading-7 text-[var(--color-muted)]">
+          <Card className="rounded-[8px] border-[#cfd6dd] bg-[#fcfbf7] px-6 py-8 text-center shadow-none">
+            <p className="text-base leading-7 text-[#445365]">
               No kosher places match those filters right now. Try another neighborhood, category, or search term.
             </p>
           </Card>

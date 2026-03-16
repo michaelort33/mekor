@@ -1,20 +1,158 @@
 .page {
-  background: linear-gradient(180deg, #f8f8f4 0%, #f2f6fb 62%, #eef3f9 100%);
+  background:
+    linear-gradient(180deg, rgba(252, 249, 243, 0.98) 0%, rgba(244, 240, 232, 0.98) 100%),
+    #f7f3ea;
 }
 
 .stack {
   display: grid;
-  gap: 16px;
+  gap: 20px;
+}
+
+.heroSection {
+  border-radius: 10px !important;
+  border: 1px solid #c8bda9 !important;
+  box-shadow: 0 6px 20px rgba(29, 43, 57, 0.1) !important;
+}
+
+.heroSection > :global(div:nth-child(2)) {
+  background:
+    linear-gradient(180deg, rgba(250, 246, 238, 0.22) 0%, rgba(246, 238, 226, 0.66) 66%, rgba(240, 230, 214, 0.86) 100%) !important;
+}
+
+.heroSection :global(h1) {
+  letter-spacing: -0.02em !important;
+  line-height: 0.98 !important;
+}
+
+.heroSection :global(p) {
+  color: #394b5d !important;
+}
+
+.heroSection :global(a) {
+  border-radius: 5px !important;
+  border-color: #91a6bc !important;
+  background: rgba(250, 252, 255, 0.92) !important;
+  color: #1f3f5f !important;
+  box-shadow: none !important;
+}
+
+.sectionCard {
+  border-radius: 8px !important;
+  border: 1px solid #d4cbb9 !important;
+  background: #fffdfa !important;
+  box-shadow: 0 2px 12px rgba(36, 48, 62, 0.08) !important;
+}
+
+.sectionCard :global(h3) {
+  letter-spacing: -0.01em;
+}
+
+.splitSection {
+  gap: 22px !important;
+}
+
+.splitSection > :global(div:first-child) {
+  border-radius: 8px !important;
+  border: 1px solid #d6ccbb !important;
+  box-shadow: none !important;
+  background: #f3eee3 !important;
+}
+
+.splitSection > :global(div:first-child img) {
+  min-height: 16rem !important;
+}
+
+.splitSection > :global(div:nth-child(2)) {
+  gap: 14px !important;
+}
+
+.splitSection :global(h2) {
+  font-size: clamp(2rem, 4.5vw, 3rem) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -0.02em !important;
+  color: #24374a !important;
+}
+
+.splitSection :global(p) {
+  color: #4a5a6d !important;
+  line-height: 1.68 !important;
+}
+
+.splitSection :global(a) {
+  border-radius: 4px !important;
+  border: 1px solid #cfd8e3 !important;
+  background: #f6f9fc !important;
+  color: #234c77 !important;
+  box-shadow: none !important;
+}
+
+.splitSection :global(a:hover) {
+  background: #edf3fa !important;
+  border-color: #afc0d3 !important;
+}
+
+.resourcesCluster {
+  margin-top: 10px;
+}
+
+.resourcesCluster :global(h3) {
+  font-size: clamp(1.4rem, 2.2vw, 1.95rem) !important;
+  letter-spacing: -0.01em !important;
+}
+
+.resourcesCluster :global(a) {
+  border-radius: 6px !important;
+  border: 1px solid #ced8e4 !important;
+  background: #f9fbfe !important;
+  box-shadow: none !important;
+  padding: 0.85rem 0.95rem !important;
+}
+
+.resourcesCluster :global(a:hover) {
+  transform: none !important;
+  border-color: #b8c7d7 !important;
+  background: #f0f5fb !important;
+}
+
+.resourcesCluster :global(span) {
+  color: #264b70 !important;
 }
 
 .missionText {
   margin: 0;
   color: #4a586b;
   line-height: 1.66;
+  font-size: 1.04rem;
 }
 
 .contactText {
   margin: 0;
   color: #4a586b;
   line-height: 1.6;
+  font-size: 1.02rem;
+}
+
+@media (max-width: 1024px) {
+  .stack {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroSection {
+    border-radius: 8px !important;
+  }
+
+  .sectionCard {
+    border-radius: 7px !important;
+  }
+
+  .splitSection {
+    gap: 14px !important;
+  }
+
+  .splitSection > :global(div:first-child img) {
+    min-height: 13.5rem !important;
+  }
 }

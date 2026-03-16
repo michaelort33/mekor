@@ -35,6 +35,7 @@ export default async function OurCommunitiesPage() {
         eyebrow="Our Community"
         title="Mekor Habracha Community"
         subtitle="A welcoming, growing Orthodox community in Center City"
+        className={styles.heroFlat}
         image={{
           src: COMMUNITY_IMAGES.hero,
           alt: "Mekor community gathering",
@@ -51,7 +52,7 @@ export default async function OurCommunitiesPage() {
         ]}
       />
 
-      <SectionCard className={styles.bannerCard}>
+      <SectionCard className={`${styles.flatSection} ${styles.bannerCard}`}>
         <Image
           src={COMMUNITY_IMAGES.banner}
           alt="Mekor community life"
@@ -63,7 +64,7 @@ export default async function OurCommunitiesPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Our History">
+      <SectionCard title="Our History" className={styles.flatSection}>
         <p className={styles.bodyText}>
           Becoming a Community
         </p>
@@ -99,7 +100,7 @@ export default async function OurCommunitiesPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Our Mission and Culture">
+      <SectionCard title="Our Mission and Culture" className={styles.flatSection}>
         <div className={styles.valueGrid}>
           <article className={styles.valueCard}>
             <h3>Mission</h3>
@@ -130,7 +131,7 @@ export default async function OurCommunitiesPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Explore Community Life">
+      <SectionCard title="Explore Community Life" className={styles.flatSection}>
         <CTACluster
           items={[
             { label: "Mekor Couples", href: "/mekorcouples" },

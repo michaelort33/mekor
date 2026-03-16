@@ -92,6 +92,7 @@ export default async function OurLeadershipPage() {
         eyebrow="Board and Officers"
         title="Our Leadership"
         subtitle="Committed members guiding Mekor's growth and mission"
+        className={styles.heroSection}
         image={{
           src: LEADERSHIP_IMAGES.hero,
           alt: "Mekor leadership team",
@@ -108,7 +109,7 @@ export default async function OurLeadershipPage() {
         ]}
       />
 
-      <SectionCard title="Board Members and Officers">
+      <SectionCard title="Board Members and Officers" className={styles.sectionCard}>
         <div className={styles.memberGrid}>
           {LEADERSHIP_MEMBERS.map((member) => (
             <article key={member.name} className={styles.memberCard}>
@@ -141,8 +142,9 @@ export default async function OurLeadershipPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Contact Leadership">
+      <SectionCard title="Contact Leadership" className={styles.sectionCard}>
         <CTACluster
+          className={styles.contactCluster}
           items={[
             { label: "Board Email", href: "mailto:mekorboard@gmail.com" },
             { label: "General Shul Office", href: "mailto:admin@mekorhabracha.org" },

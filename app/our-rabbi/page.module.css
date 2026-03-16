@@ -1,66 +1,51 @@
 .page {
-  background: linear-gradient(180deg, #f8f8f4 0%, #f2f6fb 62%, #eef3f9 100%);
+  background: #f4f1ea;
 }
 
 .stack {
   display: grid;
-  gap: 16px;
+  gap: 20px;
 }
 
 .anchorSection {
-  scroll-margin-top: 108px;
+  scroll-margin-top: 120px;
 }
 
 .heroGraphic {
-  background:
-    radial-gradient(40% 62% at 14% 10%, rgba(157, 194, 228, 0.44) 0%, rgba(157, 194, 228, 0) 100%),
-    radial-gradient(46% 68% at 84% 18%, rgba(96, 159, 208, 0.48) 0%, rgba(96, 159, 208, 0) 100%),
-    radial-gradient(62% 74% at 54% 98%, rgba(53, 96, 142, 0.6) 0%, rgba(53, 96, 142, 0) 100%),
-    linear-gradient(132deg, #1c3248 0%, #264669 48%, #2f5b86 100%);
+  border-radius: 10px;
+  border: 1px solid #3a4e67;
+  background: #2d4868;
 }
 
-.heroGraphic::before,
-.heroGraphic::after {
-  content: "";
-  position: absolute;
-  border-radius: 999px;
-  border: 1px solid rgba(232, 241, 252, 0.22);
-  opacity: 0.72;
-  pointer-events: none;
-}
-
-.heroGraphic::before {
-  width: min(56vw, 520px);
-  height: min(56vw, 520px);
-  top: -34%;
-  right: -10%;
-}
-
-.heroGraphic::after {
-  width: min(44vw, 420px);
-  height: min(44vw, 420px);
-  bottom: -28%;
-  left: -8%;
+.heroGraphic > div:first-of-type {
+  background: linear-gradient(180deg, rgba(17, 30, 45, 0.16), rgba(17, 30, 45, 0.3));
 }
 
 .subheading {
   margin: 0;
-  color: #4f5b69;
+  color: #3f4c5d;
   line-height: 1.62;
+}
+
+.profileSectionCard {
+  border-radius: 8px;
+  border: 1px solid #ced5de;
+  background: #fdfdfc;
+  box-shadow: none;
 }
 
 .profileLayout {
   display: grid;
-  gap: 22px;
-  grid-template-columns: minmax(240px, 0.72fr) minmax(0, 1.28fr);
+  gap: 28px;
+  grid-template-columns: minmax(250px, 0.68fr) minmax(0, 1.32fr);
   align-items: start;
 }
 
 .profilePhotoWrap {
   overflow: hidden;
-  border-radius: 24px;
-  background: linear-gradient(180deg, #edf4fb 0%, #e3ecf6 100%);
-  border: 1px solid #d5e0ec;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #cfd6de;
 }
 
 .profilePhoto {
@@ -71,31 +56,71 @@
 
 .profileBody {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .profileTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(2rem, 3vw, 3rem);
-  line-height: 0.98;
-  letter-spacing: -0.03em;
-  color: #22364b;
+  font-size: clamp(1.85rem, 2.3vw, 2.45rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: #1e3147;
 }
 
 .profileText {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .profileText p {
   margin: 0;
-  color: #4f5b69;
-  line-height: 1.68;
+  color: #3f4c5d;
+  line-height: 1.72;
+}
+
+.splitProfile :global(h2) {
+  font-size: clamp(1.75rem, 2.2vw, 2.35rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #1e3147;
+}
+
+.splitProfile :global(p) {
+  color: #3f4c5d;
+  line-height: 1.72;
+}
+
+.linkCluster :global(a),
+.booksCluster :global(a) {
+  border-radius: 8px;
+  border: 1px solid #ccd4dd;
+  background: #f7f8fa;
+  box-shadow: none;
+  padding: 12px 14px;
+}
+
+.linkCluster :global(a:hover),
+.booksCluster :global(a:hover) {
+  transform: none;
+  border-color: #b8c2cf;
+  background: #f1f4f7;
+}
+
+.linkCluster :global(h3),
+.booksCluster :global(h3) {
+  color: #21364d;
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
 }
 
 @media (max-width: 960px) {
   .profileLayout {
     grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .stack {
+    gap: 16px;
   }
 }

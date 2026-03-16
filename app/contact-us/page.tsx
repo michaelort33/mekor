@@ -36,6 +36,7 @@ export default async function ContactUsPage() {
         eyebrow="Get in Touch"
         title="Contact Us"
         subtitle="We would love to hear from you"
+        className={styles.heroFlat}
         image={{
           src: CONTACT_IMAGES.hero,
           alt: "Mekor contact and community",
@@ -52,7 +53,7 @@ export default async function ContactUsPage() {
         ]}
       />
 
-      <SectionCard className={styles.bannerCard}>
+      <SectionCard className={`${styles.flatSection} ${styles.bannerCard}`}>
         <Image
           src={CONTACT_IMAGES.banner}
           alt="Mekor contact banner"
@@ -64,7 +65,7 @@ export default async function ContactUsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Contact Details">
+      <SectionCard title="Contact Details" className={styles.flatSection}>
         <div className={styles.detailGrid}>
           <article className={styles.detailCard}>
             <h3>Phone</h3>
@@ -87,11 +88,11 @@ export default async function ContactUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Send a Message">
+      <SectionCard title="Send a Message" className={styles.flatSection}>
         <ContactForm sourcePath={PATH} />
       </SectionCard>
 
-      <SectionCard title="Visit the Shul">
+      <SectionCard title="Visit the Shul" className={styles.flatSection}>
         <div className={styles.visitGrid}>
           <div className={styles.visitCard}>
             <h3>Address</h3>
@@ -138,6 +139,7 @@ export default async function ContactUsPage() {
       <SectionCard
         title="Mekor Community WhatsApp"
         description="Click the WhatsApp logo to join our Mekor Community group and stay up to date with everything happening in our shul and community."
+        className={styles.flatSection}
       >
         <CTACluster
           items={[

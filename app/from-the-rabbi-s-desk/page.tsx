@@ -32,6 +32,7 @@ export default async function FromTheRabbisDeskPage() {
         eyebrow="Teachings"
         title="From The Rabbi's Desk"
         subtitle="Podcast teachings, insights, and weekly Torah reflections"
+        className={styles.heroFlat}
         image={{
           src: RABBI_DESK_IMAGE,
           alt: "Rabbi's desk and Torah study",
@@ -48,13 +49,18 @@ export default async function FromTheRabbisDeskPage() {
         ]}
       />
 
-      <SectionCard title="Podcast Library" description="Search, stream, and browse episodes from Mekor's teaching archive.">
+      <SectionCard
+        className={styles.podcastSection}
+        title="Podcast Library"
+        description="Search, stream, and browse episodes from Mekor's teaching archive."
+      >
         <div id="podcast-list" className={styles.anchor} />
         <RabbiDeskPodcastList />
       </SectionCard>
 
-      <SectionCard title="Related Learning Links">
+      <SectionCard title="Related Learning Links" className={styles.linksSection}>
         <CTACluster
+          className={styles.linkCluster}
           items={[
             { label: "Center City Beit Midrash", href: "/center-city-beit-midrash" },
             { label: "Davening", href: "/davening" },

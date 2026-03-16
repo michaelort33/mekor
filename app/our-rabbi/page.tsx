@@ -23,7 +23,7 @@ export default function OurRabbiPage() {
       />
 
       <section id="rabbi-eliezer-hirsch" className={styles.anchorSection}>
-        <SectionCard>
+        <SectionCard className={styles.profileSectionCard}>
           <article className={styles.profileLayout}>
             <div className={styles.profilePhotoWrap}>
               <Image
@@ -49,6 +49,7 @@ export default function OurRabbiPage() {
                 <p>You can reach Rabbi Hirsch at rabbiehirsch@mekorhabracha.org.</p>
               </div>
               <CTACluster
+                className={styles.linkCluster}
                 items={[
                   { label: "Email Rabbi Hirsch", href: "mailto:rabbiehirsch@mekorhabracha.org" },
                   { label: "Davening schedule", href: "/davening" },
@@ -60,6 +61,7 @@ export default function OurRabbiPage() {
             </div>
           </article>
           <CTACluster
+            className={styles.booksCluster}
             title="Rabbi Hirsch's Books and Writing"
             items={[
               {
@@ -86,8 +88,9 @@ export default function OurRabbiPage() {
       </section>
 
       <section id="rabbi-steven-gotlib" className={styles.anchorSection}>
-        <SectionCard>
+        <SectionCard className={styles.profileSectionCard}>
           <SplitMediaText
+            className={styles.splitProfile}
             reverse
             title="Rabbi Steven Gotlib"
             media={{
@@ -110,6 +113,7 @@ export default function OurRabbiPage() {
             Rabbi Gotlib lives in Center City with his wife, Ruth Malkah Rohde, and their daughter Zeriza.
           </p>
           <CTACluster
+            className={styles.linkCluster}
             title="Rabbi Gotlib Online"
             items={[
               { label: "Facebook", href: "https://www.facebook.com/StevenJGotlib/" },

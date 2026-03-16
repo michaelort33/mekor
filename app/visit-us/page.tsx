@@ -63,6 +63,7 @@ export default async function VisitUsPage() {
         eyebrow="Center City Synagogue"
         title="Visit Us"
         subtitle="Services, classes, and community programs in the heart of Philadelphia"
+        className={styles.heroFlat}
         image={{
           src: VISIT_IMAGES.hero,
           alt: "Mekor Habracha synagogue interior",
@@ -79,7 +80,7 @@ export default async function VisitUsPage() {
         ]}
       />
 
-      <SectionCard className={styles.bannerCard}>
+      <SectionCard className={`${styles.flatSection} ${styles.bannerCard}`}>
         <Image
           src={VISIT_IMAGES.banner}
           alt="Mekor visitors and members"
@@ -91,7 +92,7 @@ export default async function VisitUsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Location and Contact">
+      <SectionCard title="Location and Contact" className={styles.flatSection}>
         <div className={styles.contactGrid}>
           <article className={styles.contactCard}>
             <h3>Address</h3>
@@ -120,7 +121,7 @@ export default async function VisitUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Map">
+      <SectionCard title="Map" className={styles.flatSection}>
         <div className={styles.mapShell}>
           <iframe
             src={MAP_EMBED_SRC}
@@ -132,11 +133,12 @@ export default async function VisitUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Send Us a Message">
+      <SectionCard title="Send Us a Message" className={styles.flatSection}>
         <ContactForm sourcePath={PATH} />
       </SectionCard>
 
       <SectionCard
+        className={styles.flatSection}
         title="Mekor Community WhatsApp"
         description="Click the WhatsApp logo to join one of our community groups. Whether you're looking for social events, meal matching, general chats, or updates on minyanim, there's a group for you."
       >
@@ -153,8 +155,9 @@ export default async function VisitUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Quick Links">
+      <SectionCard title="Quick Links" className={styles.flatSection}>
         <CTACluster
+          className={styles.quickLinksCluster}
           items={[
             { label: "Membership", href: "/membership" },
             { label: "Davening Schedule", href: "/davening" },

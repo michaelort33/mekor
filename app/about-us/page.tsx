@@ -19,6 +19,7 @@ export default function AboutUsPage() {
     <MarketingPageShell currentPath="/about-us" className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         title="About Us"
+        className={styles.heroSection}
         image={{
           src: "https://static.wixstatic.com/media/92f487_9d5ea30d3f994577b7580692f3db4cf1~mv2.jpg",
           alt: "Mekor Habracha sanctuary",
@@ -26,8 +27,9 @@ export default function AboutUsPage() {
         }}
       />
 
-      <SectionCard>
+      <SectionCard className={styles.sectionCard}>
         <SplitMediaText
+          className={styles.splitSection}
           title="Our History"
           media={{
             src: "https://static.wixstatic.com/media/92f487_317cadc2e57a4f1e9320b1024d4cfa85~mv2.jpeg",
@@ -50,7 +52,7 @@ export default function AboutUsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Our Mission">
+      <SectionCard title="Our Mission" className={styles.sectionCard}>
         <p className={styles.missionText}>
           The mission of Mekor Habracha is to serve the spiritual, social, and educational needs of Center
           City&apos;s diverse Jewish community. We aspire to provide an environment where people of all ages
@@ -59,8 +61,9 @@ export default function AboutUsPage() {
         </p>
       </SectionCard>
 
-      <SectionCard>
+      <SectionCard className={styles.sectionCard}>
         <SplitMediaText
+          className={styles.splitSection}
           kicker="Who we are"
           title="Vibrant and inclusive"
           media={{
@@ -81,8 +84,9 @@ export default function AboutUsPage() {
         />
       </SectionCard>
 
-      <SectionCard>
+      <SectionCard className={styles.sectionCard}>
         <SplitMediaText
+          className={styles.splitSection}
           reverse
           kicker="Learning at Mekor"
           title="Profound and practical"
@@ -99,8 +103,9 @@ export default function AboutUsPage() {
         />
       </SectionCard>
 
-      <SectionCard>
+      <SectionCard className={styles.sectionCard}>
         <SplitMediaText
+          className={styles.splitSection}
           kicker="Contact Us"
           title="We'd love to hear from you"
           media={{
@@ -118,16 +123,21 @@ export default function AboutUsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Send an Inquiry" description="Questions about membership, programs, or community life can be sent here directly from the About Us page.">
+      <SectionCard
+        title="Send an Inquiry"
+        description="Questions about membership, programs, or community life can be sent here directly from the About Us page."
+        className={styles.sectionCard}
+      >
         <ContactForm sourcePath="/about-us" />
       </SectionCard>
 
-      <SectionCard>
+      <SectionCard className={styles.sectionCard}>
         <p className={styles.contactText}>
           Mekor Habracha Center City Synagogue is located at 1500 Walnut St, Suite 206, Philadelphia, PA
           19102.
         </p>
         <CTACluster
+          className={styles.resourcesCluster}
           title="Community Resources"
           items={[
             { label: "Davening", href: "/davening" },

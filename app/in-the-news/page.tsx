@@ -39,29 +39,21 @@ export default async function InTheNewsPage() {
 
   return (
     <NativeShell currentPath="/in-the-news" className="in-news-page" contentClassName="in-news gap-6">
-      <Card className="overflow-hidden px-6 py-7 sm:px-8 sm:py-8">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:items-end">
-          <div className="space-y-4">
+      <Card className="in-news__hero">
+        <div className="in-news__hero-grid">
+          <div className="in-news__header">
             <Badge>Press Mentions</Badge>
-            <div className="space-y-3">
-              <h1 className="font-[family-name:var(--font-heading)] text-5xl leading-[0.94] tracking-[-0.04em] text-[var(--color-foreground)] sm:text-6xl">
-                In The News
-              </h1>
-              <p className="max-w-2xl text-base leading-7 text-[var(--color-muted)] sm:text-lg sm:leading-8">
-                Search and filter every archived story from our backend directory. Open each article on Mekor or jump to the original source.
-              </p>
-            </div>
+            <h1>In The News</h1>
+            <p>
+              Search and filter every archived story from our backend directory. Open each article on Mekor or jump to the original source.
+            </p>
           </div>
 
           {featured ? (
-            <div className="rounded-[28px] border border-[var(--color-border)] bg-[linear-gradient(145deg,rgba(35,77,120,0.08),rgba(194,166,122,0.08))] px-5 py-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Featured</p>
-              <h2 className="mt-3 font-[family-name:var(--font-heading)] text-3xl tracking-[-0.03em] text-[var(--color-foreground)]">
-                {featured.title}
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-[var(--color-muted)]">
-                {buildFeaturedByline(featured.publishedLabel, featured.author)}
-              </p>
+            <div className="in-news__featured">
+              <span>Featured</span>
+              <h2>{featured.title}</h2>
+              <p>{buildFeaturedByline(featured.publishedLabel, featured.author)}</p>
             </div>
           ) : null}
         </div>

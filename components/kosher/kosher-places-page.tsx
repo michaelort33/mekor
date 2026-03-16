@@ -91,48 +91,45 @@ export async function KosherPlacesPage({
   const lastUpdatedDate = formatLastUpdatedDate(rawLastUpdated);
 
   return (
-    <NativeShell currentPath={currentPath} className="kosher-places-page" contentClassName="gap-8">
-      <section className="relative isolate overflow-hidden rounded-[40px] border border-[var(--color-border)] bg-[linear-gradient(135deg,rgba(17,35,59,0.95),rgba(44,70,100,0.92))] px-6 py-8 [color:#f8fbff] shadow-[0_42px_100px_-60px_rgba(15,23,42,0.6)] sm:px-8 sm:py-10 lg:px-12 lg:py-12">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.14),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(192,155,96,0.26),transparent_30%)]" />
-        <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
+    <NativeShell currentPath={currentPath} className="kosher-places-page" contentClassName="gap-6">
+      <section className="overflow-hidden rounded-[10px] border border-[#cfd6dd] bg-[#f8f4ea] px-5 py-6 sm:px-7 sm:py-8 lg:px-9 lg:py-9">
+        <div className="grid gap-7 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center">
           <div className="space-y-5">
-            {kicker ? <Badge className="border-white/15 bg-white/10 text-[rgba(255,255,255,0.78)]">{kicker}</Badge> : null}
+            {kicker ? (
+              <Badge className="border-[#cad2dc] bg-[#eff2f6] text-[#36465a]">
+                {kicker}
+              </Badge>
+            ) : null}
             <div className="space-y-4">
-              <h1 className="font-[family-name:var(--font-heading)] text-5xl leading-[0.92] tracking-[-0.04em] sm:text-6xl">
+              <h1 className="font-[family-name:var(--font-heading)] text-4xl leading-[0.96] tracking-[-0.03em] text-[#1f3146] sm:text-5xl lg:text-[3.35rem]">
                 {heading}
               </h1>
-              <p className="max-w-2xl text-base leading-7 text-[rgba(255,255,255,0.8)] sm:text-lg sm:leading-8">
+              <p className="max-w-2xl text-base leading-7 text-[#455365] sm:text-[1.05rem] sm:leading-8">
                 {description}
               </p>
               {neighborhoodLead ? (
-                <p className="max-w-2xl text-sm leading-6 text-[rgba(255,255,255,0.72)]">{neighborhoodLead}</p>
+                <p className="max-w-2xl text-sm leading-6 text-[#556477]">{neighborhoodLead}</p>
               ) : null}
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="bg-[#2f4d6d] text-[#f8fbff] hover:bg-[#284462]">
                 <a href="#directory">Browse the guide</a>
               </Button>
-              <Button
-                asChild
-                size="sm"
-                variant="outline"
-                className="border-white/20 bg-white/10 hover:bg-white/18"
-                style={{ color: "#f8fbff" }}
-              >
+              <Button asChild size="sm" variant="outline" className="border-[#b8c4d1] bg-[#f4f6f8] text-[#2c4664] hover:bg-[#eceff3]">
                 <a href="#map">Open the map</a>
               </Button>
             </div>
-            <div className="rounded-[24px] border border-white/14 bg-white/8 px-4 py-4 sm:px-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[rgba(255,255,255,0.62)]">
+            <div className="rounded-[8px] border border-[#d3dae2] bg-[#f2f4f1] px-4 py-4 sm:px-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5a6777]">
                 How to use this guide
               </p>
-              <ul className="mt-3 grid gap-2 text-sm leading-6 text-[rgba(255,255,255,0.78)] sm:text-[15px]">
+              <ul className="mt-3 grid gap-2 text-sm leading-6 text-[#49586a] sm:text-[15px]">
                 <li>Search by restaurant name, supervision keyword, or address details.</li>
                 <li>Filter by neighborhood and category to narrow options quickly.</li>
                 <li>Use map + listings together to plan where to eat next.</li>
               </ul>
             </div>
-            <p className="text-sm leading-6 text-[rgba(255,255,255,0.66)]">
+            <p className="text-sm leading-6 text-[#596879]">
               {lastUpdatedDate ? `Guide last refreshed ${lastUpdatedDate}. ` : null}
               Each listing includes supervision notes, location details, and direct planning links.
             </p>
@@ -141,20 +138,20 @@ export async function KosherPlacesPage({
           {showcasePlaces.length > 0 ? (
             <div className="grid gap-3 sm:grid-cols-2" aria-label="Featured kosher food spots">
               {showcasePlaces.map((place) => (
-                <article key={`showcase-${place.path}`} className="overflow-hidden rounded-[26px] border border-white/12 bg-white/8">
+                <article key={`showcase-${place.path}`} className="overflow-hidden rounded-[8px] border border-[#d4dbe2] bg-[#f9f8f3]">
                   <Image
                     src={place.heroImage || KOSHER_FALLBACK_IMAGE_SRC}
                     alt={place.title}
                     width={960}
                     height={720}
                     sizes="(max-width: 900px) 100vw, 33vw"
-                    className="h-44 w-full object-cover"
+                    className="h-40 w-full object-cover sm:h-44"
                   />
                   <div className="space-y-2 px-4 py-4">
-                    <span className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-[rgba(255,255,255,0.56)]">
+                    <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-[#637286]">
                       {place.neighborhoodLabel}
                     </span>
-                    <strong className="block text-lg font-semibold tracking-[0.01em]">{place.title}</strong>
+                    <strong className="block text-lg font-semibold tracking-[0.01em] text-[#25384f]">{place.title}</strong>
                   </div>
                 </article>
               ))}
@@ -165,13 +162,13 @@ export async function KosherPlacesPage({
 
       <KosherDirectory places={places} defaultNeighborhood={defaultNeighborhood} />
 
-      <Card className="px-6 py-6 sm:px-7">
+      <Card className="rounded-[8px] border-[#cfd6dd] bg-[#fcfbf7] px-5 py-6 shadow-none sm:px-7">
         <div className="space-y-3">
-          <Badge>Local Kashrut</Badge>
-          <h2 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.03em] text-[var(--color-foreground)]">
+          <Badge className="border-[#cad2dc] bg-[#eff2f6] text-[#36465a]">Local Kashrut</Badge>
+          <h2 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.02em] text-[#23374d]">
             {contactTitle}
           </h2>
-          <p className="max-w-3xl text-base leading-7 text-[var(--color-muted)]">{contactDescription}</p>
+          <p className="max-w-3xl text-base leading-7 text-[#445365]">{contactDescription}</p>
         </div>
         <KosherInquiryForm
           sourcePath={currentPath}
@@ -179,24 +176,24 @@ export async function KosherPlacesPage({
         />
       </Card>
 
-      <section id="map" className="grid gap-6 lg:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)] lg:items-start">
-        <Card className="h-full px-6 py-6 sm:px-7">
+      <section id="map" className="grid gap-5 lg:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)] lg:items-start">
+        <Card className="h-full rounded-[8px] border-[#cfd6dd] bg-[#fcfbf7] px-5 py-6 shadow-none sm:px-7">
           <div className="space-y-4">
-            <Badge>Map View</Badge>
-            <h2 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.03em] text-[var(--color-foreground)]">
+            <Badge className="border-[#cad2dc] bg-[#eff2f6] text-[#36465a]">Map View</Badge>
+            <h2 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.02em] text-[#23374d] sm:text-[2.15rem]">
               See the directory across the region
             </h2>
-            <p className="text-base leading-7 text-[var(--color-muted)]">
+            <p className="text-base leading-7 text-[#445365]">
               Use the interactive map to orient yourself, then return to the listings for full details, supervision notes,
               and direct contact links.
             </p>
-            <div className="space-y-2 text-sm leading-6 text-[var(--color-muted)]">
+            <div className="space-y-2 text-sm leading-6 text-[#526173]">
               <p>Center City and nearby neighborhoods are included in one live guide.</p>
               <p>Use the filter rail above to narrow the results while keeping the map in view.</p>
             </div>
           </div>
         </Card>
-        <Card className="overflow-hidden p-3">
+        <Card className="overflow-hidden rounded-[8px] border-[#cfd6dd] bg-[#fcfbf7] p-3 shadow-none">
           <KosherMapEmbed />
         </Card>
       </section>

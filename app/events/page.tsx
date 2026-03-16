@@ -23,26 +23,22 @@ export default async function EventsHubPage() {
 
   return (
     <NativeShell currentPath="/events" className="events-hub-page" contentClassName="events-hub gap-6">
-      <Card className="overflow-hidden px-6 py-7 sm:px-8 sm:py-8">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-end">
-          <div className="space-y-4">
+      <Card className="events-hub__hero">
+        <div className="events-hub__hero-grid">
+          <div className="events-hub__header">
             <Badge>what&apos;s happening?</Badge>
-            <div className="space-y-3">
-              <h1 className="font-[family-name:var(--font-heading)] text-5xl leading-[0.94] tracking-[-0.04em] text-[var(--color-foreground)] sm:text-6xl">
-                Discover Our Events
-              </h1>
-              <p className="max-w-2xl text-base leading-7 text-[var(--color-muted)] sm:text-lg sm:leading-8">
-                Synagogue-managed events appear first, followed by member-hosted events below. Take a look at our
-                calendar below, or add our Google Calendar to yours.
-              </p>
-            </div>
+            <h1>Discover Our Events</h1>
+            <p>
+              Synagogue-managed events appear first, followed by member-hosted events below. Take a look at our
+              calendar below, or add our Google Calendar to yours.
+            </p>
           </div>
 
-          <div className="flex flex-wrap gap-3 lg:justify-end">
-            <Button asChild>
+          <div className="events-hub__header-actions">
+            <Button asChild className="events-hub__header-action-primary">
               <Link href="/account/member-events">Host a Member Event</Link>
             </Button>
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="events-hub__header-action-secondary">
               <Link href="/account/member-events">Manage My Hosted Events</Link>
             </Button>
           </div>
