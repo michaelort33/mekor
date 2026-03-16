@@ -15,6 +15,7 @@ const eslintConfig = defineConfig([
     "output/**",
     ".vercel/**",
     "mirror-data/**",
+    "old-archived-version/**",
   ]),
 ]);
 

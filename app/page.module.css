@@ -1,472 +1,591 @@
 .page {
-  --page-ink: #1a2a39;
-  --page-muted: #576574;
-  --page-accent: #7d5d36;
-  --page-line: rgba(33, 49, 68, 0.12);
-  --page-surface: rgba(255, 252, 247, 0.94);
-  --page-surface-cool: rgba(246, 248, 251, 0.96);
-  background:
-    radial-gradient(60% 44% at 0% 0%, rgba(192, 158, 104, 0.12) 0%, rgba(192, 158, 104, 0) 100%),
-    linear-gradient(180deg, #f5efe6 0%, #f3f5f7 38%, #f7f2ea 100%);
+  background: #fff;
+  color: #3f4359;
 }
 
-.stack {
-  display: grid;
-  gap: 22px;
-  padding-bottom: 28px;
+.container {
+  width: min(100% - 32px, 980px);
+  margin: 0 auto;
 }
 
-.hero {
-  border: 1px solid rgba(22, 35, 50, 0.14);
-  box-shadow: 0 18px 44px rgba(18, 29, 44, 0.16);
-}
-
-.signalGrid {
+.heroSection {
   position: relative;
-  z-index: 2;
-  margin-top: -56px;
+  min-height: 492px;
   display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  place-items: center;
+  overflow: hidden;
 }
 
-.signalCard {
-  border: 1px solid var(--page-line);
-  border-radius: 22px;
-  background: var(--page-surface);
-  box-shadow: 0 10px 24px rgba(26, 39, 54, 0.08);
-  padding: 20px 20px 18px;
-  display: grid;
-  gap: 8px;
+.heroImage,
+.featureImage,
+.daveningImage,
+.upcomingImage,
+.rabbiImage,
+.footerBannerImage {
+  object-fit: cover;
 }
 
-.signalEyebrow,
-.sectionEyebrow {
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(32, 38, 54, 0.3) 0%, rgba(23, 28, 41, 0.5) 100%);
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 72px 16px 56px;
+  text-align: center;
+  color: #fff;
+}
+
+.heroEyebrow,
+.newsletterPanel h2,
+.footerNewsletter h3 {
   margin: 0;
-  color: var(--page-accent);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.2em;
+  font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
+  font-size: clamp(1rem, 1.5vw, 1.625rem);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.signalTitle {
+.heroTitle,
+.heroSubtitle,
+.aboutCopy h2,
+.featureCopy h2,
+.daveningCopy h2,
+.sectionTitle,
+.contactInfo h3,
+.footerContact h2 {
   margin: 0;
-  color: var(--page-ink);
-  font-family: var(--native-font-heading);
-  font-size: clamp(1.35rem, 2.6vw, 1.82rem);
-  line-height: 1.02;
+  font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
+  letter-spacing: -0.08em;
 }
 
-.signalText {
-  margin: 0;
-  color: var(--page-muted);
-  line-height: 1.62;
+.heroTitle {
+  font-size: clamp(3rem, 9vw, 5.875rem);
+  line-height: 1.05;
 }
 
-.introCard {
+.heroDivider {
+  width: 92px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.heroSubtitle {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-style: italic;
+  line-height: 1.2;
+}
+
+.heroArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-top: 22px;
+  color: inherit;
+  font-size: 2rem;
+  text-decoration: none;
+}
+
+.aboutSection {
+  background: #43475d;
+  padding: 60px 0;
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 426px);
+  gap: 42px;
+  align-items: center;
+}
+
+.aboutCopy {
+  color: #fff;
+}
+
+.aboutCopy h2 {
+  font-size: clamp(2rem, 3.4vw, 2.3125rem);
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.aboutCopy p,
+.featureCopy p,
+.supportCopy p,
+.daveningCopy p,
+.upcomingCopy p,
+.contactInfo p,
+.footerContact p {
+  margin: 0 0 16px;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.aboutCopy a {
+  color: inherit;
+}
+
+.aboutButton,
+.featureButton,
+.daveningButton,
+.newsletterArchive,
+.footerArchive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 28px;
+  border-radius: 999px;
+  background: #7f808a;
+  color: #fff;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 120ms ease;
+}
+
+.aboutButton:hover,
+.featureButton:hover,
+.daveningButton:hover,
+.newsletterArchive:hover,
+.footerArchive:hover {
+  background: #676975;
+}
+
+.videoShell {
   overflow: hidden;
-  border-color: rgba(30, 47, 67, 0.1);
-  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98) 0%, rgba(247, 249, 252, 0.98) 100%);
-  box-shadow: 0 14px 30px rgba(20, 32, 45, 0.08);
+  border-radius: 0;
+  box-shadow: 0 24px 40px rgba(0, 0, 0, 0.22);
+  aspect-ratio: 16 / 9;
+}
+
+.videoShell iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.featureSection {
+  padding: 56px 0 40px;
+  background: #fff;
 }
 
 .featureGrid {
   display: grid;
-  gap: 16px;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 26px;
+  align-items: stretch;
+}
+
+.featureCard,
+.daveningCard {
+  display: grid;
+  min-height: 529px;
+  border: 1px solid #d9dde8;
+  background: #fff;
 }
 
 .featureCard {
-  border-color: rgba(30, 47, 67, 0.1);
-  background: linear-gradient(180deg, rgba(255, 253, 249, 0.98) 0%, rgba(248, 250, 253, 0.98) 100%);
-  box-shadow: 0 12px 28px rgba(20, 32, 45, 0.07);
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
 }
 
-.featureStory {
-  align-items: start;
-  grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1fr);
-  gap: 18px;
+.daveningCard {
+  grid-template-columns: minmax(260px, 281px) minmax(0, 1fr);
 }
 
-.featureStory > div:first-child {
-  min-width: 0;
-  max-width: 430px;
-  width: 100%;
-  justify-self: start;
-}
-
-.featureStory > div:last-child {
-  min-width: 0;
+.featureCopy,
+.daveningCopy {
+  display: grid;
   align-content: center;
+  gap: 18px;
+  padding: 34px;
+  text-align: center;
 }
 
-.introGrid {
-  display: grid;
-  gap: 32px;
-  grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
-  align-items: center;
-}
-
-.introCopy {
-  display: grid;
-  gap: 14px;
-  align-self: stretch;
-  padding: 4px 0;
-}
-
-.introTitle {
-  margin: 0;
-  color: var(--page-ink);
-  font-family: var(--native-font-heading);
-  font-size: clamp(2rem, 4.2vw, 3.15rem);
-  line-height: 0.98;
-}
-
-.introText,
-.contactText,
-.supportText,
-.rabbiBody p,
-.eventPlace {
-  margin: 0;
-  color: var(--page-muted);
-  line-height: 1.72;
-}
-
-.introMedia {
-  position: relative;
-  padding-left: 12px;
-}
-
-.introMedia::before {
-  content: "";
-  position: absolute;
-  inset: 18px 16px -18px 0;
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(233, 223, 207, 0.52) 0%, rgba(231, 238, 245, 0.58) 100%);
-}
-
-.introVideo {
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-  border-radius: 22px;
-  border: 1px solid rgba(30, 49, 73, 0.1);
-  background: linear-gradient(180deg, #f4f6fb 0%, #eef2f7 100%);
-  box-shadow: 0 14px 30px rgba(24, 37, 52, 0.1);
-  aspect-ratio: 16 / 9;
-}
-
-.introVideo iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  display: block;
-}
-
-.inlineLinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-}
-
-.inlineLinks a,
-.textLink,
-.eventLink,
-.contactPanel a {
-  color: #1e517d;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.inlineLinks a:hover,
-.textLink:hover,
-.eventLink:hover,
-.contactPanel a:hover {
-  text-decoration: underline;
-}
-
+.featureCopy h2,
+.daveningCopy h2,
 .sectionTitle,
-.supportTitle {
-  margin: 0;
-  color: var(--page-ink);
-  font-family: var(--native-font-heading);
-  line-height: 1.02;
+.footerContact h2 {
+  font-size: clamp(2.2rem, 4.2vw, 3.25rem);
+  line-height: 1.05;
+  color: #2b5a81;
 }
 
-.supportCard {
-  overflow: hidden;
-  border-color: rgba(34, 50, 69, 0.12);
-  background:
-    linear-gradient(140deg, rgba(239, 230, 216, 0.94) 0%, rgba(248, 244, 236, 0.98) 46%, rgba(238, 243, 249, 0.98) 100%);
-  box-shadow: 0 14px 30px rgba(20, 32, 45, 0.08);
-}
-
-.supportContent {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, auto);
-  align-items: center;
-}
-
-.supportTextBlock {
+.supportCopy {
   display: grid;
   gap: 10px;
 }
 
-.supportTitle {
-  font-size: clamp(1.85rem, 3.4vw, 2.65rem);
+.supportCopy h3 {
+  margin: 0;
+  font-family: helvetica-w01-bold, Arial, sans-serif;
+  font-size: 1.1875rem;
+  font-weight: 700;
 }
 
-.supportText {
-  color: #5b6774;
-}
-
-.supportButtons {
-  display: grid;
-  gap: 12px;
-  min-width: 260px;
-}
-
-.supportButton {
+.supportLinks {
   display: grid;
   gap: 8px;
-  padding: 16px 18px;
-  border-radius: 20px;
-  border: 1px solid rgba(33, 49, 68, 0.12);
-  background: rgba(255, 255, 255, 0.62);
-  color: inherit;
-  text-decoration: none;
-  transition: transform 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
 }
 
-.supportButton:hover {
-  transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 12px 22px rgba(10, 20, 34, 0.1);
+.supportLinks a,
+.upcomingActions a,
+.rabbiLinks a,
+.contactInfo a,
+.socialLinks a {
+  color: #2b5a81;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.supportButtonLabel {
-  color: var(--page-ink);
-  font-size: 1rem;
-  font-weight: 800;
-  text-transform: capitalize;
+.featureVisual,
+.daveningVisual,
+.upcomingImageWrap,
+.rabbiImageWrap {
+  position: relative;
+  min-height: 320px;
 }
 
-.supportButtonNote {
-  color: var(--page-muted);
-  line-height: 1.6;
+.newsletterSection {
+  padding: 12px 0 56px;
 }
 
-.eventsCard,
-.rabbisCard,
-.contactCard {
-  overflow: hidden;
-  border-color: rgba(30, 47, 67, 0.1);
-  background: linear-gradient(180deg, rgba(255, 253, 248, 0.98) 0%, rgba(247, 249, 252, 0.98) 100%);
-  box-shadow: 0 12px 28px rgba(20, 32, 45, 0.07);
+.newsletterPanel {
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+  padding: 42px 24px 40px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #d8dce7;
 }
 
-.sectionHeader {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: end;
-  margin-bottom: 16px;
+.newsletterPanel h2 {
+  text-align: center;
+  color: #3f4359;
+}
+
+.newsletterForm,
+.footerNewsletterForm {
+  display: grid;
+  width: min(100%, 458px);
+  gap: 14px;
+}
+
+.newsletterInput,
+.footerNewsletterInput,
+.contactInput,
+.contactTextarea {
+  border-radius: 10px !important;
+  border: 2px solid #919191 !important;
+  background: #f5fffe !important;
+  box-shadow: none !important;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+}
+
+.newsletterInput,
+.footerNewsletterInput,
+.contactInput {
+  height: 45px !important;
+}
+
+.contactTextarea {
+  min-height: 170px;
+  padding-top: 14px;
+}
+
+.newsletterSubmit,
+.footerNewsletterSubmit,
+.contactSubmit {
+  min-height: 50px !important;
+  border-radius: 10px !important;
+  background: #7f808a !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.9375rem;
+}
+
+.newsletterMessage,
+.contactMessage,
+.footerMessage {
+  margin: 0;
+  color: #1f6b43;
+  text-align: center;
+}
+
+.newsletterError,
+.contactError,
+.footerError {
+  margin: 0;
+  color: #a12727;
+  text-align: center;
+}
+
+.eventsSection,
+.rabbisSection,
+.contactSection {
+  padding: 0 0 56px;
 }
 
 .sectionTitle {
-  font-size: clamp(1.85rem, 3.6vw, 2.7rem);
+  text-align: center;
+  margin-bottom: 26px;
 }
 
-.eventsGrid {
+.upcomingCard {
   display: grid;
-  gap: 18px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  border: 1px solid #d9dde8;
+  background: #fff;
 }
 
-.eventCard {
+.upcomingCopy {
   display: grid;
-  grid-template-columns: minmax(180px, 0.9fr) minmax(0, 1fr);
-  border: 1px solid rgba(31, 51, 74, 0.1);
-  border-radius: 20px;
-  overflow: hidden;
-  background: linear-gradient(180deg, rgba(255, 253, 248, 0.98) 0%, rgba(245, 248, 252, 0.98) 100%);
-  box-shadow: 0 10px 24px rgba(25, 37, 52, 0.06);
+  align-content: center;
+  gap: 10px;
+  padding: 28px 30px;
 }
 
-.eventMedia {
-  background: linear-gradient(180deg, #f4f4f1 0%, #f7f8fb 100%);
+.upcomingTitle {
+  color: #2b5a81;
+  font-family: avenir-lt-w01_85-heavy1475544, Arial, sans-serif;
+  font-size: 1.5rem;
+  text-decoration: none;
 }
 
-.eventMedia img {
-  width: 100%;
-  height: 100%;
-  min-height: 260px;
-  object-fit: contain;
-  object-position: center top;
-  display: block;
-}
-
-.eventBody {
-  display: grid;
-  gap: 12px;
-  align-content: start;
-  padding: 20px;
-}
-
-.eventDate {
-  margin: 0;
-  color: #7f5b2c;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.eventBody h3 {
-  margin: 0;
-  color: #1a2d43;
-  font-size: 1.28rem;
+.upcomingActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  margin-top: 6px;
 }
 
 .rabbisGrid {
   display: grid;
-  gap: 18px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
 }
 
 .rabbiCard {
   display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1fr);
-  padding: 12px;
-  border: 1px solid rgba(30, 50, 73, 0.1);
-  border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98) 0%, rgba(245, 248, 252, 0.98) 100%);
-}
-
-.rabbiPortrait {
-  border-radius: 16px;
-  overflow: hidden;
-  background: #e7edf4;
-}
-
-.rabbiPortrait img {
-  width: 100%;
-  height: 100%;
-  min-height: 280px;
-  object-fit: cover;
-  object-position: center top;
-  display: block;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 1fr);
+  border: 1px solid #d9dde8;
+  background: #fff;
 }
 
 .rabbiBody {
   display: grid;
-  gap: 12px;
   align-content: center;
-  padding: 8px 8px 8px 0;
-}
-
-.rabbiRole {
-  margin: 0;
-  color: var(--page-accent);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  gap: 18px;
+  padding: 28px;
 }
 
 .rabbiBody h3 {
   margin: 0;
-  color: var(--page-ink);
-  font-size: 1.4rem;
+  color: #2b5a81;
+  font-family: avenir-lt-w01_85-heavy1475544, Arial, sans-serif;
+  font-size: 1.625rem;
+}
+
+.rabbiLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
 }
 
 .contactGrid {
   display: grid;
-  gap: 16px;
-  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 28px;
+  align-items: start;
 }
 
-.contactPanel {
+.contactFormWrap,
+.contactInfo {
+  border: 1px solid #d9dde8;
+  background: #fff;
+}
+
+.contactForm {
+  display: grid;
+  gap: 16px;
+  padding: 28px;
+}
+
+.contactField {
+  display: grid;
+  gap: 8px;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.95rem;
+  color: #3f4359;
+}
+
+.contactInfo {
   display: grid;
   gap: 12px;
-  padding: 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(27, 48, 72, 0.1);
-  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98) 0%, rgba(242, 246, 251, 0.98) 100%);
+  padding: 28px;
+  align-content: start;
 }
 
-.contactPanel p {
-  margin: 0;
-  color: var(--page-muted);
-  line-height: 1.6;
+.contactInfo h3 {
+  color: #3f4359;
+  font-size: 1.5rem;
+  line-height: 1.15;
 }
 
-@media (max-width: 1100px) {
-  .signalGrid,
+.contactInfo a {
+  font-family: helvetica-w01-light, Arial, sans-serif;
+}
+
+.footer {
+  position: relative;
+  background: #3f4359;
+  color: #b0b2b8;
+  padding: 52px 0 28px;
+  overflow: hidden;
+}
+
+.footerBanner {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 468px;
+  pointer-events: none;
+}
+
+.footerBannerOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(63, 67, 89, 0.82) 0%, rgba(63, 67, 89, 0.97) 100%);
+}
+
+.footerInner,
+.footerContact,
+.footerNewsletter {
+  position: relative;
+  z-index: 1;
+}
+
+.footerInner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 495px);
+  gap: 40px;
+  align-items: start;
+}
+
+.footerContact,
+.footerNewsletter {
+  display: grid;
+  gap: 14px;
+}
+
+.footerContact h2 {
+  color: #fff;
+}
+
+.footerContact a {
+  width: fit-content;
+}
+
+.footerNewsletter {
+  padding: 0 18px;
+}
+
+.footerNewsletter h3 {
+  color: #b0b2b8;
+}
+
+.socialLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding-top: 6px;
+}
+
+.socialLinks a {
+  color: #fff;
+}
+
+.copyright {
+  position: relative;
+  z-index: 1;
+  margin: 36px 0 0;
+  color: #b0b2b8;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.9375rem;
+}
+
+@media (max-width: 960px) {
+  .aboutGrid,
   .featureGrid,
-  .eventsGrid,
+  .upcomingCard,
   .rabbisGrid,
   .contactGrid,
-  .supportContent {
+  .footerInner {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .featureStory {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .featureStory > div:first-child {
-    max-width: none;
-  }
-
-  .introGrid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .introMedia {
-    padding-left: 0;
-  }
-
-  .introMedia::before {
-    inset: 14px 0 -14px;
-  }
-}
-
-@media (max-width: 900px) {
-  .signalGrid {
-    margin-top: 0;
-  }
-
-  .eventCard,
+  .featureCard,
+  .daveningCard,
   .rabbiCard {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .eventMedia img,
-  .rabbiPortrait img {
-    min-height: 240px;
+  .featureVisual,
+  .daveningVisual,
+  .upcomingImageWrap,
+  .rabbiImageWrap {
+    min-height: 280px;
   }
 }
 
 @media (max-width: 640px) {
-  .stack {
-    gap: 20px;
+  .container {
+    width: min(100% - 24px, 980px);
   }
 
-  .signalCard,
-  .eventBody,
-  .contactPanel {
-    padding: 18px;
+  .heroSection {
+    min-height: 420px;
   }
 
-  .introTitle,
-  .sectionTitle,
-  .supportTitle,
-  .signalTitle {
-    line-height: 0.96;
+  .heroInner {
+    padding-top: 56px;
+  }
+
+  .aboutSection,
+  .featureSection,
+  .newsletterSection,
+  .eventsSection,
+  .rabbisSection,
+  .contactSection,
+  .footer {
+    padding-top: 36px;
+    padding-bottom: 36px;
+  }
+
+  .newsletterPanel,
+  .contactForm,
+  .contactInfo,
+  .footerNewsletter,
+  .featureCopy,
+  .daveningCopy,
+  .upcomingCopy,
+  .rabbiBody {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .featureCopy,
+  .daveningCopy,
+  .newsletterPanel {
+    gap: 16px;
   }
 }

@@ -9,6 +9,8 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
       - name: Checkout
@@ -17,7 +19,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
@@ -30,7 +32,12 @@ jobs:
         run: npm run test
 
       - name: Verify Native Contracts
+        if: ${{ env.DATABASE_URL != '' }}
         run: npm run native:verify
+
+      - name: Skip Native Contracts
+        if: ${{ env.DATABASE_URL == '' }}
+        run: echo "Skipping native contract verification because DATABASE_URL is not configured in GitHub Actions."
 
       - name: Build
         run: npm run build
