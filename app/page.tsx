@@ -17,17 +17,6 @@ const DAVEING_IMAGE = "https://static.wixstatic.com/media/92f487_34e64b1fb2e94c5
 const FOOTER_BANNER = "https://static.wixstatic.com/media/92f487_22b1dca93b6045ad8ed3ce85337f5c74~mv2.jpg";
 const DEFAULT_EVENT_IMAGE = "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg";
 
-const SUPPORT_LINKS = [
-  {
-    label: "Wine: tinyurl.com/mekorwine",
-    href: "https://tinyurl.com/mekorwine",
-  },
-  {
-    label: "Judaica: tinyurl.com/mekorjudaica",
-    href: "https://tinyurl.com/mekorjudaica",
-  },
-] as const;
-
 const RABBIS = [
   {
     name: "Rabbi Eliezer Hirsch",
@@ -87,8 +76,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const upcomingManagedEvents = (await getManagedEvents()).filter((event) => !event.isPast);
-  const featuredEvent = upcomingManagedEvents[0] ?? null;
-  const upcomingEvent = upcomingManagedEvents[1] ?? featuredEvent;
+  const upcomingEvent = upcomingManagedEvents[0] ?? null;
 
   return (
     <main className={styles.page}>
@@ -152,44 +140,6 @@ export default async function HomePage() {
       <section className={styles.featureSection}>
         <div className={styles.container}>
           <div className={styles.featureGrid}>
-            <article className={styles.featureCard}>
-              <div className={styles.featureCopy}>
-                <h2>{featuredEvent?.title ?? "Purim at Mekor"}</h2>
-                <p>
-                  {featuredEvent?.timeLabel ||
-                    featuredEvent?.shortDate ||
-                    "Join us for Megillah readings, tefillot, and our festive Purim celebration."}
-                </p>
-                <div className={styles.supportCopy}>
-                  <h3>Support Mekor while buying wine and Judaica!</h3>
-                  <p>
-                    If you use the following Mekor-specific links when ordering from Kosherwine.com and Judaica.com,
-                    Mekor will earn 5% back!
-                  </p>
-                  <div className={styles.supportLinks}>
-                    {SUPPORT_LINKS.map((link) => (
-                      <a key={link.href} href={link.href} target="_blank" rel="noreferrer noopener">
-                        {link.label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-                <Link href={featuredEvent?.path ?? "/events"} className={styles.featureButton}>
-                  Event Details
-                </Link>
-              </div>
-
-              <div className={styles.featureVisual}>
-                <Image
-                  src={featuredEvent?.heroImage || DEFAULT_EVENT_IMAGE}
-                  alt={featuredEvent ? `${featuredEvent.title} graphic` : "Featured Mekor event"}
-                  fill
-                  sizes="(max-width: 900px) 100vw, 31rem"
-                  className={styles.featureImage}
-                />
-              </div>
-            </article>
-
             <article className={styles.daveningCard}>
               <div className={styles.daveningVisual}>
                 <Image
