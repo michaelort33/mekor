@@ -7,7 +7,7 @@
 
 .content {
   display: grid;
-  gap: 20px;
+  gap: 24px;
 }
 
 .overviewCard {
@@ -18,8 +18,8 @@
 .storyGrid,
 .joinGrid {
   display: grid;
-  gap: 24px;
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: clamp(20px, 2.6vw, 34px);
+  grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
   align-items: start;
 }
 
@@ -27,16 +27,16 @@
 .storyCopy,
 .joinCopy {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .overviewAside,
 .supportPanel,
 .benefitCard {
   display: grid;
-  gap: 10px;
-  padding: 18px;
-  border-radius: 20px;
+  gap: 12px;
+  padding: clamp(16px, 1.8vw, 22px);
+  border-radius: 22px;
   border: 1px solid rgba(34, 52, 73, 0.1);
   background: linear-gradient(180deg, rgba(255, 254, 250, 0.98) 0%, rgba(245, 248, 252, 0.98) 100%);
   box-shadow: 0 10px 22px rgba(20, 32, 45, 0.06);
@@ -55,7 +55,7 @@
   margin: 0;
   color: #1a2a39;
   font-size: clamp(1.5rem, 3.2vw, 2.5rem);
-  line-height: 1.06;
+  line-height: 1.12;
   letter-spacing: 0.02em;
   text-wrap: balance;
 }
@@ -73,7 +73,7 @@
 }
 
 .leadText {
-  font-size: 1.03rem;
+  font-size: clamp(1.02rem, 1.28vw, 1.13rem);
   color: #31485f;
 }
 
@@ -85,36 +85,44 @@
 
 .noteStack {
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .factList,
 .bulletList,
 .checkList {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-left: 1.2rem;
   display: grid;
-  gap: 8px;
+  gap: 9px;
   color: #445262;
-  line-height: 1.64;
+  line-height: 1.66;
+}
+
+.factList li::marker,
+.bulletList li::marker,
+.checkList li::marker {
+  color: #2f638f;
 }
 
 .rateGrid {
-  margin-top: 0.25rem;
+  margin-top: 0.35rem;
   display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: clamp(12px, 1.8vw, 18px);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .rateCard {
-  padding: 16px;
-  border-radius: 18px;
+  padding: 18px;
+  border-radius: 20px;
   border: 1px solid rgba(35, 58, 84, 0.12);
   background: linear-gradient(145deg, rgba(248, 251, 255, 0.98) 0%, rgba(239, 245, 252, 0.98) 100%);
   display: grid;
-  gap: 8px;
+  gap: 10px;
   align-content: start;
   box-shadow: 0 10px 22px rgba(22, 35, 54, 0.06);
+  min-height: 100%;
 }
 
 .rateTitle {
@@ -126,8 +134,8 @@
 .rateAmount {
   margin: 0;
   color: #223f5f;
-  font-size: 1.72rem;
-  line-height: 1;
+  font-size: clamp(1.62rem, 2.2vw, 1.95rem);
+  line-height: 1.04;
 }
 
 .rateTerm {
@@ -137,7 +145,7 @@
 }
 
 .inlineAction {
-  margin-top: 4px;
+  margin-top: 6px;
   width: fit-content;
   display: inline-flex;
   align-items: center;
@@ -165,22 +173,22 @@
 .joinImageFrame {
   position: relative;
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: 26px;
   border: 1px solid rgba(34, 52, 73, 0.1);
   background: linear-gradient(180deg, #f2f5f9 0%, #ebf0f6 100%);
   box-shadow: 0 16px 34px rgba(22, 35, 54, 0.12);
 }
 
 .imageFrame {
-  min-height: 360px;
+  min-height: clamp(300px, 32vw, 440px);
 }
 
 .sideImageFrame {
-  min-height: 100%;
+  min-height: clamp(360px, 35vw, 520px);
 }
 
 .joinImageFrame {
-  min-height: 280px;
+  min-height: clamp(250px, 26vw, 360px);
 }
 
 .coverImage {
@@ -189,14 +197,14 @@
 
 .benefitsLayout {
   display: grid;
-  gap: 22px;
-  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-  align-items: stretch;
+  gap: clamp(18px, 2.5vw, 30px);
+  grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+  align-items: start;
 }
 
 .benefitColumns {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .joinCard {
@@ -205,7 +213,7 @@
 
 .joinSidebar {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   align-content: start;
 }
 
@@ -268,26 +276,38 @@
   .joinImageFrame {
     min-height: 300px;
   }
+
+  .sideImageFrame {
+    min-height: 320px;
+  }
+
+  .rateGrid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
   .content {
-    gap: 16px;
+    gap: 18px;
   }
 
   .overviewAside,
   .supportPanel,
   .benefitCard,
   .rateCard {
-    padding: 15px;
+    padding: 16px;
     border-radius: 16px;
   }
 
   .imageFrame,
   .sideImageFrame,
   .joinImageFrame {
-    min-height: 240px;
+    min-height: 248px;
     border-radius: 18px;
+  }
+
+  .rateGrid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .actionButton,

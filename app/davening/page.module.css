@@ -1,100 +1,129 @@
 .page {
   background:
-    radial-gradient(920px 430px at 8% -12%, rgba(176, 202, 228, 0.28) 0%, rgba(176, 202, 228, 0) 68%),
-    radial-gradient(880px 430px at 94% -18%, rgba(247, 229, 193, 0.3) 0%, rgba(247, 229, 193, 0) 70%),
-    #f9f7f2;
+    linear-gradient(180deg, rgba(251, 248, 241, 0.98) 0%, rgba(243, 238, 228, 0.98) 100%),
+    #f7f3ea;
 }
 
 .stack {
   display: grid;
-  gap: 16px;
+  gap: 20px;
+}
+
+.heroSection {
+  border-radius: 10px !important;
+  border: 1px solid #c8bda9 !important;
+  box-shadow: 0 7px 22px rgba(29, 43, 57, 0.11) !important;
+}
+
+.heroSection > :global(div:nth-child(2)) {
+  background:
+    linear-gradient(180deg, rgba(244, 235, 219, 0.24) 0%, rgba(232, 218, 197, 0.7) 72%, rgba(222, 205, 182, 0.88) 100%) !important;
+}
+
+.heroSection :global(h1) {
+  line-height: 0.98 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.heroSection :global(p) {
+  color: #3a4c5e !important;
+}
+
+.heroSection :global(a) {
+  border-radius: 5px !important;
+  border-color: #99acbf !important;
+  background: rgba(249, 252, 255, 0.94) !important;
+  color: #1d3e5e !important;
+  box-shadow: none !important;
+}
+
+.sectionCard {
+  border-radius: 8px !important;
+  border: 1px solid #d4cbb9 !important;
+  background: #fffdfa !important;
+  box-shadow: 0 2px 12px rgba(34, 47, 62, 0.08) !important;
 }
 
 .calendarSection {
-  border-color: #c8d8e6;
-  background:
-    radial-gradient(120% 120% at 50% -10%, rgba(210, 227, 241, 0.38) 0%, rgba(210, 227, 241, 0) 46%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(246, 248, 252, 0.96) 100%);
+  border-color: #d4cbb9 !important;
+  background: #fffdf8 !important;
 }
 
 .scheduleIntro {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   align-items: end;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.86fr);
 }
 
 .scheduleEyebrow {
-  margin: 0 0 10px;
-  color: #587393;
-  font-size: 0.78rem;
+  margin: 0 0 8px;
+  color: #5c6c7d;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .scheduleTitle {
   margin: 0;
-  color: #14293f;
+  color: #24374c;
   font-family: var(--font-heading);
-  font-size: clamp(2.2rem, 3.4vw, 3.3rem);
-  line-height: 0.94;
-  letter-spacing: -0.045em;
+  font-size: clamp(2rem, 3.6vw, 3.05rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
 }
 
 .scheduleLead {
   margin: 0;
-  color: #4c6178;
+  color: #4d5f73;
   font-size: 1rem;
-  line-height: 1.75;
+  line-height: 1.65;
 }
 
 .infoBand {
-  margin-top: 22px;
+  margin-top: 16px;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .infoBand p {
   margin: 0;
-  border-radius: 20px;
-  border: 1px solid rgba(95, 124, 155, 0.16);
-  background: rgba(248, 250, 253, 0.9);
-  padding: 14px 16px;
-  color: #485f76;
-  line-height: 1.65;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  border-radius: 6px;
+  border: 1px solid #ddd3c2;
+  background: #fff9ef;
+  padding: 12px 13px;
+  color: #4d5e72;
+  line-height: 1.56;
 }
 
 .desktopCalendar {
-  margin-top: 22px;
+  margin-top: 16px;
   display: grid;
-  gap: 14px;
+  gap: 11px;
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
 .dayColumn {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   align-content: start;
-  border-radius: 28px;
-  border: 1px solid #d7e2ec;
-  background: linear-gradient(180deg, rgba(252, 253, 255, 0.98) 0%, rgba(244, 247, 251, 0.94) 100%);
-  padding: 16px 14px 14px;
+  border-radius: 7px;
+  border: 1px solid #ddd3c2;
+  background: #fffaf0;
+  padding: 12px 10px 11px;
   min-height: 100%;
 }
 
 .dayColumn[data-kind="friday"] {
-  border-color: #d8d4c8;
-  background: linear-gradient(180deg, rgba(255, 251, 241, 0.98) 0%, rgba(249, 243, 229, 0.96) 100%);
+  border-color: #d6ccb9;
+  background: #fbf4e7;
 }
 
 .dayColumn[data-kind="shabbat"] {
-  border-color: #c7d7e8;
-  background:
-    radial-gradient(120% 120% at 50% -10%, rgba(206, 225, 243, 0.54) 0%, rgba(206, 225, 243, 0) 45%),
-    linear-gradient(180deg, rgba(243, 248, 254, 0.99) 0%, rgba(232, 240, 249, 0.97) 100%);
+  border-color: #d6ccb9;
+  background: #f7efe2;
 }
 
 .dayHeader {
@@ -106,71 +135,71 @@
 
 .dayName {
   margin: 0;
-  color: #183450;
-  font-size: 0.98rem;
+  color: #2e4359;
+  font-size: 0.93rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .entryStack {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .entryCard {
-  border-radius: 18px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(120, 146, 174, 0.15);
-  box-shadow: 0 18px 38px -34px rgba(16, 34, 54, 0.46);
+  border-radius: 5px;
+  padding: 10px 9px;
+  background: #fffefb;
+  border: 1px solid #e1d8c9;
+  box-shadow: none;
 }
 
 .entryCard[data-tone="daybreak"] {
-  background: linear-gradient(180deg, rgba(248, 251, 255, 0.98) 0%, rgba(239, 245, 251, 0.96) 100%);
+  background: #fffefb;
 }
 
 .entryCard[data-tone="midday"] {
-  background: linear-gradient(180deg, rgba(255, 252, 245, 0.98) 0%, rgba(249, 242, 230, 0.96) 100%);
+  background: #fff9f0;
 }
 
 .entryCard[data-tone="evening"] {
-  background: linear-gradient(180deg, rgba(241, 246, 252, 0.98) 0%, rgba(228, 237, 247, 0.96) 100%);
+  background: #fbf7ef;
 }
 
 .entryLabel {
   margin: 0;
-  color: #18334d;
-  font-size: 0.84rem;
+  color: #31485f;
+  font-size: 0.8rem;
   font-weight: 700;
-  line-height: 1.45;
+  line-height: 1.4;
 }
 
 .entryTime {
-  margin: 6px 0 0;
-  color: #0f2740;
+  margin: 4px 0 0;
+  color: #233d58;
   font-family: var(--font-heading);
-  font-size: 1.15rem;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+  font-size: 1.03rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
 .entryDetail {
-  margin: 6px 0 0;
-  color: #566a80;
-  font-size: 0.8rem;
-  line-height: 1.5;
+  margin: 5px 0 0;
+  color: #5d6f83;
+  font-size: 0.77rem;
+  line-height: 1.45;
 }
 
 .dayNotes {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .dayNotes p {
   margin: 0;
-  color: #5d6d80;
-  font-size: 0.8rem;
-  line-height: 1.52;
+  color: #617184;
+  font-size: 0.77rem;
+  line-height: 1.48;
 }
 
 .mobileCalendar {
@@ -179,16 +208,16 @@
 
 .zmanimEmbedWrap {
   overflow: hidden;
-  border-radius: 26px;
-  border: 1px solid #d6e0ea;
-  background: linear-gradient(180deg, rgba(252, 253, 255, 0.98) 0%, rgba(243, 247, 252, 0.96) 100%);
-  box-shadow: 0 24px 54px rgba(31, 57, 88, 0.1);
+  border-radius: 8px;
+  border: 1px solid #ddd3c2;
+  background: #fffefb;
+  box-shadow: none;
 }
 
 .zmanimEmbed {
   display: block;
   width: 100%;
-  min-height: 720px;
+  min-height: 680px;
   border: 0;
   background: #ffffff;
 }
@@ -200,8 +229,8 @@
 
 .zmanimFallback p {
   margin: 0;
-  color: #46586d;
-  line-height: 1.72;
+  color: #4d5f73;
+  line-height: 1.62;
 }
 
 .zmanimFallback code {
@@ -211,23 +240,21 @@
 
 .mobileDayCard {
   display: grid;
-  gap: 12px;
-  border-radius: 24px;
-  border: 1px solid #d7e2ec;
-  background: linear-gradient(180deg, rgba(252, 253, 255, 0.98) 0%, rgba(244, 247, 251, 0.94) 100%);
-  padding: 16px;
+  gap: 10px;
+  border-radius: 7px;
+  border: 1px solid #ddd3c2;
+  background: #fffaf0;
+  padding: 12px;
 }
 
 .mobileDayCard[data-kind="friday"] {
-  border-color: #d8d4c8;
-  background: linear-gradient(180deg, rgba(255, 251, 241, 0.98) 0%, rgba(249, 243, 229, 0.96) 100%);
+  border-color: #d6ccb9;
+  background: #fbf4e7;
 }
 
 .mobileDayCard[data-kind="shabbat"] {
-  border-color: #c7d7e8;
-  background:
-    radial-gradient(120% 120% at 50% -10%, rgba(206, 225, 243, 0.54) 0%, rgba(206, 225, 243, 0) 45%),
-    linear-gradient(180deg, rgba(243, 248, 254, 0.99) 0%, rgba(232, 240, 249, 0.97) 100%);
+  border-color: #d6ccb9;
+  background: #f7efe2;
 }
 
 .mobileDayHeader {
@@ -239,60 +266,76 @@
 
 .mobileEntryList {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .mobileEntryRow {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
-  border-radius: 18px;
-  border: 1px solid rgba(120, 146, 174, 0.15);
-  background: rgba(255, 255, 255, 0.9);
-  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid #e1d8c9;
+  background: #fffefb;
+  padding: 10px 9px;
 }
 
 .mobileEntryTime {
   margin: 0;
-  color: #102941;
+  color: #233d58;
   font-family: var(--font-heading);
-  font-size: 1rem;
-  line-height: 1.2;
-  letter-spacing: -0.03em;
+  font-size: 0.97rem;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
   text-align: right;
 }
 
 .noteGrid {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .noteCard {
-  border-radius: 20px;
-  border: 1px solid #d8e2ec;
-  background: linear-gradient(180deg, rgba(251, 252, 254, 0.98) 0%, rgba(244, 247, 251, 0.96) 100%);
-  padding: 16px;
+  border-radius: 6px;
+  border: 1px solid #ddd3c2;
+  background: #fff9ef;
+  padding: 12px;
 }
 
 .noteCard p {
   margin: 0;
-  color: #46586d;
-  line-height: 1.7;
+  color: #4d5e72;
+  line-height: 1.58;
 }
 
 .noteText {
   margin: 0;
-  color: #46586d;
-  line-height: 1.68;
+  color: #4d5e72;
+  line-height: 1.58;
 }
 
 .participateCard {
-  border-color: #c7d9ea;
-  background:
-    radial-gradient(74% 100% at 6% -8%, rgba(183, 209, 236, 0.2) 0%, rgba(183, 209, 236, 0) 100%),
-    #fcfdff;
+  border-color: #d4cbb9 !important;
+  background: #fffdf8 !important;
+}
+
+.linkCluster :global(a) {
+  border-radius: 6px !important;
+  border: 1px solid #ced8e4 !important;
+  background: #f8fbfe !important;
+  box-shadow: none !important;
+  padding: 0.85rem 0.95rem !important;
+}
+
+.linkCluster :global(a:hover) {
+  transform: none !important;
+  border-color: #b9c9d9 !important;
+  background: #eff4fa !important;
+}
+
+.linkCluster :global(span) {
+  color: #264b71 !important;
 }
 
 @media (max-width: 1180px) {
@@ -316,32 +359,19 @@
   }
 
   .mobileCalendar {
-    margin-top: 20px;
+    margin-top: 14px;
     display: grid;
-    gap: 12px;
+    gap: 10px;
   }
 
   .zmanimEmbed {
-    min-height: 640px;
+    min-height: 560px;
   }
 }
 
 @media (max-width: 760px) {
   .stack {
-    gap: 14px;
-  }
-
-  .calendarSection {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .scheduleIntro,
-  .infoBand,
-  .mobileCalendar,
-  .noteGrid {
-    padding-left: 0;
-    padding-right: 0;
+    gap: 15px;
   }
 
   .scheduleLead,
@@ -351,7 +381,27 @@
     font-size: 0.96rem;
   }
 
+  .scheduleTitle {
+    font-size: clamp(1.7rem, 9vw, 2.2rem);
+  }
+
+  .mobileEntryRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mobileEntryTime {
+    text-align: left;
+  }
+
   .zmanimEmbed {
-    min-height: 560px;
+    min-height: 470px;
+  }
+
+  .heroSection {
+    border-radius: 8px !important;
+  }
+
+  .sectionCard {
+    border-radius: 7px !important;
   }
 }

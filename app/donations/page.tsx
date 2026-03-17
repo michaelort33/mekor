@@ -125,6 +125,7 @@ export default async function DonationsPage() {
         eyebrow="Support Mekor"
         title="How You Can Donate and Help Mekor"
         subtitle="Sustain Jewish life in Center City"
+        className={styles.heroFlat}
         image={{
           src: DONATION_IMAGES.hero,
           alt: "Community members gathering at Mekor",
@@ -142,7 +143,7 @@ export default async function DonationsPage() {
         ]}
       />
 
-      <SectionCard title="Ways You Can Donate">
+      <SectionCard title="Ways You Can Donate" className={styles.flatSection}>
         <div className={styles.methodGrid}>
           {ONLINE_METHODS.map((method) => (
             <a
@@ -168,7 +169,7 @@ export default async function DonationsPage() {
         </p>
       </SectionCard>
 
-      <SectionCard className={styles.checkoutSection}>
+      <SectionCard className={`${styles.flatSection} ${styles.checkoutSection}`}>
         <DonationCheckoutForm
           title="Donate inside Mekor"
           description="This intake flow keeps the donation purpose explicit, preserves donor details for receipts, and standardizes classification across sources."
@@ -178,8 +179,9 @@ export default async function DonationsPage() {
         />
       </SectionCard>
 
-      <SectionCard>
+      <SectionCard className={styles.flatSection}>
         <SplitMediaText
+          className={styles.splitPanel}
           title="Sponsor and Dedicate"
           kicker="Celebrate and Honor"
           media={{
@@ -200,7 +202,7 @@ export default async function DonationsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Donation Opportunities">
+      <SectionCard title="Donation Opportunities" className={styles.flatSection}>
         <ul className={styles.bulletList}>
           {DONATION_OPPORTUNITIES.map((item) => (
             <li key={item}>{item}</li>
@@ -209,7 +211,7 @@ export default async function DonationsPage() {
         <p className={styles.copyText}>General contributions -- any amount is appreciated!</p>
       </SectionCard>
 
-      <SectionCard>
+      <SectionCard className={styles.flatSection}>
         <div className={styles.dedicationSection}>
           <div className={styles.dedicationCopy}>
             <p className={styles.dedicationKicker}>Legacy Giving</p>
@@ -247,7 +249,7 @@ export default async function DonationsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard tone="blue" className={styles.affiliateCard}>
+      <SectionCard className={`${styles.flatSection} ${styles.affiliateCard}`}>
         <div className={styles.affiliateContent}>
           <div className={styles.affiliateText}>
             <h2 className={styles.affiliateHeading}>Support Mekor while buying wine and Judaica!</h2>
@@ -274,7 +276,7 @@ export default async function DonationsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard className={styles.stripeCard}>
+      <SectionCard className={`${styles.flatSection} ${styles.stripeCard}`}>
         <div className={styles.stripePromo}>
           <div className={styles.stripePromoText}>
             <h2 className={styles.stripePromoHeading}>Donate by Card</h2>
@@ -288,8 +290,9 @@ export default async function DonationsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Quick Donation Links">
+      <SectionCard title="Quick Donation Links" className={styles.flatSection}>
         <CTACluster
+          className={styles.quickLinksCluster}
           items={[
             { label: "Stripe (Credit / ACH / Apple Pay)", href: STRIPE_DONATION_URL },
             { label: "Venmo", href: "https://www.venmo.com/u/Mekor-Habracha" },

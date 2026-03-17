@@ -72,6 +72,7 @@ export default async function Team4Page() {
         eyebrow="Community Support"
         title="Volunteer at Mekor"
         subtitle="Help sustain the warmth and energy of our shul"
+        className={styles.heroFlat}
         image={{
           src: VOLUNTEER_IMAGES.hero,
           alt: "Mekor volunteers and community members",
@@ -88,7 +89,7 @@ export default async function Team4Page() {
         ]}
       />
 
-      <SectionCard className={styles.bannerCard}>
+      <SectionCard className={`${styles.flatSection} ${styles.bannerCard}`}>
         <Image
           src={VOLUNTEER_IMAGES.banner}
           alt="Volunteer sign-up banner"
@@ -106,7 +107,7 @@ export default async function Team4Page() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Where You Can Help">
+      <SectionCard title="Where You Can Help" className={styles.flatSection}>
         <div className={styles.sectionGrid}>
           {VOLUNTEER_SECTIONS.map((item) => (
             <article key={item.title} className={styles.sectionCard}>
@@ -129,7 +130,7 @@ export default async function Team4Page() {
         </div>
       </SectionCard>
 
-      <SectionCard title="A new volunteer opportunity is coming soon...">
+      <SectionCard title="A new volunteer opportunity is coming soon..." className={styles.flatSection}>
         <ol className={styles.stepsList}>
           <li>Look out. This space will contain a new and special volunteer opportunity soon.</li>
           <li>Choose an opportunity in the sign-up form below.</li>
@@ -141,12 +142,16 @@ export default async function Team4Page() {
         </p>
       </SectionCard>
 
-      <SectionCard title="Volunteer Sign-Up" description="Join our team of dedicated volunteers and make a difference." className={styles.formCard}>
+      <SectionCard
+        title="Volunteer Sign-Up"
+        description="Join our team of dedicated volunteers and make a difference."
+        className={`${styles.flatSection} ${styles.formCard}`}
+      >
         <div id="volunteer-signup" className={styles.formAnchor} />
         <VolunteerForm />
       </SectionCard>
 
-      <SectionCard title="Quick Contacts">
+      <SectionCard title="Quick Contacts" className={styles.flatSection}>
         <CTACluster
           items={[
             { label: "General Volunteer", href: "mailto:mekorhabracha@gmail.com?subject=Volunteer%20at%20Mekor" },

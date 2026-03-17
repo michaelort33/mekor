@@ -1,10 +1,13 @@
 .page {
-  background: #f4f1ea;
+  background:
+    radial-gradient(120% 70% at 0% 0%, rgba(66, 95, 130, 0.1) 0%, rgba(66, 95, 130, 0) 58%),
+    radial-gradient(150% 80% at 100% 100%, rgba(192, 173, 139, 0.18) 0%, rgba(192, 173, 139, 0) 66%),
+    #f4f1ea;
 }
 
 .stack {
   display: grid;
-  gap: 20px;
+  gap: clamp(18px, 2.4vw, 28px);
 }
 
 .anchorSection {
@@ -12,40 +15,64 @@
 }
 
 .heroGraphic {
-  border-radius: 10px;
-  border: 1px solid #3a4e67;
-  background: #2d4868;
+  border-radius: 14px;
+  border: 1px solid #324862;
+  background: linear-gradient(160deg, #2d4868 0%, #243d5a 100%);
+  box-shadow: 0 14px 34px rgba(22, 33, 48, 0.16);
 }
 
 .heroGraphic > div:first-of-type {
-  background: linear-gradient(180deg, rgba(17, 30, 45, 0.16), rgba(17, 30, 45, 0.3));
+  background:
+    radial-gradient(120% 100% at 10% 0%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0)),
+    linear-gradient(180deg, rgba(17, 30, 45, 0.14), rgba(17, 30, 45, 0.34));
+}
+
+.heroGraphic :global(h1) {
+  color: #f4f7fb;
+  text-shadow: 0 1px 1px rgba(14, 25, 38, 0.34);
+}
+
+.heroGraphic :global(.text-lg),
+.heroGraphic :global(.text-base) {
+  color: rgba(237, 244, 252, 0.9);
+}
+
+.heroGraphic :global(.inline-flex) {
+  border-color: rgba(240, 247, 255, 0.24);
+  background: rgba(242, 247, 255, 0.14);
+  color: rgba(240, 247, 255, 0.9);
 }
 
 .subheading {
   margin: 0;
-  color: #3f4c5d;
-  line-height: 1.62;
+  color: #3d4b5d;
+  line-height: 1.68;
+  font-size: clamp(1rem, 1.05vw, 1.08rem);
+  text-wrap: pretty;
 }
 
 .profileSectionCard {
-  border-radius: 8px;
-  border: 1px solid #ced5de;
-  background: #fdfdfc;
-  box-shadow: none;
+  border-radius: 14px;
+  border: 1px solid #cfd4dd;
+  background:
+    linear-gradient(180deg, rgba(253, 253, 251, 0.98) 0%, rgba(247, 249, 252, 0.94) 100%),
+    #fcfcfb;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
 }
 
 .profileLayout {
   display: grid;
-  gap: 28px;
+  gap: clamp(20px, 2.8vw, 34px);
   grid-template-columns: minmax(250px, 0.68fr) minmax(0, 1.32fr);
   align-items: start;
 }
 
 .profilePhotoWrap {
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: 12px;
   background: #ffffff;
-  border: 1px solid #cfd6de;
+  border: 1px solid #ccd3dc;
+  box-shadow: 0 10px 24px rgba(24, 36, 53, 0.1);
 }
 
 .profilePhoto {
@@ -56,71 +83,136 @@
 
 .profileBody {
   display: grid;
-  gap: 18px;
+  gap: clamp(14px, 1.8vw, 20px);
 }
 
 .profileTitle {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(1.85rem, 2.3vw, 2.45rem);
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.95rem, 2.5vw, 2.7rem);
+  line-height: 1.03;
+  letter-spacing: -0.024em;
   color: #1e3147;
+  text-wrap: balance;
 }
 
 .profileText {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .profileText p {
   margin: 0;
-  color: #3f4c5d;
-  line-height: 1.72;
+  color: #3d4c5e;
+  line-height: 1.78;
+  font-size: clamp(0.99rem, 1.02vw, 1.05rem);
+  text-wrap: pretty;
 }
 
 .splitProfile :global(h2) {
-  font-size: clamp(1.75rem, 2.2vw, 2.35rem);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.9rem, 2.45vw, 2.55rem);
+  line-height: 1.04;
+  letter-spacing: -0.022em;
   color: #1e3147;
+  text-wrap: balance;
 }
 
 .splitProfile :global(p) {
-  color: #3f4c5d;
-  line-height: 1.72;
+  color: #3d4c5e;
+  line-height: 1.76;
+  font-size: clamp(0.99rem, 1.02vw, 1.05rem);
+  text-wrap: pretty;
+}
+
+.splitProfile :global([data-media-wrap]) {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #ccd3dc;
+  box-shadow: 0 10px 24px rgba(24, 36, 53, 0.1);
 }
 
 .linkCluster :global(a),
 .booksCluster :global(a) {
-  border-radius: 8px;
-  border: 1px solid #ccd4dd;
-  background: #f7f8fa;
+  border-radius: 10px;
+  border: 1px solid #c8d1dc;
+  background:
+    linear-gradient(180deg, rgba(248, 250, 253, 0.96) 0%, rgba(241, 245, 250, 0.95) 100%),
+    #f6f8fb;
   box-shadow: none;
   padding: 12px 14px;
+  color: #224364;
+  font-weight: 600;
 }
 
 .linkCluster :global(a:hover),
 .booksCluster :global(a:hover) {
   transform: none;
-  border-color: #b8c2cf;
-  background: #f1f4f7;
+  border-color: #afbbcb;
+  background: #edf2f8;
 }
 
 .linkCluster :global(h3),
 .booksCluster :global(h3) {
   color: #21364d;
-  font-size: 1.35rem;
-  letter-spacing: -0.01em;
+  font-size: clamp(1.26rem, 1.6vw, 1.5rem);
+  letter-spacing: -0.014em;
+  margin-bottom: 10px;
+}
+
+.booksCluster {
+  margin-top: clamp(4px, 0.8vw, 10px);
+  padding-top: clamp(10px, 1.4vw, 14px);
+  border-top: 1px solid #d8dee7;
+}
+
+.linkCluster {
+  margin-top: 2px;
+}
+
+@media (min-width: 1160px) {
+  .profileSectionCard {
+    padding: clamp(20px, 2.2vw, 28px);
+  }
 }
 
 @media (max-width: 960px) {
   .profileLayout {
     grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
+    gap: 18px;
   }
 
   .stack {
     gap: 16px;
+  }
+
+  .profilePhotoWrap {
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 760px) {
+  .heroGraphic {
+    border-radius: 12px;
+  }
+
+  .profileSectionCard {
+    border-radius: 12px;
+  }
+
+  .profileTitle,
+  .splitProfile :global(h2) {
+    font-size: clamp(1.72rem, 8.2vw, 2.1rem);
+  }
+
+  .profileText p,
+  .splitProfile :global(p),
+  .subheading {
+    font-size: 0.96rem;
+    line-height: 1.72;
+  }
+
+  .linkCluster :global(a),
+  .booksCluster :global(a) {
+    padding: 11px 12px;
   }
 }

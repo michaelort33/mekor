@@ -45,6 +45,7 @@ export default async function AuxiliaryMembershipPage() {
       <HeroSection
         title="Auxiliary & Alumni Membership"
         subtitle="Mekor Alumni Membership"
+        className={styles.heroFlat}
         image={{
           src: PAGE_IMAGES.hero,
           alt: "Mekor Habracha community gathering",
@@ -62,7 +63,7 @@ export default async function AuxiliaryMembershipPage() {
         ]}
       />
 
-      <SectionCard title="Auxiliary Membership Rates (5785)">
+      <SectionCard title="Auxiliary Membership Rates (5785)" className={styles.flatSection}>
         <p className={styles.copy}>
           This is available to alumni and others who live outside the Philadelphia region, at the following rates.
         </p>
@@ -79,7 +80,7 @@ export default async function AuxiliaryMembershipPage() {
         </p>
       </SectionCard>
 
-      <SectionCard title="Full Membership Rates">
+      <SectionCard title="Full Membership Rates" className={styles.flatSection}>
         <div className={styles.rateGrid}>
           {FULL_MEMBERSHIP_RATES.map(([label, amount]) => (
             <article className={styles.rateCard} key={label}>
@@ -90,7 +91,7 @@ export default async function AuxiliaryMembershipPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="How to Join">
+      <SectionCard title="How to Join" className={styles.flatSection}>
         <ol className={styles.steps}>
           <li>Email the shul to request membership.</li>
           <li>Make payment online by Venmo, PayPal Giving Fund, or regular PayPal.</li>
@@ -113,12 +114,17 @@ export default async function AuxiliaryMembershipPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Request Auxiliary Membership" description="Send your membership request here and we will follow up with confirmation and payment coordination.">
+      <SectionCard
+        className={`${styles.flatSection} ${styles.formSection}`}
+        title="Request Auxiliary Membership"
+        description="Send your membership request here and we will follow up with confirmation and payment coordination."
+      >
         <AuxiliaryMembershipForm sourcePath={PATH} />
       </SectionCard>
 
-      <SectionCard title="Contact">
+      <SectionCard title="Contact" className={styles.flatSection}>
         <CTACluster
+          className={styles.contactLinks}
           items={[
             { label: "Email", href: "mailto:admin@mekorhabracha.org?subject=Auxiliary%20Membership" },
             { label: "Call", href: "tel:+12155254246" },

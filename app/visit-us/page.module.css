@@ -1,27 +1,55 @@
 .page {
-  background: #f4f1ea;
+  background:
+    linear-gradient(180deg, rgba(251, 248, 241, 0.98) 0%, rgba(243, 238, 228, 0.98) 100%),
+    #f7f3ea;
 }
 
 .stack {
   display: grid;
-  gap: 20px;
+  gap: 18px;
 }
 
 .heroFlat {
-  border-radius: 10px;
-  border: 1px solid #3a4e67;
-  background: #2d4868;
+  border-radius: 10px !important;
+  border: 1px solid #c8bda9 !important;
+  box-shadow: 0 7px 22px rgba(29, 43, 57, 0.11) !important;
 }
 
-.heroFlat > div:first-of-type {
-  background: linear-gradient(180deg, rgba(17, 30, 45, 0.26), rgba(17, 30, 45, 0.4));
+.heroFlat > :global(div:nth-child(2)) {
+  background:
+    linear-gradient(180deg, rgba(244, 235, 219, 0.24) 0%, rgba(232, 218, 197, 0.7) 72%, rgba(222, 205, 182, 0.88) 100%) !important;
+}
+
+.heroFlat :global(h1) {
+  line-height: 0.98 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.heroFlat :global(p) {
+  color: #3a4c5e !important;
+}
+
+.heroFlat :global(a) {
+  border-radius: 5px !important;
+  border-color: #99acbf !important;
+  background: rgba(249, 252, 255, 0.94) !important;
+  color: #1d3e5e !important;
+  box-shadow: none !important;
 }
 
 .flatSection {
-  border-radius: 8px;
-  border: 1px solid #ced5de;
-  background: #fdfdfc;
-  box-shadow: none;
+  border-radius: 8px !important;
+  border: 1px solid #d4cbb9 !important;
+  background: #fffdfa !important;
+  box-shadow: 0 2px 12px rgba(34, 47, 62, 0.08) !important;
+}
+
+.contactSection,
+.mapSection,
+.messageSection,
+.whatsAppSection,
+.quickLinksSection {
+  background: #fffdf8 !important;
 }
 
 .bannerCard {
@@ -37,72 +65,74 @@
 
 .contactGrid {
   display: grid;
-  gap: 16px;
+  gap: 12px;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
 .contactCard {
-  border: 1px solid #ccd3dc;
-  border-radius: 8px;
-  background: #f6f7f9;
-  padding: 14px;
+  border: 1px solid #ddd3c2;
+  border-radius: 6px;
+  background: #fff9ef;
+  padding: 12px;
   display: grid;
-  gap: 6px;
+  gap: 5px;
 }
 
 .contactCard h3 {
   margin: 0;
-  color: #21364d;
+  color: #24374d;
   font-size: 1rem;
+  letter-spacing: -0.01em;
 }
 
 .contactCard p {
   margin: 0;
-  color: #3f4c5d;
-  line-height: 1.62;
+  color: #4d5e72;
+  line-height: 1.58;
 }
 
 .contactCard a {
-  color: #22466f;
+  color: #22527f;
+  font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .mapShell {
-  border: 1px solid #ccd3dc;
-  border-radius: 8px;
+  border: 1px solid #ddd3c2;
+  border-radius: 6px;
   overflow: hidden;
-  background: #f6f7f9;
+  background: #fff9ef;
 }
 
 .mapFrame {
   width: 100%;
-  min-height: 380px;
+  min-height: 420px;
   border: 0;
   display: block;
 }
 
 .whatsAppGrid {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 
 .groupCard {
   text-decoration: none;
-  border: 1px solid #ccd3dc;
-  border-radius: 8px;
-  background: #f6f7f9;
-  padding: 14px;
+  border: 1px solid #ddd3c2;
+  border-radius: 6px;
+  background: #fff9ef;
+  padding: 12px;
   display: grid;
   grid-template-columns: 38px minmax(0, 1fr);
-  gap: 12px;
+  gap: 10px;
   align-items: start;
 }
 
 .groupCard:hover {
-  border-color: #b8c2cf;
-  background: #eef1f5;
+  border-color: #c2b59c;
+  background: #f7efe2;
 }
 
 .groupIcon {
@@ -113,41 +143,69 @@
 
 .groupBody {
   display: grid;
-  gap: 6px;
+  gap: 5px;
 }
 
 .groupBody h3 {
   margin: 0;
-  color: #21364d;
+  color: #24374d;
   font-size: 0.98rem;
+  letter-spacing: -0.01em;
 }
 
 .groupBody p {
   margin: 0;
-  color: #3f4c5d;
-  line-height: 1.62;
+  color: #4d5e72;
+  line-height: 1.55;
 }
 
 .quickLinksCluster :global(a) {
-  border-radius: 8px;
-  border: 1px solid #ccd3dc;
-  background: #f6f7f9;
+  border-radius: 6px;
+  border: 1px solid #ddd3c2;
+  background: #fff9ef;
   box-shadow: none;
-  padding: 12px 14px;
+  padding: 12px;
 }
 
 .quickLinksCluster :global(a:hover) {
   transform: none;
-  border-color: #b8c2cf;
-  background: #eef1f5;
+  border-color: #c2b59c;
+  background: #f7efe2;
+}
+
+.quickLinksCluster :global(span) {
+  color: #264b71 !important;
 }
 
 @media (max-width: 760px) {
   .stack {
-    gap: 16px;
+    gap: 14px;
+  }
+
+  .heroFlat {
+    border-radius: 8px !important;
+  }
+
+  .flatSection {
+    border-radius: 7px !important;
+  }
+
+  .contactGrid,
+  .whatsAppGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .groupCard {
+    grid-template-columns: 34px minmax(0, 1fr);
+    padding: 11px;
   }
 
   .mapFrame {
-    min-height: 300px;
+    min-height: 340px;
+  }
+
+  .quickLinksCluster :global(div) {
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 }

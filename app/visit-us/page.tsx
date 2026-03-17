@@ -92,7 +92,7 @@ export default async function VisitUsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Location and Contact" className={styles.flatSection}>
+      <SectionCard title="Location and Contact" className={`${styles.flatSection} ${styles.contactSection}`}>
         <div className={styles.contactGrid}>
           <article className={styles.contactCard}>
             <h3>Address</h3>
@@ -121,7 +121,7 @@ export default async function VisitUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Map" className={styles.flatSection}>
+      <SectionCard title="Map" className={`${styles.flatSection} ${styles.mapSection}`}>
         <div className={styles.mapShell}>
           <iframe
             src={MAP_EMBED_SRC}
@@ -133,12 +133,12 @@ export default async function VisitUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Send Us a Message" className={styles.flatSection}>
+      <SectionCard title="Send Us a Message" className={`${styles.flatSection} ${styles.messageSection}`}>
         <ContactForm sourcePath={PATH} />
       </SectionCard>
 
       <SectionCard
-        className={styles.flatSection}
+        className={`${styles.flatSection} ${styles.whatsAppSection}`}
         title="Mekor Community WhatsApp"
         description="Click the WhatsApp logo to join one of our community groups. Whether you're looking for social events, meal matching, general chats, or updates on minyanim, there's a group for you."
       >
@@ -155,7 +155,7 @@ export default async function VisitUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Quick Links" className={styles.flatSection}>
+      <SectionCard title="Quick Links" className={`${styles.flatSection} ${styles.quickLinksSection}`}>
         <CTACluster
           className={styles.quickLinksCluster}
           items={[

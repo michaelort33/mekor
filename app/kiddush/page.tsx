@@ -64,6 +64,7 @@ export default async function KiddushPage() {
         eyebrow="Support Mekor"
         title="Sponsor a Kiddush"
         subtitle="Bring community together in celebration"
+        className={styles.heroFlat}
         image={{
           src: KIDDUSH_IMAGES.hero,
           alt: "Kiddush gathering at Mekor Habracha",
@@ -82,7 +83,7 @@ export default async function KiddushPage() {
 
       <KiddushPaymentSection options={SPONSOR_OPTIONS} returnPath={PATH} />
 
-      <SectionCard>
+      <SectionCard className={`${styles.flatSection} ${styles.mediaSection}`}>
         <SplitMediaText
           title="Make a Kiddush Sponsorship"
           kicker="Celebrate and Honor"
@@ -105,11 +106,15 @@ export default async function KiddushPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Request a Kiddush Sponsorship" description="Send the sponsorship details here so the office can confirm the date, dedication, and payment plan with you.">
+      <SectionCard
+        title="Request a Kiddush Sponsorship"
+        description="Send the sponsorship details here so the office can confirm the date, dedication, and payment plan with you."
+        className={styles.flatSection}
+      >
         <KiddushSponsorshipForm sourcePath={PATH} />
       </SectionCard>
 
-      <SectionCard title="Quick Links">
+      <SectionCard title="Quick Links" className={styles.flatSection}>
         <CTACluster
           items={[
             { label: "Sponsor The Kiddush", href: PAYPAL_SPONSOR_URL },

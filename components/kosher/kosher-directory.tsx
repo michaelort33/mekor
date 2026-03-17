@@ -188,7 +188,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
   function renderPlaceCard(place: ManagedKosherPlace) {
     return (
       <article key={place.path}>
-        <Card className="h-full overflow-hidden rounded-[8px] border-[#d2d9e0] bg-[#fcfbf7] shadow-none">
+        <Card className="h-full overflow-hidden rounded-[14px] border-[#d8cfbe] bg-[#fdf8ef] shadow-[0_1px_0_rgba(255,255,255,0.75)_inset]">
           <Link href={place.path} className="block" aria-label={`Open ${place.title}`}>
             <div className="overflow-hidden">
               <Image
@@ -210,7 +210,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
 
           <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge className="border-[#cad2dc] bg-[#eff2f6] text-[#36465a]">{place.neighborhoodLabel}</Badge>
+              <Badge className="rounded-full border-[#cbbca2] bg-[#efe3d2] text-[#4f5f72]">{place.neighborhoodLabel}</Badge>
               {place.tags.map((tag) => (
                 <button
                   key={`${place.path}-${tag}`}
@@ -219,7 +219,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                     "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition",
                     selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
                       ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                      : "border-[#c4ced9] bg-[#f4f5f7] text-[#4e5f72] hover:border-[#b3c0ce] hover:bg-[#ebeff3] hover:text-[#2e4259]",
+                      : "border-[#ccbea6] bg-[#f7ecdb] text-[#5b4933] hover:border-[#baa88d] hover:bg-[#f0dfc8] hover:text-[#473724]",
                   )}
                   style={
                     selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
@@ -236,7 +236,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
             </div>
 
             <div className="space-y-3">
-              <h3 className="font-[family-name:var(--font-heading)] text-3xl leading-[1.02] tracking-[-0.02em] text-[#24374d]">
+              <h3 className="font-[family-name:var(--font-heading)] text-[clamp(1.65rem,2.5vw,2.15rem)] leading-[1.04] tracking-[-0.02em] text-[#24374d]">
                 {place.title}
               </h3>
               {place.summary ? <p className="text-sm leading-7 text-[#445365]">{place.summary}</p> : null}
@@ -248,18 +248,18 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
             </div>
 
             <div className="flex flex-wrap gap-2 pt-1">
-              <Button asChild size="sm" className="bg-[#2f4d6d] text-[#f8fbff] hover:bg-[#284462]">
+              <Button asChild size="sm" className="bg-[#8a5a2f] text-[#fffdfa] hover:bg-[#744a26]">
                 <Link href={place.path}>Details</Link>
               </Button>
               {place.locationHref ? (
-                <Button asChild size="sm" variant="outline" className="border-[#b8c4d1] bg-[#f4f6f8] text-[#2c4664] hover:bg-[#eceff3]">
+                <Button asChild size="sm" variant="outline" className="border-[#cdb99e] bg-[#fbf3e8] text-[#5a3e24] hover:bg-[#f1e3d2]">
                   <a href={place.locationHref} target="_blank" rel="noreferrer noopener">
                     Map
                   </a>
                 </Button>
               ) : null}
               {place.website ? (
-                <Button asChild size="sm" variant="ghost" className="text-[#2c4664] hover:bg-[#edf1f4]">
+                <Button asChild size="sm" variant="ghost" className="text-[#5a3e24] hover:bg-[#f2e6d4]">
                   <a href={place.website} target="_blank" rel="noreferrer noopener">
                     {normalizeWebsiteLabel(place.website)}
                   </a>
@@ -276,13 +276,13 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
     <>
       <div id="kosher-directory" className="sr-only" />
       <section id="directory" className="grid gap-6" aria-label="Kosher places directory">
-        <Card className="overflow-hidden rounded-[8px] border-[#cfd6dd] bg-[#fcfbf7] px-4 py-5 shadow-none sm:px-6 sm:py-6">
+        <Card className="overflow-hidden rounded-[14px] border-[#d6cfbf] bg-[#fdf9f1] px-4 py-5 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset] sm:px-6 sm:py-6">
           <div className="grid gap-5">
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end">
               <div className="space-y-3">
-                <Badge className="border-[#cad2dc] bg-[#eff2f6] text-[#36465a]">Filter the guide</Badge>
+                <Badge className="rounded-full border-[#cbbca2] bg-[#efe3d2] text-[#4f5f72]">Filter the guide</Badge>
                 <div className="space-y-2">
-                  <h2 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.02em] text-[#23374d] sm:text-4xl">
+                  <h2 className="font-[family-name:var(--font-heading)] text-[clamp(1.8rem,4vw,2.55rem)] tracking-[-0.02em] text-[#23374d]">
                     One kosher directory, all neighborhoods
                   </h2>
                   <p className="max-w-2xl text-base leading-7 text-[#445365]">
@@ -313,7 +313,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                         "rounded-full border px-4 py-2.5 text-sm font-semibold tracking-[0.01em] transition",
                         selectedNeighborhood === option.value
                           ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                          : "border-[#c4ced9] bg-[#f4f5f7] text-[#4e5f72] hover:border-[#b3c0ce] hover:bg-[#ebeff3] hover:text-[#2e4259]",
+                          : "border-[#ccbea6] bg-[#f7ecdb] text-[#5b4933] hover:border-[#baa88d] hover:bg-[#f0dfc8] hover:text-[#473724]",
                       )}
                       style={selectedNeighborhood === option.value ? { color: "#f8fbff" } : undefined}
                       onClick={() => setSelectedNeighborhood(option.value)}
@@ -338,7 +338,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                             "rounded-full border px-4 py-2.5 text-sm font-semibold tracking-[0.01em] transition",
                             selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
                               ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                              : "border-[#c4ced9] bg-[#f4f5f7] text-[#4e5f72] hover:border-[#b3c0ce] hover:bg-[#ebeff3] hover:text-[#2e4259]",
+                              : "border-[#ccbea6] bg-[#f7ecdb] text-[#5b4933] hover:border-[#baa88d] hover:bg-[#f0dfc8] hover:text-[#473724]",
                           )}
                           style={
                             selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
@@ -379,7 +379,7 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
         </Card>
 
         {filteredPlaces.length === 0 ? (
-          <Card className="rounded-[8px] border-[#cfd6dd] bg-[#fcfbf7] px-6 py-8 text-center shadow-none">
+          <Card className="rounded-[14px] border-[#d6cfbf] bg-[#fdf9f1] px-6 py-8 text-center shadow-[0_1px_0_rgba(255,255,255,0.7)_inset]">
             <p className="text-base leading-7 text-[#445365]">
               No kosher places match those filters right now. Try another neighborhood, category, or search term.
             </p>

@@ -1,26 +1,77 @@
 .page {
-  background:
-    radial-gradient(920px 420px at 6% -16%, rgba(182, 206, 230, 0.28) 0%, rgba(182, 206, 230, 0) 64%),
-    radial-gradient(860px 380px at 92% -12%, rgba(252, 231, 187, 0.26) 0%, rgba(252, 231, 187, 0) 68%),
-    #f9f7f2;
+  background: #f4f1e8;
 }
 
 .stack {
   display: grid;
-  gap: 16px;
+  gap: 20px;
+}
+
+.heroFlat {
+  border-radius: 10px;
+  border: 1px solid #3a4e67;
+  background: #2d4868;
+}
+
+.heroFlat > div:first-of-type {
+  background: linear-gradient(180deg, rgba(16, 27, 41, 0.24), rgba(16, 27, 41, 0.4));
+}
+
+.flatSection {
+  border-radius: 8px;
+  border: 1px solid #ced5de;
+  background: #fdfcf9;
+  box-shadow: none;
+}
+
+.splitPanel :global(h2) {
+  color: #1f3349;
+  font-size: clamp(1.8rem, 2.4vw, 2.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.splitPanel :global(p) {
+  color: #435262;
+  line-height: 1.72;
+}
+
+.splitPanel :global(a) {
+  border-radius: 8px;
+  border: 1px solid #c8d2de;
+  background: #eef2f6;
+}
+
+.splitPanel :global(a:hover) {
+  background: #e6edf4;
+}
+
+.communityLinks :global(a) {
+  border-radius: 8px;
+  border: 1px solid #ccd4dd;
+  background: #f5f6f2;
+  box-shadow: none;
+  padding: 12px 14px;
+}
+
+.communityLinks :global(a:hover) {
+  transform: none;
+  border-color: #b7c1cd;
+  background: #eef1f4;
 }
 
 .mapShell {
-  border-radius: 16px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #cfd9e6;
-  box-shadow: 0 14px 30px rgba(20, 34, 50, 0.14);
+  border: 1px solid #ccd4dd;
+  background: #f8f7f3;
+  box-shadow: none;
 }
 
 .mapFrame {
   width: 100%;
-  height: min(58vh, 520px);
-  min-height: 330px;
+  height: min(56vh, 500px);
+  min-height: 320px;
   border: 0;
   display: block;
 }
@@ -29,19 +80,19 @@
   margin: 0;
   padding: 0 0 0 18px;
   display: grid;
-  gap: 6px;
-  color: #445367;
-  line-height: 1.58;
+  gap: 8px;
+  color: #435262;
+  line-height: 1.62;
 }
 
 @media (max-width: 760px) {
   .stack {
-    gap: 14px;
+    gap: 16px;
   }
 
   .mapFrame {
-    height: 58vh;
-    min-height: 280px;
+    height: 54vh;
+    min-height: 290px;
   }
 
   .guidelineList {

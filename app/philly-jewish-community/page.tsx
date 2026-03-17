@@ -35,6 +35,7 @@ export default async function PhillyJewishCommunityPage() {
       <HeroSection
         title="Philly Jewish Community"
         subtitle="Center City resources and institutions"
+        className={styles.heroFlat}
         image={{
           src: COMMUNITY_IMAGES.hero,
           alt: "Mekor Habracha community celebration",
@@ -47,8 +48,9 @@ export default async function PhillyJewishCommunityPage() {
         ]}
       />
 
-      <SectionCard>
+      <SectionCard className={styles.flatSection}>
         <SplitMediaText
+          className={styles.splitPanel}
           title="Center City Eruv"
           kicker="Community Infrastructure"
           media={{
@@ -84,8 +86,9 @@ export default async function PhillyJewishCommunityPage() {
         </ul>
       </SectionCard>
 
-      <SectionCard>
+      <SectionCard className={styles.flatSection}>
         <SplitMediaText
+          className={styles.splitPanel}
           reverse
           title="Kosher Establishments"
           kicker="Dining and Shopping"
@@ -104,8 +107,9 @@ export default async function PhillyJewishCommunityPage() {
         />
       </SectionCard>
 
-      <SectionCard>
+      <SectionCard className={styles.flatSection}>
         <SplitMediaText
+          className={styles.splitPanel}
           title="Mikvaot"
           kicker="Family and Lifecycle Resources"
           media={{
@@ -123,8 +127,9 @@ export default async function PhillyJewishCommunityPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Community Links">
+      <SectionCard title="Community Links" className={styles.flatSection}>
         <CTACluster
+          className={styles.communityLinks}
           items={[
             { label: "Center City Eruv", href: "http://www.centercityeruv.org/map.asp" },
             { label: "Kosher Map", href: "/kosher-map" },

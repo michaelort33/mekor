@@ -1,29 +1,53 @@
 .page {
-  background: #f4f1e8;
+  background:
+    radial-gradient(900px 420px at 12% -14%, rgba(186, 204, 225, 0.2) 0%, rgba(186, 204, 225, 0) 72%),
+    radial-gradient(860px 420px at 92% -22%, rgba(237, 220, 189, 0.2) 0%, rgba(237, 220, 189, 0) 72%),
+    linear-gradient(180deg, #f6f3ea 0%, #f1eee6 100%);
 }
 
 .stack {
   display: grid;
-  gap: 20px;
+  gap: 24px;
 }
 
 .heroFlat {
-  border-radius: 10px;
-  border: 1px solid #3a4e67;
+  border-radius: 14px;
+  border: 1px solid #32475f;
   background: #2d4868;
-  box-shadow: none;
+  box-shadow: 0 14px 30px rgba(29, 43, 57, 0.16);
 }
 
 .heroFlat > div:first-of-type {
-  background: linear-gradient(180deg, rgba(18, 29, 43, 0.24), rgba(18, 29, 43, 0.38));
+  background: linear-gradient(180deg, rgba(18, 29, 43, 0.2), rgba(18, 29, 43, 0.42));
+}
+
+.heroFlat :global(h1) {
+  line-height: 1.04 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.heroFlat :global(p) {
+  color: #dfe8f2 !important;
+}
+
+.heroFlat :global(a) {
+  border-radius: 999px !important;
+  border-color: rgba(185, 203, 222, 0.6) !important;
+  background: rgba(246, 250, 255, 0.96) !important;
+  color: #254668 !important;
 }
 
 .podcastSection,
 .linksSection {
-  border-radius: 8px;
-  border: 1px solid #cfd6de;
-  background: #fdfcf9;
-  box-shadow: none;
+  border-radius: 14px;
+  border: 1px solid #ccd5df;
+  background: linear-gradient(180deg, #fefdfa 0%, #f8f6f1 100%);
+  box-shadow: 0 10px 24px rgba(28, 40, 56, 0.1);
+}
+
+.podcastSection :global(h2),
+.linksSection :global(h2) {
+  letter-spacing: -0.01em;
 }
 
 .anchor {
@@ -34,14 +58,14 @@
 
 .podcastSection :global(.rabbi-podcast),
 .podcastSection :global(.rabbi-podcast__error) {
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid #d3d9e0;
-  background: #f6f5f1;
-  box-shadow: none;
+  background: linear-gradient(180deg, #f8f7f3 0%, #f2f3ef 100%);
+  box-shadow: 0 8px 18px rgba(29, 43, 57, 0.06);
 }
 
 .podcastSection :global(.rabbi-podcast) {
-  gap: 14px;
+  gap: 16px;
 }
 
 .podcastSection :global(.rabbi-podcast__search-label),
@@ -52,10 +76,10 @@
 }
 
 .podcastSection :global(.rabbi-podcast__search input) {
-  border-radius: 8px;
+  border-radius: 10px;
   border-color: #c8d1da;
   background: #fdfcf9;
-  box-shadow: none;
+  box-shadow: 0 2px 10px rgba(33, 49, 67, 0.04) inset;
 }
 
 .podcastSection :global(.rabbi-podcast__search input:focus-visible),
@@ -66,16 +90,26 @@
 }
 
 .podcastSection :global(.rabbi-podcast__episode) {
-  border-radius: 8px;
+  border-radius: 12px;
   border-color: #d2d8df;
   background: #ffffff;
-  padding: 16px;
+  padding: 18px;
+  box-shadow: 0 6px 16px rgba(28, 43, 60, 0.06);
 }
 
 .podcastSection :global(.rabbi-podcast__episode-header h2) {
   color: #27384f;
   font-size: clamp(1.1rem, 1.8vw, 1.45rem);
-  line-height: 1.3;
+  line-height: 1.32;
+  text-wrap: balance;
+}
+
+.podcastSection :global(.rabbi-podcast__episode-header) {
+  gap: 8px;
+}
+
+.podcastSection :global(.rabbi-podcast__episode-description) {
+  line-height: 1.72;
 }
 
 .podcastSection :global(.rabbi-podcast__episode-actions a),
@@ -84,43 +118,52 @@
 }
 
 .podcastSection :global(.rabbi-podcast__load-more) {
-  border-radius: 8px;
+  border-radius: 999px;
   border-color: #bcc7d2;
-  background: #f2f4f6;
+  background: linear-gradient(180deg, #f3f6f9 0%, #ebeff4 100%);
   color: #24364c;
-  padding: 10px 16px;
+  padding: 10px 18px;
 }
 
 .linkCluster :global(a) {
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #ccd4dd;
-  background: #f5f6f2;
+  background: linear-gradient(180deg, #f7f8f4 0%, #f0f3f6 100%);
   box-shadow: none;
-  padding: 12px 14px;
+  padding: 13px 15px;
 }
 
 .linkCluster :global(a:hover) {
-  transform: none;
+  transform: translateY(-1px);
   border-color: #b7c1cd;
   background: #eef1f4;
 }
 
 @media (max-width: 760px) {
   .stack {
-    gap: 16px;
+    gap: 18px;
   }
 
   .heroFlat {
-    border-radius: 8px;
+    border-radius: 10px;
+  }
+
+  .podcastSection,
+  .linksSection {
+    border-radius: 10px;
   }
 
   .podcastSection :global(.rabbi-podcast) {
     margin-top: 14px;
-    padding: 14px;
+    padding: 15px;
   }
 
   .podcastSection :global(.rabbi-podcast__episode) {
-    padding: 14px;
+    padding: 15px;
+  }
+
+  .podcastSection :global(.rabbi-podcast__episode-header h2) {
+    font-size: clamp(1rem, 5.2vw, 1.18rem);
   }
 
   .anchor {

@@ -1,13 +1,27 @@
 .page {
-  background:
-    radial-gradient(920px 420px at 12% -14%, rgba(182, 206, 230, 0.3) 0%, rgba(182, 206, 230, 0) 68%),
-    radial-gradient(900px 440px at 90% -16%, rgba(250, 234, 198, 0.32) 0%, rgba(250, 234, 198, 0) 70%),
-    #f9f7f2;
+  background: #f4f1e8;
 }
 
 .stack {
   display: grid;
-  gap: 16px;
+  gap: 20px;
+}
+
+.heroFlat {
+  border-radius: 10px;
+  border: 1px solid #3a4e67;
+  background: #2d4868;
+}
+
+.heroFlat > div:first-of-type {
+  background: linear-gradient(180deg, rgba(16, 27, 41, 0.26), rgba(16, 27, 41, 0.4));
+}
+
+.flatSection {
+  border-radius: 8px;
+  border: 1px solid #ced5dd;
+  background: #fdfcf9;
+  box-shadow: none;
 }
 
 .methodGrid {
@@ -18,9 +32,9 @@
 
 .methodCard {
   --method-accent: #3d5a80;
-  border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--method-accent) 20%, #d6e0ec);
-  background: linear-gradient(150deg, color-mix(in srgb, var(--method-accent) 4%, #fbfcfe) 0%, color-mix(in srgb, var(--method-accent) 2%, #f4f7fb) 100%);
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--method-accent) 22%, #ccd5df);
+  background: #f6f6f3;
   padding: 14px 16px;
   text-decoration: none;
   display: grid;
@@ -28,24 +42,23 @@
   align-items: center;
   gap: 12px;
   min-height: 86px;
-  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+  transition: border-color 120ms ease, background-color 120ms ease;
 }
 
 .methodCard:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--method-accent) 50%, #b0c4da);
-  box-shadow: 0 12px 24px color-mix(in srgb, var(--method-accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--method-accent) 38%, #b8c4d1);
+  background: #eff2f6;
 }
 
 .methodIconWrap {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, var(--method-accent) 10%, #ffffff);
-  border: 1px solid color-mix(in srgb, var(--method-accent) 22%, #dde4ef);
+  background: color-mix(in srgb, var(--method-accent) 8%, #f7f9fc);
+  border: 1px solid color-mix(in srgb, var(--method-accent) 20%, #d4dde7);
   color: var(--method-accent);
   flex-shrink: 0;
 }
@@ -83,21 +96,17 @@
 
 .copyText {
   margin: 0;
-  color: #445262;
+  color: #435262;
   line-height: 1.68;
 }
 
 .checkoutSection {
-  border-color: rgba(42, 82, 124, 0.16);
-  background:
-    radial-gradient(120% 140% at 0% 0%, rgba(177, 203, 232, 0.28) 0%, rgba(177, 203, 232, 0) 52%),
-    radial-gradient(95% 100% at 100% 0%, rgba(249, 231, 198, 0.22) 0%, rgba(249, 231, 198, 0) 48%),
-    linear-gradient(180deg, rgba(252, 253, 255, 0.98) 0%, rgba(243, 247, 252, 0.98) 100%);
-  box-shadow: 0 24px 54px rgba(31, 57, 88, 0.12);
+  border-color: #ccd4dd;
+  background: #f8f7f3;
 }
 
 .checkoutSection::before {
-  background: linear-gradient(90deg, rgba(58, 103, 154, 0.45) 0%, rgba(58, 103, 154, 0.08) 100%);
+  background: linear-gradient(90deg, rgba(58, 103, 154, 0.26) 0%, rgba(58, 103, 154, 0.06) 100%);
 }
 
 .bulletList {
@@ -111,6 +120,7 @@
 
 .affiliateCard {
   overflow: hidden;
+  background: #f7f5f1;
 }
 
 .affiliateContent {
@@ -127,15 +137,16 @@
 
 .affiliateHeading {
   margin: 0;
-  color: #ffffff;
+  color: #23374d;
   font-size: clamp(1.3rem, 3vw, 2rem);
   line-height: 1.15;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.01em;
+  font-family: var(--font-heading);
 }
 
 .affiliateDescription {
   margin: 0;
-  color: rgba(225, 238, 255, 0.92);
+  color: #435262;
   line-height: 1.6;
   max-width: 52ch;
 }
@@ -151,27 +162,25 @@
   grid-template-columns: 48px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(6px);
+  border-radius: 8px;
+  border: 1px solid #c8d2de;
+  background: #eef2f6;
   padding: 12px 16px;
   text-decoration: none;
-  color: #ffffff;
-  transition: background-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+  color: #223a56;
+  transition: background-color 120ms ease, border-color 120ms ease;
 }
 
 .affiliateButton:hover {
-  background: rgba(255, 255, 255, 0.22);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  background: #e6edf4;
+  border-color: #b5c4d4;
 }
 
 .affiliateButtonIcon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: #dde6f0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -192,7 +201,7 @@
 
 .affiliateButtonUrl {
   font-size: 0.82rem;
-  color: rgba(215, 232, 255, 0.82);
+  color: #556477;
   line-height: 1.2;
 }
 
@@ -208,10 +217,8 @@
 }
 
 .stripeCard {
-  border-color: #cfe0f1;
-  background:
-    radial-gradient(70% 90% at 8% -12%, rgba(181, 206, 236, 0.26) 0%, rgba(181, 206, 236, 0) 100%),
-    #fbfdff;
+  border-color: #ccd4dd;
+  background: #f8f7f3;
 }
 
 .stripePromo {
@@ -228,9 +235,10 @@
 
 .stripePromoHeading {
   margin: 0;
-  color: #1d3f66;
+  color: #1f3349;
   font-size: clamp(1.3rem, 2.6vw, 1.8rem);
   line-height: 1.15;
+  font-family: var(--font-heading);
 }
 
 .stripeButton {
@@ -238,24 +246,97 @@
   align-items: center;
   justify-content: center;
   min-height: 52px;
-  border-radius: 14px;
-  border: 1px solid #4a6cf7;
-  background: linear-gradient(160deg, #635bff 0%, #4a3fdb 100%);
-  color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #b7c5d4;
+  background: #eef2f6;
+  color: #233a54;
   text-decoration: none;
-  padding: 0 28px;
-  font-size: 1.05rem;
+  padding: 0 24px;
+  font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(99, 91, 255, 0.3);
-  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+  transition: background-color 120ms ease, border-color 120ms ease;
 }
 
 .stripeButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(99, 91, 255, 0.4);
-  filter: brightness(1.06);
+  background: #e6edf4;
+  border-color: #aebfd1;
+}
+
+.splitPanel :global(h2) {
+  color: #1f3349;
+  font-size: clamp(1.8rem, 2.3vw, 2.35rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.splitPanel :global(p) {
+  color: #435262;
+  line-height: 1.72;
+}
+
+.splitPanel :global(a) {
+  border-radius: 8px;
+  border: 1px solid #c8d2de;
+  background: #eef2f6;
+}
+
+.splitPanel :global(a:hover) {
+  background: #e6edf4;
+}
+
+.quickLinksCluster :global(a) {
+  border-radius: 8px;
+  border: 1px solid #ccd4dd;
+  background: #f5f6f2;
+  box-shadow: none;
+  padding: 12px 14px;
+}
+
+.quickLinksCluster :global(a:hover) {
+  transform: none;
+  border-color: #b7c1cd;
+  background: #eef1f4;
+}
+
+.dedicationButton,
+.dedicationButtonSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.dedicationButton {
+  background: #2f4d6d;
+  color: #f8fbff;
+}
+
+.dedicationButtonSecondary {
+  border: 1px solid #c6d1dc;
+  background: #f3f5f7;
+  color: #294564;
+}
+
+.dedicationVisual {
+  overflow: hidden;
+  border-radius: 8px;
+  background: #f3f1eb;
+  border: 1px solid #d3d9e0;
+}
+
+.dedicationList {
+  margin: 0;
+  padding-left: 1.16rem;
+  display: grid;
+  gap: 8px;
+  color: #445262;
+  line-height: 1.64;
 }
 
 .dedicationSection {
@@ -293,50 +374,12 @@
   margin-top: 4px;
 }
 
-.dedicationButton,
-.dedicationButtonSecondary {
-  display: inline-flex;
-  min-height: 42px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 0 18px;
-  text-decoration: none;
-  font-weight: 700;
-}
-
-.dedicationButton {
-  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%);
-  color: #f8fbff;
-}
-
-.dedicationButtonSecondary {
-  border: 1px solid #c7d5e4;
-  background: #ffffff;
-  color: #24476d;
-}
-
-.dedicationVisual {
-  overflow: hidden;
-  border-radius: 22px;
-  background: linear-gradient(160deg, rgba(250, 245, 238, 0.98) 0%, rgba(243, 239, 234, 0.98) 100%);
-}
-
 .dedicationImage {
   display: block;
   width: 100%;
   height: clamp(240px, 40vw, 360px);
   object-fit: cover;
   object-position: center center;
-}
-
-.dedicationList {
-  margin: 0;
-  padding-left: 1.16rem;
-  display: grid;
-  gap: 8px;
-  color: #445262;
-  line-height: 1.64;
 }
 
 @media (max-width: 600px) {
@@ -352,7 +395,7 @@
 
 @media (max-width: 760px) {
   .stack {
-    gap: 14px;
+    gap: 16px;
   }
 
   .methodGrid {

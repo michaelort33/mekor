@@ -42,6 +42,7 @@ export default async function CenterCityBeitMidrashPage() {
         eyebrow="Learning"
         title="The Center City Beit Midrash (CCBM)"
         subtitle="Serious Torah learning in a warm, accessible community setting"
+        className={styles.heroSection}
         image={{
           src: CCBM_IMAGES.hero,
           alt: "Center City Beit Midrash learning session",
@@ -58,7 +59,7 @@ export default async function CenterCityBeitMidrashPage() {
         ]}
       />
 
-      <SectionCard className={styles.bannerCard}>
+      <SectionCard className={`${styles.sectionCard} ${styles.bannerCard}`}>
         <Image
           src={CCBM_IMAGES.banner}
           alt="Students learning Torah at Mekor"
@@ -76,7 +77,7 @@ export default async function CenterCityBeitMidrashPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Class Schedule">
+      <SectionCard title="Class Schedule" className={styles.sectionCard}>
         <div className={styles.scheduleGrid}>
           {SUMMER_CLASSES.map((item) => (
             <article key={item.name} className={styles.scheduleCard}>
@@ -92,7 +93,7 @@ export default async function CenterCityBeitMidrashPage() {
         </p>
       </SectionCard>
 
-      <SectionCard title="Daily Amud Yomi (With Cereal)">
+      <SectionCard title="Daily Amud Yomi (With Cereal)" className={styles.sectionCard}>
         <ul className={styles.bulletList}>
           <li>Join us each weekday morning after Shacharis for a brief and engaging Amud Yomi shiur, led by Rabbi Gotlib.</li>
           <li>The class is under 20 minutes and open to all levels.</li>
@@ -102,7 +103,7 @@ export default async function CenterCityBeitMidrashPage() {
         </ul>
       </SectionCard>
 
-      <SectionCard title="Mission">
+      <SectionCard title="Mission" className={styles.sectionCard}>
         <p className={styles.bodyText}>
           The Center City Beit Midrash is an inclusive, learning-centered organization committed to providing
           high-quality educational experiences for those seeking meaningful engagement with Jewish texts and traditions.
@@ -113,8 +114,9 @@ export default async function CenterCityBeitMidrashPage() {
         </p>
       </SectionCard>
 
-      <SectionCard title="Quick Links">
+      <SectionCard title="Quick Links" className={styles.sectionCard}>
         <CTACluster
+          className={styles.quickLinksCluster}
           items={[
             { label: "Contact CCBM", href: "mailto:admin@mekorhabracha.org?subject=CCBM%20Inquiry" },
             { label: "Davening Schedule", href: "/davening" },

@@ -4,7 +4,7 @@
 
 .stack {
   display: grid;
-  gap: 22px;
+  gap: 20px;
 }
 
 .heroFlat {
@@ -37,7 +37,8 @@
   border: 1px solid #cbc4b7 !important;
   background: #fbfaf7 !important;
   box-shadow: none !important;
-  gap: 20px;
+  gap: 18px;
+  padding: 18px;
 }
 
 .flatSection::before {
@@ -66,6 +67,14 @@
   background: #fffdf8;
 }
 
+.detailsSection :global(h2),
+.messageSection :global(h2),
+.visitSection :global(h2),
+.whatsAppSection :global(h2) {
+  font-size: clamp(1.5rem, 2.4vw, 2.15rem);
+  line-height: 1.08;
+}
+
 .bannerCard {
   overflow: hidden;
   padding: 0;
@@ -79,7 +88,7 @@
 
 .detailGrid {
   display: grid;
-  gap: 16px;
+  gap: 14px;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
@@ -90,6 +99,7 @@
   padding: 16px;
   display: grid;
   gap: 8px;
+  align-content: start;
 }
 
 .detailCard h3 {
@@ -119,7 +129,7 @@
 
 .visitCard {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   align-content: start;
   border: 1px solid #d4cdc0;
   border-radius: 8px;
@@ -149,6 +159,45 @@
   border-radius: 8px;
   background: #f9f7f2;
   padding: 18px;
+}
+
+.messageSection :global(form) {
+  max-width: 980px;
+  gap: 16px;
+}
+
+.messageSection :global(label > span) {
+  letter-spacing: 0.14em;
+  color: #5e584d !important;
+}
+
+.messageSection :global(input),
+.messageSection :global(textarea) {
+  border-radius: 8px;
+  border-color: #cfc7bb;
+  background: #fffdf9;
+}
+
+.messageSection :global(button[type="submit"]) {
+  border-radius: 8px;
+  background: #2f4c64;
+  color: #f8fbff;
+}
+
+.visitLinks :global(a.group),
+.whatsAppLinks :global(a.group) {
+  border-radius: 8px;
+  border-color: #c8c1b4;
+  background: #fffefb;
+  box-shadow: none;
+  padding: 12px 14px;
+}
+
+.visitLinks :global(a.group:hover),
+.whatsAppLinks :global(a.group:hover) {
+  transform: none;
+  border-color: #b8ae9d;
+  background: #fffdf8;
 }
 
 .locationEyebrow {
@@ -196,7 +245,22 @@
     gap: 16px;
   }
 
+  .flatSection {
+    padding: 14px;
+  }
+
+  .detailGrid {
+    gap: 12px;
+  }
+
   .visitGrid {
     grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .visitCard,
+  .locationPanel {
+    padding: 14px;
+    gap: 10px;
   }
 }

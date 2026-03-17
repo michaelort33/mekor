@@ -65,7 +65,7 @@ export default async function ContactUsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Contact Details" className={styles.flatSection}>
+      <SectionCard title="Contact Details" className={`${styles.flatSection} ${styles.detailsSection}`}>
         <div className={styles.detailGrid}>
           <article className={styles.detailCard}>
             <h3>Phone</h3>
@@ -88,11 +88,11 @@ export default async function ContactUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Send a Message" className={styles.flatSection}>
+      <SectionCard title="Send a Message" className={`${styles.flatSection} ${styles.messageSection}`}>
         <ContactForm sourcePath={PATH} />
       </SectionCard>
 
-      <SectionCard title="Visit the Shul" className={styles.flatSection}>
+      <SectionCard title="Visit the Shul" className={`${styles.flatSection} ${styles.visitSection}`}>
         <div className={styles.visitGrid}>
           <div className={styles.visitCard}>
             <h3>Address</h3>
@@ -109,6 +109,7 @@ export default async function ContactUsPage() {
             <p>Nearby garages and street parking are available throughout the neighborhood. Contact us if you need help planning your visit.</p>
 
             <CTACluster
+              className={styles.visitLinks}
               items={[
                 { label: "Open in Google Maps", href: "https://maps.google.com/?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102" },
                 { label: "Email for Visiting Info", href: "mailto:mekorhabracha@gmail.com?subject=Visiting%20Mekor" },
@@ -127,6 +128,7 @@ export default async function ContactUsPage() {
               <span>Best to coordinate ahead for weekday access</span>
             </div>
             <CTACluster
+              className={styles.visitLinks}
               items={[
                 { label: "Open in Google Maps", href: "https://maps.google.com/?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102" },
                 { label: "Call the Shul", href: "tel:+12155254246" },
@@ -139,9 +141,10 @@ export default async function ContactUsPage() {
       <SectionCard
         title="Mekor Community WhatsApp"
         description="Click the WhatsApp logo to join our Mekor Community group and stay up to date with everything happening in our shul and community."
-        className={styles.flatSection}
+        className={`${styles.flatSection} ${styles.whatsAppSection}`}
       >
         <CTACluster
+          className={styles.whatsAppLinks}
           items={[
             { label: "Join Mekor WhatsApp", href: "https://chat.whatsapp.com/INZrPssTZeHK5xrx5ghECF" },
             { label: "Open in Google Maps", href: "https://maps.google.com/?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102" },

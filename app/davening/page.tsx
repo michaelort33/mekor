@@ -178,6 +178,7 @@ export default async function DaveningPage() {
         eyebrow="Services"
         title="Davening at Mekor"
         subtitle="Shabbat and weekday minyanim in Center City"
+        className={styles.heroSection}
         image={{
           src: DAVENING_IMAGES.hero,
           alt: "Mekor sanctuary during davening",
@@ -194,7 +195,7 @@ export default async function DaveningPage() {
         ]}
       />
 
-      <SectionCard className={styles.calendarSection}>
+      <SectionCard className={`${styles.sectionCard} ${styles.calendarSection}`}>
         <div className={styles.scheduleIntro}>
           <div>
             <p className={styles.scheduleEyebrow}>Shabbat Services</p>
@@ -269,6 +270,7 @@ export default async function DaveningPage() {
       <SectionCard
         title="Live Zmanim"
         description="For up-to-the-minute daily zmanim, use the MyZmanim widget below when available. The Mekor service schedule above remains the primary davening schedule."
+        className={styles.sectionCard}
       >
         {MYZMANIM_WIDGET_URL ? (
           <div className={styles.zmanimEmbedWrap}>
@@ -288,6 +290,7 @@ export default async function DaveningPage() {
               MyZmanim widget URL.
             </p>
             <CTACluster
+              className={styles.linkCluster}
               items={[
                 { label: "Open MyZmanim", href: "https://www.myzmanim.com/" },
                 { label: "Join Minyan WhatsApp", href: MINYAN_WHATSAPP_URL },
@@ -297,7 +300,11 @@ export default async function DaveningPage() {
         )}
       </SectionCard>
 
-      <SectionCard title="Weekday Services" description="Please notify us if you plan to attend weekday minyanim.">
+      <SectionCard
+        title="Weekday Services"
+        description="Please notify us if you plan to attend weekday minyanim."
+        className={styles.sectionCard}
+      >
         <div className={styles.noteGrid}>
           {WEEKDAY_NOTES.map((note) => (
             <article key={note} className={styles.noteCard}>
@@ -310,12 +317,14 @@ export default async function DaveningPage() {
       <SectionCard
         title="RSVP or Participate"
         description="Use this intake for weekday minyan interest, Shabbat attendance coordination, leining, leading davening, or yahrzeit-related requests."
+        className={styles.sectionCard}
       >
         <DaveningRsvpForm sourcePath={PATH} />
       </SectionCard>
 
-      <SectionCard title="Nearby Weekday Minyanim">
+      <SectionCard title="Nearby Weekday Minyanim" className={styles.sectionCard}>
         <CTACluster
+          className={styles.linkCluster}
           items={[
             { label: "Orthodox Community at Penn (Hillel)", href: "https://pennhillel.org/program/orthodox-community-at-penn/" },
             { label: "Penn OCP Minyan Schedule", href: "https://www.pennocp.org/minyan/" },
@@ -327,12 +336,13 @@ export default async function DaveningPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Participate in Davening" className={styles.participateCard}>
+      <SectionCard title="Participate in Davening" className={`${styles.sectionCard} ${styles.participateCard}`}>
         <p className={styles.noteText}>
           Interested in reading Torah or Haftorah, or leading davening? Have an upcoming yahrzeit? Reach out and we
           will help coordinate.
         </p>
         <CTACluster
+          className={styles.linkCluster}
           items={[
             { label: "Sign up by Email", href: "mailto:admin@mekorhabracha.org?subject=Davening%20Participation" },
             { label: "Call (215) 525-4246", href: "tel:+12155254246" },

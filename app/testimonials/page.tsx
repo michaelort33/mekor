@@ -108,7 +108,7 @@ export default async function TestimonialsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Testimonials">
+      <SectionCard title="Testimonials" className={styles.testimonialsSection}>
         <div className={styles.quoteGrid}>
           {TESTIMONIALS.map((entry, index) => (
             <article key={`${entry.by}-${index}`} className={styles.quoteCard}>
@@ -119,7 +119,7 @@ export default async function TestimonialsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Connect With Mekor">
+      <SectionCard title="Connect With Mekor" className={styles.connectSection}>
         <CTACluster
           items={[
             { label: "Membership", href: "/membership" },

@@ -55,8 +55,6 @@
 .heroTitle,
 .heroSubtitle,
 .aboutCopy h2,
-.featureCopy h2,
-.daveningCopy h2,
 .sectionTitle,
 .contactInfo h3,
 .footerContact h2 {
@@ -96,7 +94,7 @@
 
 .aboutSection {
   background: #43475d;
-  padding: 60px 0;
+  padding: 68px 0;
 }
 
 .aboutGrid {
@@ -126,7 +124,7 @@
   margin: 0 0 16px;
   font-family: helvetica-w01-light, Arial, sans-serif;
   font-size: 1rem;
-  line-height: 1.7;
+  line-height: 1.68;
 }
 
 .aboutCopy a {
@@ -175,44 +173,44 @@
 }
 
 .featureSection {
-  padding: 56px 0 40px;
-  background: #fff;
+  padding: 70px 0 52px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
 }
 
 .featureGrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 26px;
+  gap: 28px;
   align-items: stretch;
 }
 
 .featureCard,
 .daveningCard {
   display: grid;
-  min-height: 529px;
+  min-height: clamp(430px, 37vw, 520px);
   border: 1px solid #d9dde8;
   background: #fff;
+  box-shadow: 0 16px 32px rgba(47, 66, 97, 0.09);
+  overflow: hidden;
 }
 
 .featureCard {
-  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  grid-template-columns: minmax(0, 1.08fr) minmax(235px, 0.92fr);
 }
 
 .daveningCard {
-  grid-template-columns: minmax(260px, 281px) minmax(0, 1fr);
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
 }
 
 .featureCopy,
 .daveningCopy {
   display: grid;
   align-content: center;
-  gap: 18px;
-  padding: 34px;
-  text-align: center;
+  gap: 12px;
+  padding: clamp(24px, 3vw, 34px);
+  text-align: left;
 }
 
-.featureCopy h2,
-.daveningCopy h2,
 .sectionTitle,
 .footerContact h2 {
   font-size: clamp(2.2rem, 4.2vw, 3.25rem);
@@ -220,9 +218,19 @@
   color: #2b5a81;
 }
 
+.featureCopy h2,
+.daveningCopy h2 {
+  font-size: clamp(1.625rem, 3vw, 2.25rem);
+  line-height: 1.12;
+  letter-spacing: -0.04em;
+  color: #2b5a81;
+  margin-bottom: 2px;
+}
+
 .supportCopy {
   display: grid;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 2px;
 }
 
 .supportCopy h3 {
@@ -255,8 +263,13 @@
   min-height: 320px;
 }
 
+.featureVisual,
+.daveningVisual {
+  min-height: 100%;
+}
+
 .newsletterSection {
-  padding: 12px 0 56px;
+  padding: 20px 0 64px;
 }
 
 .newsletterPanel {
@@ -333,7 +346,7 @@
 .eventsSection,
 .rabbisSection,
 .contactSection {
-  padding: 0 0 56px;
+  padding: 0 0 64px;
 }
 
 .sectionTitle {
@@ -346,12 +359,14 @@
   grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
   border: 1px solid #d9dde8;
   background: #fff;
+  min-height: 320px;
+  align-items: stretch;
 }
 
 .upcomingCopy {
   display: grid;
-  align-content: center;
-  gap: 10px;
+  align-content: start;
+  gap: 12px;
   padding: 28px 30px;
 }
 
@@ -539,11 +554,32 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .featureSection {
+    padding-top: 56px;
+    padding-bottom: 46px;
+  }
+
+  .featureGrid {
+    gap: 22px;
+  }
+
+  .featureCard,
+  .daveningCard {
+    min-height: 0;
+  }
+
+  .featureCopy,
+  .daveningCopy {
+    align-content: start;
+    gap: 14px;
+    padding: 24px 24px 26px;
+  }
+
   .featureVisual,
   .daveningVisual,
   .upcomingImageWrap,
   .rabbiImageWrap {
-    min-height: 280px;
+    min-height: clamp(230px, 52vw, 340px);
   }
 }
 
@@ -587,5 +623,15 @@
   .daveningCopy,
   .newsletterPanel {
     gap: 16px;
+  }
+
+  .featureCopy p,
+  .daveningCopy p {
+    margin-bottom: 12px;
+  }
+
+  .featureCopy h2,
+  .daveningCopy h2 {
+    font-size: clamp(1.5rem, 8vw, 1.95rem);
   }
 }

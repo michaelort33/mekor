@@ -1,12 +1,34 @@
 .content {
   display: grid;
-  gap: 16px;
+  gap: 20px;
+}
+
+.heroFlat {
+  border-radius: 10px;
+  border: 1px solid #3a4e67;
+  background: #2d4868;
+}
+
+.heroFlat > div:first-of-type {
+  background: linear-gradient(180deg, rgba(16, 27, 41, 0.24), rgba(16, 27, 41, 0.4));
+}
+
+.flatSection {
+  border-radius: 8px;
+  border: 1px solid #ced5de;
+  background: #fdfcf9;
+  box-shadow: none;
+}
+
+.flatSection :global(h2) {
+  color: #23374d;
+  letter-spacing: -0.015em;
 }
 
 .copy,
 .note {
   margin: 0;
-  color: #445262;
+  color: #435262;
   line-height: 1.64;
 }
 
@@ -18,14 +40,14 @@
 .rateGrid {
   margin-top: 8px;
   display: grid;
-  gap: 12px;
+  gap: 14px;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
 
 .rateCard {
-  border-radius: 14px;
-  border: 1px solid #dae4ef;
-  background: linear-gradient(148deg, #f8fbff 0%, #edf4fc 100%);
+  border-radius: 8px;
+  border: 1px solid #ccd4dd;
+  background: #f6f7f4;
   padding: 14px;
   display: grid;
   gap: 6px;
@@ -33,23 +55,24 @@
 
 .rateTitle {
   margin: 0;
-  color: #1f3f64;
+  color: #2b3f55;
   font-weight: 700;
 }
 
 .rateAmount {
   margin: 0;
-  color: #2f5178;
-  font-size: 1.48rem;
-  line-height: 1.06;
+  color: #294765;
+  font-size: 1.38rem;
+  line-height: 1.08;
+  font-family: var(--font-heading);
 }
 
 .steps {
   margin: 0;
   padding-left: 1.1rem;
   display: grid;
-  gap: 8px;
-  color: #445262;
+  gap: 9px;
+  color: #435262;
   line-height: 1.62;
 }
 
@@ -57,7 +80,63 @@
   width: 100%;
   height: auto;
   margin-top: 10px;
-  border-radius: 14px;
-  border: 1px solid #d8e3ef;
-  box-shadow: 0 14px 30px rgba(22, 37, 55, 0.13);
+  border-radius: 8px;
+  border: 1px solid #d1d8e0;
+  box-shadow: none;
+}
+
+.formSection :global(form) {
+  gap: 16px;
+}
+
+.formSection :global(label > span) {
+  letter-spacing: 0.14em;
+  color: #5d584d !important;
+}
+
+.formSection :global(input),
+.formSection :global(select),
+.formSection :global(textarea) {
+  border-radius: 8px;
+  border-color: #cfc7bc;
+  background: #fffdf9;
+}
+
+.formSection :global(button[type="submit"]) {
+  border-radius: 8px;
+  background: #2f4c64;
+  color: #f8fbff;
+}
+
+.contactLinks :global(a) {
+  border-radius: 8px;
+  border: 1px solid #ccd4dd;
+  background: #f5f6f2;
+  box-shadow: none;
+  padding: 12px 14px;
+}
+
+.contactLinks :global(a:hover) {
+  transform: none;
+  border-color: #b7c1cd;
+  background: #eef1f4;
+}
+
+@media (max-width: 760px) {
+  .content {
+    gap: 16px;
+  }
+
+  .rateGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .rateCard {
+    padding: 12px;
+  }
+
+  .steps {
+    gap: 8px;
+  }
 }

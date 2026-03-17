@@ -1,31 +1,37 @@
 .page {
-  background: radial-gradient(1000px 420px at 50% -120px, #e7edf7 0%, #f6f7fb 45%, #f9f7f2 100%);
+  background:
+    radial-gradient(980px 420px at 10% -18%, rgba(175, 197, 223, 0.2) 0%, rgba(175, 197, 223, 0) 72%),
+    radial-gradient(900px 420px at 92% -24%, rgba(240, 222, 191, 0.2) 0%, rgba(240, 222, 191, 0) 74%),
+    radial-gradient(1000px 420px at 50% -120px, #e7edf7 0%, #f6f7fb 45%, #f9f7f2 100%);
 }
 
 .stack {
   display: grid;
-  gap: 16px;
+  gap: 22px;
 }
 
 .sparkGrid {
   display: grid;
-  gap: 14px;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 300px);
+  gap: clamp(16px, 2.2vw, 28px);
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
+  align-items: start;
 }
 
 .sparkImage {
-  border-radius: 16px;
+  border-radius: 22px;
   overflow: hidden;
-  border: 1px solid rgba(202, 220, 239, 0.4);
-  box-shadow: 0 10px 24px rgba(15, 28, 43, 0.18);
+  border: 1px solid rgba(202, 220, 239, 0.5);
+  box-shadow: 0 14px 30px rgba(15, 28, 43, 0.2);
+  background: linear-gradient(180deg, rgba(26, 50, 75, 0.14) 0%, rgba(26, 50, 75, 0.08) 100%);
 }
 
 .sparkImage img {
   width: 100%;
-  height: 100%;
-  min-height: 220px;
-  object-fit: contain;
-  object-position: center top;
+  height: auto;
+  min-height: 260px;
+  max-height: 420px;
+  object-fit: cover;
+  object-position: center 24%;
   background: rgba(255, 255, 255, 0.08);
   display: block;
 }
@@ -33,21 +39,50 @@
 .sparkParagraph {
   margin: 0;
   color: #e6eef9;
-  line-height: 1.62;
+  line-height: 1.68;
+  font-size: clamp(1rem, 1.1vw, 1.08rem);
 }
 
 .longCopy {
-  margin: 0;
+  margin: 6px 0 0;
   color: #4f5b69;
   line-height: 1.68;
 }
 
+.stack :global(section) {
+  border-radius: 14px;
+}
+
 @media (max-width: 980px) {
+  .stack {
+    gap: 18px;
+  }
+
   .sparkGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .sparkImage {
+    border-radius: 18px;
+  }
+
   .sparkImage img {
-    min-height: 190px;
+    min-height: 240px;
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 640px) {
+  .stack {
+    gap: 16px;
+  }
+
+  .sparkImage {
+    border-radius: 14px;
+  }
+
+  .sparkImage img {
+    min-height: 210px;
+    max-height: 280px;
   }
 }

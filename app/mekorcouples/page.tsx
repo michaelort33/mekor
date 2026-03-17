@@ -53,6 +53,7 @@ export default async function MekorCouplesPage() {
         eyebrow="Community Milestones"
         title="Mekor Couples"
         subtitle="We celebrate our Mekor couples"
+        className={styles.heroSection}
         image={{
           src: COUPLES_IMAGES.hero,
           alt: "Mekor couples celebration",
@@ -69,7 +70,7 @@ export default async function MekorCouplesPage() {
         ]}
       />
 
-      <SectionCard className={styles.bannerCard}>
+      <SectionCard className={`${styles.sectionCard} ${styles.bannerCard}`}>
         <Image
           src={COUPLES_IMAGES.banner}
           alt="Mazel tov banner for Mekor couples"
@@ -81,14 +82,14 @@ export default async function MekorCouplesPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Engagements">
+      <SectionCard title="Engagements" className={styles.sectionCard}>
         <p className={styles.bodyText}>
           Love blooms, promises made. We celebrate the joy of Mekor couples&apos; engagements and wish them endless
           happiness and blessings as they prepare to build their lives together.
         </p>
       </SectionCard>
 
-      <SectionCard title="Marriages">
+      <SectionCard title="Marriages" className={styles.sectionCard}>
         <ol className={styles.marriageList}>
           {MARRIAGES.map((item) => (
             <li key={item}>{item}</li>
@@ -100,8 +101,9 @@ export default async function MekorCouplesPage() {
         </p>
       </SectionCard>
 
-      <SectionCard title="Get Involved">
+      <SectionCard title="Get Involved" className={styles.sectionCard}>
         <CTACluster
+          className={styles.linksCluster}
           items={[
             { label: "Membership", href: "/membership" },
             { label: "Volunteer", href: "/team-4" },

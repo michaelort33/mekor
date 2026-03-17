@@ -42,18 +42,18 @@ export default async function InTheNewsPage() {
       <Card className="in-news__hero">
         <div className="in-news__hero-grid">
           <div className="in-news__header">
-            <Badge>Press Mentions</Badge>
+            <Badge className="in-news__badge">Press Mentions</Badge>
             <h1>In The News</h1>
-            <p>
+            <p className="in-news__lede">
               Search and filter every archived story from our backend directory. Open each article on Mekor or jump to the original source.
             </p>
           </div>
 
           {featured ? (
             <div className="in-news__featured">
-              <span>Featured</span>
+              <span className="in-news__featured-label">Featured</span>
               <h2>{featured.title}</h2>
-              <p>{buildFeaturedByline(featured.publishedLabel, featured.author)}</p>
+              <p className="in-news__featured-byline">{buildFeaturedByline(featured.publishedLabel, featured.author)}</p>
             </div>
           ) : null}
         </div>
