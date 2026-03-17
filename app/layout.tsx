@@ -33,8 +33,11 @@ export default function RootLayout({
   const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
   return (
-    <html lang="en">
-      <body className={`${bodyFont.variable} ${headingFont.variable}`}>
+    <html lang="en" style={{ backgroundColor: "#f7f3eb" }}>
+      <body
+        className={`${bodyFont.variable} ${headingFont.variable}`}
+        style={{ backgroundColor: "#f7f3eb", color: "#1f3043" }}
+      >
         {gtmId ? (
           <Script
             id="gtm-script"
@@ -53,6 +56,10 @@ export default function RootLayout({
         {metaPixelId ? (
           <Script id="meta-pixel" strategy="afterInteractive">{`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js'); fbq('init', '${metaPixelId}'); fbq('track', 'PageView');`}</Script>
         ) : null}
+        <Script
+          id="mcjs"
+          strategy="afterInteractive"
+        >{`!function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,p.parentNode.insertBefore(m,p)}(document,"script","https://chimpstatic.com/mcjs-connected/js/users/f9fe87a16c42c24704c099073/cf1653c4971bcc7dfa51f8285.js");`}</Script>
         {children}
       </body>
     </html>
