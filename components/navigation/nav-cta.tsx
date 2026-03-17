@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { JOIN_US_LINK, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
+import { JOIN_US_LINK } from "@/lib/navigation/site-menu";
 
 type NavCtaProps = {
   isSignedIn: boolean;
@@ -17,7 +17,6 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   const signOutAction = { label: "Sign Out", href: "/logout", variant: "signout" as const };
 
   const links = [
-    { ...SUPPORT_MEKOR_LINK, label: "Donate", variant: "donate" as const },
     { ...JOIN_US_LINK, label: "Join WhatsApp", variant: "join" as const },
     authAction,
     ...(isSignedIn && !isCheckingAuth ? [signOutAction] : []),
@@ -28,19 +27,9 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
       {links.map((link) => {
         const external = /^https?:\/\//i.test(link.href);
         const variant =
-          link.variant === "donate"
-            ? "default"
-            : link.variant === "join"
-              ? "secondary"
-              : link.variant === "members"
-                ? "secondary"
-                : "ghost";
+          link.variant === "join" ? "secondary" : link.variant === "members" ? "secondary" : "ghost";
         const className =
-          link.variant === "donate"
-            ? "bg-[var(--color-foreground)] text-white hover:bg-[color-mix(in_srgb,var(--color-foreground)_88%,black)]"
-            : link.variant === "signin" || link.variant === "signout"
-              ? "bg-white/78 hover:bg-white"
-              : "";
+          link.variant === "signin" || link.variant === "signout" ? "bg-white/78 hover:bg-white" : "";
 
         if (!external) {
           return (

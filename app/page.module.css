@@ -272,6 +272,50 @@
   min-height: 100%;
 }
 
+.supportSection {
+  padding: 0 0 52px;
+}
+
+.supportPanel {
+  display: grid;
+  gap: 20px;
+  padding: clamp(26px, 3vw, 34px);
+  border: 1px solid #d9dde8;
+  background: linear-gradient(180deg, #fbfcff 0%, #f4f7fb 100%);
+  box-shadow: 0 16px 32px rgba(47, 66, 97, 0.08);
+}
+
+.supportIntro {
+  display: grid;
+  gap: 10px;
+}
+
+.supportEyebrow {
+  margin: 0;
+  color: #7f808a;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.supportIntro h2 {
+  margin: 0;
+  font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
+  font-size: clamp(1.35rem, 2.7vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.05em;
+  color: #2b5a81;
+}
+
+.supportIntro p {
+  margin: 0;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.68;
+}
+
 .newsletterSection {
   padding: 20px 0 64px;
 }
@@ -563,6 +607,10 @@
     padding-bottom: 46px;
   }
 
+  .supportSection {
+    padding-bottom: 40px;
+  }
+
   .featureGrid {
     gap: 0;
   }
@@ -612,6 +660,7 @@
   }
 
   .newsletterPanel,
+  .supportPanel,
   .contactForm,
   .contactInfo,
   .footerNewsletter,

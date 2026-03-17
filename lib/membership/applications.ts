@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { getHebrewYearContext } from "@/lib/calendar/hebrew-year";
+
 export const MEMBERSHIP_APPLICATION_STATUS = ["pending", "approved", "declined"] as const;
 export const MEMBERSHIP_APPLICATION_TYPE = ["new", "renewal"] as const;
 export const MEMBERSHIP_CATEGORY = ["single", "couple_family", "student"] as const;
@@ -12,31 +14,37 @@ export type MembershipCategory = (typeof MEMBERSHIP_CATEGORY)[number];
 export type PaymentMethodPreference = (typeof PAYMENT_METHOD_PREFERENCE)[number];
 export type MembershipApprovalBillingMode = (typeof MEMBERSHIP_APPROVAL_BILLING_MODE)[number];
 
-export const MEMBERSHIP_CATEGORY_OPTIONS: Array<{
+type MembershipCategoryOption = {
   value: MembershipCategory;
   label: string;
   amountCents: number;
   detail: string;
-}> = [
-  {
-    value: "single",
-    label: "Single Membership",
-    amountCents: 100_000,
-    detail: "$1,000 until Rosh Hashana 5786",
-  },
-  {
-    value: "couple_family",
-    label: "Couple/Family Membership",
-    amountCents: 200_000,
-    detail: "$2,000 until Rosh Hashana 5786",
-  },
-  {
-    value: "student",
-    label: "Student Membership",
-    amountCents: 50_000,
-    detail: "$500 until Rosh Hashana 5786",
-  },
-];
+};
+
+export function getMembershipCategoryOptions(): MembershipCategoryOption[] {
+  const { nextRoshHashanaHebrewYearLabel } = getHebrewYearContext();
+
+  return [
+    {
+      value: "single",
+      label: "Single Membership",
+      amountCents: 100_000,
+      detail: `$1,000 until Rosh Hashana ${nextRoshHashanaHebrewYearLabel}`,
+    },
+    {
+      value: "couple_family",
+      label: "Couple/Family Membership",
+      amountCents: 200_000,
+      detail: `$2,000 until Rosh Hashana ${nextRoshHashanaHebrewYearLabel}`,
+    },
+    {
+      value: "student",
+      label: "Student Membership",
+      amountCents: 50_000,
+      detail: `$500 until Rosh Hashana ${nextRoshHashanaHebrewYearLabel}`,
+    },
+  ];
+}
 
 export const VOLUNTEER_INTEREST_OPTIONS = [
   "Hospitality and Shabbat meals",
@@ -202,7 +210,7 @@ function addYearsToDateOnly(value: string, yearsToAdd: number) {
 }
 
 export function getMembershipCategoryOption(category: MembershipCategory) {
-  const option = MEMBERSHIP_CATEGORY_OPTIONS.find((item) => item.value === category);
+  const option = getMembershipCategoryOptions().find((item) => item.value === category);
   if (!option) {
     throw new Error(`Unknown membership category: ${category}`);
   }

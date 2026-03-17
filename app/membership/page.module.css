@@ -14,12 +14,25 @@
   border-color: rgba(35, 52, 73, 0.12);
 }
 
+.auxiliaryCard {
+  border-color: rgba(34, 77, 118, 0.18);
+  background:
+    linear-gradient(140deg, rgba(255, 252, 246, 0.98) 0%, rgba(238, 245, 252, 0.98) 54%, rgba(230, 239, 249, 0.98) 100%);
+}
+
 .overviewGrid,
 .storyGrid,
 .joinGrid {
   display: grid;
   gap: clamp(20px, 2.6vw, 34px);
   grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
+  align-items: start;
+}
+
+.auxiliaryGrid {
+  display: grid;
+  gap: clamp(20px, 2.6vw, 34px);
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
   align-items: start;
 }
 
@@ -30,7 +43,13 @@
   gap: 14px;
 }
 
+.auxiliaryCopy {
+  display: grid;
+  gap: 14px;
+}
+
 .overviewAside,
+.auxiliaryAside,
 .supportPanel,
 .benefitCard {
   display: grid;
@@ -40,6 +59,11 @@
   border: 1px solid rgba(34, 52, 73, 0.1);
   background: linear-gradient(180deg, rgba(255, 254, 250, 0.98) 0%, rgba(245, 248, 252, 0.98) 100%);
   box-shadow: 0 10px 22px rgba(20, 32, 45, 0.06);
+}
+
+.auxiliaryAside {
+  background: linear-gradient(180deg, rgba(249, 252, 255, 0.98) 0%, rgba(240, 246, 253, 0.98) 100%);
+  border-color: rgba(42, 87, 129, 0.16);
 }
 
 .sectionEyebrow {
@@ -113,6 +137,11 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+.auxiliaryRateGrid {
+  display: grid;
+  gap: 10px;
+}
+
 .rateCard {
   padding: 18px;
   border-radius: 20px;
@@ -123,6 +152,15 @@
   align-content: start;
   box-shadow: 0 10px 22px rgba(22, 35, 54, 0.06);
   min-height: 100%;
+}
+
+.auxiliaryRateCard {
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(35, 58, 84, 0.12);
+  background: rgba(255, 255, 255, 0.74);
+  display: grid;
+  gap: 6px;
 }
 
 .rateTitle {
@@ -265,6 +303,7 @@
 
 @media (max-width: 960px) {
   .overviewGrid,
+  .auxiliaryGrid,
   .storyGrid,
   .joinGrid,
   .benefitsLayout {
@@ -292,11 +331,17 @@
   }
 
   .overviewAside,
+  .auxiliaryAside,
   .supportPanel,
   .benefitCard,
   .rateCard {
     padding: 16px;
     border-radius: 16px;
+  }
+
+  .auxiliaryRateCard {
+    padding: 14px 16px;
+    border-radius: 14px;
   }
 
   .imageFrame,

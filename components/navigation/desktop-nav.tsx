@@ -100,7 +100,7 @@ export function DesktopNav({
                   href={item.href}
                   prefetch={false}
                   className={cn(
-                    "inline-flex items-center rounded-full px-4 py-2 text-[15px] font-medium tracking-[0.01em] text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]",
+                    "inline-flex items-center whitespace-nowrap rounded-full px-3 py-2 text-[14px] font-medium tracking-[0.01em] text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]",
                     active && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
                   )}
                   onClick={() => setOpenGroupId(null)}
@@ -131,7 +131,7 @@ export function DesktopNav({
                   href={item.href}
                   prefetch={false}
                   className={cn(
-                    "inline-flex items-center rounded-full px-4 py-2 text-[15px] font-medium tracking-[0.01em] text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]",
+                    "inline-flex items-center whitespace-nowrap rounded-full px-3 py-2 text-[14px] font-medium tracking-[0.01em] text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]",
                     active && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
                     isOpen && "text-[var(--color-foreground)]",
                   )}
@@ -155,7 +155,7 @@ export function DesktopNav({
                     groupButtonRefs.current[groupId] = node;
                   }}
                   type="button"
-                  className="mr-1 inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]"
+                  className="mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]"
                   aria-expanded={isOpen}
                   aria-controls={submenuId}
                   aria-haspopup="true"

@@ -25,15 +25,32 @@ export const SUPPORT_MEKOR_LINK = {
 
 export const SITE_MENU: NavItem[] = [
   {
-    label: "Join",
+    label: "Membership",
     href: "/membership",
+    children: [
+      { label: "Membership Overview", href: "/membership" },
+      { label: "Apply for Membership", href: "/membership/apply" },
+      { label: "Auxiliary & Alumni Membership", href: "/auxiliary-membership" },
+    ],
   },
   {
     label: "Events",
     href: "/events",
   },
   {
-    label: "About",
+    label: "Donate",
+    href: "/donations",
+  },
+  {
+    label: "Kiddush",
+    href: "/kiddush",
+  },
+  {
+    label: "Center City Beit Midrash",
+    href: "/center-city-beit-midrash",
+  },
+  {
+    label: "Who We Are",
     href: "/about-us",
     children: [
       { label: "About Us", href: "/about-us" },
@@ -47,12 +64,19 @@ export const SITE_MENU: NavItem[] = [
     ],
   },
   {
-    label: "Kosher Guide",
+    label: "Kosher Restaurants",
     href: "/center-city",
+    children: [
+      { label: "Center City & Vicinity", href: "/center-city" },
+      { label: "Main Line/Manyunk", href: "/main-line-manyunk" },
+      { label: "Old York Road/Northeast", href: "/old-yorkroad-northeast" },
+      { label: "Cherry Hill", href: "/cherry-hill" },
+      { label: "Kosher Map", href: "/kosher-map" },
+    ],
   },
   {
     label: "More",
-    href: "/donations",
+    href: "/davening",
     children: [
       { label: "Member Hub", href: "/account" },
       { label: "Dues & payments", href: "/account/dues" },
@@ -62,8 +86,6 @@ export const SITE_MENU: NavItem[] = [
       { label: "Support Mekor", href: "/donations" },
       { label: "Kiddush", href: "/kiddush" },
       { label: "Davening", href: "/davening" },
-      { label: "Auxiliary & Alumni Membership", href: "/auxiliary-membership" },
-      { label: "Center City Beit Midrash", href: "/center-city-beit-midrash" },
       { label: "Volunteer", href: "/team-4" },
       { label: "Mekor Bulletin Board", href: "/mekor-bulletin-board" },
       { label: "Israel", href: "/israel" },

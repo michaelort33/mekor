@@ -9,8 +9,8 @@ import {
   formatUsd,
   getApplicationTypeLabel,
   getMembershipCategoryLabel,
+  getMembershipCategoryOptions,
   getPaymentMethodLabel,
-  MEMBERSHIP_CATEGORY_OPTIONS,
   PAYMENT_METHOD_PREFERENCE,
   type MembershipApplicationRecordInput,
   VOLUNTEER_INTEREST_OPTIONS,
@@ -91,6 +91,7 @@ export function MembershipApplicationForm() {
       }),
     [form.includeSecurityDonation, form.membershipCategory],
   );
+  const membershipCategoryOptions = useMemo(() => getMembershipCategoryOptions(), []);
 
   const resolvedFirstName = prefillTouched.firstName ? form.firstName : form.firstName || profile?.firstName || "";
   const resolvedLastName = prefillTouched.lastName ? form.lastName : form.lastName || profile?.lastName || "";
@@ -213,7 +214,7 @@ export function MembershipApplicationForm() {
               <label className={styles.field}>
                 <span>Membership category</span>
                 <select name="membershipCategory" value={form.membershipCategory} onChange={onTextChange}>
-                  {MEMBERSHIP_CATEGORY_OPTIONS.map((option) => (
+                  {membershipCategoryOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>

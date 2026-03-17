@@ -5,6 +5,7 @@ import Image from "next/image";
 
 import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/primitives";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
+import { getHebrewYearContext } from "@/lib/calendar/hebrew-year";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
@@ -23,10 +24,16 @@ const MEMBERSHIP_IMAGES = {
     "https://static.wixstatic.com/media/92f487_1b9e6a717396499c912c95ed541884b4~mv2.jpg",
 } as const;
 
-const MEMBERSHIP_RATES = [
-  ["Single Membership", "$1000", "Until Rosh Hashana 5786"],
-  ["Couple/Family Membership", "$2,000", "Until Rosh Hashana 5786"],
-  ["Student Membership", "$500", "Until Rosh Hashana 5786"],
+const MEMBERSHIP_RATE_ROWS = [
+  ["Single Membership", "$1000"],
+  ["Couple/Family Membership", "$2,000"],
+  ["Student Membership", "$500"],
+] as const;
+
+const AUXILIARY_MEMBERSHIP_RATES = [
+  ["Family / Couple", "$900"],
+  ["Single Adult", "$450"],
+  ["Single Student", "$225"],
 ] as const;
 
 const COMMUNITY_BENEFITS = [
@@ -63,6 +70,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function MembershipPage() {
   const document = await getNativeDocumentByPath(PATH);
+  const hebrewYear = getHebrewYearContext();
 
   if (!document) {
     notFound();
@@ -123,14 +131,59 @@ export default async function MembershipPage() {
         </div>
       </SectionCard>
 
+      <SectionCard className={styles.auxiliaryCard}>
+        <div className={styles.auxiliaryGrid}>
+          <div className={styles.auxiliaryCopy}>
+            <p className={styles.sectionEyebrow}>Outside Center City?</p>
+            <h2 className={styles.panelTitle}>Auxiliary membership is a real join option.</h2>
+            <p className={styles.leadText}>
+              If you live outside Center City Philadelphia, auxiliary membership may be the right fit. It is intended
+              for alumni and others outside the Philadelphia region who want to stay connected to Mekor in a meaningful
+              way.
+            </p>
+            <p className={styles.bodyText}>
+              This should not feel like a hidden alternative. Review the auxiliary membership details, rates, and
+              request form on the dedicated page.
+            </p>
+            <div className={styles.actionRow}>
+              <Link href="/auxiliary-membership" className={styles.actionButton}>
+                View auxiliary membership
+              </Link>
+              <a
+                href="mailto:admin@mekorhabracha.org?subject=Auxiliary%20Membership"
+                className={styles.actionButtonSecondary}
+              >
+                Email about auxiliary membership
+              </a>
+            </div>
+          </div>
+
+          <aside className={styles.auxiliaryAside}>
+            <p className={styles.sectionEyebrow}>Auxiliary rates</p>
+            <div className={styles.auxiliaryRateGrid}>
+              {AUXILIARY_MEMBERSHIP_RATES.map(([label, amount]) => (
+                <article className={styles.auxiliaryRateCard} key={label}>
+                  <p className={styles.rateTitle}>{label}</p>
+                  <p className={styles.rateAmount}>{amount}</p>
+                </article>
+              ))}
+            </div>
+            <p className={styles.asideNote}>Auxiliary membership does not include High Holiday seats.</p>
+          </aside>
+        </div>
+      </SectionCard>
+
       <SectionCard title="Membership Categories & Rates">
-        <p className={styles.intro}>Year 5786 (2025-2026) Membership Rates for new and renewing members:</p>
+        <p className={styles.intro}>
+          Year {hebrewYear.currentHebrewYearLabel} ({hebrewYear.currentCivilSpanLabel}) membership rates for new and
+          renewing members:
+        </p>
         <div className={styles.rateGrid}>
-          {MEMBERSHIP_RATES.map((row) => (
-            <article className={styles.rateCard} key={row[0]}>
-              <p className={styles.rateTitle}>{row[0]}</p>
-              <p className={styles.rateAmount}>{row[1]}</p>
-              <p className={styles.rateTerm}>{row[2]}</p>
+          {MEMBERSHIP_RATE_ROWS.map(([label, amount]) => (
+            <article className={styles.rateCard} key={label}>
+              <p className={styles.rateTitle}>{label}</p>
+              <p className={styles.rateAmount}>{amount}</p>
+              <p className={styles.rateTerm}>Until Rosh Hashana {hebrewYear.nextRoshHashanaHebrewYearLabel}</p>
               <Link href={MEMBERSHIP_FORM_URL} className={styles.inlineAction}>
                 Join now
               </Link>

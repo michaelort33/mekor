@@ -52,6 +52,11 @@ const SOCIAL_LINKS = [
   },
 ] as const;
 
+const SUPPORT_LINKS = [
+  { label: "Wine: tinyurl.com/mekorwine", href: "https://tinyurl.com/mekorwine" },
+  { label: "Judaica: tinyurl.com/mekorjudaica", href: "https://tinyurl.com/mekorjudaica" },
+] as const;
+
 function formatHomeEventDate(value: string | null, shortDate: string) {
   if (!value) {
     return shortDate;
@@ -162,6 +167,28 @@ export default async function HomePage() {
                 </Link>
               </div>
             </article>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.supportSection}>
+        <div className={styles.container}>
+          <div className={styles.supportPanel}>
+            <div className={styles.supportIntro}>
+              <p className={styles.supportEyebrow}>Support Mekor</p>
+              <h2>Support Mekor while buying wine and Judaica!</h2>
+              <p>
+                If you use the following Mekor-specific links when ordering from Kosherwine.com and Judaica.com,
+                Mekor will earn 5% back.
+              </p>
+            </div>
+            <div className={styles.supportLinks}>
+              {SUPPORT_LINKS.map((link) => (
+                <a key={link.href} href={link.href} target="_blank" rel="noreferrer noopener">
+                  {link.label}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </section>

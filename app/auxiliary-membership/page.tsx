@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AuxiliaryMembershipForm } from "@/components/forms/auxiliary-membership-form";
 import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/primitives";
 import { MarketingPageShell } from "@/components/marketing/page-shell";
+import { getHebrewYearContext } from "@/lib/calendar/hebrew-year";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
@@ -35,6 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AuxiliaryMembershipPage() {
   const document = await getNativeDocumentByPath(PATH);
+  const hebrewYear = getHebrewYearContext();
 
   if (!document) {
     notFound();
@@ -63,7 +65,7 @@ export default async function AuxiliaryMembershipPage() {
         ]}
       />
 
-      <SectionCard title="Auxiliary Membership Rates (5785)" className={styles.flatSection}>
+      <SectionCard title={`Auxiliary Membership Rates (${hebrewYear.currentHebrewYearLabel})`} className={styles.flatSection}>
         <p className={styles.copy}>
           This is available to alumni and others who live outside the Philadelphia region, at the following rates.
         </p>
