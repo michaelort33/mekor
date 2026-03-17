@@ -29,17 +29,6 @@ export const SITE_MENU: NavItem[] = [
     href: "/membership",
   },
   {
-    label: "Member Hub",
-    href: "/account",
-    children: [
-      { label: "Dashboard", href: "/account" },
-      { label: "Dues & payments", href: "/account/dues" },
-      { label: "Members directory", href: "/members" },
-      { label: "Community directory", href: "/community" },
-      { label: "Your profile", href: "/account/profile" },
-    ],
-  },
-  {
     label: "Events",
     href: "/events",
   },
@@ -65,6 +54,11 @@ export const SITE_MENU: NavItem[] = [
     label: "More",
     href: "/donations",
     children: [
+      { label: "Member Hub", href: "/account" },
+      { label: "Dues & payments", href: "/account/dues" },
+      { label: "Members directory", href: "/members" },
+      { label: "Community directory", href: "/community" },
+      { label: "Your profile", href: "/account/profile" },
       { label: "Support Mekor", href: "/donations" },
       { label: "Kiddush", href: "/kiddush" },
       { label: "Davening", href: "/davening" },
