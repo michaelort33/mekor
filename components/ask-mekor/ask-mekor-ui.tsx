@@ -3,7 +3,7 @@ import { CheckCircle2, Clock3 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import type { AskMekorQuestionSummary, QuestionCategory, QuestionStatus } from "@/lib/ask-mekor/types";
+import type { AskMekorQuestionSummary, QuestionCategory, QuestionStatus, QuestionSubcategory } from "@/lib/ask-mekor/types";
 import { cn } from "@/lib/utils";
 
 const categoryThemes: Record<
@@ -123,6 +123,25 @@ export function AskMekorStatusBadge({ status, className }: { status: QuestionSta
   );
 }
 
+export function AskMekorSubcategoryBadge({
+  subcategory,
+  className,
+}: {
+  subcategory: Pick<QuestionSubcategory, "label">;
+  className?: string;
+}) {
+  return (
+    <Badge
+      className={cn(
+        "border-[rgba(31,48,67,0.12)] bg-white px-3 py-1 text-[10px] tracking-[0.2em] text-[var(--color-muted)]",
+        className,
+      )}
+    >
+      {subcategory.label}
+    </Badge>
+  );
+}
+
 export function AskMekorCategoryNav({
   categories,
   selectedSlug,
@@ -138,7 +157,7 @@ export function AskMekorCategoryNav({
           className={cn(
             "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition",
             !selectedSlug
-              ? "border-[var(--color-foreground)] bg-[var(--color-foreground)] text-white"
+              ? "border-[var(--color-accent-strong)] bg-[var(--color-accent-strong)] !text-white font-medium shadow-[0_12px_26px_-22px_rgba(15,23,42,0.55)]"
               : "border-[var(--color-border)] bg-white text-[var(--color-muted)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-foreground)]",
           )}
         >
@@ -196,6 +215,7 @@ export function AskMekorQuestionCard({
               </h3>
               <div className="flex flex-wrap items-center gap-2">
                 <AskMekorCategoryBadge category={item.category} />
+                {item.subcategory ? <AskMekorSubcategoryBadge subcategory={item.subcategory} /> : null}
                 <AskMekorStatusBadge status={item.status} />
               </div>
               <p className="text-sm text-[var(--color-muted)]">Asked by {item.askerName} on {formatDate(item.createdAt)}</p>
@@ -266,6 +286,7 @@ export function AskMekorQuestionTable({
                 <td className="px-4 py-5 align-top">
                   <div className="flex flex-wrap items-center gap-2">
                     <AskMekorCategoryBadge category={item.category} />
+                    {item.subcategory ? <AskMekorSubcategoryBadge subcategory={item.subcategory} /> : null}
                     <AskMekorStatusBadge status={item.status} className="px-2.5 py-1 text-[9px]" />
                   </div>
                 </td>

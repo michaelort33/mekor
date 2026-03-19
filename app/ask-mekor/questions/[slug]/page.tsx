@@ -8,6 +8,7 @@ import {
   AskMekorCategoryBadge,
   AskMekorQuestionCard,
   AskMekorStatusBadge,
+  AskMekorSubcategoryBadge,
 } from "@/components/ask-mekor/ask-mekor-ui";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -115,6 +116,7 @@ export default async function AskMekorQuestionPage({ params }: PageProps) {
 
           <div className="flex flex-wrap items-center gap-2">
             <AskMekorCategoryBadge category={question.category} />
+            {question.subcategory ? <AskMekorSubcategoryBadge subcategory={question.subcategory} /> : null}
             <AskMekorStatusBadge status={question.status} />
           </div>
 

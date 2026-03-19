@@ -237,6 +237,29 @@ export const askMekorCategories = pgTable(
   }),
 );
 
+export const askMekorSubcategories = pgTable(
+  "ask_mekor_subcategories",
+  {
+    id: serial("id").primaryKey(),
+    categoryId: integer("category_id")
+      .notNull()
+      .references(() => askMekorCategories.id),
+    slug: varchar("slug", { length: 80 }).notNull(),
+    label: varchar("label", { length: 120 }).notNull(),
+    description: text("description").notNull().default(""),
+    position: integer("position").notNull().default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    categoryPositionIdx: index("ask_mekor_subcategories_category_position_idx").on(table.categoryId, table.position),
+    categorySlugUniqueIdx: uniqueIndex("ask_mekor_subcategories_category_slug_unique_idx").on(
+      table.categoryId,
+      table.slug,
+    ),
+  }),
+);
+
 export const askMekorQuestions = pgTable(
   "ask_mekor_questions",
   {
@@ -244,6 +267,7 @@ export const askMekorQuestions = pgTable(
     categoryId: integer("category_id")
       .notNull()
       .references(() => askMekorCategories.id),
+    subcategoryId: integer("subcategory_id").references(() => askMekorSubcategories.id),
     visibility: askMekorQuestionVisibilityEnum("visibility").notNull().default("public"),
     status: askMekorQuestionStatusEnum("status").notNull().default("open"),
     slug: varchar("slug", { length: 200 }).notNull(),
@@ -268,6 +292,7 @@ export const askMekorQuestions = pgTable(
       table.updatedAt,
     ),
     categoryUpdatedIdx: index("ask_mekor_questions_category_updated_idx").on(table.categoryId, table.updatedAt),
+    subcategoryUpdatedIdx: index("ask_mekor_questions_subcategory_updated_idx").on(table.subcategoryId, table.updatedAt),
     askerEmailCreatedIdx: index("ask_mekor_questions_asker_email_created_idx").on(table.askerEmail, table.createdAt),
     linkedThreadIdx: uniqueIndex("ask_mekor_questions_linked_thread_unique_idx").on(table.linkedThreadId),
   }),

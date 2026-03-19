@@ -6,13 +6,19 @@ import {
   askMekorCategories,
   askMekorQuestions,
   askMekorReplies,
+  askMekorSubcategories,
   inboxMessages,
   inboxParticipants,
   inboxThreads,
   notificationsOutbox,
   users,
 } from "@/db/schema";
-import { type QuestionCategory, type AskMekorQuestionSummary, type AskMekorQuestionDetail } from "@/lib/ask-mekor/types";
+import {
+  type QuestionCategory,
+  type QuestionSubcategory,
+  type AskMekorQuestionSummary,
+  type AskMekorQuestionDetail,
+} from "@/lib/ask-mekor/types";
 import { getFormNotifyFrom, getFormNotifyTo, getResendApiKey } from "@/lib/forms/config";
 
 const DEFAULT_CATEGORIES = [
@@ -52,6 +58,7 @@ const PREVIEW_PESACH_CATEGORY: QuestionCategory = {
   description: "Preview questions for Pesach products, ingredients, and preparation.",
   position: 0,
   publicQuestionCount: 1,
+  subcategories: [],
 };
 const PREVIEW_PESACH_SLUG = "pesach-preview-kirkland-pecans";
 
@@ -67,6 +74,7 @@ function buildPreviewPesachSummary(): AskMekorQuestionSummary {
     visibility: "public",
     status: "answered",
     category: PREVIEW_PESACH_CATEGORY,
+    subcategory: null,
     askerName: "Anonymous",
     publicAnonymous: true,
     replyCount: 1,
@@ -164,6 +172,7 @@ async function getAdminParticipants() {
 function buildPrivateThreadSystemBody(input: {
   questionId: number;
   categoryLabel: string;
+  subcategoryLabel: string;
   title: string;
   askerName: string;
   askerEmail: string;
@@ -173,6 +182,7 @@ function buildPrivateThreadSystemBody(input: {
   return [
     `Ask Mekor private question #${input.questionId}`,
     `Category: ${input.categoryLabel}`,
+    input.subcategoryLabel ? `Subcategory: ${input.subcategoryLabel}` : "",
     `Title: ${input.title}`,
     `Asker: ${input.askerName}`,
     `Email: ${input.askerEmail || "Not provided"}`,
@@ -212,6 +222,13 @@ function mapSummaryRow(input: {
   categoryDescription: string;
   categoryPosition: number;
   categoryPublicCount: number;
+  categorySubcategories?: QuestionSubcategory[];
+  subcategoryId: number | null;
+  subcategorySlug: string | null;
+  subcategoryLabel: string | null;
+  subcategoryDescription: string | null;
+  subcategoryPosition: number | null;
+  subcategoryPublicCount: number;
   usePublicAskerName?: boolean;
 }): AskMekorQuestionSummary {
   return {
@@ -233,14 +250,27 @@ function mapSummaryRow(input: {
       description: input.categoryDescription,
       position: input.categoryPosition,
       publicQuestionCount: input.categoryPublicCount,
+      subcategories: input.categorySubcategories ?? [],
     },
+    subcategory:
+      input.subcategoryId === null
+        ? null
+        : {
+            id: input.subcategoryId,
+            categoryId: input.categoryId,
+            slug: input.subcategorySlug ?? "",
+            label: input.subcategoryLabel ?? "",
+            description: input.subcategoryDescription ?? "",
+            position: input.subcategoryPosition ?? 0,
+            publicQuestionCount: input.subcategoryPublicCount,
+          },
   };
 }
 
 async function listCategoriesInternal() {
   await ensureDefaultCategories();
 
-  const counts = await getDb()
+  const categoryCounts = await getDb()
     .select({
       categoryId: askMekorQuestions.categoryId,
       total: sql<number>`count(*)::int`,
@@ -249,12 +279,50 @@ async function listCategoriesInternal() {
     .where(eq(askMekorQuestions.visibility, "public"))
     .groupBy(askMekorQuestions.categoryId);
 
-  const countMap = new Map<number, number>(counts.map((row) => [row.categoryId, row.total]));
+  const subcategoryCounts = await getDb()
+    .select({
+      subcategoryId: askMekorQuestions.subcategoryId,
+      total: sql<number>`count(*)::int`,
+    })
+    .from(askMekorQuestions)
+    .where(and(eq(askMekorQuestions.visibility, "public"), sql`${askMekorQuestions.subcategoryId} is not null`))
+    .groupBy(askMekorQuestions.subcategoryId);
+
+  const categoryCountMap = new Map<number, number>(categoryCounts.map((row) => [row.categoryId, row.total]));
+  const subcategoryCountMap = new Map<number, number>(
+    subcategoryCounts
+      .filter((row): row is { subcategoryId: number; total: number } => row.subcategoryId !== null)
+      .map((row) => [row.subcategoryId, row.total]),
+  );
 
   const rows = await getDb()
     .select()
     .from(askMekorCategories)
     .orderBy(asc(askMekorCategories.position), asc(askMekorCategories.label));
+
+  const subcategoryRows = await getDb()
+    .select()
+    .from(askMekorSubcategories)
+    .orderBy(
+      asc(askMekorSubcategories.categoryId),
+      asc(askMekorSubcategories.position),
+      asc(askMekorSubcategories.label),
+    );
+
+  const subcategoriesByCategoryId = new Map<number, QuestionSubcategory[]>();
+  for (const row of subcategoryRows) {
+    const list = subcategoriesByCategoryId.get(row.categoryId) ?? [];
+    list.push({
+      id: row.id,
+      categoryId: row.categoryId,
+      slug: row.slug,
+      label: row.label,
+      description: row.description,
+      position: row.position,
+      publicQuestionCount: subcategoryCountMap.get(row.id) ?? 0,
+    });
+    subcategoriesByCategoryId.set(row.categoryId, list);
+  }
 
   return rows.map<QuestionCategory>((row) => ({
     id: row.id,
@@ -262,7 +330,8 @@ async function listCategoriesInternal() {
     label: row.label,
     description: row.description,
     position: row.position,
-    publicQuestionCount: countMap.get(row.id) ?? 0,
+    publicQuestionCount: categoryCountMap.get(row.id) ?? 0,
+    subcategories: subcategoriesByCategoryId.get(row.id) ?? [],
   }));
 }
 
@@ -282,8 +351,228 @@ async function getCategoryBySlug(slug: string) {
   return category;
 }
 
+async function getSubcategoryForCategory(input: { categoryId: number; subcategorySlug?: string }) {
+  const subcategorySlug = clean(input.subcategorySlug);
+  if (!subcategorySlug) {
+    return null;
+  }
+
+  const [subcategory] = await getDb()
+    .select()
+    .from(askMekorSubcategories)
+    .where(and(eq(askMekorSubcategories.categoryId, input.categoryId), eq(askMekorSubcategories.slug, subcategorySlug)))
+    .limit(1);
+
+  if (!subcategory) {
+    fail(400, "ASK_MEKOR_SUBCATEGORY_NOT_FOUND", "Subcategory not found for category");
+  }
+
+  return subcategory;
+}
+
 export async function listAskMekorCategories() {
   return listCategoriesInternal();
+}
+
+async function ensureUniqueCategorySlug(input: { slug: string; ignoreId?: number }) {
+  const [existing] = await getDb()
+    .select({ id: askMekorCategories.id })
+    .from(askMekorCategories)
+    .where(eq(askMekorCategories.slug, input.slug))
+    .limit(1);
+
+  if (existing && existing.id !== input.ignoreId) {
+    fail(409, "ASK_MEKOR_CATEGORY_SLUG_CONFLICT", "Category slug already exists");
+  }
+}
+
+async function ensureUniqueSubcategorySlug(input: { categoryId: number; slug: string; ignoreId?: number }) {
+  const [existing] = await getDb()
+    .select({ id: askMekorSubcategories.id })
+    .from(askMekorSubcategories)
+    .where(and(eq(askMekorSubcategories.categoryId, input.categoryId), eq(askMekorSubcategories.slug, input.slug)))
+    .limit(1);
+
+  if (existing && existing.id !== input.ignoreId) {
+    fail(409, "ASK_MEKOR_SUBCATEGORY_SLUG_CONFLICT", "Subcategory slug already exists in this category");
+  }
+}
+
+export async function saveAskMekorCategory(input: {
+  id?: number;
+  label: string;
+  slug?: string;
+  description?: string;
+  position?: number;
+}) {
+  const label = clean(input.label);
+  const slug = slugify(input.slug || label);
+  const description = clean(input.description);
+  const position = input.position ?? 0;
+
+  if (!label || !slug) {
+    fail(400, "ASK_MEKOR_CATEGORY_REQUIRED", "Category label is required");
+  }
+
+  await ensureUniqueCategorySlug({ slug, ignoreId: input.id });
+  const now = new Date();
+
+  if (input.id) {
+    const [updated] = await getDb()
+      .update(askMekorCategories)
+      .set({
+        label,
+        slug,
+        description,
+        position,
+        updatedAt: now,
+      })
+      .where(eq(askMekorCategories.id, input.id))
+      .returning({ id: askMekorCategories.id });
+
+    if (!updated) {
+      fail(404, "ASK_MEKOR_CATEGORY_NOT_FOUND", "Category not found");
+    }
+
+    return updated;
+  }
+
+  const [created] = await getDb()
+    .insert(askMekorCategories)
+    .values({
+      label,
+      slug,
+      description,
+      position,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .returning({ id: askMekorCategories.id });
+
+  return created;
+}
+
+export async function deleteAskMekorCategory(id: number) {
+  const [question] = await getDb()
+    .select({ id: askMekorQuestions.id })
+    .from(askMekorQuestions)
+    .where(eq(askMekorQuestions.categoryId, id))
+    .limit(1);
+
+  if (question) {
+    fail(400, "ASK_MEKOR_CATEGORY_IN_USE", "Category cannot be deleted while questions use it");
+  }
+
+  const [subcategory] = await getDb()
+    .select({ id: askMekorSubcategories.id })
+    .from(askMekorSubcategories)
+    .where(eq(askMekorSubcategories.categoryId, id))
+    .limit(1);
+
+  if (subcategory) {
+    fail(400, "ASK_MEKOR_CATEGORY_HAS_SUBCATEGORIES", "Delete subcategories before deleting the category");
+  }
+
+  const [deleted] = await getDb()
+    .delete(askMekorCategories)
+    .where(eq(askMekorCategories.id, id))
+    .returning({ id: askMekorCategories.id });
+
+  if (!deleted) {
+    fail(404, "ASK_MEKOR_CATEGORY_NOT_FOUND", "Category not found");
+  }
+
+  return deleted;
+}
+
+export async function saveAskMekorSubcategory(input: {
+  id?: number;
+  categoryId: number;
+  label: string;
+  slug?: string;
+  description?: string;
+  position?: number;
+}) {
+  const label = clean(input.label);
+  const slug = slugify(input.slug || label);
+  const description = clean(input.description);
+  const position = input.position ?? 0;
+
+  if (!label || !slug) {
+    fail(400, "ASK_MEKOR_SUBCATEGORY_REQUIRED", "Subcategory label is required");
+  }
+
+  const [category] = await getDb()
+    .select({ id: askMekorCategories.id })
+    .from(askMekorCategories)
+    .where(eq(askMekorCategories.id, input.categoryId))
+    .limit(1);
+
+  if (!category) {
+    fail(404, "ASK_MEKOR_CATEGORY_NOT_FOUND", "Category not found");
+  }
+
+  await ensureUniqueSubcategorySlug({ categoryId: input.categoryId, slug, ignoreId: input.id });
+  const now = new Date();
+
+  if (input.id) {
+    const [updated] = await getDb()
+      .update(askMekorSubcategories)
+      .set({
+        categoryId: input.categoryId,
+        label,
+        slug,
+        description,
+        position,
+        updatedAt: now,
+      })
+      .where(eq(askMekorSubcategories.id, input.id))
+      .returning({ id: askMekorSubcategories.id });
+
+    if (!updated) {
+      fail(404, "ASK_MEKOR_SUBCATEGORY_NOT_FOUND", "Subcategory not found");
+    }
+
+    return updated;
+  }
+
+  const [created] = await getDb()
+    .insert(askMekorSubcategories)
+    .values({
+      categoryId: input.categoryId,
+      label,
+      slug,
+      description,
+      position,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .returning({ id: askMekorSubcategories.id });
+
+  return created;
+}
+
+export async function deleteAskMekorSubcategory(id: number) {
+  const [question] = await getDb()
+    .select({ id: askMekorQuestions.id })
+    .from(askMekorQuestions)
+    .where(eq(askMekorQuestions.subcategoryId, id))
+    .limit(1);
+
+  if (question) {
+    fail(400, "ASK_MEKOR_SUBCATEGORY_IN_USE", "Subcategory cannot be deleted while questions use it");
+  }
+
+  const [deleted] = await getDb()
+    .delete(askMekorSubcategories)
+    .where(eq(askMekorSubcategories.id, id))
+    .returning({ id: askMekorSubcategories.id });
+
+  if (!deleted) {
+    fail(404, "ASK_MEKOR_SUBCATEGORY_NOT_FOUND", "Subcategory not found");
+  }
+
+  return deleted;
 }
 
 export async function listPublicAskMekorQuestions(input: {
@@ -312,10 +601,16 @@ export async function listPublicAskMekorQuestions(input: {
       categoryLabel: askMekorCategories.label,
       categoryDescription: askMekorCategories.description,
       categoryPosition: askMekorCategories.position,
+      subcategoryId: askMekorSubcategories.id,
+      subcategorySlug: askMekorSubcategories.slug,
+      subcategoryLabel: askMekorSubcategories.label,
+      subcategoryDescription: askMekorSubcategories.description,
+      subcategoryPosition: askMekorSubcategories.position,
       replyCount: sql<number>`count(${askMekorReplies.id})::int`,
     })
     .from(askMekorQuestions)
     .innerJoin(askMekorCategories, eq(askMekorCategories.id, askMekorQuestions.categoryId))
+    .leftJoin(askMekorSubcategories, eq(askMekorSubcategories.id, askMekorQuestions.subcategoryId))
     .leftJoin(askMekorReplies, eq(askMekorReplies.questionId, askMekorQuestions.id))
     .where(
       and(
@@ -326,6 +621,7 @@ export async function listPublicAskMekorQuestions(input: {
               ilike(askMekorQuestions.title, `%${q}%`),
               ilike(askMekorQuestions.body, `%${q}%`),
               ilike(askMekorCategories.label, `%${q}%`),
+              ilike(sql`coalesce(${askMekorSubcategories.label}, '')`, `%${q}%`),
             )
           : undefined,
       ),
@@ -346,6 +642,11 @@ export async function listPublicAskMekorQuestions(input: {
       askMekorCategories.label,
       askMekorCategories.description,
       askMekorCategories.position,
+      askMekorSubcategories.id,
+      askMekorSubcategories.slug,
+      askMekorSubcategories.label,
+      askMekorSubcategories.description,
+      askMekorSubcategories.position,
     )
     .orderBy(desc(askMekorQuestions.updatedAt), desc(askMekorQuestions.id))
     .limit(input.limit ?? 50);
@@ -354,6 +655,11 @@ export async function listPublicAskMekorQuestions(input: {
     mapSummaryRow({
       ...row,
       categoryPublicCount: categoryMap.get(row.categoryId)?.publicQuestionCount ?? 0,
+      categorySubcategories: categoryMap.get(row.categoryId)?.subcategories ?? [],
+      subcategoryPublicCount:
+        categoryMap
+          .get(row.categoryId)
+          ?.subcategories.find((item) => item.id === row.subcategoryId)?.publicQuestionCount ?? 0,
       usePublicAskerName: true,
     }),
   );
@@ -408,9 +714,15 @@ export async function getPublicAskMekorQuestionBySlug(slug: string) {
       categoryLabel: askMekorCategories.label,
       categoryDescription: askMekorCategories.description,
       categoryPosition: askMekorCategories.position,
+      subcategoryId: askMekorSubcategories.id,
+      subcategorySlug: askMekorSubcategories.slug,
+      subcategoryLabel: askMekorSubcategories.label,
+      subcategoryDescription: askMekorSubcategories.description,
+      subcategoryPosition: askMekorSubcategories.position,
     })
     .from(askMekorQuestions)
     .innerJoin(askMekorCategories, eq(askMekorCategories.id, askMekorQuestions.categoryId))
+    .leftJoin(askMekorSubcategories, eq(askMekorSubcategories.id, askMekorQuestions.subcategoryId))
     .where(and(eq(askMekorQuestions.slug, slug), eq(askMekorQuestions.visibility, "public")))
     .limit(1);
 
@@ -452,6 +764,13 @@ export async function getPublicAskMekorQuestionBySlug(slug: string) {
       categoryDescription: row.categoryDescription,
       categoryPosition: row.categoryPosition,
       categoryPublicCount: category?.publicQuestionCount ?? 0,
+      categorySubcategories: category?.subcategories ?? [],
+      subcategoryId: row.subcategoryId,
+      subcategorySlug: row.subcategorySlug,
+      subcategoryLabel: row.subcategoryLabel,
+      subcategoryDescription: row.subcategoryDescription,
+      subcategoryPosition: row.subcategoryPosition,
+      subcategoryPublicCount: category?.subcategories.find((item) => item.id === row.subcategoryId)?.publicQuestionCount ?? 0,
       usePublicAskerName: true,
     }),
     body: row.body,
@@ -467,6 +786,7 @@ export async function getPublicAskMekorQuestionBySlug(slug: string) {
 
 export async function createAskMekorQuestion(input: {
   categorySlug: string;
+  subcategorySlug?: string;
   visibility: "public" | "private";
   publicAnonymous?: boolean;
   title: string;
@@ -490,6 +810,10 @@ export async function createAskMekorQuestion(input: {
   }
 
   const category = await getCategoryBySlug(input.categorySlug);
+  const subcategory = await getSubcategoryForCategory({
+    categoryId: category.id,
+    subcategorySlug: input.subcategorySlug,
+  });
   const adminIds = input.visibility === "private" ? await getAdminParticipants() : [];
 
   return getDb().transaction(async (tx) => {
@@ -498,6 +822,7 @@ export async function createAskMekorQuestion(input: {
       .insert(askMekorQuestions)
       .values({
         categoryId: category.id,
+        subcategoryId: subcategory?.id ?? null,
         visibility: input.visibility,
         status: "open",
         slug: "pending",
@@ -579,6 +904,7 @@ export async function createAskMekorQuestion(input: {
         body: buildPrivateThreadSystemBody({
           questionId: created.id,
           categoryLabel: category.label,
+          subcategoryLabel: subcategory?.label ?? "",
           title,
           askerName,
           askerEmail,
@@ -590,6 +916,7 @@ export async function createAskMekorQuestion(input: {
           questionId: created.id,
           visibility: input.visibility,
           categorySlug: category.slug,
+          subcategorySlug: subcategory?.slug ?? "",
         },
         createdAt: now,
         updatedAt: now,
@@ -653,10 +980,16 @@ export async function listAdminAskMekorQuestions(input: {
       categoryLabel: askMekorCategories.label,
       categoryDescription: askMekorCategories.description,
       categoryPosition: askMekorCategories.position,
+      subcategoryId: askMekorSubcategories.id,
+      subcategorySlug: askMekorSubcategories.slug,
+      subcategoryLabel: askMekorSubcategories.label,
+      subcategoryDescription: askMekorSubcategories.description,
+      subcategoryPosition: askMekorSubcategories.position,
       replyCount: sql<number>`count(${askMekorReplies.id})::int`,
     })
     .from(askMekorQuestions)
     .innerJoin(askMekorCategories, eq(askMekorCategories.id, askMekorQuestions.categoryId))
+    .leftJoin(askMekorSubcategories, eq(askMekorSubcategories.id, askMekorQuestions.subcategoryId))
     .leftJoin(askMekorReplies, eq(askMekorReplies.questionId, askMekorQuestions.id))
     .where(
       and(
@@ -669,6 +1002,7 @@ export async function listAdminAskMekorQuestions(input: {
               ilike(askMekorQuestions.body, `%${q}%`),
               ilike(askMekorQuestions.askerName, `%${q}%`),
               ilike(askMekorQuestions.askerEmail, `%${q}%`),
+              ilike(sql`coalesce(${askMekorSubcategories.label}, '')`, `%${q}%`),
             )
           : undefined,
       ),
@@ -689,6 +1023,11 @@ export async function listAdminAskMekorQuestions(input: {
       askMekorCategories.label,
       askMekorCategories.description,
       askMekorCategories.position,
+      askMekorSubcategories.id,
+      askMekorSubcategories.slug,
+      askMekorSubcategories.label,
+      askMekorSubcategories.description,
+      askMekorSubcategories.position,
     )
     .orderBy(desc(askMekorQuestions.updatedAt), desc(askMekorQuestions.id))
     .limit(200);
@@ -699,6 +1038,11 @@ export async function listAdminAskMekorQuestions(input: {
       mapSummaryRow({
         ...row,
         categoryPublicCount: categoryMap.get(row.categoryId)?.publicQuestionCount ?? 0,
+        categorySubcategories: categoryMap.get(row.categoryId)?.subcategories ?? [],
+        subcategoryPublicCount:
+          categoryMap
+            .get(row.categoryId)
+            ?.subcategories.find((item) => item.id === row.subcategoryId)?.publicQuestionCount ?? 0,
         usePublicAskerName: false,
       }),
     ),
@@ -731,9 +1075,15 @@ export async function getAdminAskMekorQuestionDetail(id: number) {
       categoryLabel: askMekorCategories.label,
       categoryDescription: askMekorCategories.description,
       categoryPosition: askMekorCategories.position,
+      subcategoryId: askMekorSubcategories.id,
+      subcategorySlug: askMekorSubcategories.slug,
+      subcategoryLabel: askMekorSubcategories.label,
+      subcategoryDescription: askMekorSubcategories.description,
+      subcategoryPosition: askMekorSubcategories.position,
     })
     .from(askMekorQuestions)
     .innerJoin(askMekorCategories, eq(askMekorCategories.id, askMekorQuestions.categoryId))
+    .leftJoin(askMekorSubcategories, eq(askMekorSubcategories.id, askMekorQuestions.subcategoryId))
     .where(eq(askMekorQuestions.id, id))
     .limit(1);
 
@@ -792,6 +1142,13 @@ export async function getAdminAskMekorQuestionDetail(id: number) {
       categoryDescription: row.categoryDescription,
       categoryPosition: row.categoryPosition,
       categoryPublicCount: category?.publicQuestionCount ?? 0,
+      categorySubcategories: category?.subcategories ?? [],
+      subcategoryId: row.subcategoryId,
+      subcategorySlug: row.subcategorySlug,
+      subcategoryLabel: row.subcategoryLabel,
+      subcategoryDescription: row.subcategoryDescription,
+      subcategoryPosition: row.subcategoryPosition,
+      subcategoryPublicCount: category?.subcategories.find((item) => item.id === row.subcategoryId)?.publicQuestionCount ?? 0,
       usePublicAskerName: false,
     }),
     body: row.body,

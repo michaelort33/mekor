@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Phone, ScrollText, UserRound } from "lucide-react";
 
@@ -37,6 +37,7 @@ export function AskMekorForm({
     askerEmail: "",
     askerPhone: "",
     categorySlug: categories[0]?.slug ?? "general",
+    subcategorySlug: "",
     title: "",
     body: "",
     visibility: initialVisibility as "public" | "private",
@@ -44,6 +45,11 @@ export function AskMekorForm({
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const selectedCategory = useMemo(
+    () => categories.find((category) => category.slug === form.categorySlug) ?? categories[0] ?? null,
+    [categories, form.categorySlug],
+  );
+  const availableSubcategories = selectedCategory?.subcategories ?? [];
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -71,10 +77,16 @@ export function AskMekorForm({
     const payload = (await response.json().catch(() => ({}))) as {
       error?: string;
       redirectTo?: string;
+      issues?: {
+        formErrors?: string[];
+        fieldErrors?: Record<string, string[] | undefined>;
+      };
     };
 
     if (!response.ok || !payload.redirectTo) {
-      setError(payload.error || "Unable to submit right now. Please try again.");
+      const fieldError = Object.values(payload.issues?.fieldErrors ?? {}).flat().find(Boolean);
+      const formError = payload.issues?.formErrors?.find(Boolean);
+      setError(fieldError || formError || payload.error || "Unable to submit right now. Please try again.");
       return;
     }
 
@@ -200,11 +212,38 @@ export function AskMekorForm({
             <select
               className="h-12 rounded-[22px] border border-[var(--color-border-strong)] bg-white/85 px-4 text-[15px] text-[var(--color-foreground)] shadow-[0_15px_35px_-30px_rgba(15,23,42,0.5)] outline-none transition focus:border-[var(--color-ring)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--color-ring)_14%,transparent)]"
               value={form.categorySlug}
-              onChange={(event) => setForm((current) => ({ ...current, categorySlug: event.target.value }))}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  categorySlug: event.target.value,
+                  subcategorySlug: "",
+                }))
+              }
             >
               {categories.map((category) => (
                 <option key={category.id} value={category.slug}>
                   {category.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="grid gap-2 md:col-span-2">
+            <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">
+              <ScrollText className="h-3.5 w-3.5" />
+              Subcategory
+            </span>
+            <select
+              className="h-12 rounded-[22px] border border-[var(--color-border-strong)] bg-white/85 px-4 text-[15px] text-[var(--color-foreground)] shadow-[0_15px_35px_-30px_rgba(15,23,42,0.5)] outline-none transition focus:border-[var(--color-ring)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--color-ring)_14%,transparent)] disabled:cursor-not-allowed disabled:opacity-65"
+              value={form.subcategorySlug}
+              disabled={availableSubcategories.length === 0}
+              onChange={(event) => setForm((current) => ({ ...current, subcategorySlug: event.target.value }))}
+            >
+              <option value="">
+                {availableSubcategories.length === 0 ? "No subcategories available" : "No subcategory"}
+              </option>
+              {availableSubcategories.map((subcategory) => (
+                <option key={subcategory.id} value={subcategory.slug}>
+                  {subcategory.label}
                 </option>
               ))}
             </select>

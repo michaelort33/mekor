@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { AskMekorTaxonomyManager } from "@/components/ask-mekor/ask-mekor-taxonomy-manager";
 import type { AskMekorQuestionDetail, AskMekorQuestionSummary, QuestionCategory } from "@/lib/ask-mekor/types";
 
 type AdminListResponse = {
@@ -186,6 +187,8 @@ export function AskMekorAdminConsole() {
         </article>
       </div>
 
+      <AskMekorTaxonomyManager categories={categories} onRefresh={loadQuestions} />
+
       <form
         className="grid gap-4 rounded-[28px] border border-[var(--color-border)] bg-white/82 p-5 shadow-[0_18px_50px_-38px_rgba(15,23,42,0.28)] md:grid-cols-[minmax(0,1fr)_160px_160px_220px_auto]"
         onSubmit={(event) => {
@@ -261,6 +264,11 @@ export function AskMekorAdminConsole() {
                       <span className="rounded-full bg-[var(--color-surface-strong)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">
                         {item.category.label}
                       </span>
+                      {item.subcategory ? (
+                        <span className="rounded-full border border-[var(--color-border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">
+                          {item.subcategory.label}
+                        </span>
+                      ) : null}
                       <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">
                         {item.visibility}
                       </span>
@@ -289,6 +297,11 @@ export function AskMekorAdminConsole() {
                     <span className="rounded-full bg-[var(--color-surface-strong)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">
                       {detail.category.label}
                     </span>
+                    {detail.subcategory ? (
+                      <span className="rounded-full border border-[var(--color-border)] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">
+                        {detail.subcategory.label}
+                      </span>
+                    ) : null}
                     <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">{detail.visibility}</span>
                     <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">{detail.status}</span>
                   </div>

@@ -1,6 +1,16 @@
 export type QuestionVisibility = "public" | "private";
 export type QuestionStatus = "open" | "answered" | "closed";
 
+export type QuestionSubcategory = {
+  id: number;
+  categoryId: number;
+  slug: string;
+  label: string;
+  description: string;
+  position: number;
+  publicQuestionCount: number;
+};
+
 export type QuestionCategory = {
   id: number;
   slug: string;
@@ -8,6 +18,7 @@ export type QuestionCategory = {
   description: string;
   position: number;
   publicQuestionCount: number;
+  subcategories: QuestionSubcategory[];
 };
 
 export type AskMekorReply = {
@@ -34,6 +45,7 @@ export type AskMekorQuestionSummary = {
   visibility: QuestionVisibility;
   status: QuestionStatus;
   category: QuestionCategory;
+  subcategory: QuestionSubcategory | null;
   askerName: string;
   publicAnonymous: boolean;
   replyCount: number;

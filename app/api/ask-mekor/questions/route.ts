@@ -13,6 +13,7 @@ import { getUserSession } from "@/lib/auth/session";
 
 const createQuestionSchema = z.object({
   categorySlug: z.string().trim().min(1).max(80),
+  subcategorySlug: z.string().trim().max(80).optional().default(""),
   visibility: z.enum(["public", "private"]),
   publicAnonymous: z.boolean().optional().default(false),
   title: z.string().trim().min(3).max(180),
