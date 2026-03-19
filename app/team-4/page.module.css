@@ -68,19 +68,24 @@
 
 .bannerCard {
   overflow: hidden;
-  padding: 0;
+  padding: clamp(14px, 1.8vw, 20px);
   border-color: #cbc4b7;
 }
 
 .bannerImage {
   display: block;
-  width: 100%;
-  height: auto;
-  border-bottom: 1px solid #d4cdc0;
+  width: min(100%, 56rem);
+  height: clamp(210px, 24vw, 300px);
+  margin: 0 auto;
+  border-radius: 10px;
+  object-fit: cover;
+  object-position: center;
 }
 
 .bannerBody {
-  padding: 16px 18px 18px;
+  max-width: min(100%, 56rem);
+  margin: 0 auto;
+  padding: 15px 0 0;
   display: grid;
   gap: 8px;
 }

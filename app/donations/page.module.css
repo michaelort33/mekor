@@ -328,6 +328,8 @@
   border-radius: 8px;
   background: #f3f1eb;
   border: 1px solid #d3d9e0;
+  max-width: min(100%, 48rem);
+  margin: 0 auto;
 }
 
 .dedicationList {
@@ -377,9 +379,26 @@
 .dedicationImage {
   display: block;
   width: 100%;
-  height: clamp(240px, 40vw, 360px);
+  height: clamp(220px, 30vw, 300px);
   object-fit: cover;
   object-position: center center;
+}
+
+@media (min-width: 980px) {
+  .dedicationSection {
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+    align-items: start;
+  }
+
+  .dedicationList {
+    grid-column: 1 / -1;
+    max-width: min(100%, 52rem);
+  }
+
+  .dedicationVisual {
+    margin: 0;
+    justify-self: end;
+  }
 }
 
 @media (max-width: 600px) {

@@ -77,12 +77,15 @@
 }
 
 .illustration {
-  width: 100%;
-  height: auto;
+  display: block;
+  width: min(100%, 44rem);
+  height: clamp(220px, 30vw, 320px);
   margin-top: 10px;
+  margin-inline: auto;
   border-radius: 8px;
   border: 1px solid #d1d8e0;
   box-shadow: none;
+  object-fit: cover;
 }
 
 .formSection :global(form) {

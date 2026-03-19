@@ -25,25 +25,27 @@
 
 .bannerCard {
   overflow: hidden;
-  padding: 0;
+  padding: clamp(14px, 1.8vw, 20px);
   border-color: #c8daed;
   border-radius: 12px !important;
 }
 
 .bannerImage {
   display: block;
-  width: 100%;
-  height: auto;
-  min-height: clamp(170px, 26vw, 290px);
+  width: min(100%, 56rem);
+  height: clamp(210px, 24vw, 300px);
+  margin: 0 auto;
   object-fit: cover;
   object-position: center;
-  border-bottom: 1px solid #dbe5ef;
+  border-radius: 12px;
 }
 
 .bannerBody {
   display: grid;
   gap: 8px;
-  padding: 16px 18px 18px;
+  max-width: min(100%, 56rem);
+  margin: 0 auto;
+  padding: 15px 0 0;
   background: linear-gradient(180deg, #fbfdff 0%, #f6faff 100%);
 }
 
@@ -168,11 +170,11 @@
   }
 
   .bannerBody {
-    padding: 12px 14px 14px;
+    padding: 13px 0 0;
   }
 
   .bannerImage {
-    min-height: clamp(125px, 34vw, 180px);
+    height: clamp(190px, 44vw, 240px);
   }
 
   .noticeGrid {
@@ -212,7 +214,7 @@
 
   .bannerBody {
     gap: 6px;
-    padding: 11px 12px 13px;
+    padding: 11px 0 0;
   }
 
   .bannerText {

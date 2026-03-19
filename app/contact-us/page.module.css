@@ -77,13 +77,17 @@
 
 .bannerCard {
   overflow: hidden;
-  padding: 0;
+  padding: clamp(14px, 1.8vw, 20px);
 }
 
 .bannerImage {
   display: block;
-  width: 100%;
-  height: auto;
+  width: min(100%, 56rem);
+  height: clamp(210px, 24vw, 300px);
+  margin: 0 auto;
+  border-radius: 10px;
+  object-fit: cover;
+  object-position: center;
 }
 
 .detailGrid {
