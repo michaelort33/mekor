@@ -237,6 +237,19 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function buildExternalMentionPath(sourceUrl: string, title: string, publishedLabel: string) {
+  const titleSlug = slugify(title) || "entry";
+  const publishedSlug = slugify(publishedLabel) || "undated";
+
+  try {
+    const url = new URL(sourceUrl);
+    url.searchParams.set("mekor_entry", `${publishedSlug}-${titleSlug}`);
+    return url.toString();
+  } catch {
+    return sourceUrl;
+  }
+}
+
 function parsePublicationFromSummary(summary: string, sourceUrl: string) {
   const normalized = normalizeWhitespace(summary);
   if (normalized) {
@@ -284,25 +297,24 @@ function extractInTheNewsMentionsPage(document: PageDocument): ExtractedInTheNew
       return;
     }
 
-    const internalPath = normalizeInternalPath(primaryLink.href);
-    const sourceUrl = internalPath ? "" : sanitizeExternalUrl(primaryLink.href);
-    const path = internalPath || sourceUrl;
-    if (!path) {
-      return;
-    }
-
     const title = normalizeTitle(primaryLink.text || paragraphs[1] || "");
     if (!title) {
       return;
     }
 
+    const internalPath = normalizeInternalPath(primaryLink.href);
+    const sourceUrl = internalPath ? "" : sanitizeExternalUrl(primaryLink.href);
     const published = parseShortDate(paragraphs[0] ?? "");
+    const path = internalPath || buildExternalMentionPath(sourceUrl, title, published.publishedLabel);
+    if (!path) {
+      return;
+    }
     const summary = normalizeWhitespace(paragraphs.slice(2).join(" "));
     const publication = parsePublicationFromSummary(summary, sourceUrl);
 
     const slug = internalPath.startsWith(NEWS_PATH_PREFIX)
       ? internalPath.slice(NEWS_PATH_PREFIX.length)
-      : `${published.year ?? "unknown"}-${slugify(title)}`;
+      : `${published.year ?? "unknown"}-${slugify(published.publishedLabel || "undated")}-${slugify(title)}`;
 
     rows.push({
       slug,

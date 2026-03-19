@@ -162,6 +162,13 @@
       "when": 1773166770672,
       "tag": "0022_brief_mister_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1773892000000,
+      "tag": "0023_ask_mekor_board",
+      "breakpoints": true
     }
   ]
 }

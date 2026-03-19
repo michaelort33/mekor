@@ -11,6 +11,7 @@ const DESCRIPTIONS: Record<string, string> = {
   "/admin/payments": "Reconcile multi-source payments, classify payers, and generate tax reporting.",
   "/admin/invitations": "Send onboarding links, track status, and resend or revoke invites.",
   "/admin/messages": "Run quick campaigns and review delivery history in one place.",
+  "/admin/ask-mekor": "Review public and private Ask Mekor questions, answer them, and close the loop.",
   "/admin/dues": "Manage schedules, invoices, balances, and manual dues actions.",
   "/admin/events": "Review registrations and control event signup settings.",
   "/admin/templates": "Create, edit, preview, and send newsletter templates.",

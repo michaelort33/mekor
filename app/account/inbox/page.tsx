@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { MemberShell } from "@/components/members/member-shell";
@@ -118,13 +118,15 @@ function getThreadActionPayload(payload: Record<string, unknown>): ThreadActionP
 
 export default function AccountInboxPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedThreadId = Number.parseInt(searchParams.get("thread") ?? "", 10);
   const [search, setSearch] = useState("");
   const [threadTypeFilter, setThreadTypeFilter] = useState<"" | InboxThread["threadType"]>("");
   const [readFilter, setReadFilter] = useState<"all" | "unread">("all");
   const [loadingThreads, setLoadingThreads] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [threads, setThreads] = useState<InboxThread[]>([]);
-  const [selectedThreadId, setSelectedThreadId] = useState<number | null>(null);
+  const [selectedThreadId, setSelectedThreadId] = useState<number | null>(Number.isInteger(requestedThreadId) ? requestedThreadId : null);
   const [messages, setMessages] = useState<InboxMessage[]>([]);
   const [threadTitle, setThreadTitle] = useState("");
   const [error, setError] = useState("");
@@ -147,7 +149,8 @@ export default function AccountInboxPage() {
     setThreads(payload.items);
     setLoadingThreads(false);
     if (payload.items.length > 0 && !selectedThreadId) {
-      setSelectedThreadId(payload.items[0].threadId);
+      const preferredThread = payload.items.find((thread) => thread.threadId === requestedThreadId);
+      setSelectedThreadId(preferredThread?.threadId ?? payload.items[0].threadId);
     }
     if (payload.items.length === 0) {
       setSelectedThreadId(null);
@@ -177,7 +180,8 @@ export default function AccountInboxPage() {
           setThreads(payload.items);
           setLoadingThreads(false);
           if (payload.items.length > 0) {
-            setSelectedThreadId(payload.items[0].threadId);
+            const preferredThread = payload.items.find((thread) => thread.threadId === requestedThreadId);
+            setSelectedThreadId(preferredThread?.threadId ?? payload.items[0].threadId);
           } else {
             setSelectedThreadId(null);
             setMessages([]);
@@ -195,7 +199,7 @@ export default function AccountInboxPage() {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [requestedThreadId, router]);
 
   const filteredThreads = useMemo(() => {
     const query = search.trim().toLowerCase();

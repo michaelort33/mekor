@@ -165,6 +165,8 @@ export const mailchimpSignupEventTypeEnum = pgEnum("mailchimp_signup_event_type"
   "cleaned",
   "unsubscribe",
 ]);
+export const askMekorQuestionVisibilityEnum = pgEnum("ask_mekor_question_visibility", ["public", "private"]);
+export const askMekorQuestionStatusEnum = pgEnum("ask_mekor_question_status", ["open", "answered", "closed"]);
 
 export const formSubmissions = pgTable("form_submissions", {
   id: serial("id").primaryKey(),
@@ -215,6 +217,77 @@ export const adminInboxEvents = pgTable(
       table.sourceId,
     ),
     statusCreatedIdx: index("admin_inbox_events_status_created_idx").on(table.status, table.createdAt),
+  }),
+);
+
+export const askMekorCategories = pgTable(
+  "ask_mekor_categories",
+  {
+    id: serial("id").primaryKey(),
+    slug: varchar("slug", { length: 80 }).notNull(),
+    label: varchar("label", { length: 120 }).notNull(),
+    description: text("description").notNull().default(""),
+    position: integer("position").notNull().default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    slugUniqueIdx: uniqueIndex("ask_mekor_categories_slug_unique_idx").on(table.slug),
+    positionIdx: index("ask_mekor_categories_position_idx").on(table.position),
+  }),
+);
+
+export const askMekorQuestions = pgTable(
+  "ask_mekor_questions",
+  {
+    id: serial("id").primaryKey(),
+    categoryId: integer("category_id")
+      .notNull()
+      .references(() => askMekorCategories.id),
+    visibility: askMekorQuestionVisibilityEnum("visibility").notNull().default("public"),
+    status: askMekorQuestionStatusEnum("status").notNull().default("open"),
+    slug: varchar("slug", { length: 200 }).notNull(),
+    title: varchar("title", { length: 180 }).notNull(),
+    body: text("body").notNull(),
+    askerUserId: integer("asker_user_id").references(() => users.id),
+    askerName: varchar("asker_name", { length: 120 }).notNull().default(""),
+    askerEmail: varchar("asker_email", { length: 255 }).notNull().default(""),
+    askerPhone: varchar("asker_phone", { length: 60 }).notNull().default(""),
+    sourcePath: varchar("source_path", { length: 512 }).notNull().default("/ask-mekor"),
+    linkedThreadId: integer("linked_thread_id").references(() => inboxThreads.id),
+    answeredAt: timestamp("answered_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    slugUniqueIdx: uniqueIndex("ask_mekor_questions_slug_unique_idx").on(table.slug),
+    visibilityStatusUpdatedIdx: index("ask_mekor_questions_visibility_status_updated_idx").on(
+      table.visibility,
+      table.status,
+      table.updatedAt,
+    ),
+    categoryUpdatedIdx: index("ask_mekor_questions_category_updated_idx").on(table.categoryId, table.updatedAt),
+    askerEmailCreatedIdx: index("ask_mekor_questions_asker_email_created_idx").on(table.askerEmail, table.createdAt),
+    linkedThreadIdx: uniqueIndex("ask_mekor_questions_linked_thread_unique_idx").on(table.linkedThreadId),
+  }),
+);
+
+export const askMekorReplies = pgTable(
+  "ask_mekor_replies",
+  {
+    id: serial("id").primaryKey(),
+    questionId: integer("question_id")
+      .notNull()
+      .references(() => askMekorQuestions.id),
+    authorUserId: integer("author_user_id")
+      .notNull()
+      .references(() => users.id),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    questionCreatedIdx: index("ask_mekor_replies_question_created_idx").on(table.questionId, table.createdAt),
   }),
 );
 

@@ -19,6 +19,7 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
   { href: "/admin/payments", label: "Payments" },
   { href: "/admin/invitations", label: "Invitations" },
   { href: "/admin/messages", label: "Messages" },
+  { href: "/admin/ask-mekor", label: "Ask Mekor" },
   { href: "/admin/dues", label: "Dues" },
   { href: "/admin/events", label: "Events" },
   { href: "/admin/templates", label: "Templates" },

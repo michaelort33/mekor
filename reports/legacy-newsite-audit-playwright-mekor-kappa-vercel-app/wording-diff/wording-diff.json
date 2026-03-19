@@ -1,0 +1,1385 @@
+[
+  {
+    "oldPath": "/from-the-rabbi-s-desk",
+    "oldUrl": "https://www.mekorhabracha.org/from-the-rabbi-s-desk",
+    "newUrl": "https://mekor-kappa.vercel.app/from-the-rabbi-s-desk",
+    "titleOld": "From The Rabbi's Desk | Mekor 3",
+    "titleNew": "From The Rabbi's Desk | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 6,
+    "changedPhrases": [
+      {
+        "oldText": "1500 Walnut St Suite 206",
+        "newText": "1500 Walnut St Suite 206, Philadelphia, PA 19102",
+        "similarity": 0.769
+      }
+    ],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Kosher Restaurants",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Podcast teachings, insights, and weekly Torah reflections",
+      "Browse podcast episodes, search by title or topic, and listen directly from this page.",
+      "New episodes are pulled into this page automatically from our live feed.",
+      "Listen to Recent Episodes",
+      "Search, stream, and browse episodes from Mekor's teaching archive.",
+      "Tisha B'Av 2024 - TB post Oct 7",
+      "8/29/2024 | 00:33:03",
+      "Kosher in Center City 24 - Wine",
+      "7/16/2024 | 01:02:26"
+    ]
+  },
+  {
+    "oldPath": "/in-the-news",
+    "oldUrl": "https://www.mekorhabracha.org/in-the-news",
+    "newUrl": "https://mekor-kappa.vercel.app/in-the-news",
+    "titleOld": "In The News | Mekor 3",
+    "titleNew": "In The News | Mekor Habracha",
+    "lineCoverage": 0.965,
+    "exactMatches": 111,
+    "changedPhrases": [
+      {
+        "oldText": "Center City Beit Midrash",
+        "newText": "CENTER CITY SYNAGOGUE",
+        "similarity": 0.571
+      },
+      {
+        "oldText": "Philadelphia Jewish Link, P.32 -- article by Mekor member Julia Rafsky",
+        "newText": "Philadelphia Jewish Link, P. 22 -- Features Mekor​",
+        "similarity": 0.556
+      },
+      {
+        "oldText": "Philadelphia Jewish Link, P. 22 -- Features Mekor​",
+        "newText": "Philadelphia Jewish Link, P. 22",
+        "similarity": 0.833
+      },
+      {
+        "oldText": "Philadelphia Jewish Link, P.21 -- Features Rabbi Hirsch",
+        "newText": "Philadelphia Jewish Link, P.13 -- Features Rabbi Hirsch",
+        "similarity": 0.875
+      },
+      {
+        "oldText": "Philadelphia Jewish Link, P.13 -- Features Rabbi Hirsch",
+        "newText": "Philadelphia Jewish Link, P.13",
+        "similarity": 0.769
+      },
+      {
+        "oldText": "1500 Walnut St Suite 206",
+        "newText": "1500 Walnut St Suite 206, Philadelphia, PA 19102",
+        "similarity": 0.769
+      }
+    ],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Kosher Restaurants",
+      "Three Myths About Parenting Your Toddlers",
+      "Center City Rabbi Releases New Book",
+      "Center City Synagogue",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Search and filter every archived story from our backend directory. Open each article on Mekor or jump to the original source.",
+      "​ Miriam's Advice Well",
+      "​ Philadelphia Jewish Link, P.12",
+      "​ Philadelphia Jewish Link, P.16",
+      "​ Rittenhouse Square Revue",
+      "Jewish Community Voice",
+      "KYW Newsradio 1060",
+      "Philadelphia Jewish Link",
+      "Philadelphia Jewish Link, P. 11"
+    ]
+  },
+  {
+    "oldPath": "/news/a-night-of-megillah-and-music-at-mekor-habracha",
+    "oldUrl": "https://www.mekorhabracha.org/news/a-night-of-megillah-and-music-at-mekor-habracha",
+    "newUrl": "https://mekor-kappa.vercel.app/news/a-night-of-megillah-and-music-at-mekor-habracha",
+    "titleOld": "A Night of Megillah and Music at Mekor Habracha | Mekor 3",
+    "titleNew": "A Night of Megillah and Music at Mekor Habracha | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 10,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha.",
+      "Source: http://www.ccshul.com/"
+    ]
+  },
+  {
+    "oldPath": "/news/activists-prepare-for-climate-march",
+    "oldUrl": "https://www.mekorhabracha.org/news/activists-prepare-for-climate-march",
+    "newUrl": "https://mekor-kappa.vercel.app/news/activists-prepare-for-climate-march",
+    "titleOld": "Activists Prepare for Climate March | Mekor 3",
+    "titleNew": "Activists Prepare for Climate March | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 17,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/american-rabbis-brush-off-being-named-on-chief-rabbinate%E2%80%99s-%E2%80%98blacklist%E2%80%99",
+    "oldUrl": "https://www.mekorhabracha.org/news/american-rabbis-brush-off-being-named-on-chief-rabbinate%E2%80%99s-%E2%80%98blacklist%E2%80%99",
+    "newUrl": "https://mekor-kappa.vercel.app/news/american-rabbis-brush-off-being-named-on-chief-rabbinate%E2%80%99s-%E2%80%98blacklist%E2%80%99",
+    "titleOld": "American Rabbis Brush Off Being Named on Chief Rabbinate’s ‘Blacklist’ | Mekor 3",
+    "titleNew": "American Rabbis Brush Off Being Named on Chief Rabbinate’s ‘Blacklist’ | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 32,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/annual-jewish-heritage-night-fills-phillies-game",
+    "oldUrl": "https://www.mekorhabracha.org/news/annual-jewish-heritage-night-fills-phillies-game",
+    "newUrl": "https://mekor-kappa.vercel.app/news/annual-jewish-heritage-night-fills-phillies-game",
+    "titleOld": "Annual Jewish Heritage Night Fills Phillies Game | Mekor 3",
+    "titleNew": "Annual Jewish Heritage Night Fills Phillies Game | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 12,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/back-to-jewish-day-school",
+    "oldUrl": "https://www.mekorhabracha.org/news/back-to-jewish-day-school",
+    "newUrl": "https://mekor-kappa.vercel.app/news/back-to-jewish-day-school",
+    "titleOld": "Back to Jewish Day School | Mekor 3",
+    "titleNew": "Back to Jewish Day School | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 14,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/calling-attention-to-plight-of-chained-women",
+    "oldUrl": "https://www.mekorhabracha.org/news/calling-attention-to-plight-of-chained-women",
+    "newUrl": "https://mekor-kappa.vercel.app/news/calling-attention-to-plight-of-chained-women",
+    "titleOld": "Calling Attention to Plight of \"Chained\" Women | Mekor 3",
+    "titleNew": "Calling Attention to Plight of \"Chained\" Women | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 26,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/creating-modern-orthodox-community",
+    "oldUrl": "https://www.mekorhabracha.org/news/creating-modern-orthodox-community",
+    "newUrl": "https://mekor-kappa.vercel.app/news/creating-modern-orthodox-community",
+    "titleOld": "Creating Modern Orthodox Community | Mekor 3",
+    "titleNew": "Creating Modern Orthodox Community | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 36,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/crockpot-crapshoot",
+    "oldUrl": "https://www.mekorhabracha.org/news/crockpot-crapshoot",
+    "newUrl": "https://mekor-kappa.vercel.app/news/crockpot-crapshoot",
+    "titleOld": "Crockpot crapshoot | Mekor 3",
+    "titleNew": "Crockpot crapshoot | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 10,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/etz-chaim-and-minyan-outgrowth-decide-to-go-their-separate-ways",
+    "oldUrl": "https://www.mekorhabracha.org/news/etz-chaim-and-minyan-outgrowth-decide-to-go-their-separate-ways",
+    "newUrl": "https://mekor-kappa.vercel.app/news/etz-chaim-and-minyan-outgrowth-decide-to-go-their-separate-ways",
+    "titleOld": "Etz Chaim and Minyan Outgrowth Decide to Go Their Separate Ways | Mekor 3",
+    "titleNew": "Etz Chaim and Minyan Outgrowth Decide to Go Their Separate Ways | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 27,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/federation-chosen-for-prestigious-leadership-program",
+    "oldUrl": "https://www.mekorhabracha.org/news/federation-chosen-for-prestigious-leadership-program",
+    "newUrl": "https://mekor-kappa.vercel.app/news/federation-chosen-for-prestigious-leadership-program",
+    "titleOld": "Federation chosen for prestigious leadership program | Mekor 3",
+    "titleNew": "Federation chosen for prestigious leadership program | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 6,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/first-ever-hava-nagrilla-barbecue-contest-attracts-thousands",
+    "oldUrl": "https://www.mekorhabracha.org/news/first-ever-hava-nagrilla-barbecue-contest-attracts-thousands",
+    "newUrl": "https://mekor-kappa.vercel.app/news/first-ever-hava-nagrilla-barbecue-contest-attracts-thousands",
+    "titleOld": "First-ever Hava NaGrilla Barbecue Contest Attracts Thousands | Mekor 3",
+    "titleNew": "First-ever Hava NaGrilla Barbecue Contest Attracts Thousands | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 14,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/focusing-on-kids-makes-sense-but-what-about-singles",
+    "oldUrl": "https://www.mekorhabracha.org/news/focusing-on-kids-makes-sense-but-what-about-singles",
+    "newUrl": "https://mekor-kappa.vercel.app/news/focusing-on-kids-makes-sense-but-what-about-singles",
+    "titleOld": "Focusing on Kids Makes Sense, but What About Singles? | Mekor 3",
+    "titleNew": "Focusing on Kids Makes Sense, but What About Singles? | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 17,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/graduate-level-matchmaking",
+    "oldUrl": "https://www.mekorhabracha.org/news/graduate-level-matchmaking",
+    "newUrl": "https://mekor-kappa.vercel.app/news/graduate-level-matchmaking",
+    "titleOld": "Graduate-Level Matchmaking | Mekor 3",
+    "titleNew": "Graduate-Level Matchmaking | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 24,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/its-all-about-location-when-it-comes-to-eruvin",
+    "oldUrl": "https://www.mekorhabracha.org/news/its-all-about-location-when-it-comes-to-eruvin",
+    "newUrl": "https://mekor-kappa.vercel.app/news/its-all-about-location-when-it-comes-to-eruvin",
+    "titleOld": "It's All About Location When It Comes to Eruvin | Mekor 3",
+    "titleNew": "It's All About Location When It Comes to Eruvin | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 21,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/jewish-weddings-are-blending-connubiality-with-individuality",
+    "oldUrl": "https://www.mekorhabracha.org/news/jewish-weddings-are-blending-connubiality-with-individuality",
+    "newUrl": "https://mekor-kappa.vercel.app/news/jewish-weddings-are-blending-connubiality-with-individuality",
+    "titleOld": "Jewish Weddings Are Blending Connubiality with Individuality | Mekor 3",
+    "titleNew": "Jewish Weddings Are Blending Connubiality with Individuality | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 31,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/keeping-jewish-heritage-alive-in-center-city",
+    "oldUrl": "https://www.mekorhabracha.org/news/keeping-jewish-heritage-alive-in-center-city",
+    "newUrl": "https://mekor-kappa.vercel.app/news/keeping-jewish-heritage-alive-in-center-city",
+    "titleOld": "Keeping Jewish Heritage Alive in Center City | Mekor 3",
+    "titleNew": "Keeping Jewish Heritage Alive in Center City | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 9,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha.",
+      "Source: http://www.ccshul.com/"
+    ]
+  },
+  {
+    "oldPath": "/news/leavens-fate-what-to-do-with-your-chametz",
+    "oldUrl": "https://www.mekorhabracha.org/news/leavens-fate-what-to-do-with-your-chametz",
+    "newUrl": "https://mekor-kappa.vercel.app/news/leavens-fate-what-to-do-with-your-chametz",
+    "titleOld": "Leaven's Fate: What to do with your chametz | Mekor 3",
+    "titleNew": "Leaven's Fate: What to do with your chametz | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 21,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/local-rabbis-in-it-for-the-long-run",
+    "oldUrl": "https://www.mekorhabracha.org/news/local-rabbis-in-it-for-the-long-run",
+    "newUrl": "https://mekor-kappa.vercel.app/news/local-rabbis-in-it-for-the-long-run",
+    "titleOld": "Local Rabbis in It for the Long Run | Mekor 3",
+    "titleNew": "Local Rabbis in It for the Long Run | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 23,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/locals-react-to-us-abstention-from-un-vote",
+    "oldUrl": "https://www.mekorhabracha.org/news/locals-react-to-us-abstention-from-un-vote",
+    "newUrl": "https://mekor-kappa.vercel.app/news/locals-react-to-us-abstention-from-un-vote",
+    "titleOld": "Locals React to U.S. Abstention from UN Vote | Mekor 3",
+    "titleNew": "Locals React to U.S. Abstention from UN Vote | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 40,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/making-carrying-shabbat-friendly",
+    "oldUrl": "https://www.mekorhabracha.org/news/making-carrying-shabbat-friendly",
+    "newUrl": "https://mekor-kappa.vercel.app/news/making-carrying-shabbat-friendly",
+    "titleOld": "Making Carrying Shabbat-Friendly | Mekor 3",
+    "titleNew": "Making Carrying Shabbat-Friendly | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 34,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/marriage-equality-supporters-applaud-state-bill",
+    "oldUrl": "https://www.mekorhabracha.org/news/marriage-equality-supporters-applaud-state-bill",
+    "newUrl": "https://mekor-kappa.vercel.app/news/marriage-equality-supporters-applaud-state-bill",
+    "titleOld": "Marriage Equality Supporters Applaud State Bill | Mekor 3",
+    "titleNew": "Marriage Equality Supporters Applaud State Bill | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 26,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/mekor-habracha-scholar-in-residence-shabbaton-with-rabbi-saul-berman",
+    "oldUrl": "https://www.mekorhabracha.org/news/mekor-habracha-scholar-in-residence-shabbaton-with-rabbi-saul-berman",
+    "newUrl": "https://mekor-kappa.vercel.app/news/mekor-habracha-scholar-in-residence-shabbaton-with-rabbi-saul-berman",
+    "titleOld": "Mekor Habracha Scholar-in-Residence Shabbaton with Rabbi Saul Berman | Mekor 3",
+    "titleNew": "Mekor Habracha Scholar-in-Residence Shabbaton with Rabbi Saul Berman | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 10,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/moshav-band-and-moments-of-wrong-ready-to-rock-union-transfer",
+    "oldUrl": "https://www.mekorhabracha.org/news/moshav-band-and-moments-of-wrong-ready-to-rock-union-transfer",
+    "newUrl": "https://mekor-kappa.vercel.app/news/moshav-band-and-moments-of-wrong-ready-to-rock-union-transfer",
+    "titleOld": "Moshav Band and Moments of Wrong ready to rock Union Transfer | Mekor 3",
+    "titleNew": "Moshav Band and Moments of Wrong ready to rock Union Transfer | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 13,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha.",
+      "Source: http://www.examiner.com/article/moshav-band-and-oh-yes-moments-of-wrong-ready-to-rock-union-transfer-sat-nt],"
+    ]
+  },
+  {
+    "oldPath": "/news/moshav-band-presents-mekor-habracha-benefit-concert",
+    "oldUrl": "https://www.mekorhabracha.org/news/moshav-band-presents-mekor-habracha-benefit-concert",
+    "newUrl": "https://mekor-kappa.vercel.app/news/moshav-band-presents-mekor-habracha-benefit-concert",
+    "titleOld": "Moshav Band presents Mekor Habracha Benefit Concert | Mekor 3",
+    "titleNew": "Moshav Band presents Mekor Habracha Benefit Concert | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 7,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/music-bonfire-light-up-kensington-for-lag-bomer",
+    "oldUrl": "https://www.mekorhabracha.org/news/music-bonfire-light-up-kensington-for-lag-bomer",
+    "newUrl": "https://mekor-kappa.vercel.app/news/music-bonfire-light-up-kensington-for-lag-bomer",
+    "titleOld": "Music, Bonfire Light Up Kensington for Lag B’Omer | Mekor 3",
+    "titleNew": "Music, Bonfire Light Up Kensington for Lag B’Omer | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 27,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/philadelphia-jews-celebrate-lag-bomer-with-bonfire-and-music-fest",
+    "oldUrl": "https://www.mekorhabracha.org/news/philadelphia-jews-celebrate-lag-bomer-with-bonfire-and-music-fest",
+    "newUrl": "https://mekor-kappa.vercel.app/news/philadelphia-jews-celebrate-lag-bomer-with-bonfire-and-music-fest",
+    "titleOld": "Philadelphia Jews Celebrate Lag B'Omer With Bonfire and Music Fest | Mekor 3",
+    "titleNew": "Philadelphia Jews Celebrate Lag B'Omer With Bonfire and Music Fest | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 11,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/purim-stressing-gods-role-in-evil-of-world",
+    "oldUrl": "https://www.mekorhabracha.org/news/purim-stressing-gods-role-in-evil-of-world",
+    "newUrl": "https://mekor-kappa.vercel.app/news/purim-stressing-gods-role-in-evil-of-world",
+    "titleOld": "Purim: Stressing God's role in evil of world | Mekor 3",
+    "titleNew": "Purim: Stressing God's role in evil of world | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 11,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha.",
+      "Source: http://www.examiner.com/article/purim-center-city-s-rabbi-eliezer-hirsch-stresses-god-s-role-evil-of-world],"
+    ]
+  },
+  {
+    "oldPath": "/news/rabbiscanrun",
+    "oldUrl": "https://www.mekorhabracha.org/news/rabbiscanrun",
+    "newUrl": "https://mekor-kappa.vercel.app/news/rabbiscanrun",
+    "titleOld": "RabbisCanRun for Youth At Risk in Israel | Mekor 3",
+    "titleNew": "RabbisCanRun for Youth At Risk in Israel | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 16,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/ring-in-5773",
+    "oldUrl": "https://www.mekorhabracha.org/news/ring-in-5773",
+    "newUrl": "https://mekor-kappa.vercel.app/news/ring-in-5773",
+    "titleOld": "Ring in 5773 | Mekor 3",
+    "titleNew": "Ring in 5773 | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 8,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha.",
+      "Source: http://www.ccshul.com/"
+    ]
+  },
+  {
+    "oldPath": "/news/speaking-their-minds-rabbis-address-israel-at-the-high-holidays",
+    "oldUrl": "https://www.mekorhabracha.org/news/speaking-their-minds-rabbis-address-israel-at-the-high-holidays",
+    "newUrl": "https://mekor-kappa.vercel.app/news/speaking-their-minds-rabbis-address-israel-at-the-high-holidays",
+    "titleOld": "Speaking Their Minds: Rabbis Address Israel at the High Holidays | Mekor 3",
+    "titleNew": "Speaking Their Minds: Rabbis Address Israel at the High Holidays | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 37,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/understanding-yom-kippurs-focus-on-atonement-and-forgiveness",
+    "oldUrl": "https://www.mekorhabracha.org/news/understanding-yom-kippurs-focus-on-atonement-and-forgiveness",
+    "newUrl": "https://mekor-kappa.vercel.app/news/understanding-yom-kippurs-focus-on-atonement-and-forgiveness",
+    "titleOld": "Understanding Yom Kippur’s Focus on Atonement and Forgiveness | Mekor 3",
+    "titleNew": "Understanding Yom Kippur’s Focus on Atonement and Forgiveness | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 21,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/us-rabbis-sign-letter-opposing-nuclear-agreement",
+    "oldUrl": "https://www.mekorhabracha.org/news/us-rabbis-sign-letter-opposing-nuclear-agreement",
+    "newUrl": "https://mekor-kappa.vercel.app/news/us-rabbis-sign-letter-opposing-nuclear-agreement",
+    "titleOld": "US Rabbis Sign Letter Opposing Nuclear Agreement | Mekor 3",
+    "titleNew": "US Rabbis Sign Letter Opposing Nuclear Agreement | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 15,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/waxman-and-snyder-to-challenge-sims-for-the-182nd-district",
+    "oldUrl": "https://www.mekorhabracha.org/news/waxman-and-snyder-to-challenge-sims-for-the-182nd-district",
+    "newUrl": "https://mekor-kappa.vercel.app/news/waxman-and-snyder-to-challenge-sims-for-the-182nd-district",
+    "titleOld": "Waxman and Snyder to Challenge Sims for the 182nd District | Mekor 3",
+    "titleNew": "Waxman and Snyder to Challenge Sims for the 182nd District | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 40,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/what-message-are-we-sending-to-mourners",
+    "oldUrl": "https://www.mekorhabracha.org/news/what-message-are-we-sending-to-mourners",
+    "newUrl": "https://mekor-kappa.vercel.app/news/what-message-are-we-sending-to-mourners",
+    "titleOld": "What Message Are We Sending to Mourners? | Mekor 3",
+    "titleNew": "What Message Are We Sending to Mourners? | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 16,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/news/why-i-cook-for-strangers",
+    "oldUrl": "https://www.mekorhabracha.org/news/why-i-cook-for-strangers",
+    "newUrl": "https://mekor-kappa.vercel.app/news/why-i-cook-for-strangers",
+    "titleOld": "Why I Cook for Strangers | Mekor 3",
+    "titleNew": "Why I Cook for Strangers | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 16,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Press coverage and community stories connected to Mekor Habracha."
+    ]
+  },
+  {
+    "oldPath": "/post/barbara-and-harvey-brodsky-enrichment-center-of-jewish-family-and-children-services",
+    "oldUrl": "https://www.mekorhabracha.org/post/barbara-and-harvey-brodsky-enrichment-center-of-jewish-family-and-children-services",
+    "newUrl": "https://mekor-kappa.vercel.app/post/barbara-and-harvey-brodsky-enrichment-center-of-jewish-family-and-children-services",
+    "titleOld": "Barbara and Harvey Brodsky Enrichment Center of Jewish Family and Children Services",
+    "titleNew": "Barbara and Harvey Brodsky Enrichment Center of Jewish Family and Children Services",
+    "lineCoverage": 1,
+    "exactMatches": 4,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Community update from Mekor Habracha.",
+      "Updated: May 31, 2025"
+    ]
+  },
+  {
+    "oldPath": "/post/charlie-was-a-sinner",
+    "oldUrl": "https://www.mekorhabracha.org/post/charlie-was-a-sinner",
+    "newUrl": "https://mekor-kappa.vercel.app/post/charlie-was-a-sinner",
+    "titleOld": "Charlie Was a Sinner.",
+    "titleNew": "Charlie Was a Sinner.",
+    "lineCoverage": 1,
+    "exactMatches": 4,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Community update from Mekor Habracha.",
+      "Updated: Aug 13, 2025",
+      "wxacuvlwlalejd25.public.blob.vercel-storage.com"
+    ]
+  },
+  {
+    "oldPath": "/post/goldie-3",
+    "oldUrl": "https://www.mekorhabracha.org/post/goldie-3",
+    "newUrl": "https://mekor-kappa.vercel.app/post/goldie-3",
+    "titleOld": "Goldie - Franklin's Table",
+    "titleNew": "Goldie - Franklin's Table",
+    "lineCoverage": 1,
+    "exactMatches": 6,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Community update from Mekor Habracha.",
+      "Updated: Apr 8, 2025"
+    ]
+  },
+  {
+    "oldPath": "/post/miss-rachel-s-pantry",
+    "oldUrl": "https://www.mekorhabracha.org/post/miss-rachel-s-pantry",
+    "newUrl": "https://mekor-kappa.vercel.app/post/miss-rachel-s-pantry",
+    "titleOld": "Miss Rachel's Pantry",
+    "titleNew": "Miss Rachel's Pantry",
+    "lineCoverage": 0.833,
+    "exactMatches": 6,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Kosher Corner at Temple University",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Community update from Mekor Habracha.",
+      "Updated: Apr 8, 2025",
+      "missrachelspantry.com"
+    ]
+  },
+  {
+    "oldPath": "/post/plnt-burger",
+    "oldUrl": "https://www.mekorhabracha.org/post/plnt-burger",
+    "newUrl": "https://mekor-kappa.vercel.app/post/plnt-burger",
+    "titleOld": "PLNT Burger - Wynnewood Rd",
+    "titleNew": "PLNT Burger - Wynnewood Rd",
+    "lineCoverage": 0.8,
+    "exactMatches": 4,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Barbara and Harvey Brodsky Enrichment Center of Jewish Family and Children Services",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Community update from Mekor Habracha.",
+      "Updated: May 29, 2025"
+    ]
+  },
+  {
+    "oldPath": "/post/rita-s-water-ice",
+    "oldUrl": "https://www.mekorhabracha.org/post/rita-s-water-ice",
+    "newUrl": "https://mekor-kappa.vercel.app/post/rita-s-water-ice",
+    "titleOld": "Rita's Water Ice - Grant Ave",
+    "titleNew": "Rita's Water Ice - Grant Ave",
+    "lineCoverage": 1,
+    "exactMatches": 4,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Community update from Mekor Habracha.",
+      "Updated: May 31, 2025"
+    ]
+  },
+  {
+    "oldPath": "/post/the-kosher-grill",
+    "oldUrl": "https://www.mekorhabracha.org/post/the-kosher-grill",
+    "newUrl": "https://mekor-kappa.vercel.app/post/the-kosher-grill",
+    "titleOld": "The Kosher Grill​",
+    "titleNew": "The Kosher Grill​",
+    "lineCoverage": 1,
+    "exactMatches": 2,
+    "changedPhrases": [],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Center City Beit Midrash",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "admin@mekorhabracha.org",
+      "1500 Walnut St Suite 206",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here",
+      "Latest Newsletters",
+      "Copyright ©2025 by Mekor Habracha Synagogue"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Community update from Mekor Habracha.",
+      "Updated: Apr 10, 2025"
+    ]
+  },
+  {
+    "oldPath": "/search?q=%7Bsearch_term%7D",
+    "oldUrl": "https://www.mekorhabracha.org/search?q=%7Bsearch_term%7D",
+    "newUrl": "https://mekor-kappa.vercel.app/search?q=%7Bsearch_term%7D",
+    "titleOld": "Search Results: '{search_term}' - Mekor 3",
+    "titleNew": "Search | Mekor Habracha",
+    "lineCoverage": 1,
+    "exactMatches": 3,
+    "changedPhrases": [
+      {
+        "oldText": "Center City Beit Midrash",
+        "newText": "CENTER CITY SYNAGOGUE",
+        "similarity": 0.571
+      },
+      {
+        "oldText": "No results found for \"{search_term}\". Try a new search.",
+        "newText": "Search Results No results found for \"{search_term}\". Try a new search. Mekor Habracha Center City Synagogue (215) 525-4246 admin@mekorh",
+        "similarity": 0.625
+      },
+      {
+        "oldText": "1500 Walnut St Suite 206",
+        "newText": "1500 Walnut St Suite 206, Philadelphia, PA 19102",
+        "similarity": 0.769
+      }
+    ],
+    "removedPhrases": [
+      "Skip to Main Content",
+      "Kosher Restaurants",
+      "Center City Synagogue",
+      "Philadelphia, PA 19102",
+      "SUBSCRIBE TO OUR WEEKLY NEWSLETTER",
+      "Enter your email here"
+    ],
+    "addedPhrases": [
+      "Toggle Member Hub submenu",
+      "Toggle About submenu",
+      "Toggle More submenu",
+      "Find pages, events, posts, and news",
+      "Search across the public site from one place. Results include native pages, public content, and live directories.",
+      "2 RESULTS FOR “{SEARCH_TERM}”",
+      "/SEARCH?Q=%7BSEARCH_TERM%7D",
+      "Search Results: '{search_term}' - Mekor 3",
+      "/EVENTS-1/SPECIAL-DISCUSSION-WITH-MARK-TRENCHER-OF-NISHMA-RESEARCH",
+      "Special Discussion with Mark Trencher of Nishma Research | Mekor 3",
+      "Special Discussion with Mark Trencher of Nishma Research Thu, Jul 31 | RSVP For Zoom Link Registration is closed See other events Time",
+      "A vibrant Modern Orthodox community in the heart of Center City, Philadelphia."
+    ]
+  }
+]
