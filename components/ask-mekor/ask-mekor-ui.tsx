@@ -229,6 +229,78 @@ export function AskMekorQuestionCard({
   );
 }
 
+export function AskMekorQuestionTable({
+  items,
+  emptyState,
+}: {
+  items: AskMekorQuestionSummary[];
+  emptyState: string;
+}) {
+  if (items.length === 0) {
+    return (
+      <Card className="border-[var(--color-border)] bg-white/88">
+        <CardContent className="p-8 text-sm leading-7 text-[var(--color-muted)]">{emptyState}</CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <>
+      <div className="grid gap-4 lg:hidden">
+        {items.map((item) => (
+          <AskMekorQuestionCard key={item.id} item={item} compact />
+        ))}
+      </div>
+
+      <div className="hidden overflow-hidden rounded-[32px] border border-[var(--color-border)] bg-white/92 shadow-[0_28px_70px_-54px_rgba(15,23,42,0.32)] lg:block">
+        <table className="w-full table-fixed border-collapse">
+          <colgroup>
+            <col className="w-[58%]" />
+            <col className="w-[12%]" />
+            <col className="w-[14%]" />
+            <col className="w-[16%]" />
+          </colgroup>
+          <thead>
+            <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface)] text-left">
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Topic</th>
+              <th className="px-4 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Replies</th>
+              <th className="px-4 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Status</th>
+              <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.id} className="border-b border-[var(--color-border)] last:border-b-0 hover:bg-[rgba(255,255,255,0.7)]">
+                <td className="px-6 py-5 align-top">
+                  <Link href={`/ask-mekor/questions/${item.slug}`} className="group block min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <AskMekorCategoryBadge category={item.category} />
+                    </div>
+                    <h3 className="mt-3 break-words font-[family-name:var(--font-heading)] text-[1.7rem] leading-tight tracking-[-0.03em] text-[var(--color-foreground)] transition group-hover:text-[var(--color-link)]">
+                      {item.title}
+                    </h3>
+                    <p className="mt-2 break-words text-sm leading-7 text-[var(--color-muted)]">
+                      Asked by {item.askerName} on {formatDate(item.createdAt)}
+                    </p>
+                  </Link>
+                </td>
+                <td className="px-4 py-5 align-top text-sm font-semibold text-[var(--color-foreground)]">{item.replyCount}</td>
+                <td className="px-4 py-5 align-top">
+                  <AskMekorStatusBadge status={item.status} />
+                </td>
+                <td className="px-6 py-5 align-top text-sm leading-7 text-[var(--color-muted)]">
+                  <div className="break-words">{formatDate(item.updatedAt)}</div>
+                  <div className="break-words">{item.category.label}</div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
 export function AskMekorSidebarCta({ href = "/ask-mekor#ask-private" }: { href?: string }) {
   return (
     <Card className="overflow-hidden border-[rgba(31,48,67,0.12)] bg-[linear-gradient(180deg,rgba(31,48,67,0.98),rgba(20,32,48,0.96))] text-white shadow-[0_36px_90px_-48px_rgba(15,23,42,0.72)]">

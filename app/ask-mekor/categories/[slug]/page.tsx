@@ -5,10 +5,9 @@ import { ArrowLeft, ArrowRight, BookOpenText } from "lucide-react";
 import { AskMekorLauncher } from "@/components/ask-mekor/ask-mekor-launcher";
 import {
   AskMekorCategoryBadge,
-  AskMekorQuestionCard,
+  AskMekorQuestionTable,
   getAskMekorCategoryTheme,
 } from "@/components/ask-mekor/ask-mekor-ui";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { listPublicAskMekorQuestions } from "@/lib/ask-mekor/service";
@@ -106,20 +105,12 @@ export default async function AskMekorCategoryPage({ params }: PageProps) {
         </div>
 
         {items.length === 0 ? (
-          <Card className="border-[var(--color-border)] bg-white/88">
-            <CardContent className="p-8">
-              <Badge className="mb-4">Empty category</Badge>
-              <p className="max-w-[46rem] text-sm leading-7 text-[var(--color-muted)]">
-                No public questions are listed here yet. You can submit the first question for this category from the Ask Mekor flow.
-              </p>
-            </CardContent>
-          </Card>
+          <AskMekorQuestionTable
+            items={items}
+            emptyState="No public questions are listed here yet. You can submit the first question for this category from the Ask Mekor flow."
+          />
         ) : (
-          <div className="grid gap-4">
-            {items.map((item) => (
-              <AskMekorQuestionCard key={item.id} item={item} compact />
-            ))}
-          </div>
+          <AskMekorQuestionTable items={items} emptyState="" />
         )}
       </section>
     </main>

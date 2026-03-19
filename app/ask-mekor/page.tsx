@@ -1,18 +1,19 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowRight, Compass, Search, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Compass, Info, Search, ShieldCheck, Sparkles } from "lucide-react";
 
+import { AskMekorInfoDialog } from "@/components/ask-mekor/ask-mekor-info-dialog";
 import { AskMekorLauncher } from "@/components/ask-mekor/ask-mekor-launcher";
 import {
   AskMekorCategoryCard,
   AskMekorQuestionCard,
+  AskMekorQuestionTable,
   AskMekorSidebarCta,
 } from "@/components/ask-mekor/ask-mekor-ui";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { listPublicAskMekorQuestions } from "@/lib/ask-mekor/service";
 
 export const dynamic = "force-dynamic";
@@ -45,7 +46,7 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
   return (
     <main className="internal-page overflow-hidden px-4 pb-20 sm:px-6 lg:px-8">
       <section className="mx-auto flex w-full max-w-[84rem] flex-col gap-10 rounded-[40px] border border-[rgba(31,48,67,0.1)] bg-[radial-gradient(circle_at_top_left,rgba(47,111,168,0.18),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(164,123,82,0.14),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.97),rgba(245,239,230,0.96))] p-6 shadow-[0_38px_120px_-64px_rgba(15,23,42,0.45)] sm:p-8 lg:p-10">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_24rem]">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_22rem]">
           <div className="space-y-8">
             <div className="space-y-5">
               <Badge className="w-fit border-[rgba(47,111,168,0.14)] bg-[rgba(47,111,168,0.09)] text-[var(--color-link)]">
@@ -139,28 +140,43 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
           </div>
 
           <Card className="overflow-hidden border-[rgba(31,48,67,0.12)] bg-[linear-gradient(180deg,rgba(31,48,67,0.98),rgba(20,32,48,0.96))] text-white shadow-[0_36px_90px_-48px_rgba(15,23,42,0.72)]">
-            <CardContent className="space-y-6 p-6">
-              <Badge className="border-white/15 bg-white/10 text-[rgba(255,255,255,0.8)]">How it works</Badge>
-              <div className="space-y-4">
+            <CardContent className="space-y-5 p-6">
+              <Badge className="border-white/15 bg-white/10 text-[rgba(255,255,255,0.8)]">Ask Mekor</Badge>
+              <div className="space-y-3">
                 <h2 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.04em] text-white">
-                  A better front door than a generic forum.
+                  Fast browse. Focused intake.
                 </h2>
                 <p className="text-sm leading-7 text-[rgba(255,255,255,0.72)]">
-                  Public questions become part of the searchable board. Private questions open a direct admin conversation without exposing the issue publicly.
+                  Keep the board for scanning and searching. Open the details only when you need them.
                 </p>
               </div>
-              <Separator className="bg-white/10" />
-              <div className="grid gap-4">
-                {[
-                  "Search existing answers before posting.",
-                  "Choose public or private based on sensitivity.",
-                  "Track answered questions and recent updates by category.",
-                ].map((item) => (
-                  <div key={item} className="flex gap-3 rounded-[24px] border border-white/10 bg-white/6 p-4">
-                    <span className="mt-1 h-2.5 w-2.5 rounded-full bg-white/80" />
-                    <p className="text-sm leading-7 text-[rgba(255,255,255,0.78)]">{item}</p>
-                  </div>
-                ))}
+              <div className="grid gap-3">
+                <AskMekorInfoDialog
+                  badge="How it works"
+                  title="How Ask Mekor works"
+                  description="The board is designed to stay compact while still giving you the instructions when you need them."
+                  triggerLabel="How it works"
+                  triggerVariant="secondary"
+                >
+                  <p>Search existing answers before posting a new public question.</p>
+                  <p>Choose the public path when the answer should help other people later.</p>
+                  <p>Choose the private path when the issue is personal, sensitive, or better handled directly with Mekor admins.</p>
+                  <p>Short, authoritative replies are intentional. The product is an answer desk, not an open-ended discussion forum.</p>
+                </AskMekorInfoDialog>
+                <AskMekorInfoDialog
+                  badge="Board rules"
+                  title="Board rules"
+                  description="Use clear, specific questions so the board stays searchable and useful."
+                  triggerLabel="Board rules"
+                  triggerVariant="outline"
+                >
+                  <p>Use exact product names or concrete practical questions whenever possible.</p>
+                  <p>Public posts should be broadly useful. Personal situations are better handled privately.</p>
+                  <p>If a question belongs to a specific area like Kashrut or Shabbat, choose the right category to make it easier to find later.</p>
+                </AskMekorInfoDialog>
+              </div>
+              <div className="rounded-[24px] border border-white/10 bg-white/6 p-4 text-sm leading-7 text-[rgba(255,255,255,0.78)]">
+                Use the private path for one-to-one follow-up. Use the public board for durable answers others can search.
               </div>
             </CardContent>
           </Card>
@@ -222,17 +238,12 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
             </div>
           </div>
           {latestItems.length === 0 ? (
-            <Card className="border-[var(--color-border)] bg-white/88">
-              <CardContent className="p-8 text-sm leading-7 text-[var(--color-muted)]">
-                No public questions match these filters yet. Try a different search or submit the first question in this area.
-              </CardContent>
-            </Card>
+            <AskMekorQuestionTable
+              items={latestItems}
+              emptyState="No public questions match these filters yet. Try a different search or submit the first question in this area."
+            />
           ) : (
-            <div className="grid gap-4">
-              {latestItems.map((item) => (
-                <AskMekorQuestionCard key={item.id} item={item} />
-              ))}
-            </div>
+            <AskMekorQuestionTable items={latestItems} emptyState="" />
           )}
         </div>
 
@@ -240,12 +251,20 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
           <AskMekorSidebarCta />
           <Card className="border-[rgba(31,48,67,0.1)] bg-white/88 shadow-[0_28px_70px_-56px_rgba(15,23,42,0.28)]">
             <CardContent className="space-y-4 p-6">
-              <Badge>Board rules</Badge>
-              <div className="space-y-3 text-sm leading-7 text-[var(--color-muted)]">
-                <p>Use clear titles with the exact product or practice question whenever possible.</p>
-                <p>Public posts should be broadly useful. Personal situations are better handled privately.</p>
-                <p>Short, authoritative answers are intentional. The board is an answer desk, not a debate thread.</p>
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--color-surface)] text-[var(--color-link)]">
+                  <Info className="h-4 w-4" />
+                </span>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-muted)]">Need guidance?</p>
+                  <p className="font-[family-name:var(--font-heading)] text-2xl tracking-[-0.03em] text-[var(--color-foreground)]">
+                    Open the details on demand.
+                  </p>
+                </div>
               </div>
+              <p className="text-sm leading-7 text-[var(--color-muted)]">
+                The board keeps the main view compact. Use the modal buttons above for posting guidance and board instructions.
+              </p>
             </CardContent>
           </Card>
         </div>
