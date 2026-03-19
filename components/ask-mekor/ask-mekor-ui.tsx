@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookMarked, CheckCircle2, Clock3, LockKeyhole, MessageSquareQuote } from "lucide-react";
+import { ArrowRight, BookMarked, CheckCircle2, Clock3, MessageSquareQuote } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,7 +62,7 @@ const statusCopy: Record<QuestionStatus, { label: string; className: string; ico
   closed: {
     label: "Closed",
     className: "border-slate-200 bg-slate-100 text-slate-700",
-    icon: LockKeyhole,
+    icon: Clock3,
   },
 };
 
@@ -301,21 +301,21 @@ export function AskMekorQuestionTable({
   );
 }
 
-export function AskMekorSidebarCta({ href = "/ask-mekor#ask-private" }: { href?: string }) {
+export function AskMekorSidebarCta({ href = "/ask-mekor#ask-question" }: { href?: string }) {
   return (
     <Card className="overflow-hidden border-[rgba(31,48,67,0.12)] bg-[linear-gradient(180deg,rgba(31,48,67,0.98),rgba(20,32,48,0.96))] text-white shadow-[0_36px_90px_-48px_rgba(15,23,42,0.72)]">
       <CardContent className="space-y-5 p-6">
-        <Badge className="border-white/15 bg-white/10 text-[rgba(255,255,255,0.8)]">Private help</Badge>
+        <Badge className="border-white/15 bg-white/10 text-[rgba(255,255,255,0.8)]">Ask Mekor</Badge>
         <div className="space-y-3">
           <h3 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.03em] text-white">
-            Need an answer that stays between you and Mekor?
+            Need an answer that is not on the board yet?
           </h3>
           <p className="text-sm leading-7 text-[rgba(255,255,255,0.72)]">
-            Private questions stay off the public board. Signed-in askers continue the conversation in their inbox thread.
+            Ask here, then choose whether it should post publicly, stay private, or appear anonymously.
           </p>
         </div>
         <Button asChild variant="secondary" className="w-full bg-white/14 text-white hover:bg-white/20">
-          <Link href={href}>Ask privately</Link>
+          <Link href={href}>Ask a question</Link>
         </Button>
       </CardContent>
     </Card>

@@ -111,8 +111,7 @@ export default async function AskMekorQuestionPage({ params }: PageProps) {
                 <AskMekorLauncher
                   categories={categories}
                   sourcePath={`/ask-mekor/questions/${question.slug}`}
-                  initialVisibility="private"
-                  triggerLabel="Ask your own private question"
+                  triggerLabel="Ask your own question"
                   triggerVariant="outline"
                   wide
                 />
@@ -148,7 +147,7 @@ export default async function AskMekorQuestionPage({ params }: PageProps) {
                 <CardContent className="p-6 sm:p-8">
                   <Badge className="mb-4">Awaiting answer</Badge>
                   <p className="text-sm leading-7 text-[var(--color-muted)]">
-                    No public answer is posted yet. If your situation is time-sensitive or personal, use the private ask flow instead.
+                    No public answer is posted yet. If you need your own guidance now, submit a question from here.
                   </p>
                 </CardContent>
               </Card>

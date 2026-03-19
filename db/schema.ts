@@ -251,6 +251,7 @@ export const askMekorQuestions = pgTable(
     body: text("body").notNull(),
     askerUserId: integer("asker_user_id").references(() => users.id),
     askerName: varchar("asker_name", { length: 120 }).notNull().default(""),
+    publicAnonymous: boolean("public_anonymous").notNull().default(false),
     askerEmail: varchar("asker_email", { length: 255 }).notNull().default(""),
     askerPhone: varchar("asker_phone", { length: 60 }).notNull().default(""),
     sourcePath: varchar("source_path", { length: 512 }).notNull().default("/ask-mekor"),

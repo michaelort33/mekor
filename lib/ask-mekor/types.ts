@@ -35,6 +35,7 @@ export type AskMekorQuestionSummary = {
   status: QuestionStatus;
   category: QuestionCategory;
   askerName: string;
+  publicAnonymous: boolean;
   replyCount: number;
   createdAt: Date;
   updatedAt: Date;

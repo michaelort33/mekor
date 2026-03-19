@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Globe2, LockKeyhole, Mail, Phone, ScrollText, UserRound } from "lucide-react";
+import { Mail, Phone, ScrollText, UserRound } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,7 @@ export function AskMekorForm({
     title: "",
     body: "",
     visibility: initialVisibility as "public" | "private",
+    publicAnonymous: false,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -96,53 +97,62 @@ export function AskMekorForm({
           </h2>
           <p className="max-w-[46rem] text-sm leading-7 text-[var(--color-muted)]">
             {description ??
-              "Search the public board first when possible. If your question is personal or sensitive, use the private path instead."}
+              "Search first when possible, then submit your question with the posting settings that fit it best."}
           </p>
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <button
-          type="button"
-          onClick={() => setForm((current) => ({ ...current, visibility: "public" }))}
-          className={cn(
-            "rounded-[26px] border p-5 text-left transition",
-            form.visibility === "public"
-              ? "border-[rgba(47,111,168,0.28)] bg-[rgba(47,111,168,0.08)] shadow-[0_24px_60px_-46px_rgba(47,111,168,0.5)]"
-              : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-border-strong)]",
-          )}
-        >
-          <div className="flex items-center gap-3">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(47,111,168,0.12)] text-[var(--color-link)]">
-              <Globe2 className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-base font-semibold text-[var(--color-foreground)]">Public question</p>
-              <p className="text-sm text-[var(--color-muted)]">Visible on the board so others can find the answer.</p>
+      <Card className="border-[rgba(31,48,67,0.08)] bg-[var(--color-surface)] shadow-none">
+        <CardContent className="grid gap-5 p-5">
+          <div className="grid gap-2">
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">Posting settings</span>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant={form.visibility === "public" ? "default" : "outline"}
+                onClick={() => setForm((current) => ({ ...current, visibility: "public" }))}
+              >
+                Post publicly
+              </Button>
+              <Button
+                type="button"
+                variant={form.visibility === "private" ? "default" : "outline"}
+                onClick={() => setForm((current) => ({ ...current, visibility: "private", publicAnonymous: false }))}
+              >
+                Keep private
+              </Button>
             </div>
+            <p className="text-sm leading-7 text-[var(--color-muted)]">
+              Private questions are only visible to you and Mekor admins. Public questions can optionally show as anonymous.
+            </p>
           </div>
-        </button>
-        <button
-          type="button"
-          onClick={() => setForm((current) => ({ ...current, visibility: "private" }))}
-          className={cn(
-            "rounded-[26px] border p-5 text-left transition",
-            form.visibility === "private"
-              ? "border-[rgba(31,48,67,0.2)] bg-[rgba(31,48,67,0.07)] shadow-[0_24px_60px_-46px_rgba(15,23,42,0.45)]"
-              : "border-[var(--color-border)] bg-[var(--color-surface)] hover:border-[var(--color-border-strong)]",
-          )}
-        >
-          <div className="flex items-center gap-3">
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[rgba(31,48,67,0.12)] text-[var(--color-foreground)]">
-              <LockKeyhole className="h-5 w-5" />
-            </span>
-            <div>
-              <p className="text-base font-semibold text-[var(--color-foreground)]">Private question</p>
-              <p className="text-sm text-[var(--color-muted)]">Only visible to you and the Mekor admin team.</p>
+
+          {form.visibility === "public" ? (
+            <div className="grid gap-2">
+              <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">Public attribution</span>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant={form.publicAnonymous ? "outline" : "default"}
+                  onClick={() => setForm((current) => ({ ...current, publicAnonymous: false }))}
+                >
+                  Show my name
+                </Button>
+                <Button
+                  type="button"
+                  variant={form.publicAnonymous ? "default" : "outline"}
+                  onClick={() => setForm((current) => ({ ...current, publicAnonymous: true }))}
+                >
+                  Post anonymously
+                </Button>
+              </div>
+              <p className="text-sm leading-7 text-[var(--color-muted)]">
+                Mekor admins still see your contact details either way.
+              </p>
             </div>
-          </div>
-        </button>
-      </div>
+          ) : null}
+        </CardContent>
+      </Card>
 
       <Card className="border-[rgba(31,48,67,0.08)] bg-[var(--color-surface)] shadow-none">
         <CardContent className="grid gap-4 p-5 md:grid-cols-2">
@@ -209,7 +219,7 @@ export function AskMekorForm({
             required
             value={form.title}
             onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
-            placeholder={form.visibility === "private" ? "What do you need guidance on?" : "Write a clear public topic title"}
+            placeholder="Write a clear, specific topic title"
           />
         </label>
 
@@ -220,11 +230,7 @@ export function AskMekorForm({
             rows={7}
             value={form.body}
             onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))}
-            placeholder={
-              form.visibility === "private"
-                ? "Share the practical details and context. Only Mekor admins and you will see this."
-                : "Include the relevant product, ingredients, context, or practical question so others can find the answer later."
-            }
+            placeholder="Include the practical details, products, ingredients, or context needed to answer the question well."
           />
         </label>
       </div>
@@ -232,8 +238,10 @@ export function AskMekorForm({
       <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--color-border)] pt-4">
         <p className="max-w-[34rem] text-sm leading-7 text-[var(--color-muted)]">
           {form.visibility === "private"
-            ? "Private questions stay off the public archive. Signed-in askers continue in their inbox thread."
-            : "Public questions appear on the board after submission so the answer can help the broader community."}
+            ? "Private questions stay off the board. Signed-in askers continue in their inbox thread."
+            : form.publicAnonymous
+              ? "This will post publicly under Anonymous."
+              : "This will post publicly under your name."}
         </p>
         <Button type="submit" disabled={submitting}>
           {submitting ? "Submitting..." : submitLabel ?? "Submit question"}

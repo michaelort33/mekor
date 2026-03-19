@@ -43,6 +43,61 @@ const DEFAULT_CATEGORIES = [
   },
 ] as const;
 
+const PREVIEW_PESACH_CREATED_AT = new Date("2026-03-10T14:00:00.000Z");
+const PREVIEW_PESACH_ANSWERED_AT = new Date("2026-03-11T16:30:00.000Z");
+const PREVIEW_PESACH_CATEGORY: QuestionCategory = {
+  id: -1,
+  slug: "pesach",
+  label: "Pesach",
+  description: "Preview questions for Pesach products, ingredients, and preparation.",
+  position: 0,
+  publicQuestionCount: 1,
+};
+const PREVIEW_PESACH_SLUG = "pesach-preview-kirkland-pecans";
+
+function buildPreviewPesachSummary(): AskMekorQuestionSummary {
+  return {
+    id: -1,
+    slug: PREVIEW_PESACH_SLUG,
+    title: "Are Kirkland raw pecan halves acceptable for Pesach?",
+    visibility: "public",
+    status: "answered",
+    category: PREVIEW_PESACH_CATEGORY,
+    askerName: "Anonymous",
+    publicAnonymous: true,
+    replyCount: 1,
+    createdAt: PREVIEW_PESACH_CREATED_AT,
+    updatedAt: PREVIEW_PESACH_ANSWERED_AT,
+    answeredAt: PREVIEW_PESACH_ANSWERED_AT,
+  };
+}
+
+function buildPreviewPesachDetail(): AskMekorQuestionDetail {
+  return {
+    ...buildPreviewPesachSummary(),
+    body: [
+      "I found Kirkland raw pecan halves at Costco and want to use them for Pesach baking.",
+      "",
+      "The package only says raw pecan halves with no added ingredients. Are they acceptable for Pesach as sold, or do they need a specific Pesach certification?",
+    ].join("\n"),
+    askerEmail: "preview@example.com",
+    askerPhone: "",
+    askerUserId: null,
+    sourcePath: "/ask-mekor",
+    linkedThreadId: null,
+    replies: [
+      {
+        id: -1,
+        authorUserId: 0,
+        authorDisplayName: "Mekor Admin",
+        body: "Plain raw pecans are acceptable for Pesach when they contain no additives and no shared-processing concern is indicated on the package. For chopped, candied, or flavored varieties, ask separately.",
+        createdAt: PREVIEW_PESACH_ANSWERED_AT,
+      },
+    ],
+    threadMessages: [],
+  };
+}
+
 export class AskMekorServiceError extends Error {
   status: number;
   code: string;
@@ -123,6 +178,18 @@ function buildPrivateThreadSystemBody(input: {
   ].join("\n");
 }
 
+function getPublicAskerName(input: {
+  visibility: "public" | "private";
+  publicAnonymous: boolean;
+  askerName: string;
+}) {
+  if (input.visibility === "public" && input.publicAnonymous) {
+    return "Anonymous";
+  }
+
+  return input.askerName;
+}
+
 function mapSummaryRow(input: {
   id: number;
   slug: string;
@@ -130,6 +197,7 @@ function mapSummaryRow(input: {
   visibility: "public" | "private";
   status: "open" | "answered" | "closed";
   askerName: string;
+  publicAnonymous: boolean;
   createdAt: Date;
   updatedAt: Date;
   answeredAt: Date | null;
@@ -140,6 +208,7 @@ function mapSummaryRow(input: {
   categoryDescription: string;
   categoryPosition: number;
   categoryPublicCount: number;
+  usePublicAskerName?: boolean;
 }): AskMekorQuestionSummary {
   return {
     id: input.id,
@@ -147,7 +216,8 @@ function mapSummaryRow(input: {
     title: input.title,
     visibility: input.visibility,
     status: input.status,
-    askerName: input.askerName,
+    askerName: input.usePublicAskerName === false ? input.askerName : getPublicAskerName(input),
+    publicAnonymous: input.publicAnonymous,
     replyCount: input.replyCount,
     createdAt: input.createdAt,
     updatedAt: input.updatedAt,
@@ -229,6 +299,7 @@ export async function listPublicAskMekorQuestions(input: {
       visibility: askMekorQuestions.visibility,
       status: askMekorQuestions.status,
       askerName: askMekorQuestions.askerName,
+      publicAnonymous: askMekorQuestions.publicAnonymous,
       createdAt: askMekorQuestions.createdAt,
       updatedAt: askMekorQuestions.updatedAt,
       answeredAt: askMekorQuestions.answeredAt,
@@ -262,6 +333,7 @@ export async function listPublicAskMekorQuestions(input: {
       askMekorQuestions.visibility,
       askMekorQuestions.status,
       askMekorQuestions.askerName,
+      askMekorQuestions.publicAnonymous,
       askMekorQuestions.createdAt,
       askMekorQuestions.updatedAt,
       askMekorQuestions.answeredAt,
@@ -274,18 +346,34 @@ export async function listPublicAskMekorQuestions(input: {
     .orderBy(desc(askMekorQuestions.updatedAt), desc(askMekorQuestions.id))
     .limit(input.limit ?? 50);
 
+  const mappedItems = rows.map((row) =>
+    mapSummaryRow({
+      ...row,
+      categoryPublicCount: categoryMap.get(row.categoryId)?.publicQuestionCount ?? 0,
+      usePublicAskerName: true,
+    }),
+  );
+
+  if (!q && mappedItems.length === 0 && (!input.categorySlug || input.categorySlug === PREVIEW_PESACH_CATEGORY.slug)) {
+    return {
+      categories: categories.some((category) => category.slug === PREVIEW_PESACH_CATEGORY.slug)
+        ? categories
+        : [...categories, PREVIEW_PESACH_CATEGORY],
+      items: [buildPreviewPesachSummary()],
+    };
+  }
+
   return {
     categories,
-    items: rows.map((row) =>
-      mapSummaryRow({
-        ...row,
-        categoryPublicCount: categoryMap.get(row.categoryId)?.publicQuestionCount ?? 0,
-      }),
-    ),
+    items: mappedItems,
   };
 }
 
 export async function getPublicAskMekorQuestionBySlug(slug: string) {
+  if (slug === PREVIEW_PESACH_SLUG) {
+    return buildPreviewPesachDetail();
+  }
+
   await ensureDefaultCategories();
 
   const [row] = await getDb()
@@ -297,6 +385,7 @@ export async function getPublicAskMekorQuestionBySlug(slug: string) {
       visibility: askMekorQuestions.visibility,
       status: askMekorQuestions.status,
       askerName: askMekorQuestions.askerName,
+      publicAnonymous: askMekorQuestions.publicAnonymous,
       askerEmail: askMekorQuestions.askerEmail,
       askerPhone: askMekorQuestions.askerPhone,
       askerUserId: askMekorQuestions.askerUserId,
@@ -343,6 +432,7 @@ export async function getPublicAskMekorQuestionBySlug(slug: string) {
       visibility: row.visibility,
       status: row.status,
       askerName: row.askerName,
+      publicAnonymous: row.publicAnonymous,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       answeredAt: row.answeredAt,
@@ -353,6 +443,7 @@ export async function getPublicAskMekorQuestionBySlug(slug: string) {
       categoryDescription: row.categoryDescription,
       categoryPosition: row.categoryPosition,
       categoryPublicCount: category?.publicQuestionCount ?? 0,
+      usePublicAskerName: true,
     }),
     body: row.body,
     askerEmail: row.askerEmail,
@@ -368,6 +459,7 @@ export async function getPublicAskMekorQuestionBySlug(slug: string) {
 export async function createAskMekorQuestion(input: {
   categorySlug: string;
   visibility: "public" | "private";
+  publicAnonymous?: boolean;
   title: string;
   body: string;
   askerName: string;
@@ -382,6 +474,7 @@ export async function createAskMekorQuestion(input: {
   const askerEmail = clean(input.askerEmail).toLowerCase();
   const askerPhone = clean(input.askerPhone);
   const sourcePath = clean(input.sourcePath) || "/ask-mekor";
+  const publicAnonymous = input.visibility === "public" ? Boolean(input.publicAnonymous) : false;
 
   if (!title || !body || !askerName || !askerEmail) {
     fail(400, "ASK_MEKOR_INVALID_INPUT", "Title, details, name, and email are required");
@@ -403,6 +496,7 @@ export async function createAskMekorQuestion(input: {
         body,
         askerUserId: input.askerUserId ?? null,
         askerName,
+        publicAnonymous,
         askerEmail,
         askerPhone,
         sourcePath,
@@ -541,6 +635,7 @@ export async function listAdminAskMekorQuestions(input: {
       visibility: askMekorQuestions.visibility,
       status: askMekorQuestions.status,
       askerName: askMekorQuestions.askerName,
+      publicAnonymous: askMekorQuestions.publicAnonymous,
       createdAt: askMekorQuestions.createdAt,
       updatedAt: askMekorQuestions.updatedAt,
       answeredAt: askMekorQuestions.answeredAt,
@@ -576,6 +671,7 @@ export async function listAdminAskMekorQuestions(input: {
       askMekorQuestions.visibility,
       askMekorQuestions.status,
       askMekorQuestions.askerName,
+      askMekorQuestions.publicAnonymous,
       askMekorQuestions.createdAt,
       askMekorQuestions.updatedAt,
       askMekorQuestions.answeredAt,
@@ -594,6 +690,7 @@ export async function listAdminAskMekorQuestions(input: {
       mapSummaryRow({
         ...row,
         categoryPublicCount: categoryMap.get(row.categoryId)?.publicQuestionCount ?? 0,
+        usePublicAskerName: false,
       }),
     ),
   };
@@ -611,6 +708,7 @@ export async function getAdminAskMekorQuestionDetail(id: number) {
       visibility: askMekorQuestions.visibility,
       status: askMekorQuestions.status,
       askerName: askMekorQuestions.askerName,
+      publicAnonymous: askMekorQuestions.publicAnonymous,
       askerEmail: askMekorQuestions.askerEmail,
       askerPhone: askMekorQuestions.askerPhone,
       askerUserId: askMekorQuestions.askerUserId,
@@ -674,6 +772,7 @@ export async function getAdminAskMekorQuestionDetail(id: number) {
       visibility: row.visibility,
       status: row.status,
       askerName: row.askerName,
+      publicAnonymous: row.publicAnonymous,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       answeredAt: row.answeredAt,
@@ -684,6 +783,7 @@ export async function getAdminAskMekorQuestionDetail(id: number) {
       categoryDescription: row.categoryDescription,
       categoryPosition: row.categoryPosition,
       categoryPublicCount: category?.publicQuestionCount ?? 0,
+      usePublicAskerName: false,
     }),
     body: row.body,
     askerEmail: row.askerEmail,
