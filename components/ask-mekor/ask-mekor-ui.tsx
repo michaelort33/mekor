@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Clock3, MessageSquareQuote } from "lucide-react";
+import { CheckCircle2, Clock3 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AskMekorQuestionSummary, QuestionCategory, QuestionStatus } from "@/lib/ask-mekor/types";
 import { cn } from "@/lib/utils";
@@ -132,8 +131,8 @@ export function AskMekorCategoryNav({
   selectedSlug?: string;
 }) {
   return (
-    <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <div className="flex min-w-max flex-wrap gap-2 sm:min-w-0">
+    <div>
+      <div className="flex flex-wrap gap-2">
         <Link
           href="/ask-mekor"
           className={cn(

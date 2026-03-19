@@ -43,7 +43,7 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
   return (
     <main className="internal-page overflow-hidden px-4 pb-20 sm:px-6 lg:px-8">
       <section className="mx-auto flex w-full max-w-[84rem] flex-col gap-5 rounded-[28px] border border-[var(--color-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,245,239,0.96))] p-5 shadow-[0_24px_70px_-56px_rgba(15,23,42,0.28)] sm:p-6 lg:p-8">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
           <div className="space-y-4">
             <Badge className="w-fit border-[rgba(47,111,168,0.14)] bg-[rgba(47,111,168,0.09)] text-[var(--color-link)]">
               Ask Mekor
@@ -58,30 +58,30 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <AskMekorLauncher categories={categories} sourcePath="/ask-mekor" triggerLabel="Ask a question" />
-            <AskMekorInfoDialog
-              badge="How it works"
-              title="How Ask Mekor works"
-              description="The board stays compact. Open the details only when you need them."
-              triggerLabel="How it works"
-              triggerVariant="outline"
-            >
-              <p>Search existing answers before posting a new question.</p>
-              <p>Use a clear title and enough detail so Mekor can answer without unnecessary back-and-forth.</p>
-              <p>Posting settings are handled inside the submission form, including private and anonymous options.</p>
-            </AskMekorInfoDialog>
-            <AskMekorInfoDialog
-              badge="Board rules"
-              title="Board rules"
-              description="Use clear, specific questions so the board stays searchable and useful."
-              triggerLabel="Board rules"
-              triggerVariant="ghost"
-            >
-              <p>Use exact product names or concrete practical questions whenever possible.</p>
-              <p>When posting publicly, write in a way that helps other people find the answer later.</p>
-              <p>If a question belongs to a specific area like Kashrut or Shabbat, choose the right category.</p>
-            </AskMekorInfoDialog>
+          <div className="flex flex-wrap items-center gap-3">
+              <AskMekorLauncher categories={categories} sourcePath="/ask-mekor" triggerLabel="Ask a question" />
+              <AskMekorInfoDialog
+                badge="How it works"
+                title="How Ask Mekor works"
+                description="The board stays compact. Open the details only when you need them."
+                triggerLabel="How it works"
+                triggerVariant="outline"
+              >
+                <p>Search existing answers before posting a new question.</p>
+                <p>Use a clear title and enough detail so Mekor can answer without unnecessary back-and-forth.</p>
+                <p>Posting settings are handled inside the submission form, including private and anonymous options.</p>
+              </AskMekorInfoDialog>
+              <AskMekorInfoDialog
+                badge="Board rules"
+                title="Board rules"
+                description="Use clear, specific questions so the board stays searchable and useful."
+                triggerLabel="Board rules"
+                triggerVariant="ghost"
+              >
+                <p>Use exact product names or concrete practical questions whenever possible.</p>
+                <p>When posting publicly, write in a way that helps other people find the answer later.</p>
+                <p>If a question belongs to a specific area like Kashrut or Shabbat, choose the right category.</p>
+              </AskMekorInfoDialog>
           </div>
         </div>
 

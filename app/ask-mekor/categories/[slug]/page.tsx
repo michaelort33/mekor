@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -18,6 +19,24 @@ type PageProps = {
     slug: string;
   }>;
 };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const { categories } = await listPublicAskMekorQuestions({ categorySlug: slug });
+  const category = categories.find((item) => item.slug === slug);
+
+  if (!category) {
+    return {
+      title: "Ask Mekor | Mekor Habracha",
+      description: "Browse recent Mekor Q&A and submit a question to Mekor.",
+    };
+  }
+
+  return {
+    title: `${category.label} | Ask Mekor`,
+    description: category.description || `Browse public ${category.label.toLowerCase()} questions and answers from the Mekor board.`,
+  };
+}
 
 export default async function AskMekorCategoryPage({ params }: PageProps) {
   const { slug } = await params;
@@ -43,7 +62,7 @@ export default async function AskMekorCategoryPage({ params }: PageProps) {
             sourcePath={`/ask-mekor/categories/${category.slug}`}
             triggerLabel={`Ask in ${category.label}`}
             title={`Ask a ${category.label} question`}
-            description={`Post a public ${category.label.toLowerCase()} question or switch to private if the issue is sensitive.`}
+            description={`Use the submission flow to post a ${category.label.toLowerCase()} question and choose the visibility that fits.`}
           />
         </div>
 
