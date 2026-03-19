@@ -55,6 +55,10 @@ const PREVIEW_PESACH_CATEGORY: QuestionCategory = {
 };
 const PREVIEW_PESACH_SLUG = "pesach-preview-kirkland-pecans";
 
+function shouldUseAskMekorPreviewData() {
+  return process.env.NODE_ENV !== "production";
+}
+
 function buildPreviewPesachSummary(): AskMekorQuestionSummary {
   return {
     id: -1,
@@ -354,7 +358,12 @@ export async function listPublicAskMekorQuestions(input: {
     }),
   );
 
-  if (!q && mappedItems.length === 0 && (!input.categorySlug || input.categorySlug === PREVIEW_PESACH_CATEGORY.slug)) {
+  if (
+    shouldUseAskMekorPreviewData() &&
+    !q &&
+    mappedItems.length === 0 &&
+    (!input.categorySlug || input.categorySlug === PREVIEW_PESACH_CATEGORY.slug)
+  ) {
     return {
       categories: categories.some((category) => category.slug === PREVIEW_PESACH_CATEGORY.slug)
         ? categories
@@ -370,7 +379,7 @@ export async function listPublicAskMekorQuestions(input: {
 }
 
 export async function getPublicAskMekorQuestionBySlug(slug: string) {
-  if (slug === PREVIEW_PESACH_SLUG) {
+  if (shouldUseAskMekorPreviewData() && slug === PREVIEW_PESACH_SLUG) {
     return buildPreviewPesachDetail();
   }
 

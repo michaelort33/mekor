@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookMarked, CheckCircle2, Clock3, MessageSquareQuote } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock3, MessageSquareQuote } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -124,51 +124,53 @@ export function AskMekorStatusBadge({ status, className }: { status: QuestionSta
   );
 }
 
-export function AskMekorCategoryCard({ category }: { category: QuestionCategory }) {
-  const theme = getAskMekorCategoryTheme(category.slug);
-
+export function AskMekorCategoryNav({
+  categories,
+  selectedSlug,
+}: {
+  categories: QuestionCategory[];
+  selectedSlug?: string;
+}) {
   return (
-    <Link href={`/ask-mekor/categories/${category.slug}`} className="group block">
-      <Card
-        className="relative h-full overflow-hidden border bg-white/88 transition duration-200 hover:-translate-y-1"
-        style={{
-          borderColor: theme.border,
-          boxShadow: `0 28px 80px -50px ${theme.glow}`,
-        }}
-      >
-        <div
-          className="absolute inset-x-0 top-0 h-1.5 transition duration-200 group-hover:h-2.5"
-          style={{ background: `linear-gradient(90deg, ${theme.accent}, transparent)` }}
-        />
-        <CardContent className="flex h-full flex-col gap-5 p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div
-              className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border"
+    <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+      <div className="flex min-w-max flex-wrap gap-2 sm:min-w-0">
+        <Link
+          href="/ask-mekor"
+          className={cn(
+            "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition",
+            !selectedSlug
+              ? "border-[var(--color-foreground)] bg-[var(--color-foreground)] text-white"
+              : "border-[var(--color-border)] bg-white text-[var(--color-muted)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-foreground)]",
+          )}
+        >
+          <span>All</span>
+        </Link>
+        {categories.map((category) => {
+          const theme = getAskMekorCategoryTheme(category.slug);
+          const selected = selectedSlug === category.slug;
+
+          return (
+            <Link
+              key={category.id}
+              href={`/ask-mekor?category=${category.slug}`}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition",
+                selected ? "shadow-[0_14px_28px_-24px_rgba(15,23,42,0.4)]" : "bg-white hover:-translate-y-0.5",
+              )}
               style={{
-                borderColor: theme.border,
-                backgroundColor: theme.surface,
-                color: theme.accent,
+                borderColor: selected ? theme.accent : theme.border,
+                backgroundColor: selected ? theme.surface : "rgba(255,255,255,0.92)",
+                color: selected ? theme.accent : "var(--color-foreground)",
               }}
             >
-              <BookMarked className="h-5 w-5" />
-            </div>
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">
-              {category.publicQuestionCount} topics
-            </span>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-[family-name:var(--font-heading)] text-2xl tracking-[-0.03em] text-[var(--color-foreground)]">
-              {category.label}
-            </h3>
-            <p className="text-sm leading-7 text-[var(--color-muted)]">{category.description}</p>
-          </div>
-          <div className="mt-auto flex items-center gap-2 text-sm font-semibold" style={{ color: theme.accent }}>
-            Browse questions
-            <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: theme.accent }} />
+              <span>{category.label}</span>
+              <span className="text-xs opacity-75">{category.publicQuestionCount}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -179,49 +181,30 @@ export function AskMekorQuestionCard({
   item: AskMekorQuestionSummary;
   compact?: boolean;
 }) {
-  const theme = getAskMekorCategoryTheme(item.category.slug);
-
   return (
     <Link href={`/ask-mekor/questions/${item.slug}`} className="group block">
-      <Card
-        className={cn(
-          "overflow-hidden border bg-white/90 transition duration-200 hover:-translate-y-1 hover:bg-white",
-          compact ? "rounded-[28px]" : "rounded-[30px]",
-        )}
-        style={{
-          borderColor: theme.border,
-          boxShadow: `0 28px 80px -54px ${theme.glow}`,
-        }}
-      >
-        <CardContent className={cn("space-y-5", compact ? "p-5" : "p-6")}>
-          <div className="flex flex-wrap items-center gap-2">
-            <AskMekorCategoryBadge category={item.category} />
-            <AskMekorStatusBadge status={item.status} />
-          </div>
-
-          <div className="space-y-2">
-            <h3
-              className={cn(
-                "font-[family-name:var(--font-heading)] tracking-[-0.03em] text-[var(--color-foreground)] transition group-hover:text-[var(--color-link)]",
-                compact ? "text-2xl" : "text-[2rem]",
-              )}
-            >
-              {item.title}
-            </h3>
-            <p className="text-sm leading-7 text-[var(--color-muted)]">
-              Asked by {item.askerName} on {formatDate(item.createdAt)}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-5 text-sm text-[var(--color-muted)]">
-            <span className="inline-flex items-center gap-2">
-              <MessageSquareQuote className="h-4 w-4" />
-              {item.replyCount} repl{item.replyCount === 1 ? "y" : "ies"}
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <Clock3 className="h-4 w-4" />
-              Updated {formatDate(item.updatedAt)}
-            </span>
+      <Card className={cn("rounded-[22px] border border-[var(--color-border)] bg-white shadow-none transition hover:border-[var(--color-border-strong)]", compact ? "" : "")}>
+        <CardContent className={cn("space-y-3", compact ? "p-4" : "p-5")}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 space-y-2">
+              <h3
+                className={cn(
+                  "break-words font-[family-name:var(--font-heading)] tracking-[-0.03em] text-[var(--color-foreground)] transition group-hover:text-[var(--color-link)]",
+                  compact ? "text-xl leading-tight" : "text-2xl leading-tight",
+                )}
+              >
+                {item.title}
+              </h3>
+              <div className="flex flex-wrap items-center gap-2">
+                <AskMekorCategoryBadge category={item.category} />
+                <AskMekorStatusBadge status={item.status} />
+              </div>
+              <p className="text-sm text-[var(--color-muted)]">Asked by {item.askerName} on {formatDate(item.createdAt)}</p>
+            </div>
+            <div className="shrink-0 text-right text-sm text-[var(--color-muted)]">
+              <div>{item.replyCount} repl{item.replyCount === 1 ? "y" : "ies"}</div>
+              <div>{formatDate(item.updatedAt)}</div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -252,45 +235,44 @@ export function AskMekorQuestionTable({
         ))}
       </div>
 
-      <div className="hidden overflow-hidden rounded-[32px] border border-[var(--color-border)] bg-white/92 shadow-[0_28px_70px_-54px_rgba(15,23,42,0.32)] lg:block">
+      <div className="hidden overflow-hidden rounded-[20px] border border-[var(--color-border)] bg-white lg:block">
         <table className="w-full table-fixed border-collapse">
           <colgroup>
-            <col className="w-[58%]" />
-            <col className="w-[12%]" />
-            <col className="w-[14%]" />
+            <col className="w-[56%]" />
+            <col className="w-[18%]" />
+            <col className="w-[10%]" />
             <col className="w-[16%]" />
           </colgroup>
           <thead>
             <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface)] text-left">
               <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Topic</th>
+              <th className="px-4 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Category</th>
               <th className="px-4 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Replies</th>
-              <th className="px-4 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Status</th>
               <th className="px-6 py-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Activity</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr key={item.id} className="border-b border-[var(--color-border)] last:border-b-0 hover:bg-[rgba(255,255,255,0.7)]">
+              <tr key={item.id} className="border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-surface)]">
                 <td className="px-6 py-5 align-top">
                   <Link href={`/ask-mekor/questions/${item.slug}`} className="group block min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <AskMekorCategoryBadge category={item.category} />
-                    </div>
-                    <h3 className="mt-3 break-words font-[family-name:var(--font-heading)] text-[1.7rem] leading-tight tracking-[-0.03em] text-[var(--color-foreground)] transition group-hover:text-[var(--color-link)]">
+                    <h3 className="break-words font-[family-name:var(--font-heading)] text-[1.45rem] leading-tight tracking-[-0.03em] text-[var(--color-foreground)] transition group-hover:text-[var(--color-link)]">
                       {item.title}
                     </h3>
-                    <p className="mt-2 break-words text-sm leading-7 text-[var(--color-muted)]">
+                    <p className="mt-2 break-words text-sm text-[var(--color-muted)]">
                       Asked by {item.askerName} on {formatDate(item.createdAt)}
                     </p>
                   </Link>
                 </td>
-                <td className="px-4 py-5 align-top text-sm font-semibold text-[var(--color-foreground)]">{item.replyCount}</td>
                 <td className="px-4 py-5 align-top">
-                  <AskMekorStatusBadge status={item.status} />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <AskMekorCategoryBadge category={item.category} />
+                    <AskMekorStatusBadge status={item.status} className="px-2.5 py-1 text-[9px]" />
+                  </div>
                 </td>
+                <td className="px-4 py-5 align-top text-sm font-semibold text-[var(--color-foreground)]">{item.replyCount}</td>
                 <td className="px-6 py-5 align-top text-sm leading-7 text-[var(--color-muted)]">
                   <div className="break-words">{formatDate(item.updatedAt)}</div>
-                  <div className="break-words">{item.category.label}</div>
                 </td>
               </tr>
             ))}
@@ -298,26 +280,5 @@ export function AskMekorQuestionTable({
         </table>
       </div>
     </>
-  );
-}
-
-export function AskMekorSidebarCta({ href = "/ask-mekor#ask-question" }: { href?: string }) {
-  return (
-    <Card className="overflow-hidden border-[rgba(31,48,67,0.12)] bg-[linear-gradient(180deg,rgba(31,48,67,0.98),rgba(20,32,48,0.96))] text-white shadow-[0_36px_90px_-48px_rgba(15,23,42,0.72)]">
-      <CardContent className="space-y-5 p-6">
-        <Badge className="border-white/15 bg-white/10 text-[rgba(255,255,255,0.8)]">Ask Mekor</Badge>
-        <div className="space-y-3">
-          <h3 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.03em] text-white">
-            Need an answer that is not on the board yet?
-          </h3>
-          <p className="text-sm leading-7 text-[rgba(255,255,255,0.72)]">
-            Ask here, then choose whether it should post publicly, stay private, or appear anonymously.
-          </p>
-        </div>
-        <Button asChild variant="secondary" className="w-full bg-white/14 text-white hover:bg-white/20">
-          <Link href={href}>Ask a question</Link>
-        </Button>
-      </CardContent>
-    </Card>
   );
 }

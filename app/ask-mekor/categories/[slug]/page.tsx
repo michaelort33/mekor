@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, BookOpenText } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { AskMekorLauncher } from "@/components/ask-mekor/ask-mekor-launcher";
 import {
   AskMekorCategoryBadge,
+  AskMekorCategoryNav,
   AskMekorQuestionTable,
-  getAskMekorCategoryTheme,
 } from "@/components/ask-mekor/ask-mekor-ui";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { listPublicAskMekorQuestions } from "@/lib/ask-mekor/service";
 
 export const dynamic = "force-dynamic";
@@ -29,14 +28,9 @@ export default async function AskMekorCategoryPage({ params }: PageProps) {
     notFound();
   }
 
-  const theme = getAskMekorCategoryTheme(category.slug);
-
   return (
     <main className="internal-page px-4 pb-20 sm:px-6 lg:px-8">
-      <section
-        className="mx-auto flex w-full max-w-[84rem] flex-col gap-8 rounded-[40px] border bg-[linear-gradient(180deg,rgba(255,255,255,0.97),rgba(246,240,232,0.95))] p-6 shadow-[0_36px_100px_-60px_rgba(15,23,42,0.45)] sm:p-8 lg:p-10"
-        style={{ borderColor: theme.border }}
-      >
+      <section className="mx-auto flex w-full max-w-[84rem] flex-col gap-5 rounded-[28px] border border-[var(--color-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,245,239,0.96))] p-5 shadow-[0_24px_70px_-56px_rgba(15,23,42,0.28)] sm:p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Button asChild variant="ghost">
             <Link href="/ask-mekor">
@@ -53,46 +47,25 @@ export default async function AskMekorCategoryPage({ params }: PageProps) {
           />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <div className="space-y-5">
-            <AskMekorCategoryBadge category={category} className="w-fit" />
-            <div className="space-y-4">
-              <h1 className="font-[family-name:var(--font-heading)] text-5xl tracking-[-0.05em] text-[var(--color-foreground)] sm:text-6xl">
-                {category.label}
-              </h1>
-              <p className="max-w-[58ch] text-base leading-8 text-[var(--color-muted)] sm:text-lg">
-                {category.description || `Browse public ${category.label.toLowerCase()} questions and answers from the Mekor board.`}
-              </p>
-            </div>
+        <div className="space-y-4">
+          <AskMekorCategoryBadge category={category} className="w-fit" />
+          <div className="space-y-3">
+            <h1 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.05em] text-[var(--color-foreground)] sm:text-5xl">
+              {category.label}
+            </h1>
+            <p className="max-w-[58ch] text-sm leading-7 text-[var(--color-muted)] sm:text-base">
+              {category.description || `Browse public ${category.label.toLowerCase()} questions and answers from the Mekor board.`}
+            </p>
           </div>
-
-          <Card className="border bg-white/80 shadow-[0_28px_80px_-56px_rgba(15,23,42,0.35)]" style={{ borderColor: theme.border }}>
-            <CardContent className="space-y-4 p-6">
-              <div
-                className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border"
-                style={{ borderColor: theme.border, backgroundColor: theme.surface, color: theme.accent }}
-              >
-                <BookOpenText className="h-5 w-5" />
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-muted)]">Public topics</p>
-                <p className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.04em] text-[var(--color-foreground)]">
-                  {category.publicQuestionCount}
-                </p>
-              </div>
-              <p className="text-sm leading-7 text-[var(--color-muted)]">
-                Use this category page to scan open questions, answered items, and recurring topics in one place.
-              </p>
-            </CardContent>
-          </Card>
+          <AskMekorCategoryNav categories={categories} selectedSlug={category.slug} />
         </div>
       </section>
 
-      <section className="mx-auto mt-12 flex w-full max-w-[84rem] flex-col gap-5">
+      <section className="mx-auto mt-10 flex w-full max-w-[84rem] flex-col gap-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-muted)]">Category feed</p>
-            <h2 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.04em] text-[var(--color-foreground)]">
+            <h2 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.04em] text-[var(--color-foreground)] sm:text-4xl">
               Recent questions in {category.label}.
             </h2>
           </div>

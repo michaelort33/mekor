@@ -5,7 +5,7 @@ import { ArrowRight, Search } from "lucide-react";
 import { AskMekorInfoDialog } from "@/components/ask-mekor/ask-mekor-info-dialog";
 import { AskMekorLauncher } from "@/components/ask-mekor/ask-mekor-launcher";
 import {
-  AskMekorCategoryCard,
+  AskMekorCategoryNav,
   AskMekorQuestionTable,
 } from "@/components/ask-mekor/ask-mekor-ui";
 import { Badge } from "@/components/ui/badge";
@@ -42,17 +42,17 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
 
   return (
     <main className="internal-page overflow-hidden px-4 pb-20 sm:px-6 lg:px-8">
-      <section className="mx-auto flex w-full max-w-[84rem] flex-col gap-6 rounded-[40px] border border-[rgba(31,48,67,0.1)] bg-[radial-gradient(circle_at_top_left,rgba(47,111,168,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(164,123,82,0.12),transparent_24%),linear-gradient(180deg,rgba(255,255,255,0.97),rgba(245,239,230,0.96))] p-6 shadow-[0_38px_120px_-64px_rgba(15,23,42,0.45)] sm:p-8 lg:p-10">
+      <section className="mx-auto flex w-full max-w-[84rem] flex-col gap-5 rounded-[28px] border border-[var(--color-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,245,239,0.96))] p-5 shadow-[0_24px_70px_-56px_rgba(15,23,42,0.28)] sm:p-6 lg:p-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-4">
             <Badge className="w-fit border-[rgba(47,111,168,0.14)] bg-[rgba(47,111,168,0.09)] text-[var(--color-link)]">
               Ask Mekor
             </Badge>
             <div className="space-y-3">
-              <h1 className="font-[family-name:var(--font-heading)] text-5xl tracking-[-0.05em] text-[var(--color-foreground)] sm:text-6xl">
+              <h1 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.05em] text-[var(--color-foreground)] sm:text-5xl">
                 Ask Mekor
               </h1>
-              <p className="max-w-[58ch] text-base leading-8 text-[var(--color-muted)] sm:text-lg">
+              <p className="max-w-[58ch] text-sm leading-7 text-[var(--color-muted)] sm:text-base">
                 Search prior answers, browse by category, and open the ask flow only when you need direct guidance.
               </p>
             </div>
@@ -85,8 +85,8 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
           </div>
         </div>
 
-        <Card className="border-white/80 bg-white/84 shadow-[0_30px_90px_-56px_rgba(15,23,42,0.45)]">
-          <CardContent className="space-y-5 p-5 sm:p-6">
+        <Card className="border-[var(--color-border)] bg-white shadow-none">
+          <CardContent className="space-y-4 p-4 sm:p-5">
             <form className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px_auto]">
               <label className="relative block">
                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-muted)]" />
@@ -116,6 +116,11 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
             </form>
           </CardContent>
         </Card>
+
+        <div className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-muted)]">Categories</p>
+          <AskMekorCategoryNav categories={categories} selectedSlug={categorySlug || undefined} />
+        </div>
       </section>
 
       {submitted === "private" ? (
@@ -126,34 +131,20 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
         </section>
       ) : null}
 
-      <section className="mx-auto mt-12 flex w-full max-w-[84rem] flex-col gap-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      <section className="mx-auto mt-10 flex w-full max-w-[84rem] flex-col gap-4">
+        <div className="flex items-end justify-between gap-4">
           <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-muted)]">Browse by category</p>
-            <h2 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.04em] text-[var(--color-foreground)]">
-              Start with the topic area.
-            </h2>
-          </div>
-          <Button asChild variant="ghost">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-muted)]">Latest questions</p>
+          <h2 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.04em] text-[var(--color-foreground)] sm:text-4xl">
+            The current board.
+          </h2>
+        </div>
+          <Button asChild variant="ghost" className="hidden sm:inline-flex">
             <Link href="/ask-mekor?category=">
               View all questions
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {categories.map((category) => (
-            <AskMekorCategoryCard key={category.id} category={category} />
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto mt-14 flex w-full max-w-[84rem] flex-col gap-6">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-muted)]">Latest questions</p>
-          <h2 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.04em] text-[var(--color-foreground)]">
-            The current board.
-          </h2>
         </div>
         {latestItems.length === 0 ? (
           <AskMekorQuestionTable
