@@ -93,7 +93,7 @@ export function MobileDrawer({
               const isActive = isNavigationPathActive(currentPath, item.href);
               const itemClassName =
                 item.tone === "cta"
-                  ? "block rounded-[22px] border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-4 text-base font-semibold text-[#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)]"
+                  ? "block rounded-[22px] border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-4 text-base font-semibold [color:#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] visited:[color:#f8fbff]"
                   : "block rounded-[22px] border border-[var(--color-border)] bg-white/72 px-4 py-4 text-base font-medium text-[var(--color-foreground)] shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]";
 
               if (!isNavGroup(item)) {
@@ -138,7 +138,7 @@ export function MobileDrawer({
                       prefetch={false}
                       className={cn(
                         "flex-1 text-base font-semibold",
-                        item.tone === "cta" ? "text-[#f8fbff]" : "text-[var(--color-foreground)]",
+                        item.tone === "cta" ? "[color:#f8fbff] visited:[color:#f8fbff]" : "text-[var(--color-foreground)]",
                       )}
                       onClick={onClose}
                       aria-current={groupActive ? "page" : undefined}

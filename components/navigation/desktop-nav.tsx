@@ -95,7 +95,7 @@ export function DesktopNav({
           const itemClassName =
             item.tone === "cta"
               ? cn(
-                  "inline-flex items-center whitespace-nowrap rounded-full border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-2 text-[14px] font-semibold tracking-[0.02em] text-[#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] transition hover:bg-[linear-gradient(180deg,#285f90_0%,#1c4368_100%)] hover:text-white",
+                  "inline-flex items-center whitespace-nowrap rounded-full border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-2 text-[14px] font-semibold tracking-[0.02em] [color:#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] transition visited:[color:#f8fbff] hover:bg-[linear-gradient(180deg,#285f90_0%,#1c4368_100%)] hover:[color:#ffffff] focus-visible:[color:#ffffff]",
                   active && "shadow-[0_20px_48px_-28px_rgba(15,23,42,0.55)]",
                 )
               : cn(
@@ -104,7 +104,7 @@ export function DesktopNav({
                 );
           const toggleClassName =
             item.tone === "cta"
-              ? "mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-white"
+              ? "mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full [color:#f8fbff] transition hover:bg-white/10 hover:[color:#ffffff]"
               : "mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]";
 
           if (!isNavGroup(item)) {
@@ -144,6 +144,7 @@ export function DesktopNav({
                   prefetch={false}
                   className={cn(
                     itemClassName,
+                    groupActive && item.tone === "cta" && "[color:#ffffff]",
                     groupActive && item.tone !== "cta" && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
                     isOpen && item.tone !== "cta" && "text-[var(--color-foreground)]",
                   )}

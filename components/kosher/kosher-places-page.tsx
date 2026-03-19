@@ -86,14 +86,15 @@ export async function KosherPlacesPage({
   const softButtonClass = isFoodTone
     ? "border-[#cdb99e] bg-[#fbf3e8] text-[#5a3e24] hover:bg-[#f1e3d2]"
     : "border-[#b8c4d1] bg-[#f4f6f8] text-[#2c4664] hover:bg-[#eceff3]";
-  const places = await getManagedKosherPlaces();
+  const places = process.env.DATABASE_URL ? await getManagedKosherPlaces() : [];
   const showcasePlaces =
     defaultNeighborhood === "all"
       ? places.slice(0, 4)
       : places.filter((place) => place.neighborhood === defaultNeighborhood).slice(0, 4);
   const derivedLastUpdated = newestSourceCapturedAt(places);
   const rawLastUpdated =
-    derivedLastUpdated ?? (lastUpdatedKey ? await getKosherDirectoryLastUpdated(lastUpdatedKey) : null);
+    derivedLastUpdated ??
+    (process.env.DATABASE_URL && lastUpdatedKey ? await getKosherDirectoryLastUpdated(lastUpdatedKey) : null);
   const lastUpdatedDate = formatLastUpdatedDate(rawLastUpdated);
 
   return (

@@ -44,10 +44,6 @@ export const SITE_MENU: NavItem[] = [
     href: "/events",
   },
   {
-    label: "Donate",
-    href: "/donations",
-  },
-  {
     label: "Beit Midrash",
     href: "/center-city-beit-midrash",
   },
