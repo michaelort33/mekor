@@ -90,6 +90,12 @@ export function MobileDrawer({
         <nav className="mt-6 flex-1 overflow-y-auto" aria-label="Mobile site menu">
           <ul className="space-y-3">
             {items.map((item) => {
+              const isActive = isNavigationPathActive(currentPath, item.href);
+              const itemClassName =
+                item.tone === "cta"
+                  ? "block rounded-[22px] border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-4 text-base font-semibold text-[#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)]"
+                  : "block rounded-[22px] border border-[var(--color-border)] bg-white/72 px-4 py-4 text-base font-medium text-[var(--color-foreground)] shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]";
+
               if (!isNavGroup(item)) {
                 return (
                   <li key={item.label}>
@@ -97,11 +103,13 @@ export function MobileDrawer({
                       href={item.href}
                       prefetch={false}
                       className={cn(
-                        "block rounded-[22px] border border-[var(--color-border)] bg-white/72 px-4 py-4 text-base font-medium text-[var(--color-foreground)] shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]",
-                        isNavigationPathActive(currentPath, item.href) && "border-[var(--color-border-strong)] bg-[var(--color-surface-strong)]",
+                        itemClassName,
+                        isActive &&
+                          item.tone !== "cta" &&
+                          "border-[var(--color-border-strong)] bg-[var(--color-surface-strong)]",
                       )}
                       onClick={onClose}
-                      aria-current={isNavigationPathActive(currentPath, item.href) ? "page" : undefined}
+                      aria-current={isActive ? "page" : undefined}
                     >
                       {item.label}
                     </Link>
@@ -111,22 +119,40 @@ export function MobileDrawer({
 
               const groupId = getGroupId(item.label);
               const isExpanded = expandedIds.has(groupId);
+              const groupActive = isActive || item.children.some((child) => isNavigationPathActive(currentPath, child.href));
 
               return (
-                <li key={item.label} className="rounded-[26px] border border-[var(--color-border)] bg-white/70 px-4 py-4 shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]">
+                <li
+                  key={item.label}
+                  className={cn(
+                    "rounded-[26px] px-4 py-4 shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]",
+                    item.tone === "cta"
+                      ? "border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)]"
+                      : "border border-[var(--color-border)] bg-white/70",
+                    groupActive && item.tone !== "cta" && "border-[var(--color-border-strong)] bg-[var(--color-surface-strong)]",
+                  )}
+                >
                   <div className="flex items-center gap-3">
                     <Link
                       href={item.href}
                       prefetch={false}
-                      className="flex-1 text-base font-semibold text-[var(--color-foreground)]"
+                      className={cn(
+                        "flex-1 text-base font-semibold",
+                        item.tone === "cta" ? "text-[#f8fbff]" : "text-[var(--color-foreground)]",
+                      )}
                       onClick={onClose}
-                      aria-current={isNavigationPathActive(currentPath, item.href) ? "page" : undefined}
+                      aria-current={groupActive ? "page" : undefined}
                     >
                       {item.label}
                     </Link>
                     <button
                       type="button"
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-white/85 text-[var(--color-muted)]"
+                      className={cn(
+                        "inline-flex h-10 w-10 items-center justify-center rounded-full",
+                        item.tone === "cta"
+                          ? "border border-white/20 bg-white/10 text-white"
+                          : "border border-[var(--color-border)] bg-white/85 text-[var(--color-muted)]",
+                      )}
                       aria-expanded={isExpanded}
                       aria-controls={`native-mobile-submenu-${groupId}`}
                       aria-label={`Toggle ${item.label} submenu`}
@@ -155,8 +181,13 @@ export function MobileDrawer({
                             href={child.href}
                             prefetch={false}
                             className={cn(
-                              "block rounded-[18px] px-3 py-3 text-sm font-medium text-[var(--color-muted)] transition hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
-                              isNavigationPathActive(currentPath, child.href) && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)]",
+                              item.tone === "cta"
+                                ? "block rounded-[18px] bg-white/10 px-3 py-3 text-sm font-medium text-white/90 transition hover:bg-white/18 hover:text-white"
+                                : "block rounded-[18px] px-3 py-3 text-sm font-medium text-[var(--color-muted)] transition hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
+                              isNavigationPathActive(currentPath, child.href) &&
+                                (item.tone === "cta"
+                                  ? "bg-white/18 text-white"
+                                  : "bg-[var(--color-surface-strong)] text-[var(--color-foreground)]"),
                             )}
                             onClick={onClose}
                             aria-current={isNavigationPathActive(currentPath, child.href) ? "page" : undefined}

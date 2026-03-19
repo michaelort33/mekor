@@ -1,6 +1,7 @@
 export type NavLink = {
   label: string;
   href: string;
+  tone?: "default" | "cta";
 };
 
 export type NavGroup = NavLink & {
@@ -25,8 +26,13 @@ export const SUPPORT_MEKOR_LINK = {
 
 export const SITE_MENU: NavItem[] = [
   {
-    label: "Membership",
-    href: "/membership",
+    label: "Davening",
+    href: "/davening",
+  },
+  {
+    label: "Become a Member",
+    href: "/membership/apply",
+    tone: "cta",
     children: [
       { label: "Membership Overview", href: "/membership" },
       { label: "Apply for Membership", href: "/membership/apply" },
@@ -42,11 +48,7 @@ export const SITE_MENU: NavItem[] = [
     href: "/donations",
   },
   {
-    label: "Kiddush",
-    href: "/kiddush",
-  },
-  {
-    label: "Center City Beit Midrash",
+    label: "Beit Midrash",
     href: "/center-city-beit-midrash",
   },
   {
@@ -64,7 +66,7 @@ export const SITE_MENU: NavItem[] = [
     ],
   },
   {
-    label: "Kosher Restaurants",
+    label: "Kosher Guide",
     href: "/center-city",
     children: [
       { label: "Center City & Vicinity", href: "/center-city" },
@@ -76,16 +78,14 @@ export const SITE_MENU: NavItem[] = [
   },
   {
     label: "More",
-    href: "/davening",
+    href: "/community",
     children: [
       { label: "Member Hub", href: "/account" },
       { label: "Dues & payments", href: "/account/dues" },
       { label: "Members directory", href: "/members" },
       { label: "Community directory", href: "/community" },
       { label: "Your profile", href: "/account/profile" },
-      { label: "Support Mekor", href: "/donations" },
       { label: "Kiddush", href: "/kiddush" },
-      { label: "Davening", href: "/davening" },
       { label: "Volunteer", href: "/team-4" },
       { label: "Mekor Bulletin Board", href: "/mekor-bulletin-board" },
       { label: "Ask Mekor", href: "/ask-mekor" },
