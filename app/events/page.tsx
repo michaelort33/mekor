@@ -18,8 +18,6 @@ export const dynamic = "force-dynamic";
 
 export default async function EventsHubPage() {
   const events = await getManagedEvents();
-  const upcomingEvents = events.filter((event) => !event.isPast);
-  const pastEvents = events.filter((event) => event.isPast);
 
   return (
     <NativeShell currentPath="/events" className="events-hub-page" contentClassName="events-hub gap-6">
@@ -45,18 +43,10 @@ export default async function EventsHubPage() {
         </div>
       </Card>
       <EventsCalendar
-        events={upcomingEvents}
-        title="Upcoming events"
-        emptyMessage="No upcoming event dates are currently available."
+        events={events}
+        title="Events"
+        emptyMessage="There are no events scheduled right now. Check back later."
       />
-      {pastEvents.length > 0 ? (
-        <EventsCalendar
-          events={pastEvents}
-          title="Past events"
-          allowSignup={false}
-          emptyMessage="No past events are currently archived."
-        />
-      ) : null}
       <MemberEventsSection />
     </NativeShell>
   );

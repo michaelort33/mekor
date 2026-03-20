@@ -34,6 +34,7 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
   const q = (filters.q ?? "").trim();
   const categorySlug = (filters.category ?? "").trim();
   const submitted = (filters.submitted ?? "").trim();
+  const hasActiveFilters = Boolean(q || categorySlug);
   const { categories, items } = await listPublicAskMekorQuestions({
     q,
     categorySlug: categorySlug || undefined,
@@ -139,12 +140,14 @@ export default async function AskMekorPage({ searchParams }: PageProps) {
             The current board.
           </h2>
         </div>
-          <Button asChild variant="ghost" className="hidden sm:inline-flex">
-            <Link href="/ask-mekor?category=">
-              View all questions
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
+          {hasActiveFilters ? (
+            <Button asChild variant="ghost" className="hidden sm:inline-flex">
+              <Link href="/ask-mekor">
+                View all questions
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          ) : null}
         </div>
         {latestItems.length === 0 ? (
           <AskMekorQuestionTable

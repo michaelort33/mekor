@@ -31,7 +31,7 @@ export const SITE_MENU: NavItem[] = [
   },
   {
     label: "Become a Member",
-    href: "/membership/apply",
+    href: "/membership",
     children: [
       { label: "Membership Overview", href: "/membership" },
       { label: "Apply for Membership", href: "/membership/apply" },

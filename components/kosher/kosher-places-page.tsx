@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 
 import { KosherDirectory } from "@/components/kosher/kosher-directory";
@@ -46,29 +47,6 @@ function formatLastUpdatedDate(value: string | null) {
   }).format(parsed);
 }
 
-function newestSourceCapturedAt(places: { sourceCapturedAt: string | null }[]) {
-  let newest: string | null = null;
-  let newestTimestamp = 0;
-
-  for (const place of places) {
-    if (!place.sourceCapturedAt) {
-      continue;
-    }
-
-    const timestamp = Date.parse(place.sourceCapturedAt);
-    if (Number.isNaN(timestamp)) {
-      continue;
-    }
-
-    if (!newest || timestamp > newestTimestamp) {
-      newest = place.sourceCapturedAt;
-      newestTimestamp = timestamp;
-    }
-  }
-
-  return newest;
-}
-
 export async function KosherPlacesPage({
   currentPath,
   heading,
@@ -91,10 +69,8 @@ export async function KosherPlacesPage({
     defaultNeighborhood === "all"
       ? places.slice(0, 4)
       : places.filter((place) => place.neighborhood === defaultNeighborhood).slice(0, 4);
-  const derivedLastUpdated = newestSourceCapturedAt(places);
   const rawLastUpdated =
-    derivedLastUpdated ??
-    (process.env.DATABASE_URL && lastUpdatedKey ? await getKosherDirectoryLastUpdated(lastUpdatedKey) : null);
+    process.env.DATABASE_URL && lastUpdatedKey ? await getKosherDirectoryLastUpdated(lastUpdatedKey) : null;
   const lastUpdatedDate = formatLastUpdatedDate(rawLastUpdated);
 
   return (
@@ -176,6 +152,18 @@ export async function KosherPlacesPage({
             {contactTitle}
           </h2>
           <p className="max-w-3xl text-base leading-7 text-[#445365]">{contactDescription}</p>
+          <p className="max-w-3xl text-sm leading-6 text-[#556477]">
+            For general kosher questions, use Ask Mekor to browse prior answers or submit a new question. Use the
+            form below for listing corrections, certification updates, or place-specific changes to this guide.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild size="sm" className={accentClass}>
+              <Link href="/ask-mekor">Ask Mekor About Kashrut</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className={softButtonClass}>
+              <Link href="/ask-mekor">Browse Ask Mekor</Link>
+            </Button>
+          </div>
         </div>
         <KosherInquiryForm
           sourcePath={currentPath}

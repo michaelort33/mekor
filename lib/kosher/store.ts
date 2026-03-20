@@ -14,6 +14,7 @@ type NeighborhoodFilter = KosherNeighborhood | "all";
 const VALID_NEIGHBORHOOD_FILTERS = new Set<string>([...KOSHER_NEIGHBORHOODS, "all"]);
 const KOSHER_NEIGHBORHOOD_SET = new Set<KosherNeighborhood>(KOSHER_NEIGHBORHOODS);
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const GUIDE_LAST_REFRESH_MAX_AGE_DAYS = 14;
 
 export type KosherDirectoryFreshnessKey = "center-city";
 
@@ -211,7 +212,31 @@ export async function getKosherDirectoryLastUpdated(key: KosherDirectoryFreshnes
   }
 
   const freshnessDate = await ensureDirectoryFreshnessRow(key);
-  return freshnessDate.toISOString();
+  const threshold = Date.now() - GUIDE_LAST_REFRESH_MAX_AGE_DAYS * ONE_DAY_MS;
+
+  if (freshnessDate.getTime() >= threshold) {
+    return freshnessDate.toISOString();
+  }
+
+  const now = new Date();
+
+  await getDb()
+    .insert(pageFreshness)
+    .values({
+      key,
+      lastUpdatedAt: now,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: pageFreshness.key,
+      set: {
+        lastUpdatedAt: now,
+        updatedAt: now,
+      },
+    });
+
+  return now.toISOString();
 }
 
 export async function refreshKosherDirectoryLastUpdatedIfStale(

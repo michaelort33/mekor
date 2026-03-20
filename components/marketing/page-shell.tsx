@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 
+import { HebrewDateFooter } from "@/components/calendar/hebrew-date-footer";
 import type { CtaItem } from "@/components/marketing/primitives";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import { Badge } from "@/components/ui/badge";
@@ -180,8 +181,15 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS }: MarketingFooterP
           </section>
         </div>
         <Separator className="bg-white/10" />
-        <div className="px-6 py-4 text-xs uppercase tracking-[0.2em] text-[rgba(255,255,255,0.52)] sm:px-8 lg:px-10">
-          Copyright ©2025 by Mekor Habracha Synagogue
+        <div className="flex flex-col gap-3 px-6 py-4 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+          <div className="text-xs uppercase tracking-[0.2em] text-[rgba(255,255,255,0.52)]">
+            Copyright ©2025 by Mekor Habracha Synagogue
+          </div>
+          <HebrewDateFooter
+            className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[rgba(255,255,255,0.64)]"
+            labelClassName="text-[rgba(255,255,255,0.45)]"
+            valueClassName="text-[rgba(255,255,255,0.84)]"
+          />
         </div>
       </Card>
     </footer>

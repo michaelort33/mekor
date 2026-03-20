@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import { HebrewDateFooter } from "@/components/calendar/hebrew-date-footer";
 import { HomeContactForm } from "@/components/home/home-contact-form";
 import { HomeNewsletterForm } from "@/components/home/home-newsletter-form";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
@@ -348,7 +349,14 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <p className={styles.copyright}>Copyright ©2025 by Mekor Habracha Synagogue</p>
+          <div className={styles.footerMeta}>
+            <p className={styles.copyright}>Copyright ©2025 by Mekor Habracha Synagogue</p>
+            <HebrewDateFooter
+              className={styles.hebrewDate}
+              labelClassName={styles.hebrewDateLabel}
+              valueClassName={styles.hebrewDateValue}
+            />
+          </div>
         </div>
       </footer>
     </main>

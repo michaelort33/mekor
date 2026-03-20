@@ -6,10 +6,13 @@ import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page
 import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
+import { MyZmanimWidget } from "./myzmanim-widget";
 import styles from "./page.module.css";
 
 const PATH = "/davening" as const;
 const MINYAN_WHATSAPP_URL = "https://chat.whatsapp.com/INZrPssTZeHK5xrx5ghECF";
+const MYZMANIM_WIDGET_EMBED_HTML =
+  process.env.MYZMANIM_WIDGET_EMBED_HTML || process.env.NEXT_PUBLIC_MYZMANIM_WIDGET_EMBED_HTML || "";
 const MYZMANIM_WIDGET_URL = process.env.MYZMANIM_WIDGET_URL || process.env.NEXT_PUBLIC_MYZMANIM_WIDGET_URL || "";
 
 const DAVENING_IMAGES = {
@@ -272,22 +275,21 @@ export default async function DaveningPage() {
         description="For up-to-the-minute daily zmanim, use the MyZmanim widget below when available. The Mekor service schedule above remains the primary davening schedule."
         className={styles.sectionCard}
       >
-        {MYZMANIM_WIDGET_URL ? (
+        {MYZMANIM_WIDGET_EMBED_HTML || MYZMANIM_WIDGET_URL ? (
           <div className={styles.zmanimEmbedWrap}>
-            <iframe
-              src={MYZMANIM_WIDGET_URL}
-              title="MyZmanim live zmanim"
+            <MyZmanimWidget
+              embedHtml={MYZMANIM_WIDGET_EMBED_HTML}
+              embedUrl={MYZMANIM_WIDGET_URL}
               className={styles.zmanimEmbed}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
         ) : (
           <div className={styles.zmanimFallback}>
             <p>
-              A MyZmanim widget slot has been restored on this page. To activate the live embed, set
-              <code> MYZMANIM_WIDGET_URL</code> or <code> NEXT_PUBLIC_MYZMANIM_WIDGET_URL</code> to your issued
-              MyZmanim widget URL.
+              MyZmanim requires an account and a site-specific issued widget embed. To activate the live embed, set
+              <code> MYZMANIM_WIDGET_EMBED_HTML</code> or <code> NEXT_PUBLIC_MYZMANIM_WIDGET_EMBED_HTML</code> to the
+              issued MyZmanim embed code. If MyZmanim gave you a direct iframe URL instead, <code> MYZMANIM_WIDGET_URL</code>
+              and <code> NEXT_PUBLIC_MYZMANIM_WIDGET_URL</code> are still supported.
             </p>
             <CTACluster
               className={styles.linkCluster}

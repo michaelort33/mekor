@@ -114,6 +114,14 @@ function buildMonthBuckets(events: ManagedEvent[]): MonthBucket[] {
     });
   }
 
+  for (const bucket of byKey.values()) {
+    bucket.events.sort((left, right) => {
+      const leftTime = left.startAt ? new Date(left.startAt).getTime() : Number.MAX_SAFE_INTEGER;
+      const rightTime = right.startAt ? new Date(right.startAt).getTime() : Number.MAX_SAFE_INTEGER;
+      return leftTime - rightTime;
+    });
+  }
+
   return [...byKey.values()].sort((a, b) => a.firstDay.getTime() - b.firstDay.getTime());
 }
 
@@ -125,6 +133,7 @@ export function EventsCalendar({
 }: EventsCalendarProps) {
   const months = useMemo(() => buildMonthBuckets(events), [events]);
   const [selectedMonthKey, setSelectedMonthKey] = useState("");
+  const [expandedPastMonthKey, setExpandedPastMonthKey] = useState("");
   const defaultMonthIndex = useMemo(() => closestMonthIndex(months, new Date()), [months]);
   const selectedMonthIndex = useMemo(() => {
     if (months.length === 0) {
@@ -138,6 +147,12 @@ export function EventsCalendar({
   const selectedMonth = selectedMonthIndex >= 0 ? months[selectedMonthIndex] : null;
   const canGoPreviousMonth = selectedMonthIndex > 0;
   const canGoNextMonth = selectedMonthIndex >= 0 && selectedMonthIndex < months.length - 1;
+  const upcomingEvents = useMemo(
+    () => selectedMonth?.events.filter((event) => !event.isPast) ?? [],
+    [selectedMonth],
+  );
+  const pastEvents = useMemo(() => selectedMonth?.events.filter((event) => event.isPast) ?? [], [selectedMonth]);
+  const showPastEvents = selectedMonth ? expandedPastMonthKey === selectedMonth.key : false;
 
   const navigateToMonth = (step: number) => {
     const nextIndex = selectedMonthIndex + step;
@@ -228,14 +243,15 @@ export function EventsCalendar({
       </ul>
 
       <div className="events-hub__event-list">
-        {selectedMonth.events.map((event) => (
+        {upcomingEvents.length === 0 ? (
+          <p className="events-hub__empty">There are no future events scheduled. Check back later.</p>
+        ) : null}
+        {upcomingEvents.map((event) => (
           <article key={event.path} className="events-hub__event-card">
             <div className="events-hub__event-meta">
               <span>{event.shortDate || dayNumber(event.startAt)}</span>
               {event.location ? <span>{event.location}</span> : null}
-              {event.isPast ? (
-                <span className="events-hub__closed-badge">Past</span>
-              ) : event.isClosed ? (
+              {event.isClosed ? (
                 <span className="events-hub__closed-badge">Closed</span>
               ) : null}
             </div>
@@ -252,6 +268,39 @@ export function EventsCalendar({
           </article>
         ))}
       </div>
+      {pastEvents.length > 0 ? (
+        <div className="events-hub__past-section">
+          <button
+            type="button"
+            className="events-hub__past-toggle"
+            onClick={() =>
+              setExpandedPastMonthKey((currentValue) => (currentValue === selectedMonth.key ? "" : selectedMonth.key))
+            }
+            aria-expanded={showPastEvents}
+            aria-controls={`past-events-${selectedMonth.key}`}
+          >
+            {showPastEvents ? "Hide past events" : `Past (${pastEvents.length})`}
+          </button>
+          {showPastEvents ? (
+            <div id={`past-events-${selectedMonth.key}`} className="events-hub__event-list">
+              {pastEvents.map((event) => (
+                <article key={event.path} className="events-hub__event-card">
+                  <div className="events-hub__event-meta">
+                    <span>{event.shortDate || dayNumber(event.startAt)}</span>
+                    {event.location ? <span>{event.location}</span> : null}
+                    <span className="events-hub__closed-badge">Past</span>
+                  </div>
+                  <h3>{event.title}</h3>
+                  {event.timeLabel ? <p>{event.timeLabel}</p> : null}
+                  <Link href={event.path} className="events-hub__event-link">
+                    View event
+                  </Link>
+                </article>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </section>
   );
 }
