@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { CurrentCivilYear, HebrewDateFooter } from "@/components/calendar/hebrew-date-footer";
-import { RecurringEventsSection } from "@/components/events/recurring-events-section";
 import { HomeContactForm } from "@/components/home/home-contact-form";
 import { HomeNewsletterForm } from "@/components/home/home-newsletter-form";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
-import { RECURRING_EVENTS } from "@/lib/events/recurring";
-import { getManagedEvents } from "@/lib/events/store";
+import { getManagedEvents, type ManagedEvent } from "@/lib/events/store";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import styles from "@/app/page.module.css";
@@ -79,10 +78,58 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildDocumentMetadata(document);
 }
 
-export default async function HomePage() {
+function UpcomingEventCard({
+  upcomingEvent,
+  loading = false,
+}: {
+  upcomingEvent: ManagedEvent | null;
+  loading?: boolean;
+}) {
+  const href = upcomingEvent?.path ?? "/events";
+  const title = loading
+    ? "Loading upcoming events..."
+    : upcomingEvent?.title ?? "See what's next at Mekor";
+  const dateLabel = loading
+    ? "Fetching the latest event details"
+    : upcomingEvent
+      ? formatHomeEventDate(upcomingEvent.startAt, upcomingEvent.shortDate)
+      : "Check the events page for the latest posted dates";
+  const location = loading ? "Center City Philadelphia" : upcomingEvent?.location || "Center City Philadelphia";
+
+  return (
+    <div className={styles.upcomingCard} aria-busy={loading ? "true" : undefined}>
+      <div className={styles.upcomingImageWrap}>
+        <Image
+          src={upcomingEvent?.heroImage || DEFAULT_EVENT_IMAGE}
+          alt={upcomingEvent ? `${upcomingEvent.title} graphic` : "Upcoming event graphic"}
+          fill
+          sizes="(max-width: 900px) 100vw, 24rem"
+          className={styles.upcomingImage}
+        />
+      </div>
+      <div className={styles.upcomingCopy}>
+        <Link href={href} className={styles.upcomingTitle}>
+          {title}
+        </Link>
+        <p>{dateLabel}</p>
+        <p>{location}</p>
+        <div className={styles.upcomingActions}>
+          <Link href={href}>More info</Link>
+          <Link href={href}>{loading ? "Loading" : "RSVP"}</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+async function HomeUpcomingEventCard() {
   const upcomingManagedEvents = (await getManagedEvents()).filter((event) => !event.isPast);
   const upcomingEvent = upcomingManagedEvents[0] ?? null;
 
+  return <UpcomingEventCard upcomingEvent={upcomingEvent} />;
+}
+
+export default function HomePage() {
   return (
     <main className={styles.page}>
       <SiteNavigation currentPath="/" />
@@ -198,38 +245,9 @@ export default async function HomePage() {
       <section className={styles.eventsSection}>
         <div className={styles.container}>
           <h2 className={styles.sectionTitle}>Don&apos;t miss our upcoming events:</h2>
-          <div className={styles.upcomingCard}>
-            <div className={styles.upcomingImageWrap}>
-              <Image
-                src={upcomingEvent?.heroImage || DEFAULT_EVENT_IMAGE}
-                alt={upcomingEvent ? `${upcomingEvent.title} graphic` : "Upcoming event graphic"}
-                fill
-                sizes="(max-width: 900px) 100vw, 24rem"
-                className={styles.upcomingImage}
-              />
-            </div>
-            <div className={styles.upcomingCopy}>
-              <Link href={upcomingEvent?.path ?? "/events"} className={styles.upcomingTitle}>
-                {upcomingEvent?.title ?? "See what's next at Mekor"}
-              </Link>
-              <p>
-                {upcomingEvent ? formatHomeEventDate(upcomingEvent.startAt, upcomingEvent.shortDate) : "Check the events page for the latest posted dates"}
-              </p>
-              <p>{upcomingEvent?.location || "Center City Philadelphia"}</p>
-              <div className={styles.upcomingActions}>
-                <Link href={upcomingEvent?.path ?? "/events"}>More info</Link>
-                <Link href={upcomingEvent?.path ?? "/events"}>RSVP</Link>
-              </div>
-            </div>
-          </div>
-          <div className={styles.recurringEventsWrap}>
-            <RecurringEventsSection
-              title="Recurring Gatherings"
-              description="Monthly community gatherings stay visible here even when the next exact date has not been posted yet."
-              events={RECURRING_EVENTS}
-              compact
-            />
-          </div>
+          <Suspense fallback={<UpcomingEventCard upcomingEvent={null} loading />}>
+            <HomeUpcomingEventCard />
+          </Suspense>
         </div>
       </section>
 

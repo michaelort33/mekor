@@ -368,10 +368,6 @@
   margin-top: 6px;
 }
 
-.recurringEventsWrap {
-  margin-top: 26px;
-}
-
 .rabbisGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

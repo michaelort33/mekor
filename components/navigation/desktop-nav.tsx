@@ -139,30 +139,63 @@ export function DesktopNav({
               onMouseLeave={scheduleClose}
             >
               <div className="flex items-center rounded-full">
-                <Link
-                  href={item.href}
-                  prefetch={false}
-                  className={cn(
-                    itemClassName,
-                    groupActive && item.tone === "cta" && "[color:#ffffff]",
-                    groupActive && item.tone !== "cta" && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
-                    isOpen && item.tone !== "cta" && "text-[var(--color-foreground)]",
-                  )}
-                  onFocus={() => {
-                    clearCloseTimer();
-                    setOpenGroupId(groupId);
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "ArrowDown") {
-                      event.preventDefault();
+                {item.triggerOnly ? (
+                  <button
+                    type="button"
+                    className={cn(
+                      itemClassName,
+                      groupActive && item.tone === "cta" && "[color:#ffffff]",
+                      groupActive &&
+                        item.tone !== "cta" &&
+                        "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
+                      isOpen && item.tone !== "cta" && "text-[var(--color-foreground)]",
+                    )}
+                    onClick={() => setOpenGroupId(isOpen ? null : groupId)}
+                    onFocus={() => {
+                      clearCloseTimer();
                       setOpenGroupId(groupId);
-                      focusFirstSubmenuLink(groupId);
-                    }
-                  }}
-                  aria-current={groupActive ? "page" : undefined}
-                >
-                  {item.label}
-                </Link>
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        setOpenGroupId(groupId);
+                        focusFirstSubmenuLink(groupId);
+                      }
+                    }}
+                    aria-expanded={isOpen}
+                    aria-controls={submenuId}
+                    aria-haspopup="true"
+                  >
+                    {item.label}
+                  </button>
+                ) : (
+                  <Link
+                    href={item.href}
+                    prefetch={false}
+                    className={cn(
+                      itemClassName,
+                      groupActive && item.tone === "cta" && "[color:#ffffff]",
+                      groupActive &&
+                        item.tone !== "cta" &&
+                        "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
+                      isOpen && item.tone !== "cta" && "text-[var(--color-foreground)]",
+                    )}
+                    onFocus={() => {
+                      clearCloseTimer();
+                      setOpenGroupId(groupId);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "ArrowDown") {
+                        event.preventDefault();
+                        setOpenGroupId(groupId);
+                        focusFirstSubmenuLink(groupId);
+                      }
+                    }}
+                    aria-current={groupActive ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                )}
                 <button
                   ref={(node) => {
                     groupButtonRefs.current[groupId] = node;
@@ -204,9 +237,14 @@ export function DesktopNav({
               >
                 <div className="mb-3 flex items-center justify-between gap-3 px-2 pt-1">
                   <Badge>{item.tone === "cta" ? "Get started" : "Explore"}</Badge>
-                  <Link href={item.href} className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">
-                    {item.tone === "cta" ? "Apply Now" : "View All"}
-                  </Link>
+                  {item.triggerOnly ? null : (
+                    <Link
+                      href={item.href}
+                      className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]"
+                    >
+                      {item.tone === "cta" ? "Apply Now" : "View All"}
+                    </Link>
+                  )}
                 </div>
                 <ul className="grid gap-1">
                   {item.children.map((child) => {

@@ -133,18 +133,48 @@ export function MobileDrawer({
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <Link
-                      href={item.href}
-                      prefetch={false}
-                      className={cn(
-                        "flex-1 text-base font-semibold",
-                        item.tone === "cta" ? "[color:#f8fbff] visited:[color:#f8fbff]" : "text-[var(--color-foreground)]",
-                      )}
-                      onClick={onClose}
-                      aria-current={groupActive ? "page" : undefined}
-                    >
-                      {item.label}
-                    </Link>
+                    {item.triggerOnly ? (
+                      <button
+                        type="button"
+                        className={cn(
+                          "flex-1 text-left text-base font-semibold",
+                          item.tone === "cta"
+                            ? "[color:#f8fbff] visited:[color:#f8fbff]"
+                            : "text-[var(--color-foreground)]",
+                        )}
+                        onClick={() => {
+                          setExpandedIds((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(groupId)) {
+                              next.delete(groupId);
+                            } else {
+                              next.add(groupId);
+                            }
+                            return next;
+                          });
+                        }}
+                        aria-expanded={isExpanded}
+                        aria-controls={`native-mobile-submenu-${groupId}`}
+                        aria-haspopup="true"
+                      >
+                        {item.label}
+                      </button>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        prefetch={false}
+                        className={cn(
+                          "flex-1 text-base font-semibold",
+                          item.tone === "cta"
+                            ? "[color:#f8fbff] visited:[color:#f8fbff]"
+                            : "text-[var(--color-foreground)]",
+                        )}
+                        onClick={onClose}
+                        aria-current={groupActive ? "page" : undefined}
+                      >
+                        {item.label}
+                      </Link>
+                    )}
                     <button
                       type="button"
                       className={cn(

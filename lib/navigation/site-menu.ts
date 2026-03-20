@@ -6,6 +6,7 @@ export type NavLink = {
 
 export type NavGroup = NavLink & {
   children: NavLink[];
+  triggerOnly?: boolean;
 };
 
 export type NavItem = NavLink | NavGroup;
@@ -74,6 +75,7 @@ export const SITE_MENU: NavItem[] = [
   {
     label: "More",
     href: "/community",
+    triggerOnly: true,
     children: [
       { label: "Member Hub", href: "/account" },
       { label: "Dues & payments", href: "/account/dues" },
