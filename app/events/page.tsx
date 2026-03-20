@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { EventsCalendar } from "@/app/events/events-calendar";
+import { RecurringEventsSection } from "@/components/events/recurring-events-section";
 import { MemberEventsSection } from "@/app/events/member-events-section";
 import { NativeShell } from "@/components/navigation/native-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { RECURRING_EVENTS } from "@/lib/events/recurring";
 import { getManagedEvents } from "@/lib/events/store";
 
 export const metadata: Metadata = {
@@ -46,6 +48,12 @@ export default async function EventsHubPage() {
         events={events}
         title="Events"
         emptyMessage="There are no events scheduled right now. Check back later."
+      />
+      <RecurringEventsSection
+        title="Recurring Community Events"
+        description="Some gatherings happen on an ongoing monthly cadence even when the next exact date has not been posted yet. Keep these on your radar alongside the dated calendar above."
+        events={RECURRING_EVENTS}
+        showBrowseAll={false}
       />
       <MemberEventsSection />
     </NativeShell>

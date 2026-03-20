@@ -15,6 +15,13 @@ function formatHebrewDate(date: Date) {
   }).format(date);
 }
 
+function formatCivilYear(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    timeZone: MEKOR_TIME_ZONE,
+  }).format(date);
+}
+
 type HebrewDateFooterProps = {
   className?: string;
   labelClassName?: string;
@@ -45,4 +52,25 @@ export function HebrewDateFooter({
       <span className={valueClassName}>{formattedDate || "Loading..."}</span>
     </div>
   );
+}
+
+type CurrentCivilYearProps = {
+  fallbackYear?: string;
+};
+
+export function CurrentCivilYear({ fallbackYear = "2026" }: CurrentCivilYearProps) {
+  const [year, setYear] = useState(fallbackYear);
+
+  useEffect(() => {
+    const updateYear = () => {
+      setYear(formatCivilYear(new Date()));
+    };
+
+    updateYear();
+
+    const intervalId = window.setInterval(updateYear, REFRESH_INTERVAL_MS);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  return year;
 }

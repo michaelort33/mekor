@@ -116,7 +116,6 @@
 
 .aboutCopy p,
 .featureCopy p,
-.supportCopy p,
 .daveningCopy p,
 .upcomingCopy p,
 .contactInfo p,
@@ -231,25 +230,6 @@
   margin-bottom: 2px;
 }
 
-.supportCopy {
-  display: grid;
-  gap: 8px;
-  margin-top: 2px;
-}
-
-.supportCopy h3 {
-  margin: 0;
-  font-family: helvetica-w01-bold, Arial, sans-serif;
-  font-size: 1.1875rem;
-  font-weight: 700;
-}
-
-.supportLinks {
-  display: grid;
-  gap: 8px;
-}
-
-.supportLinks a,
 .upcomingActions a,
 .rabbiLinks a,
 .contactInfo a,
@@ -270,50 +250,6 @@
 .featureVisual,
 .daveningVisual {
   min-height: 100%;
-}
-
-.supportSection {
-  padding: 0 0 52px;
-}
-
-.supportPanel {
-  display: grid;
-  gap: 20px;
-  padding: clamp(26px, 3vw, 34px);
-  border: 1px solid #d9dde8;
-  background: linear-gradient(180deg, #fbfcff 0%, #f4f7fb 100%);
-  box-shadow: 0 16px 32px rgba(47, 66, 97, 0.08);
-}
-
-.supportIntro {
-  display: grid;
-  gap: 10px;
-}
-
-.supportEyebrow {
-  margin: 0;
-  color: #7f808a;
-  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.supportIntro h2 {
-  margin: 0;
-  font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
-  font-size: clamp(1.35rem, 2.7vw, 2rem);
-  line-height: 1.2;
-  letter-spacing: -0.05em;
-  color: #2b5a81;
-}
-
-.supportIntro p {
-  margin: 0;
-  font-family: helvetica-w01-light, Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 1.68;
 }
 
 .newsletterSection {
@@ -432,6 +368,10 @@
   margin-top: 6px;
 }
 
+.recurringEventsWrap {
+  margin-top: 26px;
+}
+
 .rabbisGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -467,15 +407,21 @@
 
 .contactGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1.22fr);
   gap: 28px;
   align-items: start;
 }
 
 .contactFormWrap,
+.contactMapShell,
 .contactInfo {
   border: 1px solid #d9dde8;
   background: #fff;
+}
+
+.contactAside {
+  display: grid;
+  gap: 18px;
 }
 
 .contactForm {
@@ -494,12 +440,13 @@
 
 .contactInfo {
   display: grid;
-  gap: 12px;
-  padding: 28px;
+  gap: 10px;
+  padding: 24px 28px 26px;
   align-content: start;
 }
 
 .contactInfo h3 {
+  margin: 0;
   color: #3f4359;
   font-size: 1.5rem;
   line-height: 1.15;
@@ -507,6 +454,19 @@
 
 .contactInfo a {
   font-family: helvetica-w01-light, Arial, sans-serif;
+}
+
+.contactMapShell {
+  overflow: hidden;
+  min-height: 100%;
+  background: #eef4fb;
+}
+
+.contactMapFrame {
+  display: block;
+  width: 100%;
+  min-height: 430px;
+  border: 0;
 }
 
 .footer {
@@ -632,13 +592,13 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .contactGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .featureSection {
     padding-top: 56px;
     padding-bottom: 46px;
-  }
-
-  .supportSection {
-    padding-bottom: 40px;
   }
 
   .featureGrid {
@@ -690,7 +650,6 @@
   }
 
   .newsletterPanel,
-  .supportPanel,
   .contactForm,
   .contactInfo,
   .footerNewsletter,
@@ -706,6 +665,10 @@
   .daveningCopy,
   .newsletterPanel {
     gap: 16px;
+  }
+
+  .contactMapFrame {
+    min-height: 320px;
   }
 
   .featureCopy p,

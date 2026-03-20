@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import { HebrewDateFooter } from "@/components/calendar/hebrew-date-footer";
+import { CurrentCivilYear, HebrewDateFooter } from "@/components/calendar/hebrew-date-footer";
+import { RecurringEventsSection } from "@/components/events/recurring-events-section";
 import { HomeContactForm } from "@/components/home/home-contact-form";
 import { HomeNewsletterForm } from "@/components/home/home-newsletter-form";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
+import { RECURRING_EVENTS } from "@/lib/events/recurring";
 import { getManagedEvents } from "@/lib/events/store";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
@@ -17,6 +19,8 @@ const HERO_IMAGE = "https://static.wixstatic.com/media/11062b_8135b27108d04d2a97
 const DAVEING_IMAGE = "https://static.wixstatic.com/media/92f487_34e64b1fb2e94c56886578290ef2bcd0~mv2.jpeg";
 const FOOTER_BANNER = "https://static.wixstatic.com/media/92f487_22b1dca93b6045ad8ed3ce85337f5c74~mv2.jpg";
 const DEFAULT_EVENT_IMAGE = "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg";
+const MAP_EMBED_SRC =
+  "https://www.google.com/maps?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102&output=embed";
 
 const RABBIS = [
   {
@@ -51,11 +55,6 @@ const SOCIAL_LINKS = [
     label: "Facebook",
     href: "https://www.facebook.com/groups/19458667730/?hoisted_section_header_type=recently_seen&multi_permalinks=10160757013487731",
   },
-] as const;
-
-const SUPPORT_LINKS = [
-  { label: "Wine: tinyurl.com/mekorwine", href: "https://tinyurl.com/mekorwine" },
-  { label: "Judaica: tinyurl.com/mekorjudaica", href: "https://tinyurl.com/mekorjudaica" },
 ] as const;
 
 function formatHomeEventDate(value: string | null, shortDate: string) {
@@ -172,28 +171,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className={styles.supportSection}>
-        <div className={styles.container}>
-          <div className={styles.supportPanel}>
-            <div className={styles.supportIntro}>
-              <p className={styles.supportEyebrow}>Support Mekor</p>
-              <h2>Support Mekor while buying wine and Judaica!</h2>
-              <p>
-                If you use the following Mekor-specific links when ordering from Kosherwine.com and Judaica.com,
-                Mekor will earn 5% back.
-              </p>
-            </div>
-            <div className={styles.supportLinks}>
-              {SUPPORT_LINKS.map((link) => (
-                <a key={link.href} href={link.href} target="_blank" rel="noreferrer noopener">
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className={styles.newsletterSection}>
         <div className={styles.container}>
           <div className={styles.newsletterPanel}>
@@ -233,15 +210,25 @@ export default async function HomePage() {
             </div>
             <div className={styles.upcomingCopy}>
               <Link href={upcomingEvent?.path ?? "/events"} className={styles.upcomingTitle}>
-                {upcomingEvent?.title ?? "Mekor’s Tot Shabbat"}
+                {upcomingEvent?.title ?? "See what's next at Mekor"}
               </Link>
-              <p>{upcomingEvent ? formatHomeEventDate(upcomingEvent.startAt, upcomingEvent.shortDate) : "Once a month"}</p>
-              <p>{upcomingEvent?.location || "Philadelphia"}</p>
+              <p>
+                {upcomingEvent ? formatHomeEventDate(upcomingEvent.startAt, upcomingEvent.shortDate) : "Check the events page for the latest posted dates"}
+              </p>
+              <p>{upcomingEvent?.location || "Center City Philadelphia"}</p>
               <div className={styles.upcomingActions}>
                 <Link href={upcomingEvent?.path ?? "/events"}>More info</Link>
                 <Link href={upcomingEvent?.path ?? "/events"}>RSVP</Link>
               </div>
             </div>
+          </div>
+          <div className={styles.recurringEventsWrap}>
+            <RecurringEventsSection
+              title="Recurring Gatherings"
+              description="Monthly community gatherings stay visible here even when the next exact date has not been posted yet."
+              events={RECURRING_EVENTS}
+              compact
+            />
           </div>
         </div>
       </section>
@@ -293,13 +280,31 @@ export default async function HomePage() {
                 errorClassName={styles.contactError}
               />
             </div>
-            <div className={styles.contactInfo}>
-              <h3>Mekor Habracha</h3>
-              <p>Center City Synagogue</p>
-              <a href="tel:+12155254246">(215) 525-4246</a>
-              <a href="mailto:admin@mekorhabracha.org?subject=Join%20Us">admin@mekorhabracha.org</a>
-              <p>1500 Walnut St Suite 206</p>
-              <p>Philadelphia, PA 19102</p>
+            <div className={styles.contactAside}>
+              <div className={styles.contactMapShell}>
+                <iframe
+                  src={MAP_EMBED_SRC}
+                  title="Mekor Habracha location map"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className={styles.contactMapFrame}
+                />
+              </div>
+              <div className={styles.contactInfo}>
+                <h3>Mekor Habracha</h3>
+                <p>Center City Synagogue</p>
+                <a href="tel:+12155254246">(215) 525-4246</a>
+                <a href="mailto:admin@mekorhabracha.org?subject=Join%20Us">admin@mekorhabracha.org</a>
+                <p>1500 Walnut St Suite 206</p>
+                <p>Philadelphia, PA 19102</p>
+                <a
+                  href="https://maps.google.com/?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Open in Google Maps
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -350,7 +355,7 @@ export default async function HomePage() {
           </div>
 
           <div className={styles.footerMeta}>
-            <p className={styles.copyright}>Copyright ©2025 by Mekor Habracha Synagogue</p>
+            <p className={styles.copyright}>Copyright ©<CurrentCivilYear /> by Mekor Habracha Synagogue</p>
             <HebrewDateFooter
               className={styles.hebrewDate}
               labelClassName={styles.hebrewDateLabel}
