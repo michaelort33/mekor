@@ -1,9 +1,9 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { duesInvoices, duesPayments, users } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customers";
 import { getStripeClient } from "@/lib/stripe/client";
@@ -17,9 +17,9 @@ export async function POST(request: Request, { params }: Params) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const { invoiceId } = await params;
@@ -42,7 +42,7 @@ export async function POST(request: Request, { params }: Params) {
     .where(
       and(
         eq(duesInvoices.id, numericInvoiceId),
-        eq(duesInvoices.userId, session.userId),
+        eq(duesInvoices.userId, access.session.userId),
         inArray(duesInvoices.status, ["open", "overdue"]),
       ),
     )
@@ -59,7 +59,7 @@ export async function POST(request: Request, { params }: Params) {
       displayName: users.displayName,
     })
     .from(users)
-    .where(eq(users.id, session.userId))
+    .where(eq(users.id, access.session.userId))
     .limit(1);
 
   if (!user) {

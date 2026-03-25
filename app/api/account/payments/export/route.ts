@@ -1,9 +1,8 @@
 import { and, eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
 
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { familyMembers } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { renderPaymentHistoryPdf } from "@/lib/payments/documents";
 import { listPayments } from "@/lib/payments/service";
 
@@ -38,9 +37,9 @@ function toCsv(rows: Awaited<ReturnType<typeof listPayments>>) {
 }
 
 export async function GET(request: Request) {
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const { searchParams } = new URL(request.url);
@@ -54,7 +53,7 @@ export async function GET(request: Request) {
           .from(familyMembers)
           .where(
             and(
-              eq(familyMembers.userId, session.userId),
+              eq(familyMembers.userId, access.session.userId),
               eq(familyMembers.membershipStatus, "active"),
               eq(familyMembers.roleInFamily, "primary_adult"),
             ),
@@ -65,7 +64,7 @@ export async function GET(request: Request) {
   const rows =
     scope === "family" && familyAdminMembership
       ? await listPayments({ familyId: familyAdminMembership.familyId })
-      : await listPayments({ userId: session.userId });
+      : await listPayments({ userId: access.session.userId });
 
   if (format === "csv") {
     return new Response(toCsv(rows), {
@@ -78,7 +77,7 @@ export async function GET(request: Request) {
 
   const buffer = await renderPaymentHistoryPdf({
     title: scope === "family" ? "Household payment history" : "Personal payment history",
-    subtitle: `Generated for user ${session.userId}`,
+    subtitle: `Generated for user ${access.session.userId}`,
     rows,
   });
 

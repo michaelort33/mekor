@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { and, asc, eq, gt, inArray, or } from "drizzle-orm";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
 import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
+import { canAccessMembersArea, getSessionAccountAccess } from "@/lib/auth/account-access";
 import { isFeatureEnabled } from "@/lib/config/features";
 import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
 import { isAnonymousVisibility } from "@/lib/users/visibility";
@@ -26,6 +28,11 @@ type CommunityPageProps = {
 
 export default async function CommunityDirectoryPage({ searchParams }: CommunityPageProps) {
   const hasPublicDirectory = await isFeatureEnabled("FEATURE_PUBLIC_DIRECTORY");
+  const accountAccess = await getSessionAccountAccess();
+
+  if (!hasPublicDirectory && accountAccess && canAccessMembersArea(accountAccess)) {
+    redirect("/members");
+  }
 
   if (!hasPublicDirectory) {
     return (
@@ -41,10 +48,18 @@ export default async function CommunityDirectoryPage({ searchParams }: Community
 
         <header className={styles.header}>
           <h1>Community Directory</h1>
-          <p>Public directory is temporarily unavailable. Sign in to access the Members Directory.</p>
+          <p>
+            {accountAccess?.accessState === "pending_approval"
+              ? "Your account is pending approval as a member. You can update your profile while Mekor reviews your application."
+              : accountAccess?.accessState === "declined"
+                ? "Your last membership application was not approved. Please contact Mekor if you want to reapply."
+                : "Public directory is temporarily unavailable. Sign in to access the Members Directory."}
+          </p>
         </header>
         <section className={styles.empty}>
-          <Link href="/members">Go to Members Directory</Link>
+          <Link href={accountAccess ? "/account" : "/members"}>
+            {accountAccess ? "Open your account" : "Go to Members Directory"}
+          </Link>
         </section>
       </main>
     );
@@ -120,6 +135,9 @@ export default async function CommunityDirectoryPage({ searchParams }: Community
       <header className={styles.header}>
         <h1>Community Directory</h1>
         <p>Meet members who chose to share their profile publicly.</p>
+        {accountAccess?.accessState === "pending_approval" ? (
+          <p>Your account is pending approval as a member. Member-only access will unlock after review.</p>
+        ) : null}
       </header>
 
       {members.length === 0 ? (

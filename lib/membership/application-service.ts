@@ -206,6 +206,14 @@ async function maybeCreateSpouseLead(input: {
 }
 
 export async function createMembershipApplication(input: MembershipApplicationRecordInput) {
+  return createMembershipApplicationRecord({ ...input, submittedByUserId: null });
+}
+
+export async function createMembershipApplicationRecord(
+  input: MembershipApplicationRecordInput & {
+    submittedByUserId?: number | null;
+  },
+) {
   const estimate = calculateMembershipEstimate({
     membershipCategory: input.membershipCategory,
     includeSecurityDonation: input.includeSecurityDonation,
@@ -246,6 +254,7 @@ export async function createMembershipApplication(input: MembershipApplicationRe
       notes: input.notes,
       sourcePath: input.sourcePath,
       payloadJson: input,
+      submittedByUserId: input.submittedByUserId ?? null,
       createdAt: now,
       updatedAt: now,
     })
@@ -298,6 +307,7 @@ export async function listMembershipApplications(input: {
       volunteerInterestsJson: membershipApplications.volunteerInterestsJson,
       notes: membershipApplications.notes,
       reviewNotes: membershipApplications.reviewNotes,
+      submittedByUserId: membershipApplications.submittedByUserId,
       reviewedAt: membershipApplications.reviewedAt,
       reviewedByUserId: membershipApplications.reviewedByUserId,
       approvedPersonId: membershipApplications.approvedPersonId,
@@ -413,10 +423,23 @@ export async function approveMembershipApplication(input: {
       role: users.role,
     })
     .from(users)
-    .where(eq(users.email, normalizedEmail))
+    .where(eq(users.id, application.submittedByUserId ?? -1))
     .limit(1);
 
-  const invitationDraft = existingUser ? null : createMembershipInvitationDraft({
+  const [existingUserByEmail] = existingUser
+    ? [null]
+    : await db
+        .select({
+          id: users.id,
+          role: users.role,
+        })
+        .from(users)
+        .where(eq(users.email, normalizedEmail))
+        .limit(1);
+
+  const resolvedExistingUser = existingUser ?? existingUserByEmail;
+
+  const invitationDraft = resolvedExistingUser ? null : createMembershipInvitationDraft({
     email: normalizedEmail,
     siteOrigin: input.siteOrigin,
   });
@@ -455,14 +478,27 @@ export async function approveMembershipApplication(input: {
             role: users.role,
           })
           .from(users)
-          .where(eq(users.email, normalizedEmail))
+          .where(eq(users.id, currentApplication.submittedByUserId ?? -1))
           .limit(1);
+
+        const [currentUserByEmail] = currentUser
+          ? [null]
+          : await tx
+              .select({
+                id: users.id,
+                role: users.role,
+              })
+              .from(users)
+              .where(eq(users.email, normalizedEmail))
+              .limit(1);
+
+        const linkedUser = currentUser ?? currentUserByEmail;
 
         const [person] = currentPerson
           ? await tx
               .update(people)
               .set({
-                userId: currentUser?.id ?? currentPerson.userId,
+                userId: linkedUser?.id ?? currentPerson.userId,
                 status: "member",
                 firstName: currentApplication.firstName,
                 lastName: currentApplication.lastName,
@@ -480,7 +516,7 @@ export async function approveMembershipApplication(input: {
           : await tx
               .insert(people)
               .values({
-                userId: currentUser?.id ?? null,
+                userId: linkedUser?.id ?? null,
                 status: "member",
                 firstName: currentApplication.firstName,
                 lastName: currentApplication.lastName,
@@ -508,7 +544,7 @@ export async function approveMembershipApplication(input: {
         });
 
         let approvalProvisioning = null;
-        if (currentUser) {
+        if (linkedUser) {
           await tx
             .update(users)
             .set({
@@ -519,12 +555,12 @@ export async function approveMembershipApplication(input: {
               membershipRenewalDate: approvalPlan.membershipRenewalDate,
               updatedAt: now,
             })
-            .where(eq(users.id, currentUser.id));
+            .where(eq(users.id, linkedUser.id));
 
           approvalProvisioning = await provisionApprovedMembershipForUser({
             db: tx,
             applicationId: currentApplication.id,
-            userId: currentUser.id,
+            userId: linkedUser.id,
             city: currentApplication.city,
             approvalPlan,
             now,

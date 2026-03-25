@@ -79,7 +79,7 @@ test("signup stays successful when people schema is missing", async () => {
         id: 44,
         email: "alice@example.com",
         displayName: "Alice",
-        role: "member",
+        role: "visitor",
       }),
       hashPassword: async () => "hash",
       createSession: async () => {
@@ -98,7 +98,7 @@ test("signup stays successful when people schema is missing", async () => {
       id: 44,
       email: "alice@example.com",
       displayName: "Alice",
-      role: "member",
+      role: "visitor",
     },
   });
   assert.deepEqual(steps, ["session"]);

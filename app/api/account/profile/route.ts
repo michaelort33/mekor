@@ -1,23 +1,15 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { canAccessMembersArea, requireAuthenticatedAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { people, users } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { profileUpdatePayloadSchema } from "@/lib/users/validation";
 
-async function requireUserSession() {
-  const session = await getUserSession();
-  if (!session) {
-    return null;
-  }
-  return session;
-}
-
 export async function GET() {
-  const session = await requireUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAuthenticatedAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const db = getDb();
@@ -33,7 +25,7 @@ export async function GET() {
       role: users.role,
     })
     .from(users)
-    .where(eq(users.id, session.userId))
+    .where(eq(users.id, access.session.userId))
     .limit(1);
 
   if (!profile) {
@@ -48,7 +40,7 @@ export async function GET() {
       city: people.city,
     })
     .from(people)
-    .where(eq(people.userId, session.userId))
+    .where(eq(people.userId, access.session.userId))
     .limit(1);
 
   const nameParts = profile.displayName.trim().split(/\s+/).filter(Boolean);
@@ -62,14 +54,17 @@ export async function GET() {
       lastName,
       phone: person?.phone || "",
       city: person?.city || profile.city,
+      accessState: access.accessState,
+      canAccessMembersArea: canAccessMembersArea(access),
+      latestMembershipApplicationStatus: access.latestMembershipApplicationStatus,
     },
   });
 }
 
 export async function PUT(request: Request) {
-  const session = await requireUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAuthenticatedAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const parsed = profileUpdatePayloadSchema.safeParse(await request.json());
@@ -93,7 +88,7 @@ export async function PUT(request: Request) {
       profileVisibility: parsed.data.profileVisibility,
       updatedAt: new Date(),
     })
-    .where(eq(users.id, session.userId))
+    .where(eq(users.id, access.session.userId))
     .returning({
       id: users.id,
       email: users.email,
@@ -109,5 +104,12 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ profile: updated });
+  return NextResponse.json({
+    profile: {
+      ...updated,
+      accessState: access.accessState,
+      canAccessMembersArea: canAccessMembersArea(access),
+      latestMembershipApplicationStatus: access.latestMembershipApplicationStatus,
+    },
+  });
 }

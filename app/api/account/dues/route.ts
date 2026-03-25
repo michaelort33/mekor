@@ -1,9 +1,9 @@
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { duesInvoices, duesPayments, duesSchedules } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
 
 export async function GET() {
@@ -11,9 +11,9 @@ export async function GET() {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const db = getDb();
@@ -30,7 +30,7 @@ export async function GET() {
       updatedAt: duesSchedules.updatedAt,
     })
     .from(duesSchedules)
-    .where(eq(duesSchedules.userId, session.userId))
+    .where(eq(duesSchedules.userId, access.session.userId))
     .orderBy(desc(duesSchedules.updatedAt));
 
   const openInvoices = await db
@@ -46,7 +46,7 @@ export async function GET() {
       updatedAt: duesInvoices.updatedAt,
     })
     .from(duesInvoices)
-    .where(and(eq(duesInvoices.userId, session.userId), inArray(duesInvoices.status, ["open", "overdue"])))
+    .where(and(eq(duesInvoices.userId, access.session.userId), inArray(duesInvoices.status, ["open", "overdue"])))
     .orderBy(desc(duesInvoices.dueDate));
 
   const payments = await db
@@ -61,7 +61,7 @@ export async function GET() {
       createdAt: duesPayments.createdAt,
     })
     .from(duesPayments)
-    .where(eq(duesPayments.userId, session.userId))
+    .where(eq(duesPayments.userId, access.session.userId))
     .orderBy(desc(duesPayments.createdAt));
 
   return NextResponse.json({ schedules, openInvoices, payments });

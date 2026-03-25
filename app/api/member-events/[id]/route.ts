@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getUserSession } from "@/lib/auth/session";
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { memberEventsServiceErrorResponse } from "@/lib/member-events/http";
 import { getMemberEventDetail, updateMemberEvent } from "@/lib/member-events/service";
 
@@ -38,11 +38,14 @@ export async function GET(_: Request, context: RouteContext) {
     return NextResponse.json({ error: "Invalid event id" }, { status: 400 });
   }
 
-  const session = await getUserSession();
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
+  }
   try {
     const detail = await getMemberEventDetail({
       eventId,
-      viewerUserId: session?.userId,
+      viewerUserId: access.session.userId,
     });
     return NextResponse.json(detail);
   } catch (error) {
@@ -56,9 +59,9 @@ export async function PUT(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Invalid event id" }, { status: 400 });
   }
 
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const parsed = updateMemberEventSchema.safeParse(await request.json().catch(() => ({})));
@@ -68,7 +71,7 @@ export async function PUT(request: Request, context: RouteContext) {
 
   try {
     const updated = await updateMemberEvent({
-      actorUserId: session.userId,
+      actorUserId: access.session.userId,
       eventId,
       title: parsed.data.title,
       description: parsed.data.description,

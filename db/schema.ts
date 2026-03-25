@@ -1290,6 +1290,7 @@ export const membershipApplications = pgTable(
     reviewNotes: text("review_notes").notNull().default(""),
     sourcePath: varchar("source_path", { length: 512 }).notNull().default("/membership/apply"),
     payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    submittedByUserId: integer("submitted_by_user_id").references(() => users.id),
     reviewedAt: timestamp("reviewed_at"),
     reviewedByUserId: integer("reviewed_by_user_id").references(() => users.id),
     approvedPersonId: integer("approved_person_id").references(() => people.id),
@@ -1301,6 +1302,7 @@ export const membershipApplications = pgTable(
     statusCreatedAtIdx: index("membership_applications_status_created_at_idx").on(table.status, table.createdAt),
     emailCreatedAtIdx: index("membership_applications_email_created_at_idx").on(table.email, table.createdAt),
     reviewerStatusIdx: index("membership_applications_reviewer_status_idx").on(table.reviewedByUserId, table.status),
+    submitterStatusIdx: index("membership_applications_submitter_status_idx").on(table.submittedByUserId, table.status),
   }),
 );
 

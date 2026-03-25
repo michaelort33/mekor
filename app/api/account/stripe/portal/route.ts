@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
 import { getStripeClient } from "@/lib/stripe/client";
 import { getOrCreateStripeCustomer } from "@/lib/stripe/customers";
@@ -13,9 +13,9 @@ export async function POST(request: Request) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const [user] = await getDb()
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       displayName: users.displayName,
     })
     .from(users)
-    .where(eq(users.id, session.userId))
+    .where(eq(users.id, access.session.userId))
     .limit(1);
 
   if (!user) {

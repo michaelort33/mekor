@@ -1,4 +1,5 @@
 import type { UserSessionRole } from "@/lib/auth/session";
+import type { AccountAccessState } from "@/lib/auth/account-access";
 import { normalizeNavigationPath } from "@/lib/navigation/path";
 
 export type AppArea = "site" | "member" | "admin";
@@ -43,13 +44,17 @@ export function detectAppArea(currentPath: string): AppArea {
 export function buildAreaSwitcherLinks(input: {
   currentPath: string;
   role: UserSessionRole | null;
+  authenticated?: boolean;
+  canAccessMembersArea?: boolean;
+  accessState?: AccountAccessState | null;
   includeSignInLinks?: boolean;
   currentArea?: AppArea;
 }): AreaSwitcherLink[] {
   const currentArea = input.currentArea ?? detectAppArea(input.currentPath);
-  const canAccessMemberArea = isMemberCapableRole(input.role);
+  const authenticated = input.authenticated ?? input.role !== null;
+  const canAccessMemberArea = input.canAccessMembersArea ?? isMemberCapableRole(input.role);
   const canAccessAdminArea = isAdminLevelRole(input.role);
-  const shouldShowMemberArea = canAccessMemberArea || input.includeSignInLinks;
+  const shouldShowMemberArea = canAccessMemberArea || authenticated || input.includeSignInLinks;
   const shouldShowAdminArea =
     currentArea === "admin" && (canAccessAdminArea || input.includeSignInLinks);
   const links: AreaSwitcherLink[] = [
@@ -67,6 +72,14 @@ export function buildAreaSwitcherLinks(input: {
       area: "member",
       href: "/account",
       label: "Member Area",
+      current: currentArea === "member",
+      requiresSignIn: false,
+    });
+  } else if (authenticated) {
+    links.push({
+      area: "member",
+      href: "/account",
+      label: input.accessState === "pending_approval" ? "Pending Account" : "Account",
       current: currentArea === "member",
       requiresSignIn: false,
     });

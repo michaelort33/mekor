@@ -20,16 +20,20 @@ test("admin paths are admin-protected", () => {
   assert.equal(getEdgeProtectionType("/api/admin/users"), "admin");
 });
 
-test("members/account and event action APIs are user-protected", () => {
-  assert.equal(getEdgeProtectionType("/account"), "user");
-  assert.equal(getEdgeProtectionType("/members"), "user");
-  assert.equal(getEdgeProtectionType("/api/account/profile"), "user");
-  assert.equal(getEdgeProtectionType("/api/events/33/signup"), "user");
-  assert.equal(getEdgeProtectionType("/api/events/33/checkout"), "user");
-  assert.equal(getEdgeProtectionType("/api/events/33/cancel"), "user");
-  assert.equal(getEdgeProtectionType("/api/events/33/ask-organizer"), "user");
-  assert.equal(getEdgeProtectionType("/api/member-events/12/join"), "user");
-  assert.equal(getEdgeProtectionType("/api/member-events/12/cancel"), "user");
-  assert.equal(getEdgeProtectionType("/api/member-events/12/requests/44/approve"), "user");
-  assert.equal(getEdgeProtectionType("/api/member-events/12/requests/44/reject"), "user");
+test("account basics are authenticated and member tools are member-protected", () => {
+  assert.equal(getEdgeProtectionType("/account"), "authenticated");
+  assert.equal(getEdgeProtectionType("/account/profile"), "authenticated");
+  assert.equal(getEdgeProtectionType("/members"), "member");
+  assert.equal(getEdgeProtectionType("/account/dues"), "member");
+  assert.equal(getEdgeProtectionType("/api/account/profile"), "authenticated");
+  assert.equal(getEdgeProtectionType("/api/account/dashboard"), "authenticated");
+  assert.equal(getEdgeProtectionType("/api/account/dues"), "member");
+  assert.equal(getEdgeProtectionType("/api/member-events/12/join"), "member");
+  assert.equal(getEdgeProtectionType("/api/member-events/12/cancel"), "member");
+  assert.equal(getEdgeProtectionType("/api/member-events/12/requests/44/approve"), "member");
+  assert.equal(getEdgeProtectionType("/api/member-events/12/requests/44/reject"), "member");
+  assert.equal(getEdgeProtectionType("/api/events/33/signup"), "authenticated");
+  assert.equal(getEdgeProtectionType("/api/events/33/checkout"), "authenticated");
+  assert.equal(getEdgeProtectionType("/api/events/33/cancel"), "authenticated");
+  assert.equal(getEdgeProtectionType("/api/events/33/ask-organizer"), "authenticated");
 });

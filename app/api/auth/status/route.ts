@@ -3,12 +3,18 @@ import { NextResponse } from "next/server";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
+import { canAccessMembersArea, getSessionAccountAccess } from "@/lib/auth/account-access";
 
 export async function GET() {
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ authenticated: false, role: null });
+  const access = await getSessionAccountAccess();
+  if (!access) {
+    return NextResponse.json({
+      authenticated: false,
+      role: null,
+      accessState: null,
+      canAccessMembersArea: false,
+      latestMembershipApplicationStatus: null,
+    });
   }
 
   const [user] = await getDb()
@@ -16,11 +22,14 @@ export async function GET() {
       role: users.role,
     })
     .from(users)
-    .where(eq(users.id, session.userId))
+    .where(eq(users.id, access.session.userId))
     .limit(1);
 
   return NextResponse.json({
     authenticated: Boolean(user),
     role: user?.role ?? null,
+    accessState: access.accessState,
+    canAccessMembersArea: Boolean(user) && canAccessMembersArea(access),
+    latestMembershipApplicationStatus: access.latestMembershipApplicationStatus,
   });
 }

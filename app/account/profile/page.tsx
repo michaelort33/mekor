@@ -18,6 +18,9 @@ type ProfileResponse = {
     avatarUrl: string;
     profileVisibility: "private" | "members" | "public" | "anonymous";
     role: "visitor" | "member" | "admin" | "super_admin";
+    accessState: "approved_member" | "pending_approval" | "declined" | "visitor";
+    canAccessMembersArea: boolean;
+    latestMembershipApplicationStatus: "pending" | "approved" | "declined" | null;
   };
 };
 
@@ -38,6 +41,8 @@ export default function AccountProfilePage() {
     city: "",
     avatarUrl: "",
     profileVisibility: "private" as "private" | "members" | "public" | "anonymous",
+    accessState: "visitor" as "approved_member" | "pending_approval" | "declined" | "visitor",
+    canAccessMembersArea: false,
   });
   const [memberStats, setMemberStats] = useState<{
     eventsHostedCount: number;
@@ -67,6 +72,8 @@ export default function AccountProfilePage() {
         city: data.profile.city,
         avatarUrl: data.profile.avatarUrl,
         profileVisibility: data.profile.profileVisibility,
+        accessState: data.profile.accessState,
+        canAccessMembersArea: data.profile.canAccessMembersArea,
       });
       if (statsResponse.ok) {
         const statsPayload = (await statsResponse.json().catch(() => ({}))) as {
@@ -189,7 +196,11 @@ export default function AccountProfilePage() {
 
   const shellStats = [
     { label: "Role", value: form.role, hint: "Account permission level" },
-    { label: "Visibility", value: form.profileVisibility, hint: "Who can see your profile" },
+    {
+      label: "Membership access",
+      value: form.canAccessMembersArea ? "approved" : form.accessState.replace("_", " "),
+      hint: form.canAccessMembersArea ? "Full member features are unlocked" : "Member tools unlock after approval",
+    },
     memberStats
       ? {
           label: "Hosted events",
@@ -206,17 +217,25 @@ export default function AccountProfilePage() {
   return (
     <MemberShell
       title="Your profile"
-      description="Edit your public details and choose who can see your profile."
+      description={
+        form.canAccessMembersArea
+          ? "Edit your public details and choose who can see your profile."
+          : "Edit your basic profile while your membership access is being reviewed."
+      }
+      eyebrow={form.canAccessMembersArea ? "Members Area" : "Account"}
       breadcrumbs={[
         { label: "Home", href: "/" },
-        { label: "Members Area", href: "/members" },
+        form.canAccessMembersArea
+          ? { label: "Members Area", href: "/members" }
+          : { label: "Account", href: "/account" },
         { label: "Your Profile" },
       ]}
       activeSection="profile"
+      navigationContext={form.canAccessMembersArea ? "member" : "authenticated"}
       stats={shellStats}
       actions={
         <>
-          <Link href="/community" className={memberShellStyles.actionPill}>Community directory</Link>
+          {form.canAccessMembersArea ? <Link href="/members" className={memberShellStyles.actionPill}>Members directory</Link> : null}
           <button type="button" className={memberShellStyles.secondaryButton} onClick={logout}>
             Log out
           </button>
@@ -230,7 +249,13 @@ export default function AccountProfilePage() {
         </div>
 
         <p className={styles.subtitle}>
-          Edit your public details and choose who can see your profile.
+          {form.canAccessMembersArea
+            ? "Edit your public details and choose who can see your profile."
+            : form.accessState === "pending_approval"
+              ? "Your account is pending member approval. You can still update your profile now so it is ready once access is granted."
+              : form.accessState === "declined"
+                ? "Your last membership application was declined. You can still keep your basic profile information current."
+                : "Edit your basic account profile."}
         </p>
 
         <label className={styles.field}>
@@ -348,15 +373,19 @@ export default function AccountProfilePage() {
           <button className={styles.button} type="submit" disabled={saving}>
             {saving ? "Saving..." : "Save profile"}
           </button>
-          <Link href="/members" className={styles.secondaryLink}>
-            View members area
+          <Link href={form.canAccessMembersArea ? "/members" : "/account"} className={styles.secondaryLink}>
+            {form.canAccessMembersArea ? "View members area" : "Open account home"}
           </Link>
-          <Link href="/account/dues" className={styles.secondaryLink}>
-            View dues
-          </Link>
-          <Link href="/account/member-events" className={styles.secondaryLink}>
-            Host events
-          </Link>
+          {form.canAccessMembersArea ? (
+            <>
+              <Link href="/account/dues" className={styles.secondaryLink}>
+                View dues
+              </Link>
+              <Link href="/account/member-events" className={styles.secondaryLink}>
+                Host events
+              </Link>
+            </>
+          ) : null}
         </div>
 
         {error ? <p className={styles.error}>{error}</p> : null}

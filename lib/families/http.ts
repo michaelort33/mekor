@@ -1,9 +1,9 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { FamilyServiceError } from "@/lib/families/service";
 
 export type FamilyUserRole = "visitor" | "member" | "admin" | "super_admin";
@@ -20,9 +20,9 @@ export function isMemberCapableRole(role: FamilyUserRole) {
 }
 
 export async function requireFamilyActor() {
-  const session = await getUserSession();
-  if (!session) {
-    return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) } as const;
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access;
   }
 
   const [actor] = await getDb()
@@ -33,7 +33,7 @@ export async function requireFamilyActor() {
       role: users.role,
     })
     .from(users)
-    .where(eq(users.id, session.userId))
+    .where(eq(users.id, access.session.userId))
     .limit(1);
 
   if (!actor) {

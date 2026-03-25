@@ -69,7 +69,10 @@ function sanitizeRows<T extends { name: string }>(rows: T[]) {
 
 export function MembershipApplicationForm() {
   const profile = usePublicProfilePrefill();
+  const isAuthenticated = Boolean(profile?.email);
   const [form, setForm] = useState<FormState>(initialState);
+  const [accountPassword, setAccountPassword] = useState("");
+  const [accountConfirmPassword, setAccountConfirmPassword] = useState("");
   const [prefillTouched, setPrefillTouched] = useState({
     firstName: false,
     lastName: false,
@@ -81,8 +84,6 @@ export function MembershipApplicationForm() {
   const [yahrzeitRows, setYahrzeitRows] = useState<YahrzeitRow[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState<{ applicationId: number } | null>(null);
-
   const estimate = useMemo(
     () =>
       calculateMembershipEstimate({
@@ -156,7 +157,11 @@ export function MembershipApplicationForm() {
     const response = await fetch("/api/membership-applications", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        ...payload,
+        password: isAuthenticated ? undefined : accountPassword,
+        confirmPassword: isAuthenticated ? undefined : accountConfirmPassword,
+      }),
     });
 
     const data = (await response.json().catch(() => ({}))) as { applicationId?: number; error?: string };
@@ -180,7 +185,6 @@ export function MembershipApplicationForm() {
       return;
     }
 
-    setSuccess({ applicationId: data.applicationId });
     setSubmitting(false);
     setForm(initialState);
     setPrefillTouched({
@@ -192,6 +196,9 @@ export function MembershipApplicationForm() {
     });
     setHouseholdRows([]);
     setYahrzeitRows([]);
+    setAccountPassword("");
+    setAccountConfirmPassword("");
+    window.location.assign("/account?membership=pending");
   }
 
   return (
@@ -273,7 +280,7 @@ export function MembershipApplicationForm() {
               </label>
               <label className={styles.field}>
                 <span>Email</span>
-                <input name="email" type="email" value={resolvedEmail} onChange={onTextChange} required />
+                <input name="email" type="email" value={resolvedEmail} onChange={onTextChange} required readOnly={isAuthenticated} />
               </label>
             </div>
             <div className={styles.inlineGrid}>
@@ -440,24 +447,51 @@ export function MembershipApplicationForm() {
             </label>
           </section>
 
+          {!isAuthenticated ? (
+            <section className={styles.formCard}>
+              <div className={styles.cardHeader}>
+                <p className={styles.sectionEyebrow}>Account access</p>
+                <h2 className={styles.cardTitle}>Create your sign-in</h2>
+              </div>
+              <p className={styles.helperText}>
+                Submitting this form creates your Mekor account as pending. You can sign in right away, but member tools unlock only after approval.
+              </p>
+              <div className={styles.inlineGrid}>
+                <label className={styles.field}>
+                  <span>Password</span>
+                  <input
+                    type="password"
+                    value={accountPassword}
+                    onChange={(event) => setAccountPassword(event.target.value)}
+                    minLength={8}
+                    required
+                    autoComplete="new-password"
+                  />
+                </label>
+                <label className={styles.field}>
+                  <span>Confirm password</span>
+                  <input
+                    type="password"
+                    value={accountConfirmPassword}
+                    onChange={(event) => setAccountConfirmPassword(event.target.value)}
+                    minLength={8}
+                    required
+                    autoComplete="new-password"
+                  />
+                </label>
+              </div>
+            </section>
+          ) : null}
+
           <section className={styles.submitCard}>
             <div className={styles.cardHeader}>
               <p className={styles.sectionEyebrow}>Final step</p>
               <h2 className={styles.cardTitle}>Submit your membership application</h2>
             </div>
             <p className={styles.bodyText}>
-              When you submit, the application goes straight to Mekor&apos;s admin team for review. Approved applicants receive a welcome email with next steps.
+              When you submit, the application goes straight to Mekor&apos;s admin team for review. You&apos;ll land in your account immediately, and full member access will unlock after approval.
             </p>
             {error ? <p className={styles.errorBanner}>{error}</p> : null}
-            {success ? (
-              <section className={styles.successCard}>
-                <p className={styles.sectionEyebrow}>Submitted</p>
-                <h2 className={styles.cardTitle}>Application received</h2>
-                <p className={styles.bodyText}>
-                  Your application ID is <strong>#{success.applicationId}</strong>. Mekor staff will review it and follow up by email.
-                </p>
-              </section>
-            ) : null}
             <button type="submit" className={styles.submitButton} disabled={submitting}>
               {submitting ? "Submitting..." : "Submit membership application"}
             </button>
@@ -507,8 +541,8 @@ export function MembershipApplicationForm() {
             <p className={styles.sectionEyebrow}>Review flow</p>
             <ol className={styles.reviewList}>
               <li>Your application lands directly in Mekor&apos;s admin panel.</li>
-              <li>An admin reviews the submission and approves or follows up.</li>
-              <li>Approved applicants receive a welcome email with login or setup instructions.</li>
+              <li>{isAuthenticated ? "Your account stays signed in while Mekor reviews the application." : "A pending Mekor account is created for you immediately."}</li>
+              <li>An admin reviews the submission and approves or follows up before member tools unlock.</li>
             </ol>
           </section>
         </aside>

@@ -101,6 +101,50 @@ test("expired session token is rejected and cookie is cleared", async () => {
   assert.match(response.headers.get("set-cookie") ?? "", /mekor_user_session=;/);
 });
 
+test("visitor user session is redirected from member pages to pending account state", async () => {
+  process.env.USER_SESSION_SECRET = "test-user-session-secret";
+  const token = await signUserSessionToken(
+    {
+      userId: 41,
+      role: "visitor",
+      exp: Date.now() + 60_000,
+    },
+    process.env.USER_SESSION_SECRET,
+  );
+
+  const request = new NextRequest("http://localhost:3000/members", {
+    headers: {
+      cookie: `mekor_user_session=${token}`,
+    },
+  });
+
+  const response = await proxy(request);
+  assert.equal(response.status, 307);
+  assert.equal(response.headers.get("location"), "http://localhost:3000/account?membership=pending");
+});
+
+test("visitor user session gets 403 for member-only APIs", async () => {
+  process.env.USER_SESSION_SECRET = "test-user-session-secret";
+  const token = await signUserSessionToken(
+    {
+      userId: 42,
+      role: "visitor",
+      exp: Date.now() + 60_000,
+    },
+    process.env.USER_SESSION_SECRET,
+  );
+
+  const request = new NextRequest("http://localhost:3000/api/member-events/9/join", {
+    method: "POST",
+    headers: {
+      cookie: `mekor_user_session=${token}`,
+    },
+  });
+
+  const response = await proxy(request);
+  assert.equal(response.status, 403);
+});
+
 test("valid admin user session token allows admin route through edge", async () => {
   process.env.USER_SESSION_SECRET = "test-user-session-secret";
   const token = await signUserSessionToken(

@@ -23,7 +23,7 @@ export type MembersNavSection =
   | "community"
   | "none";
 
-type MembersBreadcrumbsContext = "member" | "public";
+type MembersBreadcrumbsContext = "member" | "authenticated" | "public";
 
 type MembersBreadcrumbsProps = {
   items: BreadcrumbItem[];
@@ -49,15 +49,21 @@ const publicLinks: Array<{ section: MembersNavSection; label: string; href: stri
   { section: "none", label: "Events", href: "/events" },
 ];
 
+const authenticatedLinks: Array<{ section: MembersNavSection; label: string; href: string }> = [
+  { section: "dashboard", label: "Account", href: "/account" },
+  { section: "profile", label: "Profile", href: "/account/profile" },
+  { section: "none", label: "Membership", href: "/membership" },
+];
+
 export function MembersBreadcrumbs({
   items,
   context = "member",
   activeSection = "none",
 }: MembersBreadcrumbsProps) {
   const pathname = usePathname();
-  const links = context === "member" ? memberLinks : publicLinks;
+  const links = context === "member" ? memberLinks : context === "authenticated" ? authenticatedLinks : publicLinks;
   const currentPath = pathname ?? "/";
-  const currentArea = context === "member" ? "member" : "site";
+  const currentArea = context === "public" ? "site" : "member";
 
   return (
     <nav className={styles.wrap} aria-label="Members navigation">
@@ -86,7 +92,7 @@ export function MembersBreadcrumbs({
             includeSignInLinks={context === "public"}
             variant="compact"
           />
-          {context === "member" ? (
+          {context === "member" || context === "authenticated" ? (
             <form action="/logout" method="post">
               <button type="submit" className={styles.pillAction}>
                 Sign out

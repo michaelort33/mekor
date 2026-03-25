@@ -1,18 +1,18 @@
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { people, taxDocuments } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { renderYearEndLetterPdf } from "@/lib/payments/documents";
 import { ensureYearEndLetter } from "@/lib/payments/service";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const { searchParams } = new URL(request.url);
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       displayName: people.displayName,
     })
     .from(people)
-    .where(eq(people.userId, session.userId))
+    .where(eq(people.userId, access.session.userId))
     .limit(1);
   if (!person) {
     return NextResponse.json({ error: "No linked CRM person found" }, { status: 404 });

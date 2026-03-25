@@ -1,4 +1,4 @@
-export type EdgeProtectionType = "none" | "user" | "admin";
+export type EdgeProtectionType = "none" | "authenticated" | "member" | "admin";
 
 const PUBLIC_EXACT_PATHS = new Set([
   "/login",
@@ -11,17 +11,29 @@ const PUBLIC_EXACT_PATHS = new Set([
 ]);
 
 const PUBLIC_PREFIX_PATHS = ["/community"];
-const USER_PAGE_PREFIX_PATHS = ["/account", "/members"];
-const USER_API_PREFIX_PATHS = ["/api/account", "/api/families", "/api/inbox"];
-const USER_API_PATTERNS = [
+const AUTHENTICATED_PAGE_EXACT_PATHS = new Set(["/account", "/account/profile"]);
+const MEMBER_PAGE_PREFIX_PATHS = [
+  "/members",
+  "/account/dues",
+  "/account/payments",
+  "/account/family",
+  "/account/inbox",
+  "/account/member-events",
+  "/member-events",
+];
+const AUTHENTICATED_API_EXACT_PATHS = new Set([
+  "/api/account/avatar/generate",
+  "/api/account/avatar/upload",
+  "/api/account/dashboard",
+  "/api/account/member-stats",
+  "/api/account/profile",
+]);
+const MEMBER_API_PREFIX_PATHS = ["/api/account/dues", "/api/account/payments", "/api/account/stripe", "/api/families", "/api/inbox", "/api/member-events"];
+const AUTHENTICATED_API_PATTERNS = [
   /^\/api\/events\/[^/]+\/signup$/,
   /^\/api\/events\/[^/]+\/checkout$/,
   /^\/api\/events\/[^/]+\/cancel$/,
   /^\/api\/events\/[^/]+\/ask-organizer$/,
-  /^\/api\/member-events\/[^/]+\/join$/,
-  /^\/api\/member-events\/[^/]+\/cancel$/,
-  /^\/api\/member-events\/[^/]+\/requests\/[^/]+\/approve$/,
-  /^\/api\/member-events\/[^/]+\/requests\/[^/]+\/reject$/,
 ];
 
 const ADMIN_PAGE_PREFIX = "/admin";
@@ -50,16 +62,24 @@ export function getEdgeProtectionType(pathname: string): EdgeProtectionType {
     return "admin";
   }
 
-  if (USER_PAGE_PREFIX_PATHS.some((prefix) => matchesPathPrefix(pathname, prefix))) {
-    return "user";
+  if (AUTHENTICATED_PAGE_EXACT_PATHS.has(pathname)) {
+    return "authenticated";
   }
 
-  if (USER_API_PREFIX_PATHS.some((prefix) => pathname.startsWith(prefix))) {
-    return "user";
+  if (MEMBER_PAGE_PREFIX_PATHS.some((prefix) => matchesPathPrefix(pathname, prefix))) {
+    return "member";
   }
 
-  if (USER_API_PATTERNS.some((pattern) => pattern.test(pathname))) {
-    return "user";
+  if (AUTHENTICATED_API_EXACT_PATHS.has(pathname)) {
+    return "authenticated";
+  }
+
+  if (MEMBER_API_PREFIX_PATHS.some((prefix) => matchesPathPrefix(pathname, prefix))) {
+    return "member";
+  }
+
+  if (AUTHENTICATED_API_PATTERNS.some((pattern) => pattern.test(pathname))) {
+    return "authenticated";
   }
 
   return "none";

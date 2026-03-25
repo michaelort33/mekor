@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getUserSession } from "@/lib/auth/session";
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { memberEventsServiceErrorResponse } from "@/lib/member-events/http";
 import { createMemberEventComment, getMemberEventDetail } from "@/lib/member-events/service";
 
@@ -24,11 +24,14 @@ export async function GET(_: Request, context: RouteContext) {
   if (!eventId) {
     return NextResponse.json({ error: "Invalid event id" }, { status: 400 });
   }
-  const session = await getUserSession();
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
+  }
   try {
     const detail = await getMemberEventDetail({
       eventId,
-      viewerUserId: session?.userId,
+      viewerUserId: access.session.userId,
     });
     return NextResponse.json({ comments: detail.comments });
   } catch (error) {
@@ -37,9 +40,9 @@ export async function GET(_: Request, context: RouteContext) {
 }
 
 export async function POST(request: Request, context: RouteContext) {
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const eventId = parseEventId((await context.params).id);
@@ -54,7 +57,7 @@ export async function POST(request: Request, context: RouteContext) {
 
   try {
     const comment = await createMemberEventComment({
-      actorUserId: session.userId,
+      actorUserId: access.session.userId,
       eventId,
       body: parsed.data.body,
     });

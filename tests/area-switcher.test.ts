@@ -42,3 +42,19 @@ test("member sign-in context does not expose admin sign-in outside admin pages",
     ["Public Site", "Member Sign In"],
   );
 });
+
+test("authenticated pending users see account access instead of sign-in", () => {
+  const links = buildAreaSwitcherLinks({
+    currentPath: "/account",
+    currentArea: "member",
+    role: "visitor",
+    authenticated: true,
+    canAccessMembersArea: false,
+    accessState: "pending_approval",
+  });
+
+  assert.deepEqual(
+    links.map((link) => link.label),
+    ["Public Site", "Pending Account"],
+  );
+});

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { and, eq, inArray } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
 import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
+import { canAccessMembersArea, getSessionAccountAccess } from "@/lib/auth/account-access";
 import { isFeatureEnabled } from "@/lib/config/features";
 import { isAnonymousVisibility } from "@/lib/users/visibility";
 import styles from "./page.module.css";
@@ -18,7 +19,13 @@ type PageProps = {
 export const dynamic = "force-dynamic";
 
 export default async function CommunityProfilePage({ params }: PageProps) {
+  const accountAccess = await getSessionAccountAccess();
+
   if (!(await isFeatureEnabled("FEATURE_PUBLIC_DIRECTORY"))) {
+    if (accountAccess && canAccessMembersArea(accountAccess)) {
+      redirect("/members");
+    }
+
     return (
       <main className={styles.page}>
         <MembersBreadcrumbs
@@ -32,10 +39,18 @@ export default async function CommunityProfilePage({ params }: PageProps) {
 
         <header className={styles.header}>
           <h1>Community Directory</h1>
-          <p>Public directory is temporarily unavailable. Sign in to access the Members Directory.</p>
+          <p>
+            {accountAccess?.accessState === "pending_approval"
+              ? "Your account is pending approval as a member. You can manage your account while Mekor reviews your application."
+              : accountAccess?.accessState === "declined"
+                ? "Your last membership application was not approved. Please contact Mekor if you want to reapply."
+                : "Public directory is temporarily unavailable. Sign in to access the Members Directory."}
+          </p>
         </header>
         <section className={styles.empty}>
-          <Link href="/members">Go to Members Directory</Link>
+          <Link href={accountAccess ? "/account" : "/members"}>
+            {accountAccess ? "Open your account" : "Go to Members Directory"}
+          </Link>
         </section>
       </main>
     );

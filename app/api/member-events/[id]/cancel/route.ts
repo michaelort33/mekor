@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getUserSession } from "@/lib/auth/session";
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { memberEventsServiceErrorResponse } from "@/lib/member-events/http";
 import { cancelMemberEvent } from "@/lib/member-events/service";
 
@@ -15,9 +15,9 @@ function parseEventId(raw: string) {
 }
 
 export async function POST(_: Request, context: RouteContext) {
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const eventId = parseEventId((await context.params).id);
@@ -27,7 +27,7 @@ export async function POST(_: Request, context: RouteContext) {
 
   try {
     const event = await cancelMemberEvent({
-      actorUserId: session.userId,
+      actorUserId: access.session.userId,
       eventId,
     });
     return NextResponse.json({ event });

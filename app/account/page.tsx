@@ -12,6 +12,9 @@ type DashboardResponse = {
   summary: {
     displayName: string;
     role: "visitor" | "member" | "admin" | "super_admin";
+    accessState: "approved_member" | "pending_approval" | "declined" | "visitor";
+    canAccessMembersArea: boolean;
+    latestMembershipApplicationStatus: "pending" | "approved" | "declined" | null;
     profileVisibility: "private" | "members" | "public" | "anonymous";
     lastLoginAt: string | null;
     profileUpdatedAt: string;
@@ -145,14 +148,14 @@ export default function AccountDashboardPage() {
   const shellStats = dashboard
     ? [
         {
-          label: "Open dues",
-          value: formatMoney(dashboard.summary.totalDueCents, "usd"),
-          hint: `${dashboard.summary.openInvoicesCount} invoice(s) due`,
+          label: "Membership access",
+          value: dashboard.summary.canAccessMembersArea ? "approved" : dashboard.summary.accessState.replace("_", " "),
+          hint: dashboard.summary.canAccessMembersArea ? "Full member features are unlocked" : "Member tools unlock after approval",
         },
         {
-          label: "Upcoming events",
-          value: String(dashboard.summary.upcomingRegistrationsCount),
-          hint: "Registrations on your calendar",
+          label: "Role",
+          value: dashboard.summary.role,
+          hint: "Account permission level",
         },
         {
           label: "Profile visibility",
@@ -172,171 +175,209 @@ export default function AccountDashboardPage() {
     return <main className={styles.page}>{error || "Dashboard unavailable"}</main>;
   }
 
+  const hasMemberAccess = dashboard.summary.canAccessMembersArea;
+  const pendingAccessMessage =
+    dashboard.summary.accessState === "pending_approval"
+      ? "Your account is pending member approval. You can update your profile while Mekor reviews your application."
+      : dashboard.summary.accessState === "declined"
+        ? "Your most recent membership application was declined. Contact Mekor if you want to reapply."
+        : "This account does not yet have member approval.";
+
   return (
     <MemberShell
       title={`Welcome, ${dashboard.summary.displayName}`}
-      description="Track dues, events, and community updates from one operational dashboard."
+      description={
+        hasMemberAccess
+          ? "Track dues, events, and community updates from one operational dashboard."
+          : "Manage your account while your membership access is being reviewed."
+      }
+      eyebrow={hasMemberAccess ? "Members Area" : "Account"}
       breadcrumbs={[
         { label: "Home", href: "/" },
-        { label: "Members Area", href: "/members" },
-        { label: "Dashboard" },
+        hasMemberAccess ? { label: "Members Area", href: "/members" } : { label: "Account", href: "/account" },
+        { label: hasMemberAccess ? "Dashboard" : "Overview" },
       ]}
       activeSection="dashboard"
+      navigationContext={hasMemberAccess ? "member" : "authenticated"}
       stats={shellStats}
       actions={
         <>
           <Link href="/account/profile" className={memberShellStyles.actionPill}>Profile</Link>
-          <Link href="/account/payments" className={memberShellStyles.actionPill}>Payments</Link>
-          <Link href="/account/dues" className={memberShellStyles.actionPill}>Dues</Link>
-          <Link href="/account/member-events" className={memberShellStyles.actionPill}>Host events</Link>
-          <Link href="/account/inbox" className={memberShellStyles.actionPill}>Inbox</Link>
+          {hasMemberAccess ? (
+            <>
+              <Link href="/account/payments" className={memberShellStyles.actionPill}>Payments</Link>
+              <Link href="/account/dues" className={memberShellStyles.actionPill}>Dues</Link>
+              <Link href="/account/member-events" className={memberShellStyles.actionPill}>Host events</Link>
+              <Link href="/account/inbox" className={memberShellStyles.actionPill}>Inbox</Link>
+            </>
+          ) : null}
         </>
       }
     >
 
       {error ? <p className={styles.error}>{error}</p> : null}
 
-      <section className={styles.summaryGrid}>
-        <article className={`${styles.card} internal-card`}>
-          <h2>Amount Due</h2>
-          <p className={styles.metric}>{formatMoney(dashboard.summary.totalDueCents, "usd")}</p>
-          <p>{dashboard.summary.openInvoicesCount} open invoice(s)</p>
-        </article>
-        <article className={`${styles.card} internal-card`}>
-          <h2>Upcoming Registrations</h2>
-          <p className={styles.metric}>{dashboard.summary.upcomingRegistrationsCount}</p>
-          <p>events currently on your calendar</p>
-        </article>
-        <article className={`${styles.card} internal-card`}>
-          <h2>Recent Payments</h2>
-          <p className={styles.metric}>{formatMoney(totalRecentPayments, "usd")}</p>
-          <p>across your latest dues transactions</p>
-        </article>
-        {memberStats ? (
+      {!hasMemberAccess ? (
+        <section className={styles.grid}>
           <article className={`${styles.card} internal-card`}>
-            <h2>Host Stats</h2>
-            <p className={styles.metric}>{memberStats.eventsHostedCount}</p>
-            <p>
-              {memberStats.approvedAttendeesTotal} approved attendees · {memberStats.upcomingHostedCount} upcoming
-            </p>
+            <h2>
+              {dashboard.summary.accessState === "pending_approval"
+                ? "Your account is pending member approval"
+                : dashboard.summary.accessState === "declined"
+                  ? "Your membership application needs follow-up"
+                  : "Your account is active"}
+            </h2>
+            <p>{pendingAccessMessage}</p>
+            <Link href="/account/profile" className={styles.inlineLink}>
+              Update your profile
+            </Link>
           </article>
-        ) : null}
-      </section>
+        </section>
+      ) : (
+        <>
+          <section className={styles.summaryGrid}>
+            <article className={`${styles.card} internal-card`}>
+              <h2>Amount Due</h2>
+              <p className={styles.metric}>{formatMoney(dashboard.summary.totalDueCents, "usd")}</p>
+              <p>{dashboard.summary.openInvoicesCount} open invoice(s)</p>
+            </article>
+            <article className={`${styles.card} internal-card`}>
+              <h2>Upcoming Registrations</h2>
+              <p className={styles.metric}>{dashboard.summary.upcomingRegistrationsCount}</p>
+              <p>events currently on your calendar</p>
+            </article>
+            <article className={`${styles.card} internal-card`}>
+              <h2>Recent Payments</h2>
+              <p className={styles.metric}>{formatMoney(totalRecentPayments, "usd")}</p>
+              <p>across your latest dues transactions</p>
+            </article>
+            {memberStats ? (
+              <article className={`${styles.card} internal-card`}>
+                <h2>Host Stats</h2>
+                <p className={styles.metric}>{memberStats.eventsHostedCount}</p>
+                <p>
+                  {memberStats.approvedAttendeesTotal} approved attendees · {memberStats.upcomingHostedCount} upcoming
+                </p>
+              </article>
+            ) : null}
+          </section>
 
-      <section className={styles.grid}>
-        <article className={`${styles.card} internal-card`}>
-          <h2>Dues Snapshot</h2>
-          {dashboard.dues.enabled ? (
-            dashboard.dues.openInvoices.length > 0 ? (
-              <ul className={styles.list}>
-                {dashboard.dues.openInvoices.map((invoice) => (
-                  <li key={invoice.id}>
-                    <strong>{invoice.label}</strong>
-                    <p>
-                      {formatMoney(invoice.amountCents, invoice.currency)} · due {invoice.dueDate}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No open dues invoices.</p>
-            )
-          ) : (
-            <p>Dues module is currently disabled.</p>
-          )}
-          <Link href="/account/dues" className={styles.inlineLink}>
-            Open dues page
-          </Link>
-        </article>
+          <section className={styles.grid}>
+            <article className={`${styles.card} internal-card`}>
+              <h2>Dues Snapshot</h2>
+              {dashboard.dues.enabled ? (
+                dashboard.dues.openInvoices.length > 0 ? (
+                  <ul className={styles.list}>
+                    {dashboard.dues.openInvoices.map((invoice) => (
+                      <li key={invoice.id}>
+                        <strong>{invoice.label}</strong>
+                        <p>
+                          {formatMoney(invoice.amountCents, invoice.currency)} · due {invoice.dueDate}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No open dues invoices.</p>
+                )
+              ) : (
+                <p>Dues module is currently disabled.</p>
+              )}
+              <Link href="/account/dues" className={styles.inlineLink}>
+                Open dues page
+              </Link>
+            </article>
 
-        <article className={`${styles.card} internal-card`}>
-          <h2>Upcoming Events</h2>
-          {dashboard.events.enabled ? (
-            dashboard.events.upcomingRegistrations.length > 0 ? (
-              <ul className={styles.list}>
-                {dashboard.events.upcomingRegistrations.map((registration) => (
-                  <li key={registration.id}>
-                    <strong>{registration.eventTitle}</strong>
-                    <p>
-                      {registration.status}
-                      {registration.eventStartAt ? ` · ${new Date(registration.eventStartAt).toLocaleString()}` : ""}
-                    </p>
-                    <Link href={registration.eventPath} className={styles.inlineLink}>
-                      View event
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No upcoming registrations yet.</p>
-            )
-          ) : (
-            <p>Event signups are currently disabled.</p>
-          )}
-        </article>
+            <article className={`${styles.card} internal-card`}>
+              <h2>Upcoming Events</h2>
+              {dashboard.events.enabled ? (
+                dashboard.events.upcomingRegistrations.length > 0 ? (
+                  <ul className={styles.list}>
+                    {dashboard.events.upcomingRegistrations.map((registration) => (
+                      <li key={registration.id}>
+                        <strong>{registration.eventTitle}</strong>
+                        <p>
+                          {registration.status}
+                          {registration.eventStartAt ? ` · ${new Date(registration.eventStartAt).toLocaleString()}` : ""}
+                        </p>
+                        <Link href={registration.eventPath} className={styles.inlineLink}>
+                          View event
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No upcoming registrations yet.</p>
+                )
+              ) : (
+                <p>Event signups are currently disabled.</p>
+              )}
+            </article>
 
-        <article className={`${styles.card} internal-card`}>
-          <h2>Suggested Events</h2>
-          {dashboard.events.suggestedEvents.length > 0 ? (
-            <ul className={styles.list}>
-              {dashboard.events.suggestedEvents.map((event) => (
-                <li key={event.id}>
-                  <strong>{event.title}</strong>
-                  <p>{event.startAt ? new Date(event.startAt).toLocaleString() : "Date TBD"}</p>
-                  <Link href={event.path} className={styles.inlineLink}>
-                    View event
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No suggested events at this time.</p>
-          )}
-        </article>
+            <article className={`${styles.card} internal-card`}>
+              <h2>Suggested Events</h2>
+              {dashboard.events.suggestedEvents.length > 0 ? (
+                <ul className={styles.list}>
+                  {dashboard.events.suggestedEvents.map((event) => (
+                    <li key={event.id}>
+                      <strong>{event.title}</strong>
+                      <p>{event.startAt ? new Date(event.startAt).toLocaleString() : "Date TBD"}</p>
+                      <Link href={event.path} className={styles.inlineLink}>
+                        View event
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No suggested events at this time.</p>
+              )}
+            </article>
 
-        <article className={`${styles.card} internal-card`}>
-          <h2>Activity Feed</h2>
-          {dashboard.activity.length > 0 ? (
-            <ul className={styles.list}>
-              {dashboard.activity.map((entry) => (
-                <li key={entry.id}>
-                  <strong>{entry.label}</strong>
-                  <p>{new Date(entry.timestamp).toLocaleString()}</p>
-                  {entry.href ? (
-                    <Link href={entry.href} className={styles.inlineLink}>
-                      Open
-                    </Link>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No recent activity yet.</p>
-          )}
-        </article>
+            <article className={`${styles.card} internal-card`}>
+              <h2>Activity Feed</h2>
+              {dashboard.activity.length > 0 ? (
+                <ul className={styles.list}>
+                  {dashboard.activity.map((entry) => (
+                    <li key={entry.id}>
+                      <strong>{entry.label}</strong>
+                      <p>{new Date(entry.timestamp).toLocaleString()}</p>
+                      {entry.href ? (
+                        <Link href={entry.href} className={styles.inlineLink}>
+                          Open
+                        </Link>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No recent activity yet.</p>
+              )}
+            </article>
 
-        <article className={`${styles.card} internal-card`}>
-          <h2>Community Updates</h2>
-          {dashboard.announcements.length > 0 ? (
-            <ul className={styles.list}>
-              {dashboard.announcements.map((announcement) => (
-                <li key={announcement.id}>
-                  <strong>{announcement.title}</strong>
-                  <p>
-                    {announcement.publication}
-                    {announcement.publishedLabel ? ` · ${announcement.publishedLabel}` : ""}
-                  </p>
-                  <Link href={announcement.path} className={styles.inlineLink}>
-                    Read
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No announcements available.</p>
-          )}
-        </article>
-      </section>
+            <article className={`${styles.card} internal-card`}>
+              <h2>Community Updates</h2>
+              {dashboard.announcements.length > 0 ? (
+                <ul className={styles.list}>
+                  {dashboard.announcements.map((announcement) => (
+                    <li key={announcement.id}>
+                      <strong>{announcement.title}</strong>
+                      <p>
+                        {announcement.publication}
+                        {announcement.publishedLabel ? ` · ${announcement.publishedLabel}` : ""}
+                      </p>
+                      <Link href={announcement.path} className={styles.inlineLink}>
+                        Read
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No announcements available.</p>
+              )}
+            </article>
+          </section>
+        </>
+      )}
     </MemberShell>
   );
 }

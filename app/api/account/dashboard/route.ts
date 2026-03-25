@@ -1,19 +1,20 @@
 import { and, asc, desc, eq, gte, inArray, notInArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { canAccessMembersArea, requireAuthenticatedAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { duesInvoices, duesPayments, eventRegistrations, events, inTheNews, users } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { isFeatureEnabled } from "@/lib/config/features";
 
 export async function GET() {
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireAuthenticatedAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const db = getDb();
   const now = new Date();
+  const membersAreaEnabled = canAccessMembersArea(access);
 
   const [user] = await db
     .select({
@@ -26,15 +27,15 @@ export async function GET() {
       updatedAt: users.updatedAt,
     })
     .from(users)
-    .where(eq(users.id, session.userId))
+    .where(eq(users.id, access.session.userId))
     .limit(1);
 
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const duesEnabled = await isFeatureEnabled("FEATURE_DUES");
-  const eventsEnabled = await isFeatureEnabled("FEATURE_EVENT_SIGNUPS");
+  const duesEnabled = membersAreaEnabled && (await isFeatureEnabled("FEATURE_DUES"));
+  const eventsEnabled = membersAreaEnabled && (await isFeatureEnabled("FEATURE_EVENT_SIGNUPS"));
 
   const openInvoices = duesEnabled
     ? await db
@@ -47,7 +48,7 @@ export async function GET() {
           status: duesInvoices.status,
         })
         .from(duesInvoices)
-        .where(and(eq(duesInvoices.userId, session.userId), inArray(duesInvoices.status, ["open", "overdue"])))
+        .where(and(eq(duesInvoices.userId, access.session.userId), inArray(duesInvoices.status, ["open", "overdue"])))
         .orderBy(asc(duesInvoices.dueDate))
     : [];
 
@@ -65,7 +66,7 @@ export async function GET() {
         })
         .from(duesPayments)
         .innerJoin(duesInvoices, eq(duesInvoices.id, duesPayments.invoiceId))
-        .where(eq(duesPayments.userId, session.userId))
+        .where(eq(duesPayments.userId, access.session.userId))
         .orderBy(desc(duesPayments.createdAt))
         .limit(8)
     : [];
@@ -86,7 +87,7 @@ export async function GET() {
         .innerJoin(events, eq(events.id, eventRegistrations.eventId))
         .where(
           and(
-            eq(eventRegistrations.userId, session.userId),
+            eq(eventRegistrations.userId, access.session.userId),
             inArray(eventRegistrations.status, ["registered", "waitlisted", "payment_pending"]),
             gte(events.startAt, now),
           ),
@@ -153,6 +154,9 @@ export async function GET() {
     summary: {
       displayName: user.displayName,
       role: user.role,
+      accessState: access.accessState,
+      canAccessMembersArea: membersAreaEnabled,
+      latestMembershipApplicationStatus: access.latestMembershipApplicationStatus,
       profileVisibility: user.profileVisibility,
       lastLoginAt: user.lastLoginAt,
       profileUpdatedAt: user.updatedAt,

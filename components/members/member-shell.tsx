@@ -13,6 +13,7 @@ export function MemberShell({
   title,
   description,
   eyebrow = "Members Area",
+  navigationContext = "member",
   breadcrumbs,
   activeSection,
   actions,
@@ -22,6 +23,7 @@ export function MemberShell({
   title: string;
   description?: string;
   eyebrow?: string;
+  navigationContext?: "member" | "authenticated";
   breadcrumbs: BreadcrumbItem[];
   activeSection: MembersNavSection;
   actions?: ReactNode;
@@ -30,7 +32,7 @@ export function MemberShell({
 }) {
   return (
     <main className={`internal-page ${styles.shell}`}>
-      <MembersBreadcrumbs items={breadcrumbs} context="member" activeSection={activeSection} />
+      <MembersBreadcrumbs items={breadcrumbs} context={navigationContext} activeSection={activeSection} />
 
       <section className={styles.headerCard}>
         <div className={styles.headerTop}>

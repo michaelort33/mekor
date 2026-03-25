@@ -8,7 +8,7 @@ import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import type { UserSessionRole } from "@/lib/auth/session";
+import type { AccountAccessState } from "@/lib/auth/account-access";
 import type { NavItem } from "@/lib/navigation/site-menu";
 import { cn } from "@/lib/utils";
 import { isNavGroup } from "@/lib/navigation/site-menu";
@@ -21,7 +21,9 @@ type MobileDrawerProps = {
   onClose: () => void;
   drawerId: string;
   titleId: string;
-  role: UserSessionRole | null;
+  authenticated: boolean;
+  canAccessMembersArea: boolean;
+  accessState: AccountAccessState | null;
   isCheckingAuth: boolean;
 };
 
@@ -36,7 +38,7 @@ export function MobileDrawer({
   onClose,
   drawerId,
   titleId,
-  role,
+  authenticated,
   isCheckingAuth,
 }: MobileDrawerProps) {
   const initialExpanded = useMemo(() => {
@@ -248,7 +250,7 @@ export function MobileDrawer({
               <span className="text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">Command K</span>
             </button>
           </div>
-          <NavCta isSignedIn={role !== null} isCheckingAuth={isCheckingAuth} />
+          <NavCta isSignedIn={authenticated} isCheckingAuth={isCheckingAuth} />
         </div>
       </SheetContent>
     </Sheet>

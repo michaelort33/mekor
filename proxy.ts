@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getEdgeProtectionType, isAdminLoginPath, isApiPath } from "@/lib/auth/edge-route-policy";
-import { USER_SESSION_COOKIE, getValidUserSessionRole, hasValidUserSession } from "@/lib/auth/edge-session";
+import { USER_SESSION_COOKIE, getValidUserSessionRole } from "@/lib/auth/edge-session";
 import statusOverrides from "@/mirror-data/routes/status-overrides.json";
 
 const STATUS_MAP = new Map<string, number>(
@@ -18,7 +18,7 @@ function buildUserLoginRedirect(request: NextRequest) {
 function unauthorizedResponse(
   request: NextRequest,
   options: {
-    type: "admin" | "user";
+    type: "admin" | "authenticated" | "member";
     isApi: boolean;
     clearCookie?: boolean;
   },
@@ -32,6 +32,20 @@ function unauthorizedResponse(
   }
 
   return response;
+}
+
+function membershipApprovalRequiredResponse(request: NextRequest, isApi: boolean) {
+  if (isApi) {
+    return NextResponse.json(
+      {
+        error: "Membership approval is required to access this area.",
+        code: "PENDING_MEMBERSHIP_APPROVAL",
+      },
+      { status: 403 },
+    );
+  }
+
+  return NextResponse.redirect(new URL("/account?membership=pending", request.url));
 }
 
 function resolveStatusOverride(request: NextRequest) {
@@ -96,18 +110,22 @@ export async function proxy(request: NextRequest) {
   const token = request.cookies.get(USER_SESSION_COOKIE)?.value;
   if (!token) {
     return unauthorizedResponse(request, {
-      type: "user",
+      type: protectionType,
       isApi: isApiPath(pathname),
     });
   }
 
-  const valid = await hasValidUserSession(token);
-  if (!valid) {
+  const role = await getValidUserSessionRole(token);
+  if (!role) {
     return unauthorizedResponse(request, {
-      type: "user",
+      type: protectionType,
       isApi: isApiPath(pathname),
       clearCookie: true,
     });
+  }
+
+  if (protectionType === "member" && role === "visitor") {
+    return membershipApprovalRequiredResponse(request, isApiPath(pathname));
   }
 
   return NextResponse.next();

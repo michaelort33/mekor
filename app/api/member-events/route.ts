@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { getUserSession } from "@/lib/auth/session";
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { allowWithinWindow } from "@/lib/invitations/rate-limit";
 import { memberEventsServiceErrorResponse } from "@/lib/member-events/http";
 import { createMemberEvent, listMemberEvents } from "@/lib/member-events/service";
@@ -32,13 +32,13 @@ export async function GET(request: Request) {
     const rawLimit = Number(url.searchParams.get("limit") ?? "40");
     const limit = Number.isInteger(rawLimit) ? rawLimit : 40;
 
-    const session = await getUserSession();
-    if (host === "me" && !session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const access = await requireApprovedMemberAccountAccess();
+    if ("error" in access) {
+      return access.error;
     }
 
     const items = await listMemberEvents({
-      viewerUserId: session?.userId,
+      viewerUserId: access.session.userId,
       includeHostedByViewer: host === "me",
       includeDraft: includeDraft && host === "me",
       includePast,
@@ -52,13 +52,13 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (!allowWithinWindow(`member-event-create:${session.userId}:${ip}`, 10, 60_000)) {
+  if (!allowWithinWindow(`member-event-create:${access.session.userId}:${ip}`, 10, 60_000)) {
     return NextResponse.json({ error: "Too many create attempts. Please wait and retry." }, { status: 429 });
   }
 
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
 
   try {
     const created = await createMemberEvent({
-      actorUserId: session.userId,
+      actorUserId: access.session.userId,
       title: parsed.data.title,
       description: parsed.data.description,
       startsAt: new Date(parsed.data.startsAt),

@@ -1,15 +1,15 @@
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { familyMembers, people } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { getPaymentSummaryForTaxYear, listPayments } from "@/lib/payments/service";
 
 export async function GET(request: Request) {
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const { searchParams } = new URL(request.url);
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
       displayName: people.displayName,
     })
     .from(people)
-    .where(eq(people.userId, session.userId))
+    .where(eq(people.userId, access.session.userId))
     .limit(1);
 
   const [familyAdminMembership] = await db
@@ -31,10 +31,10 @@ export async function GET(request: Request) {
       familyId: familyMembers.familyId,
     })
     .from(familyMembers)
-    .where(and(eq(familyMembers.userId, session.userId), eq(familyMembers.membershipStatus, "active"), eq(familyMembers.roleInFamily, "primary_adult")))
+    .where(and(eq(familyMembers.userId, access.session.userId), eq(familyMembers.membershipStatus, "active"), eq(familyMembers.roleInFamily, "primary_adult")))
     .limit(1);
 
-  const personalPayments = await listPayments({ userId: session.userId });
+  const personalPayments = await listPayments({ userId: access.session.userId });
   const familyPayments = familyAdminMembership ? await listPayments({ familyId: familyAdminMembership.familyId }) : [];
   const taxSummary = person ? await getPaymentSummaryForTaxYear({ personId: person.id, taxYear }) : null;
 
@@ -48,9 +48,9 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     actor: {
-      userId: session.userId,
+      userId: access.session.userId,
       personId: person?.id ?? null,
-      displayName: person?.displayName ?? `User ${session.userId}`,
+      displayName: person?.displayName ?? `User ${access.session.userId}`,
     },
     familyAdmin: Boolean(familyAdminMembership),
     selectedTaxYear: taxYear,

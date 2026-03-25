@@ -1,9 +1,9 @@
 import { and, eq, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { requireApprovedMemberAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { familyMembers, paymentsLedger, taxDocuments } from "@/db/schema";
-import { getUserSession } from "@/lib/auth/session";
 import { renderTaxReceiptPdf } from "@/lib/payments/documents";
 import { ensureTaxReceiptForPayment } from "@/lib/payments/service";
 
@@ -14,9 +14,9 @@ type Params = {
 };
 
 export async function GET(_request: Request, { params }: Params) {
-  const session = await getUserSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const access = await requireApprovedMemberAccountAccess();
+  if ("error" in access) {
+    return access.error;
   }
 
   const { paymentId } = await params;
@@ -30,7 +30,7 @@ export async function GET(_request: Request, { params }: Params) {
     .from(familyMembers)
     .where(
       and(
-        eq(familyMembers.userId, session.userId),
+        eq(familyMembers.userId, access.session.userId),
         eq(familyMembers.membershipStatus, "active"),
         eq(familyMembers.roleInFamily, "primary_adult"),
       ),
@@ -46,7 +46,7 @@ export async function GET(_request: Request, { params }: Params) {
       and(
         eq(paymentsLedger.id, id),
         or(
-          eq(paymentsLedger.userId, session.userId),
+          eq(paymentsLedger.userId, access.session.userId),
           familyAdminMembership ? eq(paymentsLedger.familyId, familyAdminMembership.familyId) : undefined,
         ),
       ),

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import type { UserSessionRole } from "@/lib/auth/session";
+import type { AccountAccessState } from "@/lib/auth/account-access";
 import { buildAreaSwitcherLinks, type AppArea } from "@/lib/navigation/area-switcher";
 import styles from "./area-switcher.module.css";
 
@@ -11,6 +12,9 @@ type AreaSwitcherProps = {
   currentPath: string;
   currentArea?: AppArea;
   role?: UserSessionRole | null;
+  authenticated?: boolean;
+  canAccessMembersArea?: boolean;
+  accessState?: AccountAccessState | null;
   isCheckingAuth?: boolean;
   includeSignInLinks?: boolean;
   variant?: "default" | "compact" | "mobile";
@@ -19,6 +23,9 @@ type AreaSwitcherProps = {
 
 type ProfileResponse = {
   role: UserSessionRole | null;
+  authenticated: boolean;
+  canAccessMembersArea: boolean;
+  accessState: AccountAccessState | null;
 };
 
 function joinClassNames(...values: Array<string | false | null | undefined>) {
@@ -29,13 +36,26 @@ export function AreaSwitcher({
   currentPath,
   currentArea,
   role: providedRole,
+  authenticated: providedAuthenticated,
+  canAccessMembersArea: providedCanAccessMembersArea,
+  accessState: providedAccessState,
   isCheckingAuth: providedCheckingAuth,
   includeSignInLinks = false,
   variant = "default",
   className,
 }: AreaSwitcherProps) {
-  const hasControlledAuthState = providedRole !== undefined || providedCheckingAuth !== undefined;
+  const hasControlledAuthState =
+    providedRole !== undefined ||
+    providedAuthenticated !== undefined ||
+    providedCanAccessMembersArea !== undefined ||
+    providedAccessState !== undefined ||
+    providedCheckingAuth !== undefined;
   const [role, setRole] = useState<UserSessionRole | null>(providedRole ?? null);
+  const [authenticated, setAuthenticated] = useState(providedAuthenticated ?? providedRole != null);
+  const [canAccessMembersArea, setCanAccessMembersArea] = useState(
+    providedCanAccessMembersArea ?? (providedRole === "member" || providedRole === "admin" || providedRole === "super_admin"),
+  );
+  const [accessState, setAccessState] = useState<AccountAccessState | null>(providedAccessState ?? null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(providedCheckingAuth ?? !hasControlledAuthState);
 
   useEffect(() => {
@@ -43,6 +63,24 @@ export function AreaSwitcher({
       setRole(providedRole);
     }
   }, [providedRole]);
+
+  useEffect(() => {
+    if (providedAuthenticated !== undefined) {
+      setAuthenticated(providedAuthenticated);
+    }
+  }, [providedAuthenticated]);
+
+  useEffect(() => {
+    if (providedCanAccessMembersArea !== undefined) {
+      setCanAccessMembersArea(providedCanAccessMembersArea);
+    }
+  }, [providedCanAccessMembersArea]);
+
+  useEffect(() => {
+    if (providedAccessState !== undefined) {
+      setAccessState(providedAccessState);
+    }
+  }, [providedAccessState]);
 
   useEffect(() => {
     if (providedCheckingAuth !== undefined) {
@@ -66,14 +104,23 @@ export function AreaSwitcher({
 
         if (!response.ok) {
           setRole(null);
+          setAuthenticated(false);
+          setCanAccessMembersArea(false);
+          setAccessState(null);
           return;
         }
 
         const payload = (await response.json().catch(() => ({}))) as ProfileResponse;
         setRole(payload.role ?? null);
+        setAuthenticated(Boolean(payload.authenticated));
+        setCanAccessMembersArea(Boolean(payload.canAccessMembersArea));
+        setAccessState(payload.accessState ?? null);
       } catch {
         if (active) {
           setRole(null);
+          setAuthenticated(false);
+          setCanAccessMembersArea(false);
+          setAccessState(null);
         }
       } finally {
         if (active) {
@@ -95,9 +142,12 @@ export function AreaSwitcher({
         currentPath,
         currentArea,
         role,
+        authenticated,
+        canAccessMembersArea,
+        accessState,
         includeSignInLinks: includeSignInLinks && !isCheckingAuth,
       }),
-    [currentArea, currentPath, includeSignInLinks, isCheckingAuth, role],
+    [accessState, authenticated, canAccessMembersArea, currentArea, currentPath, includeSignInLinks, isCheckingAuth, role],
   );
 
   return (
