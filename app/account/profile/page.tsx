@@ -8,6 +8,29 @@ import { MemberShell } from "@/components/members/member-shell";
 import memberShellStyles from "@/components/members/member-shell.module.css";
 import styles from "./page.module.css";
 
+type ProfileFieldVisibility = "public" | "private";
+type ProfileVisibility = "private" | "members" | "public" | "anonymous";
+
+type ProfileDetails = {
+  school: string;
+  occupation: string;
+  interests: string;
+  hobbies: string;
+  funFacts: string;
+};
+
+type ProfileFieldVisibilityMap = {
+  displayName: ProfileFieldVisibility;
+  bio: ProfileFieldVisibility;
+  city: ProfileFieldVisibility;
+  avatarUrl: ProfileFieldVisibility;
+  school: ProfileFieldVisibility;
+  occupation: ProfileFieldVisibility;
+  interests: ProfileFieldVisibility;
+  hobbies: ProfileFieldVisibility;
+  funFacts: ProfileFieldVisibility;
+};
+
 type ProfileResponse = {
   profile: {
     id: number;
@@ -16,7 +39,9 @@ type ProfileResponse = {
     bio: string;
     city: string;
     avatarUrl: string;
-    profileVisibility: "private" | "members" | "public" | "anonymous";
+    profileDetails: ProfileDetails;
+    profileFieldVisibility: ProfileFieldVisibilityMap;
+    profileVisibility: ProfileVisibility;
     role: "visitor" | "member" | "admin" | "super_admin";
     accessState: "approved_member" | "pending_approval" | "declined" | "visitor";
     canAccessMembersArea: boolean;
@@ -40,7 +65,25 @@ export default function AccountProfilePage() {
     bio: "",
     city: "",
     avatarUrl: "",
-    profileVisibility: "private" as "private" | "members" | "public" | "anonymous",
+    profileDetails: {
+      school: "",
+      occupation: "",
+      interests: "",
+      hobbies: "",
+      funFacts: "",
+    },
+    profileFieldVisibility: {
+      displayName: "public" as ProfileFieldVisibility,
+      bio: "public" as ProfileFieldVisibility,
+      city: "public" as ProfileFieldVisibility,
+      avatarUrl: "public" as ProfileFieldVisibility,
+      school: "private" as ProfileFieldVisibility,
+      occupation: "private" as ProfileFieldVisibility,
+      interests: "private" as ProfileFieldVisibility,
+      hobbies: "private" as ProfileFieldVisibility,
+      funFacts: "private" as ProfileFieldVisibility,
+    },
+    profileVisibility: "private" as ProfileVisibility,
     accessState: "visitor" as "approved_member" | "pending_approval" | "declined" | "visitor",
     canAccessMembersArea: false,
   });
@@ -71,6 +114,8 @@ export default function AccountProfilePage() {
         bio: data.profile.bio,
         city: data.profile.city,
         avatarUrl: data.profile.avatarUrl,
+        profileDetails: data.profile.profileDetails,
+        profileFieldVisibility: data.profile.profileFieldVisibility,
         profileVisibility: data.profile.profileVisibility,
         accessState: data.profile.accessState,
         canAccessMembersArea: data.profile.canAccessMembersArea,
@@ -98,6 +143,26 @@ export default function AccountProfilePage() {
 
   function update(field: "displayName" | "bio" | "city" | "avatarUrl", value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function updateDetail(field: keyof ProfileDetails, value: string) {
+    setForm((prev) => ({
+      ...prev,
+      profileDetails: {
+        ...prev.profileDetails,
+        [field]: value,
+      },
+    }));
+  }
+
+  function updateFieldVisibility(field: keyof ProfileFieldVisibilityMap, value: ProfileFieldVisibility) {
+    setForm((prev) => ({
+      ...prev,
+      profileFieldVisibility: {
+        ...prev.profileFieldVisibility,
+        [field]: value,
+      },
+    }));
   }
 
   async function handleAvatarUpload(event: React.ChangeEvent<HTMLInputElement>) {
@@ -169,6 +234,8 @@ export default function AccountProfilePage() {
         bio: form.bio,
         city: form.city,
         avatarUrl: form.avatarUrl,
+        profileDetails: form.profileDetails,
+        profileFieldVisibility: form.profileFieldVisibility,
         profileVisibility: form.profileVisibility,
       }),
     });
@@ -213,6 +280,15 @@ export default function AccountProfilePage() {
           hint: "No member stats yet",
         },
   ];
+
+  const visibilityHint =
+    form.profileVisibility === "private"
+      ? "Your profile is hidden everywhere, so individual field toggles are currently inactive."
+      : form.profileVisibility === "members"
+        ? "Fields marked public will be visible to approved members only."
+        : form.profileVisibility === "public"
+          ? "Fields marked public will appear in both the public directory and the members area."
+          : "Anonymous mode hides your identity even when individual fields are marked public.";
 
   return (
     <MemberShell
@@ -270,34 +346,61 @@ export default function AccountProfilePage() {
 
         <label className={styles.field}>
           <span>Display name</span>
-          <input
-            type="text"
-            value={form.displayName}
-            onChange={(event) => update("displayName", event.target.value)}
-            required
-            minLength={2}
-            maxLength={120}
-          />
+          <div className={styles.fieldRow}>
+            <input
+              type="text"
+              value={form.displayName}
+              onChange={(event) => update("displayName", event.target.value)}
+              required
+              minLength={2}
+              maxLength={120}
+            />
+            <select
+              value={form.profileFieldVisibility.displayName}
+              onChange={(event) => updateFieldVisibility("displayName", event.target.value as ProfileFieldVisibility)}
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
         </label>
 
         <label className={styles.field}>
           <span>Short bio</span>
-          <textarea
-            value={form.bio}
-            onChange={(event) => update("bio", event.target.value)}
-            maxLength={500}
-            rows={4}
-          />
+          <div className={styles.fieldRow}>
+            <textarea
+              value={form.bio}
+              onChange={(event) => update("bio", event.target.value)}
+              maxLength={500}
+              rows={4}
+            />
+            <select
+              value={form.profileFieldVisibility.bio}
+              onChange={(event) => updateFieldVisibility("bio", event.target.value as ProfileFieldVisibility)}
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
         </label>
 
         <label className={styles.field}>
           <span>City</span>
-          <input
-            type="text"
-            value={form.city}
-            onChange={(event) => update("city", event.target.value)}
-            maxLength={120}
-          />
+          <div className={styles.fieldRow}>
+            <input
+              type="text"
+              value={form.city}
+              onChange={(event) => update("city", event.target.value)}
+              maxLength={120}
+            />
+            <select
+              value={form.profileFieldVisibility.city}
+              onChange={(event) => updateFieldVisibility("city", event.target.value as ProfileFieldVisibility)}
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
         </label>
 
         <section className={styles.avatarSection}>
@@ -315,7 +418,16 @@ export default function AccountProfilePage() {
 
           <label className={styles.field}>
             <span>Upload image (PNG, JPG, WEBP, max 5MB)</span>
-            <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleAvatarUpload} disabled={uploadingAvatar || generatingAvatar} />
+            <div className={styles.fieldRow}>
+              <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleAvatarUpload} disabled={uploadingAvatar || generatingAvatar} />
+              <select
+                value={form.profileFieldVisibility.avatarUrl}
+                onChange={(event) => updateFieldVisibility("avatarUrl", event.target.value as ProfileFieldVisibility)}
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
           </label>
 
           <label className={styles.field}>
@@ -356,6 +468,108 @@ export default function AccountProfilePage() {
             <option value="anonymous">Anonymous</option>
           </select>
         </label>
+
+        <p className={styles.visibilityHint}>{visibilityHint}</p>
+
+        <section className={styles.avatarSection}>
+          <h2>Optional profile details</h2>
+          <p className={styles.avatarHint}>Add the kind of context you might share on a host profile, then decide whether each field is public or private.</p>
+
+          <label className={styles.field}>
+            <span>School</span>
+            <div className={styles.fieldRow}>
+              <input
+                type="text"
+                value={form.profileDetails.school}
+                onChange={(event) => updateDetail("school", event.target.value)}
+                maxLength={160}
+              />
+              <select
+                value={form.profileFieldVisibility.school}
+                onChange={(event) => updateFieldVisibility("school", event.target.value as ProfileFieldVisibility)}
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+          </label>
+
+          <label className={styles.field}>
+            <span>Occupation</span>
+            <div className={styles.fieldRow}>
+              <input
+                type="text"
+                value={form.profileDetails.occupation}
+                onChange={(event) => updateDetail("occupation", event.target.value)}
+                maxLength={160}
+              />
+              <select
+                value={form.profileFieldVisibility.occupation}
+                onChange={(event) => updateFieldVisibility("occupation", event.target.value as ProfileFieldVisibility)}
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+          </label>
+
+          <label className={styles.field}>
+            <span>Interests</span>
+            <div className={styles.fieldRow}>
+              <textarea
+                value={form.profileDetails.interests}
+                onChange={(event) => updateDetail("interests", event.target.value)}
+                maxLength={500}
+                rows={3}
+              />
+              <select
+                value={form.profileFieldVisibility.interests}
+                onChange={(event) => updateFieldVisibility("interests", event.target.value as ProfileFieldVisibility)}
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+          </label>
+
+          <label className={styles.field}>
+            <span>Hobbies</span>
+            <div className={styles.fieldRow}>
+              <textarea
+                value={form.profileDetails.hobbies}
+                onChange={(event) => updateDetail("hobbies", event.target.value)}
+                maxLength={500}
+                rows={3}
+              />
+              <select
+                value={form.profileFieldVisibility.hobbies}
+                onChange={(event) => updateFieldVisibility("hobbies", event.target.value as ProfileFieldVisibility)}
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+          </label>
+
+          <label className={styles.field}>
+            <span>Fun facts</span>
+            <div className={styles.fieldRow}>
+              <textarea
+                value={form.profileDetails.funFacts}
+                onChange={(event) => updateDetail("funFacts", event.target.value)}
+                maxLength={500}
+                rows={3}
+              />
+              <select
+                value={form.profileFieldVisibility.funFacts}
+                onChange={(event) => updateFieldVisibility("funFacts", event.target.value as ProfileFieldVisibility)}
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+          </label>
+        </section>
 
         {memberStats ? (
           <section className={styles.avatarSection}>

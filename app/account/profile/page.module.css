@@ -54,6 +54,21 @@
   font-family: inherit;
 }
 
+.fieldRow {
+  display: grid;
+  gap: 10px;
+}
+
+.fieldRow select {
+  min-width: 120px;
+}
+
+.visibilityHint {
+  margin: -4px 0 0;
+  color: #4f6174;
+  font-size: 0.92rem;
+}
+
 .avatarSection {
   border: 1px solid #d7e1ec;
   border-radius: 14px;
@@ -106,6 +121,13 @@
 .field input[readonly] {
   background: #f5f8fb;
   color: #516274;
+}
+
+@media (min-width: 720px) {
+  .fieldRow {
+    grid-template-columns: minmax(0, 1fr) 140px;
+    align-items: start;
+  }
 }
 
 .checkbox {

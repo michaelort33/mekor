@@ -52,6 +52,34 @@
   color: #1f2937;
 }
 
+.detailsList {
+  margin: 0 0 1rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.detailRow {
+  display: grid;
+  gap: 0.25rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.detailLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.detailValue {
+  margin: 0;
+  color: #1f2937;
+  line-height: 1.6;
+}
+
 .backLink {
   color: #2563eb;
 }

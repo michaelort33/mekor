@@ -435,6 +435,36 @@ export const users = pgTable(
     bio: text("bio").notNull().default(""),
     city: varchar("city", { length: 120 }).notNull().default(""),
     avatarUrl: text("avatar_url").notNull().default(""),
+    profileDetailsJson: json("profile_details_json")
+      .$type<{
+        school: string;
+        occupation: string;
+        interests: string;
+        hobbies: string;
+        funFacts: string;
+      }>()
+      .notNull()
+      .default({
+        school: "",
+        occupation: "",
+        interests: "",
+        hobbies: "",
+        funFacts: "",
+      }),
+    profileFieldVisibilityJson: json("profile_field_visibility_json")
+      .$type<{
+        displayName?: "public" | "private";
+        bio?: "public" | "private";
+        city?: "public" | "private";
+        avatarUrl?: "public" | "private";
+        school?: "public" | "private";
+        occupation?: "public" | "private";
+        interests?: "public" | "private";
+        hobbies?: "public" | "private";
+        funFacts?: "public" | "private";
+      }>()
+      .notNull()
+      .default({}),
     role: userRoleEnum("role").notNull().default("visitor"),
     profileVisibility: profileVisibilityEnum("profile_visibility").notNull().default("private"),
     membershipStartDate: date("membership_start_date"),

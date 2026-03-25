@@ -4,6 +4,10 @@ import { NextResponse } from "next/server";
 import { canAccessMembersArea, requireAuthenticatedAccountAccess } from "@/lib/auth/account-access";
 import { getDb } from "@/db/client";
 import { people, users } from "@/db/schema";
+import {
+  normalizeProfileDetails,
+  normalizeProfileFieldVisibility,
+} from "@/lib/users/profile";
 import { profileUpdatePayloadSchema } from "@/lib/users/validation";
 
 export async function GET() {
@@ -21,6 +25,8 @@ export async function GET() {
       bio: users.bio,
       city: users.city,
       avatarUrl: users.avatarUrl,
+      profileDetails: users.profileDetailsJson,
+      profileFieldVisibility: users.profileFieldVisibilityJson,
       profileVisibility: users.profileVisibility,
       role: users.role,
     })
@@ -50,6 +56,8 @@ export async function GET() {
   return NextResponse.json({
     profile: {
       ...profile,
+      profileDetails: normalizeProfileDetails(profile.profileDetails),
+      profileFieldVisibility: normalizeProfileFieldVisibility(profile.profileFieldVisibility),
       firstName,
       lastName,
       phone: person?.phone || "",
@@ -85,6 +93,8 @@ export async function PUT(request: Request) {
       bio: parsed.data.bio.trim(),
       city: parsed.data.city.trim(),
       avatarUrl: parsed.data.avatarUrl.trim(),
+      profileDetailsJson: normalizeProfileDetails(parsed.data.profileDetails),
+      profileFieldVisibilityJson: normalizeProfileFieldVisibility(parsed.data.profileFieldVisibility),
       profileVisibility: parsed.data.profileVisibility,
       updatedAt: new Date(),
     })
@@ -96,6 +106,8 @@ export async function PUT(request: Request) {
       bio: users.bio,
       city: users.city,
       avatarUrl: users.avatarUrl,
+      profileDetails: users.profileDetailsJson,
+      profileFieldVisibility: users.profileFieldVisibilityJson,
       profileVisibility: users.profileVisibility,
       role: users.role,
     });
@@ -107,6 +119,8 @@ export async function PUT(request: Request) {
   return NextResponse.json({
     profile: {
       ...updated,
+      profileDetails: normalizeProfileDetails(updated.profileDetails),
+      profileFieldVisibility: normalizeProfileFieldVisibility(updated.profileFieldVisibility),
       accessState: access.accessState,
       canAccessMembersArea: canAccessMembersArea(access),
       latestMembershipApplicationStatus: access.latestMembershipApplicationStatus,

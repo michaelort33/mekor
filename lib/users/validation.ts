@@ -45,6 +45,24 @@ export const profileUpdatePayloadSchema = z.object({
     .trim()
     .max(2048)
     .refine((value) => !value || z.url().safeParse(value).success, "Avatar URL must be a valid URL"),
+  profileDetails: z.object({
+    school: z.string().trim().max(160),
+    occupation: z.string().trim().max(160),
+    interests: z.string().trim().max(500),
+    hobbies: z.string().trim().max(500),
+    funFacts: z.string().trim().max(500),
+  }),
+  profileFieldVisibility: z.object({
+    displayName: z.enum(["public", "private"]),
+    bio: z.enum(["public", "private"]),
+    city: z.enum(["public", "private"]),
+    avatarUrl: z.enum(["public", "private"]),
+    school: z.enum(["public", "private"]),
+    occupation: z.enum(["public", "private"]),
+    interests: z.enum(["public", "private"]),
+    hobbies: z.enum(["public", "private"]),
+    funFacts: z.enum(["public", "private"]),
+  }),
   profileVisibility: z.enum(["private", "members", "public", "anonymous"]),
 });
 

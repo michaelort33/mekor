@@ -8,6 +8,10 @@ import { users } from "@/db/schema";
 import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
 import { getUserSession } from "@/lib/auth/session";
 import { decodeCursor, parsePageLimit, toPaginatedResult } from "@/lib/pagination/cursor";
+import {
+  getVisibleProfileValue,
+  normalizeProfileFieldVisibility,
+} from "@/lib/users/profile";
 import { isAnonymousVisibility } from "@/lib/users/visibility";
 import styles from "./page.module.css";
 
@@ -46,6 +50,7 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
       bio: users.bio,
       city: users.city,
       avatarUrl: users.avatarUrl,
+      profileFieldVisibility: users.profileFieldVisibilityJson,
       role: users.role,
       profileVisibility: users.profileVisibility,
     })
@@ -97,22 +102,63 @@ export default async function MembersPage({ searchParams }: MembersPageProps) {
           <section className={styles.grid}>
             {members.map((member) => (
               <article key={member.id} className={styles.card}>
-                {member.avatarUrl && !isAnonymousVisibility(member.profileVisibility) ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={member.avatarUrl} alt={`${member.displayName} avatar`} className={styles.avatar} />
-                ) : (
-                  <div className={styles.avatarPlaceholder} aria-hidden="true">
-                    {(isAnonymousVisibility(member.profileVisibility) ? "C" : member.displayName).charAt(0).toUpperCase()}
-                  </div>
-                )}
+                {(() => {
+                  const anonymous = isAnonymousVisibility(member.profileVisibility);
+                  const fieldVisibility = normalizeProfileFieldVisibility(member.profileFieldVisibility);
+                  const displayName = anonymous
+                    ? "Community Member"
+                    : getVisibleProfileValue({
+                        value: member.displayName,
+                        profileVisibility: member.profileVisibility,
+                        fieldVisibility: fieldVisibility.displayName,
+                        audience: "members",
+                      }) || "Community Member";
+                  const city = anonymous
+                    ? ""
+                    : getVisibleProfileValue({
+                        value: member.city,
+                        profileVisibility: member.profileVisibility,
+                        fieldVisibility: fieldVisibility.city,
+                        audience: "members",
+                      });
+                  const bio = anonymous
+                    ? ""
+                    : getVisibleProfileValue({
+                        value: member.bio,
+                        profileVisibility: member.profileVisibility,
+                        fieldVisibility: fieldVisibility.bio,
+                        audience: "members",
+                      });
+                  const avatarUrl = anonymous
+                    ? ""
+                    : getVisibleProfileValue({
+                        value: member.avatarUrl,
+                        profileVisibility: member.profileVisibility,
+                        fieldVisibility: fieldVisibility.avatarUrl,
+                        audience: "members",
+                      });
 
-                <div className={styles.body}>
-                  {!isAnonymousVisibility(member.profileVisibility) ? <p className={styles.role}>{member.role}</p> : null}
-                  <h2>{isAnonymousVisibility(member.profileVisibility) ? "Community Member" : member.displayName}</h2>
-                  {!isAnonymousVisibility(member.profileVisibility) && member.city ? <p className={styles.city}>{member.city}</p> : null}
-                  {!isAnonymousVisibility(member.profileVisibility) && member.bio ? <p className={styles.bio}>{member.bio}</p> : null}
-                  <Link href={`/members/${member.id}`}>View profile</Link>
-                </div>
+                  return (
+                    <>
+                      {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                        <img src={avatarUrl} alt={`${displayName} avatar`} className={styles.avatar} />
+                      ) : (
+                        <div className={styles.avatarPlaceholder} aria-hidden="true">
+                          {(anonymous ? "C" : displayName).charAt(0).toUpperCase()}
+                        </div>
+                      )}
+
+                      <div className={styles.body}>
+                        {!anonymous ? <p className={styles.role}>{member.role}</p> : null}
+                        <h2>{displayName}</h2>
+                        {city ? <p className={styles.city}>{city}</p> : null}
+                        {bio ? <p className={styles.bio}>{bio}</p> : null}
+                        <Link href={`/members/${member.id}`}>View profile</Link>
+                      </div>
+                    </>
+                  );
+                })()}
               </article>
             ))}
           </section>

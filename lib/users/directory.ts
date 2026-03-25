@@ -15,14 +15,14 @@ export function isVisibleInPublicDirectory(user: Pick<UserRow, "role" | "profile
   return isDirectoryEligibleRole(user.role) && isVisibleToPublic(user.profileVisibility);
 }
 
-export function filterMembersDirectoryUsers<T extends Pick<UserRow, "role" | "profileVisibility">>(
-  users: T[],
+export function filterMembersDirectoryUsers<T extends { role: UserRow["role"]; profileVisibility: UserRow["profileVisibility"] }>(
+  users: readonly T[],
 ) {
   return users.filter((user) => isVisibleInMembersDirectory(user));
 }
 
-export function filterPublicDirectoryUsers<T extends Pick<UserRow, "role" | "profileVisibility">>(
-  users: T[],
+export function filterPublicDirectoryUsers<T extends { role: UserRow["role"]; profileVisibility: UserRow["profileVisibility"] }>(
+  users: readonly T[],
 ) {
   return users.filter((user) => isVisibleInPublicDirectory(user));
 }

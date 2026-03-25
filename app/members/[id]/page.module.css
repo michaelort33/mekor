@@ -67,6 +67,34 @@
   line-height: 1.65;
 }
 
+.detailsList {
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.detailRow {
+  display: grid;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #e1e8f0;
+}
+
+.detailLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #58748f;
+}
+
+.detailValue {
+  margin: 0;
+  color: #385068;
+  line-height: 1.65;
+}
+
 .backLink {
   color: #245c8f;
   font-weight: 600;

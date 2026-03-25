@@ -7,6 +7,11 @@ import { users } from "@/db/schema";
 import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
 import { canAccessMembersArea, getSessionAccountAccess } from "@/lib/auth/account-access";
 import { isFeatureEnabled } from "@/lib/config/features";
+import {
+  getVisibleProfileValue,
+  normalizeProfileDetails,
+  normalizeProfileFieldVisibility,
+} from "@/lib/users/profile";
 import { isAnonymousVisibility } from "@/lib/users/visibility";
 import styles from "./page.module.css";
 
@@ -69,6 +74,8 @@ export default async function CommunityProfilePage({ params }: PageProps) {
       bio: users.bio,
       city: users.city,
       avatarUrl: users.avatarUrl,
+      profileDetails: users.profileDetailsJson,
+      profileFieldVisibility: users.profileFieldVisibilityJson,
       profileVisibility: users.profileVisibility,
     })
     .from(users)
@@ -86,6 +93,49 @@ export default async function CommunityProfilePage({ params }: PageProps) {
   }
 
   const anonymous = isAnonymousVisibility(member.profileVisibility);
+  const fieldVisibility = normalizeProfileFieldVisibility(member.profileFieldVisibility);
+  const details = normalizeProfileDetails(member.profileDetails);
+  const displayName = anonymous
+    ? "Community Member"
+    : getVisibleProfileValue({
+        value: member.displayName,
+        profileVisibility: member.profileVisibility,
+        fieldVisibility: fieldVisibility.displayName,
+        audience: "public",
+      }) || "Community Member";
+  const city = anonymous
+    ? ""
+    : getVisibleProfileValue({
+        value: member.city,
+        profileVisibility: member.profileVisibility,
+        fieldVisibility: fieldVisibility.city,
+        audience: "public",
+      });
+  const bio = anonymous
+    ? ""
+    : getVisibleProfileValue({
+        value: member.bio,
+        profileVisibility: member.profileVisibility,
+        fieldVisibility: fieldVisibility.bio,
+        audience: "public",
+      });
+  const avatarUrl = anonymous
+    ? ""
+    : getVisibleProfileValue({
+        value: member.avatarUrl,
+        profileVisibility: member.profileVisibility,
+        fieldVisibility: fieldVisibility.avatarUrl,
+        audience: "public",
+      });
+  const extraFields = anonymous
+    ? []
+    : [
+        { label: "School", value: getVisibleProfileValue({ value: details.school, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.school, audience: "public" }) },
+        { label: "Occupation", value: getVisibleProfileValue({ value: details.occupation, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.occupation, audience: "public" }) },
+        { label: "Interests", value: getVisibleProfileValue({ value: details.interests, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.interests, audience: "public" }) },
+        { label: "Hobbies", value: getVisibleProfileValue({ value: details.hobbies, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.hobbies, audience: "public" }) },
+        { label: "Fun facts", value: getVisibleProfileValue({ value: details.funFacts, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.funFacts, audience: "public" }) },
+      ].filter((item) => item.value);
 
   return (
     <main className={styles.page}>
@@ -101,21 +151,32 @@ export default async function CommunityProfilePage({ params }: PageProps) {
 
       <article className={styles.card}>
         <header className={styles.header}>
-          {member.avatarUrl && !anonymous ? (
+          {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={member.avatarUrl} alt={`${member.displayName} avatar`} className={styles.avatar} />
+            <img src={avatarUrl} alt={`${displayName} avatar`} className={styles.avatar} />
           ) : (
             <div className={styles.avatarPlaceholder} aria-hidden="true">
-              {(anonymous ? "C" : member.displayName).charAt(0).toUpperCase()}
+              {(anonymous ? "C" : displayName).charAt(0).toUpperCase()}
             </div>
           )}
           <div>
-            <h1>{anonymous ? "Community Member" : member.displayName}</h1>
-            {!anonymous && member.city ? <p className={styles.city}>{member.city}</p> : null}
+            <h1>{displayName}</h1>
+            {city ? <p className={styles.city}>{city}</p> : null}
           </div>
         </header>
 
-        {!anonymous && member.bio ? <p className={styles.bio}>{member.bio}</p> : anonymous ? null : <p className={styles.bio}>No bio provided.</p>}
+        {bio ? <p className={styles.bio}>{bio}</p> : anonymous ? null : <p className={styles.bio}>No bio provided.</p>}
+
+        {extraFields.length > 0 ? (
+          <dl className={styles.detailsList}>
+            {extraFields.map((item) => (
+              <div key={item.label} className={styles.detailRow}>
+                <dt className={styles.detailLabel}>{item.label}</dt>
+                <dd className={styles.detailValue}>{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
 
         <Link href="/community" className={styles.backLink}>
           ← Back to directory
