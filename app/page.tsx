@@ -18,6 +18,7 @@ const HERO_IMAGE = "https://static.wixstatic.com/media/11062b_8135b27108d04d2a97
 const DAVEING_IMAGE = "https://static.wixstatic.com/media/92f487_34e64b1fb2e94c56886578290ef2bcd0~mv2.jpeg";
 const FOOTER_BANNER = "https://static.wixstatic.com/media/92f487_22b1dca93b6045ad8ed3ce85337f5c74~mv2.jpg";
 const DEFAULT_EVENT_IMAGE = "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg";
+const PESACH_WITHOUT_THE_PAIN_URL = "https://www.pesachwithoutthepain.com/";
 const MAP_EMBED_SRC =
   "https://www.google.com/maps?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102&output=embed";
 
@@ -279,6 +280,73 @@ export default function HomePage() {
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className={styles.bookSection}>
+        <div className={styles.container}>
+          <article className={styles.bookCard}>
+            <div className={styles.bookVisual}>
+              <div className={styles.bookHeader}>
+                <div className={styles.bookBadge}>
+                  <Image
+                    src="/pesach-without-the-pain/favicon.svg"
+                    alt="Pesach Without the Pain mark"
+                    width={46}
+                    height={46}
+                  />
+                </div>
+                <div className={styles.bookMeta}>
+                  <span>Online edition</span>
+                  <span>Passover resource</span>
+                </div>
+              </div>
+              <p className={styles.bookEyebrow}>Rabbi Hirsch&apos;s Passover Guide</p>
+              <h2 className={styles.bookTitle}>Pesach Without the Pain</h2>
+              <p className={styles.bookSubtitle}>A practical guide to the laws and practices of Passover.</p>
+              <div className={styles.bookStats}>
+                <span>Free to read</span>
+                <span>Clear halachic guidance</span>
+                <span>Updated for 2026 / 5786</span>
+              </div>
+            </div>
+
+            <div className={styles.bookCopy}>
+              <p className={styles.bookLead}>
+                A thoughtful resource for people who want practical Pesach guidance without feeling buried by the
+                process.
+              </p>
+              <p>
+                Rabbi Eliezer Hirsch&apos;s <em>Pesach Without the Pain</em> is now available online in a free 2026
+                edition. The site organizes the material into short, readable chapters so people can prepare for
+                Pesach with more clarity and less stress.
+              </p>
+              <p>
+                It includes clear halachic guidance, step-by-step Seder help, and updated material for current
+                practical questions. No account is required to start reading.
+              </p>
+
+              <ul className={styles.bookHighlights}>
+                <li>Free online reading</li>
+                <li>Chapter-by-chapter format</li>
+                <li>Updated for the 2026 / 5786 season</li>
+              </ul>
+
+              <div className={styles.bookNote}>
+                <strong>Good for:</strong> first-time hosts, families reviewing the basics, and anyone who wants a
+                calmer, more organized way to prepare for the holiday.
+              </div>
+
+              <a
+                href={PESACH_WITHOUT_THE_PAIN_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+                className={styles.bookButton}
+              >
+                Visit the Online Edition
+              </a>
+            </div>
+          </article>
         </div>
       </section>
 
