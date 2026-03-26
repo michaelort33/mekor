@@ -298,7 +298,7 @@ export default function HomePage() {
                 </div>
                 <div className={styles.bookMeta}>
                   <span>2026 Edition</span>
-                  <span>Read online free</span>
+                  <span>Online edition</span>
                 </div>
               </div>
               <p className={styles.bookEyebrow}>Rabbi Eliezer Hirsch</p>
@@ -307,7 +307,7 @@ export default function HomePage() {
               <div className={styles.bookStats}>
                 <span>New edition for 2026</span>
                 <span>Clear halachic guidance</span>
-                <span>Seder Night Mastery</span>
+                <span>Updated for Passover</span>
               </div>
             </div>
 
@@ -323,12 +323,12 @@ export default function HomePage() {
 
               <ul className={styles.bookHighlights}>
                 <li>Clear Halachic Guidance</li>
-                <li>Seder Night Mastery</li>
+                <li>Practical guidance for Passover</li>
                 <li>Updated for 2026</li>
               </ul>
 
               <div className={styles.bookNote}>
-                The complete 2026 edition is available to read online, free of charge. No account required.
+                The complete 2026 edition is available online in a chapter-by-chapter format.
               </div>
 
               <a
@@ -337,7 +337,7 @@ export default function HomePage() {
                 rel="noreferrer noopener"
                 className={styles.bookButton}
               >
-                Start Reading Free
+                View the Online Edition
               </a>
             </div>
           </article>
