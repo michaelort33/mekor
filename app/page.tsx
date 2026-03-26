@@ -297,44 +297,38 @@ export default function HomePage() {
                   />
                 </div>
                 <div className={styles.bookMeta}>
-                  <span>Online edition</span>
-                  <span>Passover resource</span>
+                  <span>2026 Edition</span>
+                  <span>Read online free</span>
                 </div>
               </div>
-              <p className={styles.bookEyebrow}>Rabbi Hirsch&apos;s Passover Guide</p>
+              <p className={styles.bookEyebrow}>Rabbi Eliezer Hirsch</p>
               <h2 className={styles.bookTitle}>Pesach Without the Pain</h2>
               <p className={styles.bookSubtitle}>A practical guide to the laws and practices of Passover.</p>
               <div className={styles.bookStats}>
-                <span>Free to read</span>
+                <span>New edition for 2026</span>
                 <span>Clear halachic guidance</span>
-                <span>Updated for 2026 / 5786</span>
+                <span>Seder Night Mastery</span>
               </div>
             </div>
 
             <div className={styles.bookCopy}>
-              <p className={styles.bookLead}>
-                A thoughtful resource for people who want practical Pesach guidance without feeling buried by the
-                process.
+              <p className={styles.bookLead}>Make Pesach meaningful - not overwhelming.</p>
+              <p>
+                This guide distills the essential laws and customs of Passover into clear, practical guidance.
               </p>
               <p>
-                Rabbi Eliezer Hirsch&apos;s <em>Pesach Without the Pain</em> is now available online in a free 2026
-                edition. The site organizes the material into short, readable chapters so people can prepare for
-                Pesach with more clarity and less stress.
-              </p>
-              <p>
-                It includes clear halachic guidance, step-by-step Seder help, and updated material for current
-                practical questions. No account is required to start reading.
+                Whether you are preparing your home, planning the Seder, or navigating the unique halachic questions
+                of the holiday, this book brings clarity, confidence, and joy to every step of your preparation.
               </p>
 
               <ul className={styles.bookHighlights}>
-                <li>Free online reading</li>
-                <li>Chapter-by-chapter format</li>
-                <li>Updated for the 2026 / 5786 season</li>
+                <li>Clear Halachic Guidance</li>
+                <li>Seder Night Mastery</li>
+                <li>Updated for 2026</li>
               </ul>
 
               <div className={styles.bookNote}>
-                <strong>Good for:</strong> first-time hosts, families reviewing the basics, and anyone who wants a
-                calmer, more organized way to prepare for the holiday.
+                The complete 2026 edition is available to read online, free of charge. No account required.
               </div>
 
               <a
@@ -343,7 +337,7 @@ export default function HomePage() {
                 rel="noreferrer noopener"
                 className={styles.bookButton}
               >
-                Visit the Online Edition
+                Start Reading Free
               </a>
             </div>
           </article>
