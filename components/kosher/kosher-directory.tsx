@@ -258,6 +258,13 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
                   </a>
                 </Button>
               ) : null}
+              {place.certificateHref ? (
+                <Button asChild size="sm" variant="outline" className="border-[#cdb99e] bg-[#fbf3e8] text-[#5a3e24] hover:bg-[#f1e3d2]">
+                  <a href={place.certificateHref} target="_blank" rel="noreferrer noopener">
+                    Certificate
+                  </a>
+                </Button>
+              ) : null}
               {place.website ? (
                 <Button asChild size="sm" variant="ghost" className="text-[#5a3e24] hover:bg-[#f2e6d4]">
                   <a href={place.website} target="_blank" rel="noreferrer noopener">

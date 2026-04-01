@@ -7,6 +7,7 @@ import {
   KOSHER_NEIGHBORHOODS,
   type KosherNeighborhood,
 } from "@/lib/kosher/neighborhoods";
+import { resolveKosherCertificateLink } from "@/lib/kosher/certificates";
 import { validateManagedKosherPlacesContract } from "@/lib/native/contracts";
 
 type NeighborhoodFilter = KosherNeighborhood | "all";
@@ -34,6 +35,8 @@ export type ManagedKosherPlace = {
   supervision: string;
   summary: string;
   locationHref: string;
+  certificateHref: string;
+  certificateLabel: string;
   sourceCapturedAt: string | null;
 };
 
@@ -99,6 +102,15 @@ function readSourceHeroImage(sourceJson: Record<string, unknown> | null | undefi
   return "";
 }
 
+function readSourceLinks(sourceJson: Record<string, unknown> | null | undefined) {
+  const value = sourceJson?.links;
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter((entry): entry is string => typeof entry === "string");
+}
+
 function toManagedKosherPlace(row: {
   slug: string;
   path: string;
@@ -117,6 +129,14 @@ function toManagedKosherPlace(row: {
   locationHref: string;
   sourceCapturedAt: Date | null;
 }): ManagedKosherPlace {
+  const certificate = resolveKosherCertificateLink({
+    path: row.path,
+    title: row.title,
+    website: row.website,
+    supervision: row.supervision,
+    sourceLinks: readSourceLinks(row.sourceJson),
+  });
+
   return {
     slug: row.slug,
     path: row.path,
@@ -133,6 +153,8 @@ function toManagedKosherPlace(row: {
     supervision: row.supervision,
     summary: row.summary,
     locationHref: row.locationHref,
+    certificateHref: certificate?.href ?? "",
+    certificateLabel: certificate?.label ?? "",
     sourceCapturedAt: row.sourceCapturedAt ? row.sourceCapturedAt.toISOString() : null,
   };
 }

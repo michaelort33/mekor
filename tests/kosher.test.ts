@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { resolveKosherCertificateLink } from "../lib/kosher/certificates";
 import { loadExtractedKosherPlaces } from "../lib/kosher/extract";
 import { filterKosherPlaces } from "../lib/kosher/store";
 
@@ -57,4 +58,44 @@ test("kosher filters apply neighborhood, tag, and search", async () => {
   const searched = filterKosherPlaces(places, { search: "cinnaholic" });
   assert.ok(searched.length > 0);
   assert.ok(searched.some((row) => row.title.toLowerCase() === "cinnaholic"));
+});
+
+test("every extracted kosher place resolves a certificate link", async () => {
+  const places = await loadExtractedKosherPlaces();
+  const unresolved = places
+    .filter((place) => {
+      const certificate = resolveKosherCertificateLink({
+        path: place.path,
+        title: place.title,
+        website: place.website,
+        supervision: place.supervision,
+        sourceLinks:
+          place.sourceJson?.links?.filter((entry): entry is string => typeof entry === "string") ?? [],
+      });
+
+      return !certificate;
+    })
+    .map((place) => place.path);
+
+  assert.deepEqual(unresolved, []);
+});
+
+test("goldie locations resolve to the chain-wide certificate pdf", async () => {
+  const places = await loadExtractedKosherPlaces();
+  const goldie = places.find((place) => place.path === "/post/goldie");
+
+  assert.ok(goldie);
+
+  const certificate = resolveKosherCertificateLink({
+    path: goldie.path,
+    title: goldie.title,
+    website: goldie.website,
+    supervision: goldie.supervision,
+    sourceLinks: goldie.sourceJson?.links?.filter((entry): entry is string => typeof entry === "string") ?? [],
+  });
+
+  assert.equal(
+    certificate?.href,
+    "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/781820cf0bafa2033af694cfdba57c79fe6b4f32-goldie-5-locations.pdf",
+  );
 });

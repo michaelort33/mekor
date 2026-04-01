@@ -8,6 +8,7 @@ import {
   loadNativeContentIndex,
   type NativeDocumentType,
 } from "@/lib/native-content/content-loader";
+import { resolveKosherCertificateLink } from "@/lib/kosher/certificates";
 import type { PageDocument } from "@/lib/mirror/types";
 
 const FOOTER_PHONE = "+12155254246";
@@ -575,24 +576,19 @@ export function buildArticleTemplateData(document: PageDocument): ArticleTemplat
       }
     }
 
-    const assetLabelCounts = new Map<string, number>();
-    const assets = [...assetsByHref.values()].map((asset) => {
-      const baseLabel = asset.label || filenameLabelFromHref(asset.href);
-      const count = assetLabelCounts.get(baseLabel) ?? 0;
-      assetLabelCounts.set(baseLabel, count + 1);
-
-      if (count === 0) {
-        return {
-          href: asset.href,
-          label: baseLabel,
-        };
-      }
-
-      return {
-        href: asset.href,
-        label: `${baseLabel} (${count + 1})`,
-      };
+    const resolvedCertificate = resolveKosherCertificateLink({
+      path: document.path,
+      title: pathTitleOrFallback(document.path, title),
+      website,
+      supervision,
+      sourceLinks: (document.links ?? []).map((link) => cleanText(link)).filter(Boolean),
     });
+    const assets = resolvedCertificate
+      ? [resolvedCertificate]
+      : [...assetsByHref.values()].map((asset) => ({
+          href: asset.href,
+          label: asset.label || filenameLabelFromHref(asset.href),
+        }));
 
     return {
       type: "post",

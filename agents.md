@@ -41,3 +41,5 @@
 - When section structure depends on dynamic CMS/db data, test with live-like populated content, not empty fallbacks only.
 - Include before/after screenshots for the affected section in the handoff summary when layout changes are substantial.
 - If visual regressions are found, continue iterating until the section is readable and balanced at all required widths.
+## Instruction Chain
+- Read and apply `/Users/meshulumort/Documents/AGENTS.md` before applying this workspace file.
