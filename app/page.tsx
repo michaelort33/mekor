@@ -19,6 +19,7 @@ const DAVEING_IMAGE = "https://static.wixstatic.com/media/92f487_34e64b1fb2e94c5
 const FOOTER_BANNER = "https://static.wixstatic.com/media/92f487_22b1dca93b6045ad8ed3ce85337f5c74~mv2.jpg";
 const DEFAULT_EVENT_IMAGE = "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg";
 const PESACH_WITHOUT_THE_PAIN_URL = "https://www.pesachwithoutthepain.com/";
+const BRINGING_ORDER_TO_THE_SEDER_URL = "https://www.pesachwithoutthepain.com/botts/";
 const MAP_EMBED_SRC =
   "https://www.google.com/maps?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102&output=embed";
 
@@ -54,6 +55,25 @@ const SOCIAL_LINKS = [
   {
     label: "Facebook",
     href: "https://www.facebook.com/groups/19458667730/?hoisted_section_header_type=recently_seen&multi_permalinks=10160757013487731",
+  },
+] as const;
+
+const PESACH_BOOKS = [
+  {
+    author: "Rabbi Eliezer Hirsch",
+    title: "Pesach Without the Pain",
+    description: "A practical guide to the laws and practices of Passover",
+    href: PESACH_WITHOUT_THE_PAIN_URL,
+    image:
+      "https://static.wixstatic.com/media/92f487_ef840eb47c0c4e2581677ab05dc5f9c9~mv2.png/v1/fill/w_330,h_480,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/pwop-ebook-cover_DuQZD75l.png",
+  },
+  {
+    author: "Rabbi Eliezer Hirsch",
+    title: "Bringing Order to the Seder",
+    description: "A Modern Guide to the Traditional Passover Haggadah",
+    href: BRINGING_ORDER_TO_THE_SEDER_URL,
+    image:
+      "https://static.wixstatic.com/media/92f487_d3f6b691d8f64994943822d1915b946c~mv2.jpg/v1/fill/w_330,h_480,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/botts-cover.jpg",
   },
 ] as const;
 
@@ -285,62 +305,29 @@ export default function HomePage() {
 
       <section className={styles.bookSection}>
         <div className={styles.container}>
-          <article className={styles.bookCard}>
-            <div className={styles.bookVisual}>
-              <div className={styles.bookHeader}>
-                <div className={styles.bookBadge}>
-                  <Image
-                    src="/pesach-without-the-pain/favicon.svg"
-                    alt="Pesach Without the Pain mark"
-                    width={46}
-                    height={46}
-                  />
+          <div className={styles.bookSectionHeader}>
+            <h2 className={styles.bookSectionTitle}>Rabbi Eliezer Hirsch - Pesach books</h2>
+            <div className={styles.bookSectionDivider} />
+            <p className={styles.bookSectionIntro}>
+              Explore both practical guides to Pesach from preparation to the Seder.
+            </p>
+          </div>
+
+          <div className={styles.bookGrid}>
+            {PESACH_BOOKS.map((book) => (
+              <article key={book.title} className={styles.bookItem}>
+                <div className={styles.bookCoverWrap}>
+                  <Image src={book.image} alt={book.title} width={165} height={240} className={styles.bookCover} />
                 </div>
-                <div className={styles.bookMeta}>
-                  <span>2026 Edition</span>
-                  <span>Online edition</span>
-                </div>
-              </div>
-              <p className={styles.bookEyebrow}>Rabbi Eliezer Hirsch</p>
-              <h2 className={styles.bookTitle}>Pesach Without the Pain</h2>
-              <p className={styles.bookSubtitle}>A practical guide to the laws and practices of Passover.</p>
-              <div className={styles.bookStats}>
-                <span>New edition for 2026</span>
-                <span>Clear halachic guidance</span>
-                <span>Updated for Passover</span>
-              </div>
-            </div>
-
-            <div className={styles.bookCopy}>
-              <p className={styles.bookLead}>Make Pesach meaningful - not overwhelming.</p>
-              <p>
-                This guide distills the essential laws and customs of Passover into clear, practical guidance.
-              </p>
-              <p>
-                Whether you are preparing your home, planning the Seder, or navigating the unique halachic questions
-                of the holiday, this book brings clarity, confidence, and joy to every step of your preparation.
-              </p>
-
-              <ul className={styles.bookHighlights}>
-                <li>Clear Halachic Guidance</li>
-                <li>Practical guidance for Passover</li>
-                <li>Updated for 2026</li>
-              </ul>
-
-              <div className={styles.bookNote}>
-                The complete 2026 edition is available online in a chapter-by-chapter format.
-              </div>
-
-              <a
-                href={PESACH_WITHOUT_THE_PAIN_URL}
-                target="_blank"
-                rel="noreferrer noopener"
-                className={styles.bookButton}
-              >
-                View the Online Edition
-              </a>
-            </div>
-          </article>
+                <p className={styles.bookAuthor}>{book.author}</p>
+                <h3 className={styles.bookItemTitle}>{book.title}</h3>
+                <p className={styles.bookItemDescription}>{book.description}</p>
+                <a href={book.href} target="_blank" rel="noreferrer noopener" className={styles.bookButton}>
+                  Read Now
+                </a>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 

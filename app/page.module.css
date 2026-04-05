@@ -42,7 +42,6 @@
   color: #fff;
 }
 
-.heroEyebrow,
 .newsletterPanel h2,
 .footerNewsletter h3 {
   margin: 0;
@@ -53,7 +52,6 @@
 }
 
 .heroTitle,
-.heroSubtitle,
 .aboutCopy h2,
 .sectionTitle,
 .contactInfo h3,
@@ -63,21 +61,41 @@
   letter-spacing: -0.08em;
 }
 
+.heroEyebrow {
+  margin: 0;
+  font-family: var(--font-body), "Avenir Next", Arial, sans-serif;
+  font-size: clamp(1rem, 1.5vw, 1.625rem);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .heroTitle {
-  font-size: clamp(3rem, 9vw, 5.875rem);
-  line-height: 1.05;
+  font-family: var(--font-body), "Avenir Next", Arial, sans-serif;
+  font-size: clamp(3.2rem, 9vw, 6.9rem);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 0.92;
+  text-transform: uppercase;
 }
 
 .heroDivider {
-  width: 92px;
+  width: clamp(180px, 50vw, 1040px);
   height: 2px;
+  margin-top: 8px;
   background: rgba(255, 255, 255, 0.92);
 }
 
 .heroSubtitle {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  margin: 0;
+  font-family: var(--font-body), "Avenir Next", Arial, sans-serif;
+  font-size: clamp(1.75rem, 4vw, 3.1rem);
+  font-weight: 800;
   font-style: italic;
-  line-height: 1.2;
+  letter-spacing: 0.02em;
+  line-height: 1.08;
+  text-transform: uppercase;
 }
 
 .heroArrow {
@@ -403,167 +421,130 @@
 
 .bookSection {
   padding: 0 0 64px;
+  background: #525672;
 }
 
-.bookCard {
+.bookSection .container {
   display: grid;
-  grid-template-columns: minmax(260px, 0.86fr) minmax(0, 1.14fr);
-  border: 1px solid #d8cdb2;
-  background:
-    radial-gradient(circle at top left, rgba(200, 168, 75, 0.1) 0%, transparent 34%),
-    linear-gradient(135deg, #171717 0%, #26211a 100%);
-  color: #f5f3ee;
-  box-shadow: 0 22px 44px rgba(27, 28, 34, 0.16);
-  overflow: hidden;
+  justify-items: center;
+  gap: 28px;
 }
 
-.bookVisual,
-.bookCopy {
-  padding: clamp(24px, 3vw, 36px);
-}
-
-.bookVisual {
+.bookSectionHeader {
   display: grid;
-  align-content: center;
+  justify-items: center;
   gap: 14px;
-  border-right: 1px solid rgba(232, 201, 106, 0.18);
-  position: relative;
+  text-align: center;
+  color: #fff;
 }
 
-.bookBadge {
-  width: 72px;
-  height: 72px;
+.bookSectionTitle {
+  margin: 0;
+  font-family: var(--font-body), "Avenir Next", Arial, sans-serif;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.bookSectionDivider {
+  width: 28px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.bookSectionIntro {
+  margin: 0;
+  max-width: 46rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.bookGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 348px));
+  gap: 30px;
+  justify-content: center;
+}
+
+.bookItem {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 14px;
+  min-height: 510px;
+  padding: 34px 28px 30px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 22px;
+  background: #2f2f2f;
+  color: #fff;
+  text-align: center;
+}
+
+.bookCoverWrap {
   display: grid;
   place-items: center;
-  border-radius: 18px;
-  background: rgba(240, 234, 216, 0.08);
-  border: 1px solid rgba(232, 201, 106, 0.24);
+  min-height: 256px;
 }
 
-.bookHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+.bookCover {
+  width: 165px;
+  height: 240px;
+  object-fit: cover;
 }
 
-.bookMeta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.bookMeta span,
-.bookStats span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(232, 201, 106, 0.24);
-  background: rgba(240, 234, 216, 0.06);
-  color: rgba(245, 243, 238, 0.88);
-  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.bookEyebrow {
+.bookAuthor {
   margin: 0;
-  font-family: lora, Georgia, serif;
-  font-size: 0.82rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #c8a84b;
-}
-
-.bookTitle {
-  margin: 0;
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: clamp(2.2rem, 4vw, 3.5rem);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
-  color: #f5f3ee;
-}
-
-.bookSubtitle {
-  margin: 0;
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(1.1rem, 2vw, 1.45rem);
-  line-height: 1.4;
-  color: rgba(245, 243, 238, 0.9);
-}
-
-.bookStats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.bookCopy {
-  display: grid;
-  gap: 16px;
-  align-content: center;
-  background: rgba(255, 252, 247, 0.94);
-  color: #3f4359;
-}
-
-.bookLead {
-  margin: 0;
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(1.3rem, 2vw, 1.72rem);
-  line-height: 1.38;
-  color: #2c3c52;
-}
-
-.bookCopy p {
-  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
   font-family: helvetica-w01-light, Arial, sans-serif;
   font-size: 1rem;
-  line-height: 1.68;
+  line-height: 1.2;
 }
 
-.bookHighlights {
+.bookItemTitle {
   margin: 0;
-  padding-left: 20px;
-  display: grid;
-  gap: 8px;
-  color: #4c4f60;
-  font-family: helvetica-w01-light, Arial, sans-serif;
-  line-height: 1.6;
+  color: #fff;
+  font-family: avenir-lt-w01_85-heavy1475544, Arial, sans-serif;
+  font-size: clamp(1.5rem, 2vw, 1.9rem);
+  line-height: 1.2;
 }
 
-.bookNote {
-  padding: 16px 18px;
-  border-left: 3px solid #c8a84b;
-  background: linear-gradient(180deg, rgba(200, 168, 75, 0.08) 0%, rgba(200, 168, 75, 0.03) 100%);
-  color: #48536a;
+.bookItemDescription {
+  margin: 0;
+  max-width: 15.5rem;
+  color: rgba(255, 255, 255, 0.88);
   font-family: helvetica-w01-light, Arial, sans-serif;
-  line-height: 1.65;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .bookButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: fit-content;
-  min-height: 48px;
-  padding: 0 24px;
-  border-radius: 999px;
-  background: #2b5a81;
-  color: #fff;
+  min-width: 122px;
+  min-height: 40px;
+  margin-top: auto;
+  padding: 0 20px;
+  border: 1px solid #d7d7d7;
+  border-radius: 10px;
+  background: #fff;
+  color: #2b5a81;
   font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.9375rem;
+  font-weight: 600;
   text-decoration: none;
-  transition: background-color 120ms ease;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
 }
 
 .bookButton:hover {
-  background: #214766;
+  background: #eef2f8;
+  color: #214766;
 }
 
 .contactGrid {
@@ -742,7 +723,6 @@
   .featureGrid,
   .upcomingCard,
   .rabbisGrid,
-  .bookCard,
   .contactGrid,
   .footerInner {
     grid-template-columns: minmax(0, 1fr);
@@ -754,9 +734,8 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .bookVisual {
-    border-right: 0;
-    border-bottom: 1px solid rgba(232, 201, 106, 0.18);
+  .bookGrid {
+    grid-template-columns: minmax(280px, 348px);
   }
 
   .contactGrid {
@@ -805,6 +784,15 @@
     padding-top: 56px;
   }
 
+  .heroEyebrow {
+    letter-spacing: 0.1em;
+  }
+
+  .heroDivider {
+    height: 2px;
+    width: min(84vw, 520px);
+  }
+
   .aboutSection,
   .featureSection,
   .newsletterSection,
@@ -825,23 +813,26 @@
   .daveningCopy,
   .upcomingCopy,
   .rabbiBody,
-  .bookVisual,
-  .bookCopy {
+  .bookItem {
     padding-left: 20px;
     padding-right: 20px;
   }
 
-  .bookHeader {
-    align-items: flex-start;
-    flex-direction: column;
+  .bookSectionTitle {
+    font-size: clamp(1.7rem, 8vw, 2.35rem);
+    letter-spacing: 0.08em;
   }
 
-  .bookMeta {
-    justify-content: flex-start;
+  .bookSectionIntro {
+    font-size: 1rem;
+    line-height: 1.65;
   }
 
-  .bookStats {
-    gap: 8px;
+  .bookItem {
+    min-height: 0;
+    gap: 12px;
+    padding-top: 28px;
+    padding-bottom: 26px;
   }
 
   .featureCopy,
