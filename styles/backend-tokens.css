@@ -1,0 +1,107 @@
+/* Backend (admin + account) design tokens.
+ * Imported once by admin and account layouts.
+ * Builds on globals.css; defines new tokens specific to backend pages.
+ */
+
+:root {
+  /* === Spacing scale === */
+  --bk-space-1: 4px;
+  --bk-space-2: 8px;
+  --bk-space-3: 12px;
+  --bk-space-4: 16px;
+  --bk-space-5: 20px;
+  --bk-space-6: 24px;
+  --bk-space-7: 32px;
+  --bk-space-8: 40px;
+  --bk-space-9: 56px;
+  --bk-space-10: 72px;
+
+  /* === Radius === */
+  --bk-radius-sm: 6px;
+  --bk-radius-md: 10px;
+  --bk-radius-lg: 14px;
+  --bk-radius-xl: 18px;
+  --bk-radius-pill: 999px;
+
+  /* === Surfaces === */
+  --bk-surface: #ffffff;
+  --bk-surface-soft: #fbfaf6;
+  --bk-surface-sunken: #f4f1ea;
+  --bk-surface-overlay: rgba(255, 253, 248, 0.98);
+  --bk-surface-glass: linear-gradient(180deg, rgba(255, 253, 248, 0.98) 0%, rgba(244, 248, 252, 0.98) 100%);
+
+  /* === Borders === */
+  --bk-border: #e2dccf;
+  --bk-border-strong: #cfc6b4;
+  --bk-border-focus: #2c648d;
+  --bk-border-input: #d2c8b6;
+
+  /* === Text === */
+  --bk-text: #1a2a39;
+  --bk-text-soft: #455468;
+  --bk-text-muted: #6c7a89;
+  --bk-text-subtle: #97a3b1;
+  --bk-text-inverse: #f8fbff;
+  --bk-text-link: #1f4f83;
+  --bk-text-eyebrow: #8b6230;
+
+  /* === Brand & accents === */
+  --bk-accent: #2f6396;
+  --bk-accent-strong: #234d78;
+  --bk-accent-soft: #e8f2fb;
+  --bk-accent-fg: #f8fbff;
+
+  /* === Status === */
+  --bk-success: #2f7a47;
+  --bk-success-soft: #eaf6ee;
+  --bk-success-border: #b6d8be;
+  --bk-warning: #a86a18;
+  --bk-warning-soft: #fdf3e3;
+  --bk-warning-border: #e3c994;
+  --bk-danger: #9b2c2c;
+  --bk-danger-soft: #fff0f0;
+  --bk-danger-border: #e0b2b2;
+  --bk-info: #1c5887;
+  --bk-info-soft: #e8f1f9;
+  --bk-info-border: #b9d1e6;
+
+  /* === Shadows === */
+  --bk-shadow-sm: 0 1px 2px rgba(24, 43, 65, 0.05);
+  --bk-shadow-md: 0 4px 12px rgba(24, 43, 65, 0.08);
+  --bk-shadow-lg: 0 10px 24px rgba(24, 43, 65, 0.10);
+  --bk-shadow-xl: 0 18px 36px rgba(24, 43, 65, 0.14);
+  --bk-shadow-focus: 0 0 0 3px rgba(47, 99, 150, 0.25);
+
+  /* === Typography === */
+  --bk-font-heading: var(--native-font-heading);
+  --bk-font-body: var(--native-font-body);
+  --bk-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  --bk-text-xs: 0.72rem;
+  --bk-text-sm: 0.82rem;
+  --bk-text-base: 0.92rem;
+  --bk-text-md: 1rem;
+  --bk-text-lg: 1.18rem;
+  --bk-text-xl: 1.38rem;
+  --bk-text-2xl: clamp(1.6rem, 2.6vw, 2rem);
+  --bk-text-3xl: clamp(2rem, 4vw, 3rem);
+
+  /* === Layout === */
+  --bk-page-max: 1280px;
+  --bk-content-max: 1120px;
+  --bk-sidebar-width: 240px;
+  --bk-sidebar-width-collapsed: 64px;
+  --bk-table-row-height: 52px;
+
+  /* === Motion === */
+  --bk-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --bk-duration-fast: 120ms;
+  --bk-duration-base: 200ms;
+  --bk-duration-slow: 320ms;
+
+  /* === z-index === */
+  --bk-z-base: 1;
+  --bk-z-sticky: 10;
+  --bk-z-overlay: 100;
+  --bk-z-modal: 1000;
+  --bk-z-toast: 2000;
+}

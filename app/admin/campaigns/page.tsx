@@ -1,9 +1,25 @@
 "use client";
 
-import { useEffect, useEffectEvent, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
-import styles from "./page.module.css";
+import { DataState } from "@/components/backend/data/data-state";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/backend/ui/data-table";
+import { Field, Input, Select } from "@/components/backend/ui/field";
+import { Modal } from "@/components/backend/ui/modal";
+import {
+  Toolbar,
+  ToolbarActions,
+  ToolbarSearch,
+} from "@/components/backend/ui/toolbar";
+
+type CampaignStatus = "draft" | "active" | "closed" | "archived";
 
 type Campaign = {
   id: number;
@@ -13,208 +29,254 @@ type Campaign = {
   designationLabel: string;
   targetAmountCents: number | null;
   suggestedAmountCents: number | null;
-  status: "draft" | "active" | "closed" | "archived";
+  status: CampaignStatus;
   shareablePath: string;
   launchedAt: string | null;
+  closedAt: string | null;
+  createdAt: string;
   updatedAt: string;
 };
 
-const initialForm = {
-  title: "",
-  description: "",
-  designationLabel: "",
-  targetAmountCents: "",
-  suggestedAmountCents: "",
-  status: "draft" as Campaign["status"],
+type ListResponse = { campaigns: Campaign[] };
+
+const STATUS_TONES: Record<CampaignStatus, BadgeTone> = {
+  draft: "neutral",
+  active: "success",
+  closed: "warning",
+  archived: "neutral",
 };
 
+const dollars = (cents: number | null) =>
+  cents == null
+    ? "—"
+    : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+
 export default function AdminCampaignsPage() {
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [form, setForm] = useState(initialForm);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
+  const [q, setQ] = useState("");
+  const [editing, setEditing] = useState<Campaign | null>(null);
+  const [creating, setCreating] = useState(false);
 
-  async function fetchCampaigns() {
-    const response = await fetch("/api/admin/campaigns").catch(() => null);
-    if (!response) {
-      return { campaigns: [] as Campaign[], error: "Unable to load campaigns" };
-    }
-    const payload = (await response.json().catch(() => ({}))) as { campaigns?: Campaign[]; error?: string };
-    if (!response.ok) {
-      return { campaigns: [] as Campaign[], error: payload.error || "Unable to load campaigns" };
-    }
-    return { campaigns: payload.campaigns ?? [], error: "" };
-  }
-
-  const loadCampaignsForEffect = useEffectEvent(async () => {
-    const payload = await fetchCampaigns();
-    if (payload.error) {
-      setError(payload.error);
-      return;
-    }
-    setCampaigns(payload.campaigns);
-  });
-
-  async function refreshCampaigns() {
-    const payload = await fetchCampaigns();
-    if (payload.error) {
-      setError(payload.error);
-      return;
-    }
-    setCampaigns(payload.campaigns);
-  }
-
-  useEffect(() => {
-    void loadCampaignsForEffect();
-  }, []);
-
-  const stats = useMemo(
-    () => [
-      { label: "Campaigns", value: String(campaigns.length), hint: "Saved fundraising campaigns" },
-      { label: "Active", value: String(campaigns.filter((item) => item.status === "active").length), hint: "Public donation destinations" },
-      { label: "Drafts", value: String(campaigns.filter((item) => item.status === "draft").length), hint: "Not launched yet" },
-    ],
-    [campaigns],
+  const resource = useResource<ListResponse>(
+    (signal) => fetchJson<ListResponse>(`/api/admin/campaigns`, { signal }),
+    [],
   );
 
-  async function createCampaign(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    setNotice("");
-    setSaving(true);
-    const response = await fetch("/api/admin/campaigns", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: form.title,
-        description: form.description,
-        designationLabel: form.designationLabel,
-        targetAmountCents: form.targetAmountCents ? Number(form.targetAmountCents) : null,
-        suggestedAmountCents: form.suggestedAmountCents ? Number(form.suggestedAmountCents) : null,
-        status: form.status,
-      }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    setSaving(false);
-    if (!response.ok) {
-      setError(payload.error || "Unable to create campaign");
-      return;
-    }
-    setForm(initialForm);
-    setNotice("Campaign saved.");
-    await refreshCampaigns();
-  }
+  const items = useMemo(() => {
+    const all = resource.data?.campaigns ?? [];
+    if (!q) return all;
+    const needle = q.toLowerCase();
+    return all.filter(
+      (c) =>
+        c.title.toLowerCase().includes(needle) ||
+        c.slug.toLowerCase().includes(needle) ||
+        c.designationLabel.toLowerCase().includes(needle),
+    );
+  }, [resource.data?.campaigns, q]);
 
-  async function updateStatus(campaign: Campaign, status: Campaign["status"]) {
-    const response = await fetch("/api/admin/campaigns", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: campaign.id,
-        title: campaign.title,
-        description: campaign.description,
-        designationLabel: campaign.designationLabel,
-        targetAmountCents: campaign.targetAmountCents,
-        suggestedAmountCents: campaign.suggestedAmountCents,
-        status,
-      }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to update campaign");
-      return;
-    }
-    await refreshCampaigns();
-  }
+  const stats = useMemo(() => {
+    const all = resource.data?.campaigns ?? [];
+    const active = all.filter((c) => c.status === "active").length;
+    const target = all.reduce((s, c) => s + (c.targetAmountCents ?? 0), 0);
+    return [
+      { label: "Campaigns", value: String(all.length), hint: `${active} active` },
+      { label: "Combined target", value: dollars(target), hint: "Across all campaigns" },
+    ];
+  }, [resource.data?.campaigns]);
+
+  const columns: DataTableColumn<Campaign>[] = [
+    {
+      id: "title",
+      header: "Title",
+      accessor: (c) => (
+        <div>
+          <div style={{ fontWeight: 700 }}>{c.title}</div>
+          <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>/{c.slug}</div>
+        </div>
+      ),
+      sortValue: (c) => c.title,
+      exportValue: (c) => c.title,
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessor: (c) => <Badge tone={STATUS_TONES[c.status]}>{c.status}</Badge>,
+      sortValue: (c) => c.status,
+      exportValue: (c) => c.status,
+    },
+    {
+      id: "target",
+      header: "Target",
+      accessor: (c) => dollars(c.targetAmountCents),
+      sortValue: (c) => c.targetAmountCents ?? 0,
+      exportValue: (c) => (c.targetAmountCents == null ? "" : (c.targetAmountCents / 100).toFixed(2)),
+      align: "right",
+    },
+    {
+      id: "suggested",
+      header: "Suggested",
+      accessor: (c) => dollars(c.suggestedAmountCents),
+      exportValue: (c) => (c.suggestedAmountCents == null ? "" : (c.suggestedAmountCents / 100).toFixed(2)),
+      align: "right",
+      hideOnMobile: true,
+    },
+    {
+      id: "updated",
+      header: "Updated",
+      accessor: (c) => new Date(c.updatedAt).toLocaleDateString(),
+      sortValue: (c) => c.updatedAt,
+      exportValue: (c) => c.updatedAt,
+      hideOnMobile: true,
+    },
+  ];
 
   return (
     <AdminShell
       currentPath="/admin/campaigns"
       title="Campaigns"
-      description="Create campaigns in admin, launch them, and hand out shareable donation links that auto-attribute gifts."
+      description="Create and manage fundraising campaigns used across donation flows."
       stats={stats}
     >
-      <div className={styles.stack}>
-        <section className={`${styles.card} internal-card`}>
-          <h2>Create campaign</h2>
-          <form onSubmit={createCampaign} className={styles.stack}>
-            <div className={styles.grid}>
-              <label className={styles.field}>
-                <span>Title</span>
-                <input value={form.title} onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))} required />
-              </label>
-              <label className={styles.field}>
-                <span>Donation purpose label</span>
-                <input
-                  value={form.designationLabel}
-                  onChange={(event) => setForm((prev) => ({ ...prev, designationLabel: event.target.value }))}
-                  placeholder="Building fund, Kiddush, holiday appeal..."
-                />
-              </label>
-              <label className={styles.field}>
-                <span>Status</span>
-                <select value={form.status} onChange={(event) => setForm((prev) => ({ ...prev, status: event.target.value as Campaign["status"] }))}>
-                  <option value="draft">draft</option>
-                  <option value="active">active</option>
-                  <option value="closed">closed</option>
-                  <option value="archived">archived</option>
-                </select>
-              </label>
-              <label className={styles.field}>
-                <span>Target amount (cents)</span>
-                <input value={form.targetAmountCents} onChange={(event) => setForm((prev) => ({ ...prev, targetAmountCents: event.target.value }))} />
-              </label>
-              <label className={styles.field}>
-                <span>Suggested amount (cents)</span>
-                <input value={form.suggestedAmountCents} onChange={(event) => setForm((prev) => ({ ...prev, suggestedAmountCents: event.target.value }))} />
-              </label>
-            </div>
-            <label className={styles.field}>
-              <span>Description</span>
-              <textarea value={form.description} onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))} />
-            </label>
-            {error ? <p className={styles.error}>{error}</p> : null}
-            {notice ? <p className={styles.notice}>{notice}</p> : null}
-            <div className={styles.actions}>
-              <button type="submit" className={styles.button} disabled={saving}>
-                {saving ? "Saving..." : "Save campaign"}
-              </button>
-            </div>
-          </form>
-        </section>
+      <Toolbar>
+        <ToolbarSearch value={q} onChange={setQ} placeholder="Search title, slug, designation…" />
+        <ToolbarActions>
+          <Button variant="ghost" size="sm" onClick={() => void resource.refresh()}>
+            Refresh
+          </Button>
+          <Button size="sm" onClick={() => setCreating(true)}>
+            New campaign
+          </Button>
+        </ToolbarActions>
+      </Toolbar>
 
-        <section className={`${styles.card} internal-card`}>
-          <h2>Saved campaigns</h2>
-          <div className={styles.list}>
-            {campaigns.map((campaign) => (
-              <article key={campaign.id} className={styles.item}>
-                <div>
-                  <strong>{campaign.title}</strong>
-                  <div className={styles.meta}>
-                    <span>Status: {campaign.status}</span>
-                    <span>Purpose: {campaign.designationLabel}</span>
-                    <span>Updated: {new Date(campaign.updatedAt).toLocaleString()}</span>
-                  </div>
-                </div>
-                <p>{campaign.description || "No description yet."}</p>
-                <a className={styles.link} href={campaign.shareablePath} target="_blank" rel="noreferrer noopener">
-                  {campaign.shareablePath}
-                </a>
-                <div className={styles.actions}>
-                  <button type="button" className={styles.button} onClick={() => updateStatus(campaign, "active")}>
-                    Launch
-                  </button>
-                  <button type="button" className={styles.button} onClick={() => updateStatus(campaign, "closed")}>
-                    Close
-                  </button>
-                </div>
-              </article>
-            ))}
-            {campaigns.length === 0 ? <p>No campaigns yet.</p> : null}
-          </div>
-        </section>
-      </div>
+      <DataState resource={resource} empty={{ title: "No campaigns yet", description: "Create your first campaign to collect donations." }}>
+        {() => (
+          <DataTable<Campaign>
+            rows={items}
+            rowId={(c) => c.id}
+            columns={columns}
+            rowActions={(c) => (
+              <Button size="sm" variant="ghost" onClick={() => setEditing(c)}>
+                Edit
+              </Button>
+            )}
+            exportFilename="campaigns.csv"
+            emptyState="No campaigns match"
+          />
+        )}
+      </DataState>
+
+      <Modal open={!!editing} onClose={() => setEditing(null)} title={editing ? `Edit ${editing.title}` : "Edit"} size="lg">
+        {editing ? (
+          <CampaignForm
+            initial={editing}
+            onSaved={() => {
+              setEditing(null);
+              void resource.refresh();
+            }}
+          />
+        ) : null}
+      </Modal>
+
+      <Modal open={creating} onClose={() => setCreating(false)} title="Create campaign" size="lg">
+        <CampaignForm
+          onSaved={() => {
+            setCreating(false);
+            void resource.refresh();
+          }}
+        />
+      </Modal>
     </AdminShell>
+  );
+}
+
+function CampaignForm({ initial, onSaved }: { initial?: Campaign; onSaved: () => void }) {
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [description, setDescription] = useState(initial?.description ?? "");
+  const [designationLabel, setDesignationLabel] = useState(initial?.designationLabel ?? "");
+  const [target, setTarget] = useState(initial?.targetAmountCents != null ? (initial.targetAmountCents / 100).toString() : "");
+  const [suggested, setSuggested] = useState(initial?.suggestedAmountCents != null ? (initial.suggestedAmountCents / 100).toString() : "");
+  const [status, setStatus] = useState<CampaignStatus>(initial?.status ?? "draft");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      const body = {
+        ...(initial ? { id: initial.id } : {}),
+        title,
+        description,
+        designationLabel,
+        targetAmountCents: target ? Math.round(Number(target) * 100) : null,
+        suggestedAmountCents: suggested ? Math.round(Number(suggested) * 100) : null,
+        status,
+      };
+      await fetchJson(`/api/admin/campaigns`, {
+        method: initial ? "PUT" : "POST",
+        body: JSON.stringify(body),
+      });
+      onSaved();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save campaign");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "var(--bk-space-3)" }}>
+      <Field label="Title" required>
+        {(props) => <Input {...props} value={title} onChange={(e) => setTitle(e.target.value)} />}
+      </Field>
+      <Field label="Designation label" hint="Shown on receipts">
+        {(props) => <Input {...props} value={designationLabel} onChange={(e) => setDesignationLabel(e.target.value)} />}
+      </Field>
+      <Field label="Description">
+        {(props) => (
+          <textarea
+            id={props.id}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            style={{
+              width: "100%",
+              fontFamily: "inherit",
+              fontSize: "var(--bk-text-sm)",
+              padding: "var(--bk-space-2)",
+              background: "var(--bk-surface)",
+              border: "1px solid var(--bk-border)",
+              borderRadius: "var(--bk-radius-sm)",
+              color: "var(--bk-text)",
+            }}
+          />
+        )}
+      </Field>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--bk-space-3)" }}>
+        <Field label="Target (USD)" hint="Blank = no target">
+          {(props) => <Input {...props} inputMode="decimal" value={target} onChange={(e) => setTarget(e.target.value)} />}
+        </Field>
+        <Field label="Suggested donation (USD)">
+          {(props) => <Input {...props} inputMode="decimal" value={suggested} onChange={(e) => setSuggested(e.target.value)} />}
+        </Field>
+      </div>
+      <Field label="Status">
+        {(props) => (
+          <Select {...props} value={status} onChange={(e) => setStatus(e.target.value as CampaignStatus)}>
+            <option value="draft">Draft</option>
+            <option value="active">Active</option>
+            <option value="closed">Closed</option>
+            <option value="archived">Archived</option>
+          </Select>
+        )}
+      </Field>
+      {error ? <p style={{ color: "var(--bk-danger)", margin: 0, fontSize: "var(--bk-text-sm)" }}>{error}</p> : null}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--bk-space-2)" }}>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? "Saving…" : initial ? "Save changes" : "Create campaign"}
+        </Button>
+      </div>
+    </form>
   );
 }

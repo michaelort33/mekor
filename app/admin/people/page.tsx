@@ -1,12 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
-import adminStyles from "@/components/admin/admin-shell.module.css";
-import styles from "./page.module.css";
+import { DataState } from "@/components/backend/data/data-state";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button, LinkButton } from "@/components/backend/ui/button";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/backend/ui/data-table";
+import { Field, Input, Select } from "@/components/backend/ui/field";
+import { Modal } from "@/components/backend/ui/modal";
+import {
+  FilterChip,
+  Toolbar,
+  ToolbarActions,
+  ToolbarFilters,
+  ToolbarSearch,
+} from "@/components/backend/ui/toolbar";
 
 type PersonStatus = "lead" | "invited" | "visitor" | "guest" | "member" | "admin" | "super_admin" | "inactive";
 
@@ -37,58 +51,96 @@ type PageInfo = {
   limit: number;
 };
 
-const STATUS_OPTIONS: PersonStatus[] = ["lead", "invited", "visitor", "guest", "member", "admin", "super_admin", "inactive"];
+type ListResponse = { items: PersonRow[]; pageInfo: PageInfo };
 
-type CreateLeadForm = {
-  displayName: string;
-  email: string;
-  phone: string;
-  city: string;
-  source: string;
-  tags: string;
-  notes: string;
+const STATUS_OPTIONS: PersonStatus[] = [
+  "lead",
+  "invited",
+  "visitor",
+  "guest",
+  "member",
+  "admin",
+  "super_admin",
+  "inactive",
+];
+
+const STATUS_TONES: Record<PersonStatus, BadgeTone> = {
+  lead: "neutral",
+  invited: "info",
+  visitor: "neutral",
+  guest: "neutral",
+  member: "success",
+  admin: "accent",
+  super_admin: "accent",
+  inactive: "warning",
 };
 
-const initialLeadForm: CreateLeadForm = {
-  displayName: "",
-  email: "",
-  phone: "",
-  city: "",
-  source: "admin",
-  tags: "",
-  notes: "",
-};
+const dollars = (cents: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+
+function buildQuery(params: {
+  q: string;
+  status: string;
+  tag: string;
+  invited: string;
+  dues: string;
+  cursor?: string | null;
+}) {
+  const sp = new URLSearchParams();
+  if (params.q) sp.set("q", params.q);
+  if (params.status) sp.set("status", params.status);
+  if (params.tag) sp.set("tag", params.tag);
+  if (params.invited) sp.set("invited", params.invited);
+  if (params.dues) sp.set("dues", params.dues);
+  sp.set("limit", "50");
+  if (params.cursor) sp.set("cursor", params.cursor);
+  return sp.toString();
+}
 
 export default function AdminPeoplePage() {
-  const router = useRouter();
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"" | PersonStatus>("");
   const [tag, setTag] = useState("");
   const [invited, setInvited] = useState<"" | "yes" | "no">("");
   const [dues, setDues] = useState<"" | "open" | "overdue">("");
-  const [loading, setLoading] = useState(true);
-  const [working, setWorking] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const [items, setItems] = useState<PersonRow[]>([]);
-  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
-  const [leadForm, setLeadForm] = useState<CreateLeadForm>(initialLeadForm);
+  const [appendedItems, setAppendedItems] = useState<PersonRow[]>([]);
+  const [appendCursor, setAppendCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
 
-  const stats = useMemo(() => {
-    const invitedCount = items.filter((person) => person.invitation?.invitationStatus === "active").length;
-    const duesCount = items.filter((person) => person.outstandingBalanceCents > 0).length;
-    const totalOutstanding = items.reduce((sum, person) => sum + person.outstandingBalanceCents, 0);
+  const filters = { q, status, tag, invited, dues };
 
-    return [
-      { label: "Loaded people", value: String(items.length), hint: pageInfo?.hasNextPage ? "More available" : "Current result set" },
-      { label: "Active invites", value: String(invitedCount), hint: "Loaded rows with open invitations" },
-      {
-        label: "Open dues",
-        value: `${(totalOutstanding / 100).toLocaleString("en-US", { style: "currency", currency: "USD" })}`,
-        hint: `${duesCount} loaded record(s) with balance`,
-      },
-    ];
-  }, [items, pageInfo?.hasNextPage]);
+  const resource = useResource<ListResponse>(
+    (signal) => fetchJson<ListResponse>(`/api/admin/people?${buildQuery(filters)}`, { signal }),
+    [q, status, tag, invited, dues],
+  );
+
+  const baseItems = resource.data?.items ?? [];
+  const items = useMemo(() => {
+    const seen = new Set<number>();
+    const merged: PersonRow[] = [];
+    for (const row of [...baseItems, ...appendedItems]) {
+      if (seen.has(row.id)) continue;
+      seen.add(row.id);
+      merged.push(row);
+    }
+    return merged;
+  }, [baseItems, appendedItems]);
+
+  const pageInfo = appendCursor === null ? resource.data?.pageInfo ?? null : { hasNextPage: !!appendCursor, nextCursor: appendCursor, limit: 50 };
+
+  async function loadMore() {
+    const cursor = pageInfo?.nextCursor;
+    if (!cursor) return;
+    setLoadingMore(true);
+    try {
+      const next = await fetchJson<ListResponse>(`/api/admin/people?${buildQuery({ ...filters, cursor })}`);
+      setAppendedItems((prev) => [...prev, ...next.items]);
+      setAppendCursor(next.pageInfo.nextCursor);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   function resetFilters() {
     setQ("");
@@ -96,291 +148,289 @@ export default function AdminPeoplePage() {
     setTag("");
     setInvited("");
     setDues("");
-    void fetch("/api/admin/people?limit=25")
-      .then(async (response) => {
-        if (response.status === 401) {
-          router.push("/login?next=/admin/people");
-          return;
-        }
-        const payload = (await response.json().catch(() => ({}))) as {
-          items?: PersonRow[];
-          pageInfo?: PageInfo;
-          error?: string;
-        };
-        if (!response.ok) {
-          setError(payload.error || "Unable to load people");
-          setLoading(false);
-          return;
-        }
-        setItems(payload.items ?? []);
-        setPageInfo(payload.pageInfo ?? null);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Unable to load people");
-        setLoading(false);
-      });
+    setAppendedItems([]);
+    setAppendCursor(null);
   }
 
-  async function loadPeople(options?: { reset?: boolean; cursor?: string | null }) {
-    setError("");
-    if (options?.reset) {
-      setLoading(true);
-      setItems([]);
-      setPageInfo(null);
-    }
+  const columns: DataTableColumn<PersonRow>[] = [
+    {
+      id: "name",
+      header: "Name",
+      accessor: (p) => (
+        <Link
+          href={`/admin/people/${p.id}`}
+          style={{ color: "var(--bk-accent-strong)", fontWeight: 700, textDecoration: "none" }}
+        >
+          {p.displayName}
+        </Link>
+      ),
+      sortValue: (p) => p.displayName.toLowerCase(),
+      exportValue: (p) => p.displayName,
+    },
+    {
+      id: "email",
+      header: "Email",
+      accessor: (p) => p.email,
+      sortValue: (p) => p.email.toLowerCase(),
+      exportValue: (p) => p.email,
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessor: (p) => <Badge tone={STATUS_TONES[p.status] ?? "neutral"}>{p.status}</Badge>,
+      sortValue: (p) => p.status,
+      exportValue: (p) => p.status,
+    },
+    {
+      id: "phone",
+      header: "Phone",
+      accessor: (p) => p.phone || "—",
+      exportValue: (p) => p.phone,
+      hideOnMobile: true,
+    },
+    {
+      id: "city",
+      header: "City",
+      accessor: (p) => p.city || "—",
+      exportValue: (p) => p.city,
+      hideOnMobile: true,
+    },
+    {
+      id: "tags",
+      header: "Tags",
+      accessor: (p) =>
+        p.tags.length === 0 ? (
+          "—"
+        ) : (
+          <span style={{ display: "inline-flex", gap: 4, flexWrap: "wrap" }}>
+            {p.tags.slice(0, 3).map((t) => (
+              <Badge key={t} tone="neutral">{t}</Badge>
+            ))}
+            {p.tags.length > 3 ? <span style={{ color: "var(--bk-text-muted)" }}>+{p.tags.length - 3}</span> : null}
+          </span>
+        ),
+      exportValue: (p) => p.tags.join("|"),
+      hideOnMobile: true,
+    },
+    {
+      id: "balance",
+      header: "Open dues",
+      accessor: (p) =>
+        p.outstandingBalanceCents > 0 ? (
+          <span style={{ color: "var(--bk-danger)", fontWeight: 700 }}>{dollars(p.outstandingBalanceCents)}</span>
+        ) : (
+          "—"
+        ),
+      sortValue: (p) => p.outstandingBalanceCents,
+      exportValue: (p) => (p.outstandingBalanceCents / 100).toFixed(2),
+      align: "right",
+    },
+    {
+      id: "invitation",
+      header: "Invite",
+      accessor: (p) =>
+        p.invitation ? <Badge tone={p.invitation.invitationStatus === "active" ? "info" : "neutral"}>{p.invitation.invitationStatus}</Badge> : "—",
+      exportValue: (p) => p.invitation?.invitationStatus ?? "",
+      hideOnMobile: true,
+    },
+    {
+      id: "createdAt",
+      header: "Added",
+      accessor: (p) => new Date(p.createdAt).toLocaleDateString(),
+      sortValue: (p) => p.createdAt,
+      exportValue: (p) => p.createdAt,
+      hideOnMobile: true,
+    },
+  ];
 
-    const params = new URLSearchParams();
-    params.set("limit", "25");
-    if (q.trim()) params.set("q", q.trim());
-    if (status) params.set("status", status);
-    if (tag.trim()) params.set("tag", tag.trim());
-    if (invited) params.set("invited", invited);
-    if (dues) params.set("dues", dues);
-    if (options?.cursor) params.set("cursor", options.cursor);
-
-    const response = await fetch(`/api/admin/people?${params.toString()}`);
-    if (response.status === 401) {
-      router.push("/login?next=/admin/people");
-      return;
-    }
-
-    const payload = (await response.json().catch(() => ({}))) as {
-      items?: PersonRow[];
-      pageInfo?: PageInfo;
-      error?: string;
-    };
-    if (!response.ok) {
-      setError(payload.error || "Unable to load people");
-      setLoading(false);
-      return;
-    }
-
-    setItems((prev) => (options?.reset ? payload.items ?? [] : [...prev, ...(payload.items ?? [])]));
-    setPageInfo(payload.pageInfo ?? null);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    loadPeople({ reset: true }).catch(() => {
-      setError("Unable to load people");
-      setLoading(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function createLead(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setWorking(true);
-    setError("");
-    setNotice("");
-
-    const response = await fetch("/api/admin/people", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status: "lead",
-        firstName: "",
-        lastName: "",
-        displayName: leadForm.displayName,
-        email: leadForm.email,
-        phone: leadForm.phone,
-        city: leadForm.city,
-        notes: leadForm.notes,
-        source: leadForm.source,
-        tags: leadForm.tags
-          .split(",")
-          .map((part) => part.trim())
-          .filter((part) => part.length > 0),
-      }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string; person?: { id: number } };
-    setWorking(false);
-    if (!response.ok) {
-      setError(payload.error || "Unable to create lead");
-      return;
-    }
-
-    setNotice("Lead created.");
-    setLeadForm(initialLeadForm);
-    if (payload.person?.id) {
-      router.push(`/admin/people/${payload.person.id}`);
-      return;
-    }
-    await loadPeople({ reset: true });
-  }
+  const summaryStats = useMemo(() => {
+    const totalOpen = items.reduce((sum, p) => sum + p.outstandingBalanceCents, 0);
+    const activeInvites = items.filter((p) => p.invitation?.invitationStatus === "active").length;
+    return [
+      { label: "Loaded", value: String(items.length), hint: pageInfo?.hasNextPage ? "More available — load to see all" : "All matching records" },
+      { label: "Active invites", value: String(activeInvites), hint: "Loaded rows with open invitations" },
+      { label: "Open dues", value: dollars(totalOpen), hint: "Sum across loaded rows" },
+    ];
+  }, [items, pageInfo?.hasNextPage]);
 
   return (
     <AdminShell
       currentPath="/admin/people"
-      title="People CRM"
-      description="Search leads, invited contacts, and members from one operational view."
-      stats={stats}
-      actions={
-        <>
-          <Link href="/admin/membership-applications" className={adminStyles.actionPill}>Open applications</Link>
-          <Link href="/admin/invitations" className={adminStyles.actionPill}>Open invitations</Link>
-        </>
-      }
+      title="People"
+      description="Search leads and members, manage tags and outreach, and create new records."
+      stats={summaryStats}
+      actions={<Button onClick={() => setShowCreate(true)}>+ New person</Button>}
     >
-      <section className={`${styles.card} internal-card`}>
-        <h2>Create lead</h2>
-        <form className={styles.createForm} onSubmit={createLead}>
-          <input
-            value={leadForm.displayName}
-            onChange={(event) => setLeadForm((prev) => ({ ...prev, displayName: event.target.value }))}
-            placeholder="Display name"
-            required
+      <Toolbar>
+        <ToolbarSearch
+          value={q}
+          onChange={(next) => {
+            setAppendedItems([]);
+            setAppendCursor(null);
+            setQ(next);
+          }}
+          placeholder="Search name, email, phone, notes…"
+        />
+        <ToolbarFilters>
+          <Select
+            value={status}
+            onChange={(e) => {
+              setAppendedItems([]);
+              setAppendCursor(null);
+              setStatus(e.target.value as PersonStatus | "");
+            }}
+            style={{ minWidth: 140 }}
+          >
+            <option value="">All statuses</option>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </Select>
+          <Input
+            value={tag}
+            onChange={(e) => {
+              setAppendedItems([]);
+              setAppendCursor(null);
+              setTag(e.target.value);
+            }}
+            placeholder="Tag…"
+            style={{ width: 140 }}
           />
-          <input
-            type="email"
-            value={leadForm.email}
-            onChange={(event) => setLeadForm((prev) => ({ ...prev, email: event.target.value }))}
-            placeholder="Email"
-            required
-          />
-          <input
-            value={leadForm.phone}
-            onChange={(event) => setLeadForm((prev) => ({ ...prev, phone: event.target.value }))}
-            placeholder="Phone"
-          />
-          <input
-            value={leadForm.city}
-            onChange={(event) => setLeadForm((prev) => ({ ...prev, city: event.target.value }))}
-            placeholder="City"
-          />
-          <input
-            value={leadForm.source}
-            onChange={(event) => setLeadForm((prev) => ({ ...prev, source: event.target.value }))}
-            placeholder="Source (web, referral, etc)"
-          />
-          <input
-            value={leadForm.tags}
-            onChange={(event) => setLeadForm((prev) => ({ ...prev, tags: event.target.value }))}
-            placeholder="Tags (comma-separated)"
-          />
-          <textarea
-            value={leadForm.notes}
-            onChange={(event) => setLeadForm((prev) => ({ ...prev, notes: event.target.value }))}
-            placeholder="Notes"
-            rows={2}
-          />
-          <button type="submit" disabled={working}>
-            {working ? "Creating..." : "Create lead"}
-          </button>
-        </form>
-      </section>
-
-      <section className={adminStyles.toolbar}>
-        <div className={adminStyles.toolbarHeader}>
-          <p className={adminStyles.toolbarTitle}>Directory filters</p>
-          <p className={adminStyles.toolbarMeta}>Search by person, invitation state, tag, or dues status.</p>
-        </div>
-        <div className={adminStyles.toolbarFields}>
-          <label>
-            Search
-            <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Name, email, phone, notes" />
-          </label>
-          <label>
-            Status
-            <select value={status} onChange={(event) => setStatus(event.target.value as "" | PersonStatus)}>
-              <option value="">All statuses</option>
-              {STATUS_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Tag
-            <input value={tag} onChange={(event) => setTag(event.target.value)} placeholder="young-family, donor" />
-          </label>
-          <label>
-            Invitation
-            <select value={invited} onChange={(event) => setInvited(event.target.value as "" | "yes" | "no")}>
-              <option value="">All</option>
-              <option value="yes">Invited only</option>
-              <option value="no">Not invited</option>
-            </select>
-          </label>
-          <label>
-            Dues
-            <select value={dues} onChange={(event) => setDues(event.target.value as "" | "open" | "overdue")}>
-              <option value="">All</option>
-              <option value="open">Open dues</option>
-              <option value="overdue">Overdue dues</option>
-            </select>
-          </label>
-        </div>
-        <div className={adminStyles.toolbarActions}>
-          <button type="button" className={adminStyles.primaryButton} onClick={() => loadPeople({ reset: true })}>
-            Apply filters
-          </button>
-          <button type="button" className={adminStyles.secondaryButton} onClick={resetFilters}>
-            Clear filters
-          </button>
-        </div>
-      </section>
-
-      {error ? <p className={styles.error}>{error}</p> : null}
-      {notice ? <p className={styles.notice}>{notice}</p> : null}
-
-      {loading ? (
-        <p>Loading people...</p>
-      ) : (
-        <>
-          <section className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th>Email</th>
-                  <th>Tags</th>
-                  <th>Invite</th>
-                  <th>Dues</th>
-                  <th>Last contact</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((person) => (
-                  <tr key={person.id}>
-                    <td>
-                      {person.displayName}
-                      <br />
-                      <small>{person.city || "-"}</small>
-                    </td>
-                    <td>{person.status}</td>
-                    <td>{person.email}</td>
-                    <td>{person.tags.length > 0 ? person.tags.join(", ") : "-"}</td>
-                    <td>{person.invitation?.invitationStatus ?? "-"}</td>
-                    <td>
-                      {(person.outstandingBalanceCents / 100).toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      })}
-                    </td>
-                    <td>{person.lastContactedAt ? new Date(person.lastContactedAt).toLocaleString() : "-"}</td>
-                    <td>
-                      <Link href={`/admin/people/${person.id}`}>Open</Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-
-          {pageInfo?.hasNextPage && pageInfo.nextCursor ? (
-            <div className={styles.loadMore}>
-              <button type="button" onClick={() => loadPeople({ cursor: pageInfo.nextCursor })}>
-                Load more
-              </button>
-            </div>
+          <Select
+            value={invited}
+            onChange={(e) => {
+              setAppendedItems([]);
+              setAppendCursor(null);
+              setInvited(e.target.value as "" | "yes" | "no");
+            }}
+            style={{ minWidth: 130 }}
+          >
+            <option value="">Any invite</option>
+            <option value="yes">Invited</option>
+            <option value="no">Not invited</option>
+          </Select>
+          <Select
+            value={dues}
+            onChange={(e) => {
+              setAppendedItems([]);
+              setAppendCursor(null);
+              setDues(e.target.value as "" | "open" | "overdue");
+            }}
+            style={{ minWidth: 130 }}
+          >
+            <option value="">Any dues</option>
+            <option value="open">Has open</option>
+            <option value="overdue">Has overdue</option>
+          </Select>
+          {(q || status || tag || invited || dues) ? (
+            <FilterChip label="Clear filters" onRemove={resetFilters} />
           ) : null}
-        </>
-      )}
+        </ToolbarFilters>
+        <ToolbarActions>
+          <Button variant="ghost" size="sm" onClick={() => void resource.refresh()}>
+            Refresh
+          </Button>
+        </ToolbarActions>
+      </Toolbar>
+
+      <DataState resource={resource} empty={{ title: "No people found", description: "Adjust filters or add a new person to get started.", actions: <Button onClick={() => setShowCreate(true)}>+ New person</Button> }}>
+        {() => (
+          <DataTable<PersonRow>
+            rows={items}
+            rowId={(p) => p.id}
+            columns={columns}
+            selectable
+            exportFilename="people.csv"
+            emptyState="No matching people"
+            pagination={{
+              pageSize: 50,
+              totalLoaded: items.length,
+              hasMore: !!pageInfo?.hasNextPage,
+              onLoadMore: () => void loadMore(),
+            }}
+          />
+        )}
+      </DataState>
+
+      <Modal
+        open={showCreate}
+        onClose={() => setShowCreate(false)}
+        title="Create person"
+        description="Add a new lead or member to the CRM. Use the detail page for advanced fields."
+      >
+        <CreatePersonForm onCreated={() => { setShowCreate(false); void resource.refresh(); }} />
+      </Modal>
     </AdminShell>
+  );
+}
+
+function CreatePersonForm({ onCreated }: { onCreated: () => void }) {
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+  const [tags, setTags] = useState("");
+  const [statusValue, setStatusValue] = useState<PersonStatus>("lead");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      await fetchJson("/api/admin/people", {
+        method: "POST",
+        body: JSON.stringify({
+          displayName,
+          email,
+          phone,
+          city,
+          status: statusValue,
+          tags: tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
+        }),
+      });
+      onCreated();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create person");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "var(--bk-space-3)" }}>
+      <Field label="Display name" required>
+        {(props) => <Input {...props} value={displayName} onChange={(e) => setDisplayName(e.target.value)} required minLength={2} maxLength={160} />}
+      </Field>
+      <Field label="Email" required>
+        {(props) => <Input {...props} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required maxLength={255} />}
+      </Field>
+      <Field label="Phone">{(props) => <Input {...props} value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={60} />}</Field>
+      <Field label="City">{(props) => <Input {...props} value={city} onChange={(e) => setCity(e.target.value)} maxLength={120} />}</Field>
+      <Field label="Tags" hint="Comma-separated">
+        {(props) => <Input {...props} value={tags} onChange={(e) => setTags(e.target.value)} placeholder="donor, board, follow-up" />}
+      </Field>
+      <Field label="Status">
+        {(props) => (
+          <Select {...props} value={statusValue} onChange={(e) => setStatusValue(e.target.value as PersonStatus)}>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </Select>
+        )}
+      </Field>
+      {error ? <p style={{ color: "var(--bk-danger)", margin: 0, fontSize: "var(--bk-text-sm)" }}>{error}</p> : null}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--bk-space-2)" }}>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? "Creating…" : "Create person"}
+        </Button>
+      </div>
+    </form>
   );
 }

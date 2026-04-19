@@ -1,19 +1,35 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
-import adminStyles from "@/components/admin/admin-shell.module.css";
-import styles from "./page.module.css";
+import { DataState } from "@/components/backend/data/data-state";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/backend/ui/data-table";
+import { Field, Input, Select } from "@/components/backend/ui/field";
+import { Modal } from "@/components/backend/ui/modal";
+import {
+  FilterChip,
+  Toolbar,
+  ToolbarActions,
+  ToolbarFilters,
+  ToolbarSearch,
+} from "@/components/backend/ui/toolbar";
 
-type AdminUser = {
+type UserRole = "visitor" | "member" | "admin" | "super_admin";
+type ProfileVisibility = "private" | "members" | "public" | "anonymous";
+
+type UserRow = {
   id: number;
   email: string;
   displayName: string;
-  role: "visitor" | "member" | "admin" | "super_admin";
-  profileVisibility: "private" | "members" | "public" | "anonymous";
+  role: UserRole;
+  profileVisibility: ProfileVisibility;
   membershipStartDate: string | null;
   membershipRenewalDate: string | null;
   autoMessagesEnabled: boolean;
@@ -23,318 +39,331 @@ type AdminUser = {
   lastLoginAt: string | null;
 };
 
-type PageInfo = {
-  nextCursor: string | null;
-  hasNextPage: boolean;
-  limit: number;
+type PageInfo = { nextCursor: string | null; hasNextPage: boolean; limit: number };
+
+type ListResponse = {
+  items: UserRow[];
+  pageInfo: PageInfo;
+  actorRole: UserRole;
+  canManageAdminRoles: boolean;
 };
 
-const ROLE_OPTIONS: AdminUser["role"][] = ["visitor", "member", "admin", "super_admin"];
-const VISIBILITY_OPTIONS: AdminUser["profileVisibility"][] = ["private", "members", "public", "anonymous"];
+const USER_ROLES: UserRole[] = ["visitor", "member", "admin", "super_admin"];
+const ROLE_TONES: Record<UserRole, BadgeTone> = {
+  visitor: "neutral",
+  member: "success",
+  admin: "accent",
+  super_admin: "accent",
+};
+
+const dollars = (cents: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+
+function buildQuery(p: { q: string; role: string; cursor?: string | null }) {
+  const sp = new URLSearchParams();
+  if (p.q) sp.set("q", p.q);
+  if (p.role) sp.set("role", p.role);
+  sp.set("limit", "50");
+  if (p.cursor) sp.set("cursor", p.cursor);
+  return sp.toString();
+}
 
 export default function AdminUsersPage() {
-  const router = useRouter();
   const [q, setQ] = useState("");
-  const [roleFilter, setRoleFilter] = useState<"" | AdminUser["role"]>("");
-  const [actorRole, setActorRole] = useState<AdminUser["role"] | null>(null);
-  const [canManageAdminRoles, setCanManageAdminRoles] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [savingId, setSavingId] = useState<number | null>(null);
-  const [error, setError] = useState("");
-  const [users, setUsers] = useState<AdminUser[]>([]);
-  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
+  const [role, setRole] = useState<"" | UserRole>("");
+  const [appended, setAppended] = useState<UserRow[]>([]);
+  const [appendCursor, setAppendCursor] = useState<string | null>(null);
+  const [editing, setEditing] = useState<UserRow | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const resource = useResource<ListResponse>(
+    (signal) => fetchJson<ListResponse>(`/api/admin/users?${buildQuery({ q, role })}`, { signal }),
+    [q, role],
+  );
+
+  const baseItems = resource.data?.items ?? [];
+  const items = useMemo(() => {
+    const seen = new Set<number>();
+    const out: UserRow[] = [];
+    for (const u of [...baseItems, ...appended]) {
+      if (seen.has(u.id)) continue;
+      seen.add(u.id);
+      out.push(u);
+    }
+    return out;
+  }, [baseItems, appended]);
+
+  const pageInfo = appendCursor === null ? resource.data?.pageInfo ?? null : { hasNextPage: !!appendCursor, nextCursor: appendCursor, limit: 50 };
+
+  async function loadMore() {
+    const cursor = pageInfo?.nextCursor;
+    if (!cursor) return;
+    setLoadingMore(true);
+    try {
+      const next = await fetchJson<ListResponse>(`/api/admin/users?${buildQuery({ q, role, cursor })}`);
+      setAppended((prev) => [...prev, ...next.items]);
+      setAppendCursor(next.pageInfo.nextCursor);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
+  function resetFilters() {
+    setQ("");
+    setRole("");
+    setAppended([]);
+    setAppendCursor(null);
+  }
+
+  const columns: DataTableColumn<UserRow>[] = [
+    {
+      id: "displayName",
+      header: "Name",
+      accessor: (u) => <strong>{u.displayName || "—"}</strong>,
+      sortValue: (u) => u.displayName.toLowerCase(),
+      exportValue: (u) => u.displayName,
+    },
+    {
+      id: "email",
+      header: "Email",
+      accessor: (u) => u.email,
+      sortValue: (u) => u.email.toLowerCase(),
+      exportValue: (u) => u.email,
+    },
+    {
+      id: "role",
+      header: "Role",
+      accessor: (u) => <Badge tone={ROLE_TONES[u.role]}>{u.role}</Badge>,
+      sortValue: (u) => u.role,
+      exportValue: (u) => u.role,
+    },
+    {
+      id: "visibility",
+      header: "Visibility",
+      accessor: (u) => u.profileVisibility,
+      exportValue: (u) => u.profileVisibility,
+      hideOnMobile: true,
+    },
+    {
+      id: "renewal",
+      header: "Renewal",
+      accessor: (u) => (u.membershipRenewalDate ? u.membershipRenewalDate : "—"),
+      sortValue: (u) => u.membershipRenewalDate ?? "",
+      exportValue: (u) => u.membershipRenewalDate ?? "",
+      hideOnMobile: true,
+    },
+    {
+      id: "balance",
+      header: "Open dues",
+      accessor: (u) =>
+        u.outstandingBalanceCents > 0 ? (
+          <span style={{ color: "var(--bk-danger)", fontWeight: 700 }}>{dollars(u.outstandingBalanceCents)}</span>
+        ) : (
+          "—"
+        ),
+      sortValue: (u) => u.outstandingBalanceCents,
+      exportValue: (u) => (u.outstandingBalanceCents / 100).toFixed(2),
+      align: "right",
+    },
+    {
+      id: "stripe",
+      header: "Stripe",
+      accessor: (u) => (u.stripeCustomerId ? <Badge tone="info">linked</Badge> : "—"),
+      exportValue: (u) => u.stripeCustomerId ?? "",
+      hideOnMobile: true,
+    },
+    {
+      id: "lastLogin",
+      header: "Last login",
+      accessor: (u) => (u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString() : "—"),
+      sortValue: (u) => u.lastLoginAt ?? "",
+      exportValue: (u) => u.lastLoginAt ?? "",
+      hideOnMobile: true,
+    },
+  ];
 
   const stats = useMemo(() => {
-    const adminCount = users.filter((user) => user.role === "admin" || user.role === "super_admin").length;
-    const withBalanceCount = users.filter((user) => user.outstandingBalanceCents > 0).length;
-    const totalOutstanding = users.reduce((sum, user) => sum + user.outstandingBalanceCents, 0);
+    const members = items.filter((u) => u.role === "member" || u.role === "admin" || u.role === "super_admin").length;
+    const admins = items.filter((u) => u.role === "admin" || u.role === "super_admin").length;
+    const balance = items.reduce((s, u) => s + u.outstandingBalanceCents, 0);
     return [
-      { label: "Loaded users", value: String(users.length), hint: pageInfo?.hasNextPage ? "More available" : "Current result set" },
-      { label: "Admins", value: String(adminCount), hint: actorRole ? `Signed in as ${actorRole}` : "Admin + super admin roles" },
-      {
-        label: "Outstanding dues",
-        value: `${(totalOutstanding / 100).toLocaleString("en-US", { style: "currency", currency: "USD" })}`,
-        hint: `${withBalanceCount} loaded user(s) with balance`,
-      },
+      { label: "Loaded users", value: String(items.length), hint: pageInfo?.hasNextPage ? "More available" : "All matches" },
+      { label: "Members+", value: String(members), hint: `${admins} admins in view` },
+      { label: "Open dues (loaded)", value: dollars(balance), hint: "Sum across loaded users" },
     ];
-  }, [actorRole, pageInfo?.hasNextPage, users]);
-
-  async function resetFilters() {
-    setQ("");
-    setRoleFilter("");
-    const response = await fetch("/api/admin/users?limit=25");
-    if (response.status === 401) {
-      router.push("/login?next=/admin/users");
-      return;
-    }
-    const data = (await response.json().catch(() => ({}))) as {
-      items?: AdminUser[];
-      error?: string;
-      actorRole?: AdminUser["role"];
-      canManageAdminRoles?: boolean;
-      pageInfo?: PageInfo;
-    };
-    if (!response.ok) {
-      setError(data.error || "Unable to load users");
-      return;
-    }
-    setUsers(data.items ?? []);
-    setPageInfo(data.pageInfo ?? null);
-    setActorRole(data.actorRole ?? null);
-    setCanManageAdminRoles(Boolean(data.canManageAdminRoles));
-    setLoading(false);
-  }
-
-  async function loadUsers(options?: { reset?: boolean; cursor?: string | null }) {
-    setError("");
-    if (options?.reset) {
-      setLoading(true);
-      setUsers([]);
-      setPageInfo(null);
-    }
-
-    const params = new URLSearchParams();
-    if (q.trim()) params.set("q", q.trim());
-    if (roleFilter) params.set("role", roleFilter);
-    params.set("limit", "25");
-    if (options?.cursor) params.set("cursor", options.cursor);
-
-    const response = await fetch(`/api/admin/users?${params.toString()}`);
-    if (response.status === 401) {
-      router.push("/login?next=/admin/users");
-      return;
-    }
-
-    const data = (await response.json().catch(() => ({}))) as {
-      items?: AdminUser[];
-      error?: string;
-      actorRole?: AdminUser["role"];
-      canManageAdminRoles?: boolean;
-      pageInfo?: PageInfo;
-    };
-    if (!response.ok) {
-      setError(data.error || "Unable to load users");
-      setLoading(false);
-      return;
-    }
-
-    setUsers((prev) => (options?.reset ? data.items ?? [] : [...prev, ...(data.items ?? [])]));
-    setPageInfo(data.pageInfo ?? null);
-    setActorRole(data.actorRole ?? null);
-    setCanManageAdminRoles(Boolean(data.canManageAdminRoles));
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    loadUsers({ reset: true }).catch(() => {
-      setError("Unable to load users");
-      setLoading(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function saveUser(user: AdminUser) {
-    setError("");
-    setSavingId(user.id);
-
-    const response = await fetch("/api/admin/users", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: user.id,
-        role: user.role,
-        profileVisibility: user.profileVisibility,
-        membershipStartDate: user.membershipStartDate,
-        membershipRenewalDate: user.membershipRenewalDate,
-        autoMessagesEnabled: user.autoMessagesEnabled,
-      }),
-    });
-
-    const data = (await response.json().catch(() => ({}))) as { error?: string; user?: AdminUser };
-    if (!response.ok) {
-      setError(data.error || "Unable to save user");
-      setSavingId(null);
-      return;
-    }
-
-    setUsers((prev) =>
-      prev.map((item) => (item.id === user.id ? { ...item, ...(data.user ?? {}) } : item)),
-    );
-    setSavingId(null);
-  }
-
-  function updateLocalUser(id: number, patch: Partial<AdminUser>) {
-    setUsers((prev) => prev.map((user) => (user.id === id ? { ...user, ...patch } : user)));
-  }
+  }, [items, pageInfo?.hasNextPage]);
 
   return (
     <AdminShell
       currentPath="/admin/users"
-      title="Manage Users"
-      description="Roles, profile visibility, renewal dates, and automations in one user table."
+      title="Users"
+      description="Adjust roles, visibility, renewals, and automation flags for each account."
       stats={stats}
-      actions={<Link href="/admin/people" className={adminStyles.actionPill}>Open people CRM</Link>}
     >
+      <Toolbar>
+        <ToolbarSearch
+          value={q}
+          onChange={(next) => {
+            setAppended([]);
+            setAppendCursor(null);
+            setQ(next);
+          }}
+          placeholder="Search email or display name…"
+        />
+        <ToolbarFilters>
+          <Select
+            value={role}
+            onChange={(e) => {
+              setAppended([]);
+              setAppendCursor(null);
+              setRole(e.target.value as UserRole | "");
+            }}
+            style={{ minWidth: 150 }}
+          >
+            <option value="">All roles</option>
+            {USER_ROLES.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </Select>
+          {(q || role) ? <FilterChip label="Clear filters" onRemove={resetFilters} /> : null}
+        </ToolbarFilters>
+        <ToolbarActions>
+          <Button variant="ghost" size="sm" onClick={() => void resource.refresh()}>
+            Refresh
+          </Button>
+        </ToolbarActions>
+      </Toolbar>
 
-      <section className={adminStyles.toolbar}>
-        <div className={adminStyles.toolbarHeader}>
-          <p className={adminStyles.toolbarTitle}>User filters</p>
-          <p className={adminStyles.toolbarMeta}>Find an account fast, then adjust role or visibility inline.</p>
-        </div>
-        <div className={adminStyles.toolbarFields}>
-          <label>
-            Search
-            <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Email or display name" />
-          </label>
-          <label>
-            Role
-            <select value={roleFilter} onChange={(event) => setRoleFilter(event.target.value as "" | AdminUser["role"])}>
-              <option value="">All</option>
-              {(canManageAdminRoles ? ROLE_OPTIONS : ROLE_OPTIONS.filter((role) => role !== "super_admin")).map((role) => (
-                <option key={role} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className={adminStyles.toolbarActions}>
-          <button type="button" className={adminStyles.primaryButton} onClick={() => loadUsers({ reset: true })}>
-            Apply filters
-          </button>
-          <button type="button" className={adminStyles.secondaryButton} onClick={() => void resetFilters()}>
-            Clear filters
-          </button>
-        </div>
-      </section>
+      <DataState
+        resource={resource}
+        empty={{ title: "No users found", description: "Adjust your filters or search." }}
+      >
+        {() => (
+          <DataTable<UserRow>
+            rows={items}
+            rowId={(u) => u.id}
+            columns={columns}
+            rowActions={(u) => (
+              <Button size="sm" variant="ghost" onClick={() => setEditing(u)}>
+                Edit
+              </Button>
+            )}
+            exportFilename="users.csv"
+            emptyState="No matching users"
+            pagination={{
+              pageSize: 50,
+              totalLoaded: items.length,
+              hasMore: !!pageInfo?.hasNextPage,
+              onLoadMore: () => void loadMore(),
+            }}
+          />
+        )}
+      </DataState>
 
-      {error ? <p className={styles.error}>{error}</p> : null}
-      {actorRole ? <p className={styles.meta}>Signed in as <strong>{actorRole}</strong></p> : null}
-
-      {loading ? (
-        <p>Loading users...</p>
-      ) : (
-        <>
-          <section className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Visibility</th>
-                  <th>Start date</th>
-                  <th>Renewal date</th>
-                  <th>Auto messages</th>
-                  <th>Stripe customer</th>
-                  <th>Outstanding</th>
-                  <th>Last login</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.displayName}</td>
-                    <td>{user.email}</td>
-                    <td>
-                      <select
-                        value={user.role}
-                        disabled={!canManageAdminRoles && (user.role === "admin" || user.role === "super_admin")}
-                        onChange={(event) =>
-                          updateLocalUser(user.id, { role: event.target.value as AdminUser["role"] })
-                        }
-                      >
-                        {(canManageAdminRoles
-                          ? ROLE_OPTIONS
-                          : [
-                              "visitor" as const,
-                              "member" as const,
-                              ...(user.role === "admin" || user.role === "super_admin" ? [user.role] : []),
-                            ]).map((role) => (
-                          <option key={role} value={role}>
-                            {role}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <select
-                        value={user.profileVisibility}
-                        onChange={(event) =>
-                          updateLocalUser(user.id, {
-                            profileVisibility: event.target.value as AdminUser["profileVisibility"],
-                          })
-                        }
-                      >
-                        {VISIBILITY_OPTIONS.map((visibility) => (
-                          <option key={visibility} value={visibility}>
-                            {visibility}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type="date"
-                        value={user.membershipStartDate ?? ""}
-                        onChange={(event) =>
-                          updateLocalUser(user.id, { membershipStartDate: event.target.value || null })
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="date"
-                        value={user.membershipRenewalDate ?? ""}
-                        onChange={(event) =>
-                          updateLocalUser(user.id, { membershipRenewalDate: event.target.value || null })
-                        }
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={user.autoMessagesEnabled}
-                        onChange={(event) =>
-                          updateLocalUser(user.id, { autoMessagesEnabled: event.target.checked })
-                        }
-                      />
-                    </td>
-                    <td>{user.stripeCustomerId ?? "Unlinked"}</td>
-                    <td>
-                      {(user.outstandingBalanceCents / 100).toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      })}
-                    </td>
-                    <td>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</td>
-                    <td>
-                      <button
-                        type="button"
-                        onClick={() => saveUser(user)}
-                        disabled={
-                          savingId === user.id ||
-                          (!canManageAdminRoles && (user.role === "admin" || user.role === "super_admin"))
-                        }
-                      >
-                        {savingId === user.id ? "Saving..." : "Save"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-          {pageInfo?.hasNextPage && pageInfo.nextCursor ? (
-            <div className={styles.loadMoreWrap}>
-              <button type="button" onClick={() => loadUsers({ cursor: pageInfo.nextCursor })}>
-                Load more
-              </button>
-            </div>
-          ) : null}
-        </>
-      )}
+      <Modal
+        open={!!editing}
+        onClose={() => setEditing(null)}
+        title={editing ? `Edit ${editing.displayName || editing.email}` : "Edit user"}
+        description="Adjust role, visibility, dates, and notification automation."
+        size="lg"
+      >
+        {editing ? (
+          <EditUserForm
+            user={editing}
+            canManageAdminRoles={resource.data?.canManageAdminRoles ?? false}
+            onSaved={() => {
+              setEditing(null);
+              void resource.refresh();
+            }}
+          />
+        ) : null}
+      </Modal>
     </AdminShell>
+  );
+}
+
+function EditUserForm({
+  user,
+  canManageAdminRoles,
+  onSaved,
+}: {
+  user: UserRow;
+  canManageAdminRoles: boolean;
+  onSaved: () => void;
+}) {
+  const [role, setRole] = useState<UserRole>(user.role);
+  const [visibility, setVisibility] = useState<ProfileVisibility>(user.profileVisibility);
+  const [start, setStart] = useState(user.membershipStartDate ?? "");
+  const [renewal, setRenewal] = useState(user.membershipRenewalDate ?? "");
+  const [auto, setAuto] = useState(user.autoMessagesEnabled);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      await fetchJson(`/api/admin/users`, {
+        method: "PUT",
+        body: JSON.stringify({
+          id: user.id,
+          role,
+          profileVisibility: visibility,
+          membershipStartDate: start || null,
+          membershipRenewalDate: renewal || null,
+          autoMessagesEnabled: auto,
+        }),
+      });
+      onSaved();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update user");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "var(--bk-space-3)" }}>
+      <Field label="Role">
+        {(props) => (
+          <Select {...props} value={role} onChange={(e) => setRole(e.target.value as UserRole)}>
+            {USER_ROLES.map((r) => (
+              <option key={r} value={r} disabled={!canManageAdminRoles && (r === "admin" || r === "super_admin")}>
+                {r}
+              </option>
+            ))}
+          </Select>
+        )}
+      </Field>
+      <Field label="Profile visibility">
+        {(props) => (
+          <Select {...props} value={visibility} onChange={(e) => setVisibility(e.target.value as ProfileVisibility)}>
+            <option value="private">private</option>
+            <option value="members">members</option>
+            <option value="public">public</option>
+            <option value="anonymous">anonymous</option>
+          </Select>
+        )}
+      </Field>
+      <Field label="Membership start" hint="YYYY-MM-DD">
+        {(props) => <Input {...props} type="date" value={start} onChange={(e) => setStart(e.target.value)} />}
+      </Field>
+      <Field label="Membership renewal" hint="YYYY-MM-DD">
+        {(props) => <Input {...props} type="date" value={renewal} onChange={(e) => setRenewal(e.target.value)} />}
+      </Field>
+      <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+        <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
+        <span>Automated messages enabled</span>
+      </label>
+      {error ? <p style={{ color: "var(--bk-danger)", margin: 0, fontSize: "var(--bk-text-sm)" }}>{error}</p> : null}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--bk-space-2)" }}>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? "Saving…" : "Save changes"}
+        </Button>
+      </div>
+    </form>
   );
 }

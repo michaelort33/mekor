@@ -1,12 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { MemberShell } from "@/components/members/member-shell";
-import memberShellStyles from "@/components/members/member-shell.module.css";
-import styles from "./page.module.css";
+import { AccountShell } from "@/components/account/account-shell";
+import { Badge } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import { Card, CardBody, CardHeader } from "@/components/backend/ui/card";
+import { DataState } from "@/components/backend/data/data-state";
+import { DataTable, type DataTableColumn } from "@/components/backend/ui/data-table";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Select } from "@/components/backend/ui/field";
+import { Alert } from "@/components/backend/ui/feedback";
+import {
+  Toolbar,
+  ToolbarActions,
+  ToolbarFilters,
+} from "@/components/backend/ui/toolbar";
 
 type PaymentRow = {
   id: number;
@@ -22,159 +32,196 @@ type PaymentRow = {
 };
 
 type PaymentsResponse = {
-  actor: {
-    userId: number;
-    personId: number | null;
-    displayName: string;
-  };
+  actor: { userId: number; personId: number | null; displayName: string };
   familyAdmin: boolean;
   selectedTaxYear: number;
   availableYears: number[];
   personalPayments: PaymentRow[];
   familyPayments: PaymentRow[];
-  taxSummary: {
-    totalAmountCents: number;
-    totalDeductibleAmountCents: number;
-  } | null;
+  taxSummary: { totalAmountCents: number; totalDeductibleAmountCents: number } | null;
 };
 
-function formatMoney(cents: number, currency = "usd") {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
+function money(cents: number, currency = "usd") {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: currency.toUpperCase() }).format(cents / 100);
 }
 
 export default function AccountPaymentsPage() {
-  const router = useRouter();
-  const [data, setData] = useState<PaymentsResponse | null>(null);
   const [taxYear, setTaxYear] = useState(String(new Date().getUTCFullYear()));
-  const [error, setError] = useState("");
+  const [scope, setScope] = useState<"personal" | "household">("personal");
+  const [error] = useState("");
 
-  useEffect(() => {
-    async function load() {
-      const response = await fetch(`/api/account/payments?taxYear=${encodeURIComponent(taxYear)}`);
-      if (response.status === 401) {
-        router.replace("/login?next=/account/payments");
-        return;
-      }
-      const payload = (await response.json().catch(() => ({}))) as PaymentsResponse & { error?: string };
-      if (!response.ok) {
-        setError(payload.error || "Unable to load payments");
-        return;
-      }
-      setData(payload);
-    }
-    load().catch(() => setError("Unable to load payments"));
-  }, [router, taxYear]);
+  const resource = useResource<PaymentsResponse>(
+    (signal) => fetchJson<PaymentsResponse>(`/api/account/payments?taxYear=${encodeURIComponent(taxYear)}`, { signal }),
+    [taxYear],
+  );
 
-  const stats = useMemo(() => {
-    if (!data) return [];
-    return [
-      { label: "Personal payments", value: String(data.personalPayments.length), hint: "All recorded transactions" },
-      { label: "Deductible this year", value: formatMoney(data.taxSummary?.totalDeductibleAmountCents ?? 0), hint: `Tax year ${data.selectedTaxYear}` },
-      { label: "Household visibility", value: data.familyAdmin ? "Enabled" : "Personal only", hint: data.familyAdmin ? "Primary household admin access" : "No family-wide access" },
-    ];
-  }, [data]);
+  const rows = useMemo(() => {
+    if (!resource.data) return [];
+    return scope === "household" && resource.data.familyAdmin
+      ? resource.data.familyPayments
+      : resource.data.personalPayments;
+  }, [resource.data, scope]);
+
+  const columns: DataTableColumn<PaymentRow>[] = [
+    {
+      id: "paidAt",
+      header: "When",
+      accessor: (r) => new Date(r.paidAt).toLocaleString(),
+      sortValue: (r) => r.paidAt,
+      exportValue: (r) => r.paidAt,
+    },
+    {
+      id: "designation",
+      header: "Designation",
+      accessor: (r) => (
+        <div>
+          <div style={{ fontWeight: 600 }}>{r.designation}</div>
+          {r.campaignTitle ? (
+            <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>{r.campaignTitle}</div>
+          ) : null}
+        </div>
+      ),
+      sortValue: (r) => r.designation,
+      exportValue: (r) => r.designation,
+    },
+    {
+      id: "amount",
+      header: "Amount",
+      align: "right",
+      accessor: (r) => money(r.amountCents, r.currency),
+      sortValue: (r) => r.amountCents,
+      exportValue: (r) => r.amountCents / 100,
+    },
+    {
+      id: "deductible",
+      header: "Deductible",
+      align: "right",
+      accessor: (r) => money(r.deductibleAmountCents, r.currency),
+      sortValue: (r) => r.deductibleAmountCents,
+      exportValue: (r) => r.deductibleAmountCents / 100,
+    },
+    {
+      id: "source",
+      header: "Source",
+      accessor: (r) => <Badge tone="neutral">{r.source}</Badge>,
+      exportValue: (r) => r.source,
+      hideOnMobile: true,
+    },
+    {
+      id: "kind",
+      header: "Kind",
+      accessor: (r) => <Badge tone="info">{r.kind}</Badge>,
+      exportValue: (r) => r.kind,
+      hideOnMobile: true,
+    },
+    {
+      id: "receipt",
+      header: "Receipt",
+      accessor: (r) =>
+        r.deductibleAmountCents > 0 ? (
+          <a href={`/api/account/payments/receipt/${r.id}`} target="_blank" rel="noreferrer noopener">PDF</a>
+        ) : (
+          "—"
+        ),
+    },
+  ];
+
+  const deductibleCents = resource.data?.taxSummary?.totalDeductibleAmountCents ?? 0;
+  const totalCents = resource.data?.taxSummary?.totalAmountCents ?? 0;
+
+  const stats = resource.data
+    ? [
+        { label: "Payments", value: String(rows.length), hint: scope === "household" ? "Household scope" : "Personal" },
+        { label: "Deductible", value: money(deductibleCents), hint: `Tax year ${resource.data.selectedTaxYear}` },
+        { label: "Total", value: money(totalCents), hint: "All classifications" },
+        {
+          label: "Scope",
+          value: resource.data.familyAdmin ? "Household available" : "Personal only",
+          hint: resource.data.familyAdmin ? "You're a primary adult" : "No household access",
+        },
+      ]
+    : [];
 
   return (
-    <MemberShell
+    <AccountShell
+      currentPath="/account/payments"
       title="Payments"
-      description="View your full payment history, household giving visibility when applicable, and download exports for records."
-      breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Members Area", href: "/members" },
-        { label: "Payments" },
-      ]}
-      activeSection="payments"
+      description="View your full payment history, household visibility when applicable, and download exports."
       stats={stats}
       actions={
         <>
-          <Link href="/account/dues" className={memberShellStyles.actionPill}>Click to Renew</Link>
-          <Link href="/donations" className={memberShellStyles.actionPill}>Give</Link>
+          <Link href="/account/dues">
+            <Button size="sm">Renew dues</Button>
+          </Link>
+          <Link href="/donations">
+            <Button size="sm" variant="secondary">Give</Button>
+          </Link>
         </>
       }
     >
-      <div className={styles.stack}>
-        <section className={`${styles.card} internal-card`}>
-          <div className={styles.toolbar}>
-            <label>
-              Tax year
-              <select value={taxYear} onChange={(event) => setTaxYear(event.target.value)}>
-                {(data?.availableYears.length ? data.availableYears : [new Date().getUTCFullYear()]).map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <Link className={styles.linkButton} href="/api/account/payments/export?format=csv">
-              Export CSV
-            </Link>
-            <Link className={styles.linkButton} href="/api/account/payments/export?format=pdf">
-              Export PDF
-            </Link>
-            {data?.familyAdmin ? (
-              <Link className={styles.linkButton} href="/api/account/payments/export?format=csv&scope=family">
-                Export household CSV
-              </Link>
-            ) : null}
-            <Link className={styles.linkButton} href={`/api/account/payments/year-end-letter?taxYear=${encodeURIComponent(taxYear)}`}>
-              Year-end letter
-            </Link>
-          </div>
-          {error ? <p>{error}</p> : null}
-          <p className={styles.metric}>{formatMoney(data?.taxSummary?.totalDeductibleAmountCents ?? 0)}</p>
-          <p>Deductible total for tax year {taxYear}</p>
-        </section>
+      {error ? <Alert tone="danger">{error}</Alert> : null}
 
-        <section className={`${styles.card} internal-card`}>
-          <h2>Personal payment history</h2>
-          <div className={styles.list}>
-            {(data?.personalPayments ?? []).map((payment) => (
-              <article key={payment.id} className={styles.item}>
-                <strong>{payment.designation}</strong>
-                <div className={styles.meta}>
-                  <span>{formatMoney(payment.amountCents, payment.currency)}</span>
-                  <span>{payment.source}</span>
-                  <span>{payment.kind}</span>
-                  <span>{new Date(payment.paidAt).toLocaleString()}</span>
-                </div>
-                <div className={styles.meta}>
-                  <span>Deductible: {formatMoney(payment.deductibleAmountCents, payment.currency)}</span>
-                  {payment.campaignTitle ? <span>Campaign: {payment.campaignTitle}</span> : null}
-                  {payment.deductibleAmountCents > 0 ? <a href={`/api/account/payments/receipt/${payment.id}`}>Receipt PDF</a> : null}
-                </div>
-              </article>
+      <Toolbar>
+        <ToolbarFilters>
+          <Select value={taxYear} onChange={(e) => setTaxYear(e.target.value)} style={{ minWidth: 120 }}>
+            {(resource.data?.availableYears.length ? resource.data.availableYears : [new Date().getUTCFullYear()]).map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
             ))}
-            {data && data.personalPayments.length === 0 ? <p>No payments recorded yet.</p> : null}
-          </div>
-        </section>
+          </Select>
+          {resource.data?.familyAdmin ? (
+            <Select value={scope} onChange={(e) => setScope(e.target.value as "personal" | "household")}>
+              <option value="personal">Personal scope</option>
+              <option value="household">Household scope</option>
+            </Select>
+          ) : null}
+        </ToolbarFilters>
+        <ToolbarActions>
+          <a href="/api/account/payments/export?format=csv" style={{ textDecoration: "none" }}>
+            <Button size="sm" variant="ghost">Export CSV</Button>
+          </a>
+          <a href="/api/account/payments/export?format=pdf" style={{ textDecoration: "none" }}>
+            <Button size="sm" variant="ghost">Export PDF</Button>
+          </a>
+          <a href={`/api/account/payments/year-end-letter?taxYear=${encodeURIComponent(taxYear)}`} style={{ textDecoration: "none" }}>
+            <Button size="sm" variant="ghost">Year-end letter</Button>
+          </a>
+          {resource.data?.familyAdmin ? (
+            <a href="/api/account/payments/export?format=csv&scope=family" style={{ textDecoration: "none" }}>
+              <Button size="sm" variant="ghost">Household CSV</Button>
+            </a>
+          ) : null}
+        </ToolbarActions>
+      </Toolbar>
 
-        {data?.familyAdmin ? (
-          <section className={`${styles.card} internal-card`}>
-            <h2>Household donation visibility</h2>
-            <div className={styles.list}>
-              {data.familyPayments.map((payment) => (
-                <article key={payment.id} className={styles.item}>
-                  <strong>{payment.designation}</strong>
-                  <div className={styles.meta}>
-                    <span>{formatMoney(payment.amountCents, payment.currency)}</span>
-                    <span>{payment.source}</span>
-                    <span>{new Date(payment.paidAt).toLocaleString()}</span>
-                  </div>
-                  <div className={styles.meta}>
-                    <span>Deductible: {formatMoney(payment.deductibleAmountCents, payment.currency)}</span>
-                    {payment.campaignTitle ? <span>Campaign: {payment.campaignTitle}</span> : null}
-                    {payment.deductibleAmountCents > 0 ? <a href={`/api/account/payments/receipt/${payment.id}`}>Receipt PDF</a> : null}
-                  </div>
-                </article>
-              ))}
-              {data.familyPayments.length === 0 ? <p>No household payments available.</p> : null}
+      <Card padded style={{ marginBottom: "var(--bk-space-4)" }}>
+        <CardHeader title={`Tax year ${taxYear} summary`} description="Use deductible totals for tax prep." />
+        <CardBody>
+          <div style={{ display: "flex", gap: "var(--bk-space-6)", flexWrap: "wrap" }}>
+            <div>
+              <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>Total deductible</div>
+              <div style={{ fontSize: "var(--bk-text-2xl)", fontWeight: 700 }}>{money(deductibleCents)}</div>
             </div>
-          </section>
-        ) : null}
-      </div>
-    </MemberShell>
+            <div>
+              <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>Total paid</div>
+              <div style={{ fontSize: "var(--bk-text-2xl)", fontWeight: 700 }}>{money(totalCents)}</div>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+
+      <DataState resource={resource} empty={{ title: "No payments", description: "No payments recorded yet." }}>
+        {() => (
+          <DataTable<PaymentRow>
+            rows={rows}
+            rowId={(r) => r.id}
+            columns={columns}
+            exportFilename={`payments-${taxYear}-${scope}.csv`}
+            emptyState={scope === "household" ? "No household payments visible" : "No personal payments yet"}
+          />
+        )}
+      </DataState>
+    </AccountShell>
   );
 }
