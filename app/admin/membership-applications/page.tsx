@@ -1,530 +1,384 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
-import adminStyles from "@/components/admin/admin-shell.module.css";
+import { DataState } from "@/components/backend/data/data-state";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
 import {
-  buildDefaultMembershipApprovalPlan,
-  formatUsd,
-  getApplicationTypeLabel,
-  getMembershipCategoryLabel,
-  getPaymentMethodLabel,
-  type MembershipApprovalBillingMode,
-  type MembershipApprovalPlan,
-  type MembershipApplicationStatus,
-} from "@/lib/membership/applications";
-import styles from "./page.module.css";
+  DataTable,
+  type DataTableColumn,
+} from "@/components/backend/ui/data-table";
+import { Field, Input, Select } from "@/components/backend/ui/field";
+import { Modal } from "@/components/backend/ui/modal";
+import {
+  FilterChip,
+  Toolbar,
+  ToolbarActions,
+  ToolbarFilters,
+  ToolbarSearch,
+} from "@/components/backend/ui/toolbar";
 
-type ApplicationItem = {
+type ApplicationStatus = "pending" | "approved" | "declined";
+
+type Application = {
   id: number;
-  status: MembershipApplicationStatus;
-  applicationType: "new" | "renewal";
-  membershipCategory: "single" | "couple_family" | "student";
-  preferredPaymentMethod: "undecided" | "check" | "venmo" | "paypal" | "credit_card" | "other";
-  includeSecurityDonation: boolean;
-  coverOnlineFees: boolean;
+  status: ApplicationStatus;
+  applicationType: string;
+  membershipCategory: string;
+  preferredPaymentMethod: string;
   totalAmountCents: number;
   firstName: string;
   lastName: string;
   displayName: string;
-  hebrewName: string;
   email: string;
   phone: string;
-  addressLine1: string;
-  addressLine2: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  spouseFirstName: string;
-  spouseLastName: string;
-  spouseHebrewName: string;
-  spouseEmail: string;
-  spousePhone: string;
-  householdMembersJson: Array<{ name: string; hebrewName: string; relationship: string }>;
-  yahrzeitsJson: Array<{ name: string; relationship: string; hebrewDate: string; englishDate: string }>;
-  volunteerInterestsJson: string[];
-  notes: string;
   reviewNotes: string;
-  reviewedAt: string | null;
-  reviewedByUserId: number | null;
-  approvedPersonId: number | null;
-  invitationId: number | null;
   createdAt: string;
+  updatedAt: string;
+  reviewedAt: string | null;
 };
 
-const STATUS_OPTIONS: Array<"" | MembershipApplicationStatus> = ["", "pending", "approved", "declined"];
+type ListResponse = { items: Application[] };
 
-function createApprovalPlan(item: ApplicationItem) {
-  return buildDefaultMembershipApprovalPlan({
-    totalAmountCents: item.totalAmountCents,
-    spouseEmail: item.spouseEmail,
-  });
+const STATUS_TONES: Record<ApplicationStatus, BadgeTone> = {
+  pending: "warning",
+  approved: "success",
+  declined: "neutral",
+};
+
+const dollars = (cents: number) =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
 }
 
-function buildApprovalNotice(payload: {
-  billingMode?: MembershipApprovalBillingMode;
-  provisioningStatus?: string;
-  duesInvoiceId?: number | null;
-  duesScheduleId?: number | null;
-  spouseLeadPersonId?: number | null;
-}) {
-  const details = [
-    payload.provisioningStatus === "applied"
-      ? payload.duesInvoiceId
-        ? `invoice #${payload.duesInvoiceId} created`
-        : payload.duesScheduleId
-          ? `schedule #${payload.duesScheduleId} created`
-          : "membership dates applied"
-      : payload.provisioningStatus === "pending_invite_acceptance"
-        ? "billing will finish after account activation"
-        : null,
-    payload.spouseLeadPersonId ? `spouse lead #${payload.spouseLeadPersonId} created` : null,
-  ].filter(Boolean);
-
-  return details.length > 0
-    ? `Application approved. ${details.join(" · ")}.`
-    : "Application approved and welcome email sent.";
+function yearFromToday() {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() + 1);
+  return d.toISOString().slice(0, 10);
 }
 
 export default function AdminMembershipApplicationsPage() {
-  const router = useRouter();
-  const [items, setItems] = useState<ApplicationItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [workingId, setWorkingId] = useState<number | null>(null);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const [q, setQ] = useState("");
-  const [status, setStatus] = useState<"" | MembershipApplicationStatus>("pending");
-  const [reviewNotes, setReviewNotes] = useState<Record<number, string>>({});
-  const [approvalPlans, setApprovalPlans] = useState<Record<number, MembershipApprovalPlan>>({});
+  const [status, setStatus] = useState<"" | ApplicationStatus>("pending");
+  const [reviewing, setReviewing] = useState<Application | null>(null);
+
+  const resource = useResource<ListResponse>(
+    (signal) => {
+      const sp = new URLSearchParams();
+      if (q) sp.set("q", q);
+      if (status) sp.set("status", status);
+      return fetchJson<ListResponse>(`/api/admin/membership-applications?${sp.toString()}`, { signal });
+    },
+    [q, status],
+  );
+
+  const items = resource.data?.items ?? [];
 
   const stats = useMemo(() => {
-    const pendingCount = items.filter((item) => item.status === "pending").length;
-    const approvedCount = items.filter((item) => item.status === "approved").length;
-    const totalValue = items.reduce((sum, item) => sum + item.totalAmountCents, 0);
+    const pending = items.filter((a) => a.status === "pending").length;
+    const approved = items.filter((a) => a.status === "approved").length;
+    const declined = items.filter((a) => a.status === "declined").length;
     return [
-      { label: "Loaded applications", value: String(items.length), hint: "Current filtered queue" },
-      { label: "Pending", value: String(pendingCount), hint: "Needs admin review" },
-      { label: "Dues represented", value: formatUsd(totalValue), hint: `${approvedCount} approved so far in this view` },
+      { label: "Loaded applications", value: String(items.length), hint: "Current filter" },
+      { label: "Pending", value: String(pending), hint: "Awaiting review" },
+      { label: "Approved", value: String(approved), hint: `${declined} declined` },
     ];
   }, [items]);
 
-  async function loadApplications() {
-    setLoading(true);
-    setError("");
-    const params = new URLSearchParams();
-    if (q.trim()) params.set("q", q.trim());
-    if (status) params.set("status", status);
-
-    const response = await fetch(`/api/admin/membership-applications?${params.toString()}`);
-    if (response.status === 401) {
-      router.push("/login?next=/admin/membership-applications");
-      return;
-    }
-
-    const payload = (await response.json().catch(() => ({}))) as { items?: ApplicationItem[]; error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to load applications");
-      setLoading(false);
-      return;
-    }
-
-    setItems(payload.items ?? []);
-    setReviewNotes(
-      Object.fromEntries((payload.items ?? []).map((item) => [item.id, item.reviewNotes || ""])) as Record<number, string>,
-    );
-    setApprovalPlans(
-      Object.fromEntries((payload.items ?? []).map((item) => [item.id, createApprovalPlan(item)])) as Record<
-        number,
-        MembershipApprovalPlan
-      >,
-    );
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    loadApplications().catch(() => {
-      setError("Unable to load applications");
-      setLoading(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
-
-  function updateApprovalPlan(applicationId: number, patch: Partial<MembershipApprovalPlan>) {
-    setApprovalPlans((current) => ({
-      ...current,
-      [applicationId]: {
-        ...current[applicationId],
-        ...patch,
-      },
-    }));
-  }
-
-  async function applyDecision(applicationId: number, action: "approve" | "decline") {
-    setWorkingId(applicationId);
-    setError("");
-    setNotice("");
-    const body =
-      action === "approve"
-        ? {
-            reviewNotes: reviewNotes[applicationId] ?? "",
-            approvalPlan: approvalPlans[applicationId],
-          }
-        : { reviewNotes: reviewNotes[applicationId] ?? "" };
-    const response = await fetch(`/api/admin/membership-applications/${applicationId}/${action}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const payload = (await response.json().catch(() => ({}))) as {
-      error?: string;
-      warning?: string | null;
-      billingMode?: MembershipApprovalBillingMode;
-      provisioningStatus?: string;
-      duesInvoiceId?: number | null;
-      duesScheduleId?: number | null;
-      spouseLeadPersonId?: number | null;
-    };
-    if (!response.ok) {
-      setError(payload.error || `Unable to ${action} application`);
-      setWorkingId(null);
-      return;
-    }
-    setNotice(
-      action === "approve"
-        ? payload.warning
-          ? `${buildApprovalNotice(payload)} ${payload.warning}`
-          : buildApprovalNotice(payload)
-        : "Application declined.",
-    );
-    setWorkingId(null);
-    await loadApplications();
-  }
+  const columns: DataTableColumn<Application>[] = [
+    {
+      id: "name",
+      header: "Applicant",
+      accessor: (a) => (
+        <div>
+          <div style={{ fontWeight: 700 }}>{a.displayName || `${a.firstName} ${a.lastName}`}</div>
+          <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>{a.email}</div>
+        </div>
+      ),
+      sortValue: (a) => (a.displayName || `${a.firstName} ${a.lastName}`).toLowerCase(),
+      exportValue: (a) => `${a.displayName} <${a.email}>`,
+    },
+    {
+      id: "category",
+      header: "Membership",
+      accessor: (a) => (
+        <div>
+          <div>{a.membershipCategory}</div>
+          <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>{a.applicationType}</div>
+        </div>
+      ),
+      exportValue: (a) => `${a.membershipCategory} / ${a.applicationType}`,
+      hideOnMobile: true,
+    },
+    {
+      id: "amount",
+      header: "Amount",
+      accessor: (a) => <strong>{dollars(a.totalAmountCents)}</strong>,
+      sortValue: (a) => a.totalAmountCents,
+      exportValue: (a) => (a.totalAmountCents / 100).toFixed(2),
+      align: "right",
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessor: (a) => <Badge tone={STATUS_TONES[a.status]}>{a.status}</Badge>,
+      sortValue: (a) => a.status,
+      exportValue: (a) => a.status,
+    },
+    {
+      id: "submitted",
+      header: "Submitted",
+      accessor: (a) => new Date(a.createdAt).toLocaleDateString(),
+      sortValue: (a) => a.createdAt,
+      exportValue: (a) => a.createdAt,
+      hideOnMobile: true,
+    },
+  ];
 
   return (
     <AdminShell
       currentPath="/admin/membership-applications"
-      title="Membership Applications"
-      description="Review hosted membership submissions, approve applicants into the CRM, and trigger the welcome flow without leaving the admin workspace."
+      title="Membership applications"
+      description="Review and approve applicants. Approval generates invoices/schedules and seeds member records."
       stats={stats}
-      actions={<Link href="/admin/people" className={adminStyles.actionPill}>Open people CRM</Link>}
     >
-      <section className={adminStyles.toolbar}>
-        <div className={adminStyles.toolbarHeader}>
-          <p className={adminStyles.toolbarTitle}>Application filters</p>
-          <p className={adminStyles.toolbarMeta}>Search by applicant name, email, or phone and narrow the review queue by status.</p>
-        </div>
-        <div className={adminStyles.toolbarFields}>
-          <label>
-            Search
-            <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Name, email, or phone" />
-          </label>
-          <label>
-            Status
-            <select value={status} onChange={(event) => setStatus(event.target.value as "" | MembershipApplicationStatus)}>
-              {STATUS_OPTIONS.map((value) => (
-                <option key={value || "all"} value={value}>
-                  {value || "all"}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className={adminStyles.toolbarActions}>
-          <button type="button" className={adminStyles.primaryButton} onClick={() => void loadApplications()}>
-            Apply filters
-          </button>
-          <button
-            type="button"
-            className={adminStyles.secondaryButton}
-            onClick={() => {
-              setQ("");
-              setStatus("pending");
-            }}
+      <Toolbar>
+        <ToolbarSearch value={q} onChange={setQ} placeholder="Search by name, email, or phone…" />
+        <ToolbarFilters>
+          <Select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as ApplicationStatus | "")}
+            style={{ minWidth: 140 }}
           >
-            Reset to pending
-          </button>
-        </div>
-      </section>
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="declined">Declined</option>
+          </Select>
+          {(q || status) ? <FilterChip label="Clear filters" onRemove={() => { setQ(""); setStatus(""); }} /> : null}
+        </ToolbarFilters>
+        <ToolbarActions>
+          <Button variant="ghost" size="sm" onClick={() => void resource.refresh()}>
+            Refresh
+          </Button>
+        </ToolbarActions>
+      </Toolbar>
 
-      <section className={styles.stack}>
-        {error ? <p className={styles.error}>{error}</p> : null}
-        {notice ? <p className={adminStyles.notice}>{notice}</p> : null}
-        {loading ? (
-          <section className={`${styles.card} internal-card`}>
-            <p>Loading applications...</p>
-          </section>
-        ) : items.length === 0 ? (
-          <section className={`${styles.card} internal-card`}>
-            <p>No applications found for this filter set.</p>
-          </section>
-        ) : (
-          items.map((item) => (
-            <article key={item.id} className={`${styles.card} internal-card`}>
-              <div className={styles.cardHeader}>
-                <div>
-                  <p className={styles.kicker}>{item.status}</p>
-                  <h2>{item.displayName}</h2>
-                  <p className={styles.meta}>
-                    {item.email} · {item.phone} · submitted {new Date(item.createdAt).toLocaleString()}
-                  </p>
-                </div>
-                <div className={styles.summaryPills}>
-                  <span>{getApplicationTypeLabel(item.applicationType)}</span>
-                  <span>{getMembershipCategoryLabel(item.membershipCategory)}</span>
-                  <span>{formatUsd(item.totalAmountCents)}</span>
-                </div>
-              </div>
-
-              <div className={styles.grid}>
-                <section className={styles.panel}>
-                  <h3>Applicant</h3>
-                  <dl className={styles.detailList}>
-                    <div><dt>Name</dt><dd>{item.displayName}</dd></div>
-                    <div><dt>Hebrew name</dt><dd>{item.hebrewName || "-"}</dd></div>
-                    <div><dt>Address</dt><dd>{[item.addressLine1, item.addressLine2, `${item.city}, ${item.state} ${item.postalCode}`].filter(Boolean).join(", ")}</dd></div>
-                    <div><dt>Payment preference</dt><dd>{getPaymentMethodLabel(item.preferredPaymentMethod)}</dd></div>
-                    <div><dt>Security donation</dt><dd>{item.includeSecurityDonation ? "Included" : "Declined"}</dd></div>
-                    <div><dt>Online fee preference</dt><dd>{item.coverOnlineFees ? "Will cover online fees" : "No online-fee add-on selected"}</dd></div>
-                  </dl>
-                </section>
-
-                <section className={styles.panel}>
-                  <h3>Household</h3>
-                  <dl className={styles.detailList}>
-                    <div><dt>Spouse / partner</dt><dd>{[item.spouseFirstName, item.spouseLastName].filter(Boolean).join(" ") || "-"}</dd></div>
-                    <div><dt>Spouse email</dt><dd>{item.spouseEmail || "-"}</dd></div>
-                    <div><dt>Spouse phone</dt><dd>{item.spousePhone || "-"}</dd></div>
-                  </dl>
-                  {item.householdMembersJson.length ? (
-                    <ul className={styles.inlineList}>
-                      {item.householdMembersJson.map((member, index) => (
-                        <li key={`${item.id}-member-${index}`}>
-                          <strong>{member.name}</strong>
-                          {member.relationship ? ` · ${member.relationship}` : ""}
-                          {member.hebrewName ? ` · ${member.hebrewName}` : ""}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className={styles.muted}>No additional household members listed.</p>
-                  )}
-                </section>
-
-                <section className={styles.panel}>
-                  <h3>Yahrzeits and interests</h3>
-                  {item.yahrzeitsJson.length ? (
-                    <ul className={styles.inlineList}>
-                      {item.yahrzeitsJson.map((row, index) => (
-                        <li key={`${item.id}-yahrzeit-${index}`}>
-                          <strong>{row.name}</strong>
-                          {row.relationship ? ` · ${row.relationship}` : ""}
-                          {row.hebrewDate ? ` · ${row.hebrewDate}` : ""}
-                          {row.englishDate ? ` · ${row.englishDate}` : ""}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className={styles.muted}>No yahrzeits submitted.</p>
-                  )}
-                  <p className={styles.muted}>
-                    Volunteer interests: {item.volunteerInterestsJson.length ? item.volunteerInterestsJson.join(", ") : "None selected"}
-                  </p>
-                </section>
-              </div>
-
-              {item.notes ? (
-                <section className={styles.notesPanel}>
-                  <h3>Applicant notes</h3>
-                  <p>{item.notes}</p>
-                </section>
-              ) : null}
-
-              <section className={styles.reviewPanel}>
-                {item.status === "pending" ? (
-                  <>
-                    <div className={styles.reviewGrid}>
-                      <label className={styles.notesField}>
-                        <span>Admin review notes</span>
-                        <textarea
-                          rows={4}
-                          value={reviewNotes[item.id] ?? ""}
-                          onChange={(event) =>
-                            setReviewNotes((current) => ({
-                              ...current,
-                              [item.id]: event.target.value,
-                            }))
-                          }
-                          placeholder="Internal notes, payment follow-up, or membership conditions"
-                        />
-                      </label>
-
-                      <section className={styles.approvalPanel}>
-                        <h3>Approval setup</h3>
-                        <div className={styles.approvalFields}>
-                          <label>
-                            Membership start
-                            <input
-                              type="date"
-                              value={approvalPlans[item.id]?.membershipStartDate ?? ""}
-                              onChange={(event) =>
-                                updateApprovalPlan(item.id, { membershipStartDate: event.target.value })
-                              }
-                            />
-                          </label>
-                          <label>
-                            Renewal date
-                            <input
-                              type="date"
-                              value={approvalPlans[item.id]?.membershipRenewalDate ?? ""}
-                              onChange={(event) =>
-                                updateApprovalPlan(item.id, { membershipRenewalDate: event.target.value })
-                              }
-                            />
-                          </label>
-                          <label>
-                            Billing
-                            <select
-                              value={approvalPlans[item.id]?.billingMode ?? "none"}
-                              onChange={(event) =>
-                                updateApprovalPlan(item.id, {
-                                  billingMode: event.target.value as MembershipApprovalBillingMode,
-                                })
-                              }
-                            >
-                              <option value="none">none</option>
-                              <option value="invoice">create invoice</option>
-                              <option value="schedule">create recurring schedule</option>
-                            </select>
-                          </label>
-
-                          {approvalPlans[item.id]?.billingMode === "invoice" ? (
-                            <>
-                              <label>
-                                Invoice label
-                                <input
-                                  value={approvalPlans[item.id]?.invoiceLabel ?? ""}
-                                  onChange={(event) =>
-                                    updateApprovalPlan(item.id, { invoiceLabel: event.target.value })
-                                  }
-                                />
-                              </label>
-                              <label>
-                                Invoice amount (cents)
-                                <input
-                                  type="number"
-                                  min={0}
-                                  value={approvalPlans[item.id]?.invoiceAmountCents ?? 0}
-                                  onChange={(event) =>
-                                    updateApprovalPlan(item.id, {
-                                      invoiceAmountCents: Number.parseInt(event.target.value || "0", 10),
-                                    })
-                                  }
-                                />
-                              </label>
-                              <label>
-                                Invoice due date
-                                <input
-                                  type="date"
-                                  value={approvalPlans[item.id]?.invoiceDueDate ?? ""}
-                                  onChange={(event) =>
-                                    updateApprovalPlan(item.id, { invoiceDueDate: event.target.value })
-                                  }
-                                />
-                              </label>
-                            </>
-                          ) : null}
-
-                          {approvalPlans[item.id]?.billingMode === "schedule" ? (
-                            <>
-                              <label>
-                                Schedule frequency
-                                <select
-                                  value={approvalPlans[item.id]?.scheduleFrequency ?? "annual"}
-                                  onChange={(event) =>
-                                    updateApprovalPlan(item.id, {
-                                      scheduleFrequency: event.target.value as "annual" | "monthly" | "custom",
-                                    })
-                                  }
-                                >
-                                  <option value="annual">annual</option>
-                                  <option value="monthly">monthly</option>
-                                  <option value="custom">custom</option>
-                                </select>
-                              </label>
-                              <label>
-                                Schedule amount (cents)
-                                <input
-                                  type="number"
-                                  min={0}
-                                  value={approvalPlans[item.id]?.scheduleAmountCents ?? 0}
-                                  onChange={(event) =>
-                                    updateApprovalPlan(item.id, {
-                                      scheduleAmountCents: Number.parseInt(event.target.value || "0", 10),
-                                    })
-                                  }
-                                />
-                              </label>
-                              <label>
-                                First due date
-                                <input
-                                  type="date"
-                                  value={approvalPlans[item.id]?.scheduleNextDueDate ?? ""}
-                                  onChange={(event) =>
-                                    updateApprovalPlan(item.id, { scheduleNextDueDate: event.target.value })
-                                  }
-                                />
-                              </label>
-                              <label className={styles.fullWidth}>
-                                Schedule note
-                                <input
-                                  value={approvalPlans[item.id]?.scheduleNotes ?? ""}
-                                  onChange={(event) =>
-                                    updateApprovalPlan(item.id, { scheduleNotes: event.target.value })
-                                  }
-                                />
-                              </label>
-                            </>
-                          ) : null}
-
-                          <label className={styles.checkboxField}>
-                            <input
-                              type="checkbox"
-                              checked={approvalPlans[item.id]?.createSpouseLead ?? false}
-                              disabled={!item.spouseEmail}
-                              onChange={(event) =>
-                                updateApprovalPlan(item.id, { createSpouseLead: event.target.checked })
-                              }
-                            />
-                            <span>
-                              Create spouse CRM lead
-                              {item.spouseEmail ? ` (${item.spouseEmail})` : " (requires spouse email)"}
-                            </span>
-                          </label>
-                        </div>
-                      </section>
-                    </div>
-
-                    <div className={styles.actions}>
-                      <button type="button" onClick={() => void applyDecision(item.id, "decline")} disabled={workingId === item.id}>
-                        {workingId === item.id ? "Working..." : "Decline"}
-                      </button>
-                      <button type="button" className={styles.primaryButton} onClick={() => void applyDecision(item.id, "approve")} disabled={workingId === item.id}>
-                        {workingId === item.id ? "Working..." : "Approve and provision"}
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <p className={styles.muted}>Reviewed {item.reviewedAt ? new Date(item.reviewedAt).toLocaleString() : ""}</p>
-                )}
-              </section>
-            </article>
-          ))
+      <DataState resource={resource} empty={{ title: "No applications", description: "No applicants match your filters yet." }}>
+        {() => (
+          <DataTable<Application>
+            rows={items}
+            rowId={(a) => a.id}
+            columns={columns}
+            rowActions={(a) => (
+              <Button size="sm" variant="ghost" onClick={() => setReviewing(a)}>
+                {a.status === "pending" ? "Review" : "Details"}
+              </Button>
+            )}
+            exportFilename="membership-applications.csv"
+            emptyState="No applications match"
+          />
         )}
-      </section>
+      </DataState>
+
+      <Modal
+        open={!!reviewing}
+        onClose={() => setReviewing(null)}
+        title={reviewing ? `Review ${reviewing.displayName || reviewing.email}` : "Review"}
+        description="Approve with a billing plan or decline with a note."
+        size="lg"
+      >
+        {reviewing ? (
+          <ReviewForm
+            application={reviewing}
+            onDone={() => {
+              setReviewing(null);
+              void resource.refresh();
+            }}
+          />
+        ) : null}
+      </Modal>
     </AdminShell>
+  );
+}
+
+function ReviewForm({ application, onDone }: { application: Application; onDone: () => void }) {
+  const [mode, setMode] = useState<"approve" | "decline">("approve");
+  const [reviewNotes, setReviewNotes] = useState(application.reviewNotes ?? "");
+  const [billingMode, setBillingMode] = useState<"invoice" | "schedule" | "none">("invoice");
+  const [startDate, setStartDate] = useState(today());
+  const [renewalDate, setRenewalDate] = useState(yearFromToday());
+  const [invoiceLabel, setInvoiceLabel] = useState(`Membership dues ${application.membershipCategory}`);
+  const [invoiceAmount, setInvoiceAmount] = useState((application.totalAmountCents / 100).toString());
+  const [invoiceDue, setInvoiceDue] = useState(yearFromToday());
+  const [scheduleFreq, setScheduleFreq] = useState<"annual" | "monthly" | "custom">("annual");
+  const [scheduleAmount, setScheduleAmount] = useState((application.totalAmountCents / 100).toString());
+  const [scheduleNext, setScheduleNext] = useState(yearFromToday());
+  const [createSpouseLead, setCreateSpouseLead] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const isPending = application.status === "pending";
+
+  async function submit() {
+    setSubmitting(true);
+    setError(null);
+    try {
+      if (mode === "decline") {
+        await fetchJson(`/api/admin/membership-applications/${application.id}/decline`, {
+          method: "POST",
+          body: JSON.stringify({ reviewNotes }),
+        });
+      } else {
+        const invCents = Math.round(Number(invoiceAmount) * 100);
+        const schCents = Math.round(Number(scheduleAmount) * 100);
+        await fetchJson(`/api/admin/membership-applications/${application.id}/approve`, {
+          method: "POST",
+          body: JSON.stringify({
+            reviewNotes,
+            approvalPlan: {
+              membershipStartDate: startDate,
+              membershipRenewalDate: renewalDate,
+              billingMode,
+              invoiceLabel,
+              invoiceAmountCents: invCents,
+              invoiceDueDate: invoiceDue,
+              scheduleFrequency: scheduleFreq,
+              scheduleAmountCents: schCents,
+              scheduleNextDueDate: scheduleNext,
+              scheduleNotes: "",
+              createSpouseLead,
+            },
+          }),
+        });
+      }
+      onDone();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to submit");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--bk-space-3)" }}>
+      <div style={{ background: "var(--bk-surface-soft)", padding: "var(--bk-space-3)", borderRadius: "var(--bk-radius-md)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--bk-space-2)" }}>
+        <div><strong>Email:</strong> {application.email}</div>
+        <div><strong>Phone:</strong> {application.phone || "—"}</div>
+        <div><strong>Type:</strong> {application.applicationType}</div>
+        <div><strong>Category:</strong> {application.membershipCategory}</div>
+        <div><strong>Payment method:</strong> {application.preferredPaymentMethod}</div>
+        <div><strong>Amount:</strong> {dollars(application.totalAmountCents)}</div>
+      </div>
+
+      {isPending ? (
+        <div style={{ display: "flex", gap: "var(--bk-space-2)" }}>
+          <Button type="button" variant={mode === "approve" ? undefined : "ghost"} size="sm" onClick={() => setMode("approve")}>
+            Approve
+          </Button>
+          <Button type="button" variant={mode === "decline" ? undefined : "ghost"} size="sm" onClick={() => setMode("decline")}>
+            Decline
+          </Button>
+        </div>
+      ) : (
+        <div style={{ fontSize: "var(--bk-text-sm)", color: "var(--bk-text-soft)" }}>
+          Already {application.status}.
+        </div>
+      )}
+
+      {isPending && mode === "approve" ? (
+        <>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--bk-space-3)" }}>
+            <Field label="Membership start" required>
+              {(props) => <Input {...props} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />}
+            </Field>
+            <Field label="Membership renewal" required>
+              {(props) => <Input {...props} type="date" value={renewalDate} onChange={(e) => setRenewalDate(e.target.value)} />}
+            </Field>
+          </div>
+          <Field label="Billing">
+            {(props) => (
+              <Select {...props} value={billingMode} onChange={(e) => setBillingMode(e.target.value as "invoice" | "schedule" | "none")}>
+                <option value="invoice">One-time invoice</option>
+                <option value="schedule">Recurring schedule</option>
+                <option value="none">None</option>
+              </Select>
+            )}
+          </Field>
+          {billingMode === "invoice" ? (
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "var(--bk-space-3)" }}>
+              <Field label="Invoice label">
+                {(props) => <Input {...props} value={invoiceLabel} onChange={(e) => setInvoiceLabel(e.target.value)} />}
+              </Field>
+              <Field label="Amount (USD)">
+                {(props) => <Input {...props} inputMode="decimal" value={invoiceAmount} onChange={(e) => setInvoiceAmount(e.target.value)} />}
+              </Field>
+              <Field label="Due date">
+                {(props) => <Input {...props} type="date" value={invoiceDue} onChange={(e) => setInvoiceDue(e.target.value)} />}
+              </Field>
+            </div>
+          ) : null}
+          {billingMode === "schedule" ? (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--bk-space-3)" }}>
+              <Field label="Frequency">
+                {(props) => (
+                  <Select {...props} value={scheduleFreq} onChange={(e) => setScheduleFreq(e.target.value as typeof scheduleFreq)}>
+                    <option value="annual">Annual</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="custom">Custom</option>
+                  </Select>
+                )}
+              </Field>
+              <Field label="Amount (USD)">
+                {(props) => <Input {...props} inputMode="decimal" value={scheduleAmount} onChange={(e) => setScheduleAmount(e.target.value)} />}
+              </Field>
+              <Field label="Next due">
+                {(props) => <Input {...props} type="date" value={scheduleNext} onChange={(e) => setScheduleNext(e.target.value)} />}
+              </Field>
+            </div>
+          ) : null}
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+            <input type="checkbox" checked={createSpouseLead} onChange={(e) => setCreateSpouseLead(e.target.checked)} />
+            <span>Create spouse as lead in CRM</span>
+          </label>
+        </>
+      ) : null}
+
+      <Field label="Review notes" hint="Internal notes. Visible to admins only.">
+        {(props) => (
+          <textarea
+            id={props.id}
+            value={reviewNotes}
+            onChange={(e) => setReviewNotes(e.target.value)}
+            rows={3}
+            style={{
+              width: "100%",
+              fontFamily: "inherit",
+              fontSize: "var(--bk-text-sm)",
+              padding: "var(--bk-space-2)",
+              background: "var(--bk-surface)",
+              border: "1px solid var(--bk-border)",
+              borderRadius: "var(--bk-radius-sm)",
+              color: "var(--bk-text)",
+            }}
+          />
+        )}
+      </Field>
+
+      {error ? <p style={{ color: "var(--bk-danger)", margin: 0, fontSize: "var(--bk-text-sm)" }}>{error}</p> : null}
+
+      {isPending ? (
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--bk-space-2)" }}>
+          <Button type="button" onClick={submit} disabled={submitting}>
+            {submitting ? "Saving…" : mode === "approve" ? "Approve application" : "Decline application"}
+          </Button>
+        </div>
+      ) : null}
+    </div>
   );
 }

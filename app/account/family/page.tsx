@@ -1,32 +1,39 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { MemberShell } from "@/components/members/member-shell";
-import memberShellStyles from "@/components/members/member-shell.module.css";
-import styles from "./page.module.css";
+import { AccountShell } from "@/components/account/account-shell";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import { Card, CardBody, CardHeader } from "@/components/backend/ui/card";
+import { DataState } from "@/components/backend/data/data-state";
+import { DataTable, type DataTableColumn } from "@/components/backend/ui/data-table";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Field, FieldRow, Input, Select } from "@/components/backend/ui/field";
+import { Alert } from "@/components/backend/ui/feedback";
+import {
+  FilterChip,
+  Toolbar,
+  ToolbarFilters,
+} from "@/components/backend/ui/toolbar";
+
+type InviteStatus = "pending" | "accepted" | "declined" | "expired" | "revoked";
+type RoleInFamily = "primary_adult" | "adult" | "child" | "dependent";
 
 type FamilyOverview = {
-  actor: {
-    id: number;
-    email: string;
-    displayName: string;
-    role: "visitor" | "member" | "admin" | "super_admin";
-  };
+  actor: { id: number; email: string; displayName: string; role: "visitor" | "member" | "admin" | "super_admin" };
   family: {
     familyId: number;
     familyName: string;
     familySlug: string;
     familyStatus: "active" | "archived";
-    membershipRole: "primary_adult" | "adult" | "child" | "dependent" | null;
+    membershipRole: RoleInFamily | null;
     membershipStatus: "pending" | "active" | "former" | null;
   } | null;
   members: Array<{
     id: number;
     userId: number;
-    roleInFamily: "primary_adult" | "adult" | "child" | "dependent";
+    roleInFamily: RoleInFamily;
     membershipStatus: "pending" | "active" | "former";
     joinedAt: string;
     displayName: string;
@@ -41,8 +48,8 @@ type FamilyOverview = {
     inviteeEmail: string | null;
     inviteeFirstName: string;
     inviteeLastName: string;
-    roleInFamily: "primary_adult" | "adult" | "child" | "dependent";
-    status: "pending" | "accepted" | "declined" | "expired" | "revoked";
+    roleInFamily: RoleInFamily;
+    status: InviteStatus;
     contactRequired: boolean;
     expiresAt: string;
     createdAt: string;
@@ -51,17 +58,13 @@ type FamilyOverview = {
     id: number;
     requestorUserId: number;
     requestorDisplayName: string;
-    requestedRoleInFamily: "primary_adult" | "adult" | "child" | "dependent";
+    requestedRoleInFamily: RoleInFamily;
     status: "pending" | "accepted" | "declined" | "revoked";
     note: string;
     createdAt: string;
     respondedAt: string | null;
   }>;
-  duesByMember: Array<{
-    userId: number;
-    openInvoiceCount: number;
-    totalOpenAmountCents: number;
-  }>;
+  duesByMember: Array<{ userId: number; openInvoiceCount: number; totalOpenAmountCents: number }>;
   canManageInvites: boolean;
 };
 
@@ -69,400 +72,392 @@ type CreateInviteForm = {
   email: string;
   firstName: string;
   lastName: string;
-  roleInFamily: "adult" | "child" | "dependent" | "primary_adult";
+  roleInFamily: RoleInFamily;
 };
 
-const initialInviteForm: CreateInviteForm = {
-  email: "",
-  firstName: "",
-  lastName: "",
-  roleInFamily: "adult",
+const INVITE_TONES: Record<InviteStatus, BadgeTone> = {
+  pending: "info",
+  accepted: "success",
+  declined: "neutral",
+  expired: "neutral",
+  revoked: "warning",
 };
+
+const initialForm: CreateInviteForm = { email: "", firstName: "", lastName: "", roleInFamily: "adult" };
+
+function money(cents: number) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
+}
 
 function isInvitee(invite: FamilyOverview["invites"][number], actor: FamilyOverview["actor"]) {
   if (invite.inviteeUserId && invite.inviteeUserId === actor.id) return true;
   return Boolean(invite.inviteeEmail && invite.inviteeEmail.toLowerCase() === actor.email.toLowerCase());
 }
 
-function formatMoney(cents: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
 export default function AccountFamilyPage() {
-  const router = useRouter();
-  const [inviteStatusFilter, setInviteStatusFilter] = useState<"" | FamilyOverview["invites"][number]["status"]>("");
-  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<"" | InviteStatus>("pending");
+  const [form, setForm] = useState<CreateInviteForm>(initialForm);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
   const [actionError, setActionError] = useState("");
-  const [overview, setOverview] = useState<FamilyOverview | null>(null);
-  const [form, setForm] = useState<CreateInviteForm>(initialInviteForm);
+  const [notice, setNotice] = useState("");
   const [contactEmails, setContactEmails] = useState<Record<number, string>>({});
-  const [updatingInviteId, setUpdatingInviteId] = useState<number>(0);
+  const [busyInviteId, setBusyInviteId] = useState(0);
 
-  async function loadOverview() {
-    const response = await fetch("/api/families/me");
-    if (response.status === 401) {
-      router.replace("/login?next=/account/family");
-      return;
-    }
-    const payload = (await response.json().catch(() => ({}))) as FamilyOverview & { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to load family data.");
-      setLoading(false);
-      return;
-    }
-    setOverview(payload);
-    setLoading(false);
-  }
+  const resource = useResource<FamilyOverview>(
+    (signal) => fetchJson<FamilyOverview>("/api/families/me", { signal }),
+    [],
+  );
 
-  useEffect(() => {
-    let cancelled = false;
+  const overview = resource.data;
+  const duesByUser = useMemo(
+    () => new Map((overview?.duesByMember ?? []).map((d) => [d.userId, d])),
+    [overview],
+  );
 
-    async function initialLoad() {
-      try {
-        const response = await fetch("/api/families/me");
-        if (response.status === 401) {
-          router.replace("/login?next=/account/family");
-          return;
-        }
-        const payload = (await response.json().catch(() => ({}))) as FamilyOverview & { error?: string };
-        if (!response.ok) {
-          if (!cancelled) {
-            setError(payload.error || "Unable to load family data.");
-            setLoading(false);
-          }
-          return;
-        }
-        if (!cancelled) {
-          setOverview(payload);
-          setLoading(false);
-        }
-      } catch {
-        if (!cancelled) {
-          setError("Unable to load family data.");
-          setLoading(false);
-        }
-      }
-    }
-
-    void initialLoad();
-    return () => {
-      cancelled = true;
-    };
-  }, [router]);
+  const filteredInvites = useMemo(
+    () => overview?.invites.filter((i) => (statusFilter ? i.status === statusFilter : true)) ?? [],
+    [overview, statusFilter],
+  );
+  const pendingCount = overview?.invites.filter((i) => i.status === "pending").length ?? 0;
+  const totalOpenDues = overview?.duesByMember.reduce((s, r) => s + r.totalOpenAmountCents, 0) ?? 0;
 
   async function createInvite(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setActionError("");
+    setNotice("");
     setSaving(true);
-    const response = await fetch("/api/families/invites", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: form.email || undefined,
-        firstName: form.firstName || undefined,
-        lastName: form.lastName || undefined,
-        roleInFamily: form.roleInFamily,
-      }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setActionError(payload.error || "Unable to create invite.");
+    try {
+      await fetchJson("/api/families/invites", {
+        method: "POST",
+        body: JSON.stringify({
+          email: form.email || undefined,
+          firstName: form.firstName || undefined,
+          lastName: form.lastName || undefined,
+          roleInFamily: form.roleInFamily,
+        }),
+      });
+      setForm(initialForm);
+      setNotice("Invite sent");
+      await resource.refresh();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Unable to create invite");
+    } finally {
       setSaving(false);
-      return;
     }
-    setForm(initialInviteForm);
-    setSaving(false);
-    await loadOverview();
   }
 
-  async function runInviteAction(
-    inviteId: number,
-    action: "accept" | "decline" | "revoke",
-  ) {
+  async function runAction(inviteId: number, action: "accept" | "decline" | "revoke") {
     setActionError("");
-    const response = await fetch(`/api/families/invites/${inviteId}/${action}`, {
-      method: "POST",
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setActionError(payload.error || `Unable to ${action} invite.`);
-      return;
+    setBusyInviteId(inviteId);
+    try {
+      await fetchJson(`/api/families/invites/${inviteId}/${action}`, { method: "POST" });
+      await resource.refresh();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : `Unable to ${action}`);
+    } finally {
+      setBusyInviteId(0);
     }
-    await loadOverview();
   }
 
-  async function updateInviteContact(inviteId: number) {
+  async function updateContact(inviteId: number) {
     const email = contactEmails[inviteId]?.trim() ?? "";
     if (!email) {
-      setActionError("Please provide an email address before sending.");
+      setActionError("Provide an email before sending");
       return;
     }
-    setUpdatingInviteId(inviteId);
     setActionError("");
-    const response = await fetch(`/api/families/invites/${inviteId}/contact`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    setUpdatingInviteId(0);
-    if (!response.ok) {
-      setActionError(payload.error || "Unable to update invite contact.");
-      return;
+    setBusyInviteId(inviteId);
+    try {
+      await fetchJson(`/api/families/invites/${inviteId}/contact`, {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      setContactEmails((prev) => ({ ...prev, [inviteId]: "" }));
+      await resource.refresh();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Unable to update contact");
+    } finally {
+      setBusyInviteId(0);
     }
-    setContactEmails((prev) => ({ ...prev, [inviteId]: "" }));
-    await loadOverview();
   }
 
-  const pendingInvites = useMemo(() => overview?.invites.filter((invite) => invite.status === "pending") ?? [], [overview]);
-  const filteredInvites = useMemo(
-    () => overview?.invites.filter((invite) => (inviteStatusFilter ? invite.status === inviteStatusFilter : invite.status === "pending")) ?? [],
-    [inviteStatusFilter, overview],
-  );
-  const duesByUserId = useMemo(
-    () => new Map((overview?.duesByMember ?? []).map((row) => [row.userId, row])),
-    [overview],
-  );
+  const memberColumns: DataTableColumn<FamilyOverview["members"][number]>[] = [
+    {
+      id: "member",
+      header: "Member",
+      accessor: (r) => (
+        <div>
+          <div style={{ fontWeight: 600 }}>{r.displayName}</div>
+          <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>{r.email}</div>
+        </div>
+      ),
+      sortValue: (r) => r.displayName,
+      exportValue: (r) => `${r.displayName} <${r.email}>`,
+    },
+    {
+      id: "role",
+      header: "Role",
+      accessor: (r) => <Badge tone="info">{r.roleInFamily}</Badge>,
+      exportValue: (r) => r.roleInFamily,
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessor: (r) => <Badge tone={r.membershipStatus === "active" ? "success" : "neutral"}>{r.membershipStatus}</Badge>,
+      exportValue: (r) => r.membershipStatus,
+    },
+    {
+      id: "dues",
+      header: "Open dues",
+      accessor: (r) => {
+        const due = duesByUser.get(r.userId);
+        return due ? `${money(due.totalOpenAmountCents)} (${due.openInvoiceCount})` : "—";
+      },
+      exportValue: (r) => duesByUser.get(r.userId)?.totalOpenAmountCents ?? 0,
+      align: "right",
+    },
+  ];
 
-  const shellStats = overview
+  const stats = overview
     ? [
-        { label: "Household members", value: String(overview.members.length), hint: overview.family ? overview.family.familyName : "No active family yet" },
-        { label: "Pending invites", value: String(pendingInvites.length), hint: overview.canManageInvites ? "You can manage household access" : "Read-only access" },
+        {
+          label: "Household",
+          value: overview.family ? overview.family.familyName : "None",
+          hint: overview.family ? `${overview.members.length} members` : "Send first invite",
+        },
+        {
+          label: "Pending invites",
+          value: String(pendingCount),
+          hint: overview.canManageInvites ? "You manage access" : "Read-only",
+        },
         {
           label: "Open household dues",
-          value: formatMoney(overview.duesByMember.reduce((sum, row) => sum + row.totalOpenAmountCents, 0)),
-          hint: `${overview.duesByMember.reduce((sum, row) => sum + row.openInvoiceCount, 0)} invoice(s) across household`,
+          value: money(totalOpenDues),
+          hint: `${overview.duesByMember.reduce((s, r) => s + r.openInvoiceCount, 0)} invoice(s)`,
         },
       ]
     : [];
 
   return (
-    <MemberShell
-      title="Family Management"
-      description="Invite household members and manage active family access."
-      breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Members Area", href: "/members" },
-        { label: "Family" },
-      ]}
-      activeSection="family"
-      stats={shellStats}
-      actions={
-        <>
-          <Link href="/account/payments" className={memberShellStyles.actionPill}>Household payments</Link>
-          <Link href="/account/inbox" className={memberShellStyles.actionPill}>Open inbox</Link>
-          <Link href="/account" className={memberShellStyles.actionPill}>Account dashboard</Link>
-        </>
-      }
+    <AccountShell
+      currentPath="/account/family"
+      title="Family"
+      description="Invite household members and manage access."
+      stats={stats}
     >
+      {actionError ? <Alert tone="danger">{actionError}</Alert> : null}
+      {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <section className={memberShellStyles.toolbar}>
-        <div className={memberShellStyles.toolbarHeader}>
-          <p className={memberShellStyles.toolbarTitle}>Invite view</p>
-          <p className={memberShellStyles.toolbarMeta}>By default this shows pending invites. Switch status to inspect older invites.</p>
-        </div>
-        <div className={memberShellStyles.toolbarFields}>
-          <label>
-            Invite status
-            <select value={inviteStatusFilter} onChange={(event) => setInviteStatusFilter(event.target.value as "" | FamilyOverview["invites"][number]["status"])}>
-              <option value="">pending</option>
-              <option value="accepted">accepted</option>
-              <option value="declined">declined</option>
-              <option value="expired">expired</option>
-              <option value="revoked">revoked</option>
-            </select>
-          </label>
-        </div>
-      </section>
+      <DataState resource={resource} empty={{ title: "No family data", description: "Unable to load household" }}>
+        {(o) => (
+          <div style={{ display: "grid", gap: "var(--bk-space-4)" }}>
+            <Card padded>
+              <CardHeader
+                title={o.family?.familyName ?? "No active family yet"}
+                description={
+                  o.family
+                    ? `You are ${o.family.membershipRole ?? "a member"} in this household.`
+                    : "Send your first invite to create an active household."
+                }
+              />
+            </Card>
 
-      {loading ? <p>Loading family information...</p> : null}
-      {error ? <p className={styles.error}>{error}</p> : null}
-
-      {overview ? (
-        <>
-          <section className={`${styles.card} internal-card`}>
-            <h2>{overview.family ? overview.family.familyName : "No active family yet"}</h2>
-            <p>
-              {overview.family
-                ? `You are ${overview.family.membershipRole ?? "a member"} in this household.`
-                : "Send your first family invite to create an active household group."}
-            </p>
-          </section>
-
-          <section className={`${styles.card} internal-card`}>
-            <h2>Invite a family member</h2>
-            <form className={styles.form} onSubmit={createInvite}>
-              <label>
-                Email (optional)
-                <input
-                  value={form.email}
-                  onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
-                  type="email"
-                  maxLength={255}
-                  placeholder="member@example.com"
-                />
-              </label>
-              <div className={styles.nameRow}>
-                <label>
-                  First name
-                  <input
-                    value={form.firstName}
-                    onChange={(event) => setForm((prev) => ({ ...prev, firstName: event.target.value }))}
-                    type="text"
-                    maxLength={120}
-                    placeholder="First name"
-                  />
-                </label>
-                <label>
-                  Last name
-                  <input
-                    value={form.lastName}
-                    onChange={(event) => setForm((prev) => ({ ...prev, lastName: event.target.value }))}
-                    type="text"
-                    maxLength={120}
-                    placeholder="Last name"
-                  />
-                </label>
-              </div>
-              <label>
-                Role in family
-                <select
-                  value={form.roleInFamily}
-                  onChange={(event) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      roleInFamily: event.target.value as CreateInviteForm["roleInFamily"],
-                    }))
-                  }
-                >
-                  <option value="adult">Adult</option>
-                  <option value="child">Child</option>
-                  <option value="dependent">Dependent</option>
-                  <option value="primary_adult">Primary adult</option>
-                </select>
-              </label>
-              <button type="submit" disabled={saving}>
-                {saving ? "Sending invite..." : "Send family invite"}
-              </button>
-            </form>
-            {actionError ? <p className={styles.error}>{actionError}</p> : null}
-          </section>
-
-          <section className={`${styles.card} internal-card`}>
-            <h2>Family members</h2>
-            {overview.members.length === 0 ? (
-              <p>No active family members yet.</p>
-            ) : (
-              <ul className={styles.list}>
-                {overview.members.map((member) => (
-                  <li key={member.id}>
-                    <strong>{member.displayName}</strong>
-                    <p>
-                      {member.email} · {member.roleInFamily} · {member.membershipStatus}
-                    </p>
-                    {duesByUserId.get(member.userId) ? (
-                      <p>
-                        {formatMoney(duesByUserId.get(member.userId)!.totalOpenAmountCents)} open ·{" "}
-                        {duesByUserId.get(member.userId)!.openInvoiceCount} invoice(s)
-                      </p>
-                    ) : (
-                      <p>No open dues.</p>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section className={`${styles.card} internal-card`}>
-            <h2>Join requests</h2>
-            {overview.joinRequests.length === 0 ? (
-              <p>No household join requests yet.</p>
-            ) : (
-              <ul className={styles.list}>
-                {overview.joinRequests.map((request) => (
-                  <li key={request.id}>
-                    <strong>{request.requestorDisplayName}</strong>
-                    <p>
-                      {request.requestedRoleInFamily} · {request.status} · requested{" "}
-                      {new Date(request.createdAt).toLocaleString()}
-                    </p>
-                    {request.note ? <p>{request.note}</p> : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section className={`${styles.card} internal-card`}>
-            <h2>{inviteStatusFilter ? `${inviteStatusFilter} invites` : "Pending invites"}</h2>
-            {filteredInvites.length === 0 ? (
-              <p>No invites in this view.</p>
-            ) : (
-              <ul className={styles.list}>
-                {filteredInvites.map((invite) => {
-                  const label = `${invite.inviteeFirstName} ${invite.inviteeLastName}`.trim() || invite.inviteeEmail || "Pending invite";
-                  const actorCanRespond = isInvitee(invite, overview.actor);
-                  return (
-                    <li key={invite.id}>
-                      <strong>{label}</strong>
-                      <p>
-                        {invite.roleInFamily}
-                        {invite.inviteeEmail ? ` · ${invite.inviteeEmail}` : " · Awaiting contact details"}
-                        {` · Expires ${new Date(invite.expiresAt).toLocaleString()}`}
-                      </p>
-                      {invite.contactRequired && overview.canManageInvites ? (
-                        <div className={styles.contactRow}>
-                          <input
-                            type="email"
-                            placeholder="invitee@email.com"
-                            value={contactEmails[invite.id] ?? ""}
-                            onChange={(event) =>
-                              setContactEmails((prev) => ({
-                                ...prev,
-                                [invite.id]: event.target.value,
-                              }))
-                            }
+            {o.canManageInvites ? (
+              <Card padded>
+                <CardHeader title="Invite a member" description="Email is optional — add later via contact update." />
+                <CardBody>
+                  <form onSubmit={createInvite} style={{ display: "grid", gap: "var(--bk-space-3)" }}>
+                    <FieldRow cols={2}>
+                      <Field label="First name">
+                        {(p) => (
+                          <Input
+                            {...p}
+                            value={form.firstName}
+                            onChange={(e) => setForm((prev) => ({ ...prev, firstName: e.target.value }))}
+                            maxLength={120}
                           />
-                          <button
-                            type="button"
-                            onClick={() => updateInviteContact(invite.id)}
-                            disabled={updatingInviteId === invite.id}
+                        )}
+                      </Field>
+                      <Field label="Last name">
+                        {(p) => (
+                          <Input
+                            {...p}
+                            value={form.lastName}
+                            onChange={(e) => setForm((prev) => ({ ...prev, lastName: e.target.value }))}
+                            maxLength={120}
+                          />
+                        )}
+                      </Field>
+                    </FieldRow>
+                    <FieldRow cols={2}>
+                      <Field label="Email" optional>
+                        {(p) => (
+                          <Input
+                            {...p}
+                            type="email"
+                            value={form.email}
+                            onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+                            maxLength={255}
+                          />
+                        )}
+                      </Field>
+                      <Field label="Role in family">
+                        {(p) => (
+                          <Select
+                            {...p}
+                            value={form.roleInFamily}
+                            onChange={(e) => setForm((prev) => ({ ...prev, roleInFamily: e.target.value as RoleInFamily }))}
                           >
-                            {updatingInviteId === invite.id ? "Sending..." : "Add email and send"}
-                          </button>
-                        </div>
-                      ) : null}
-                      <div className={styles.rowActions}>
-                        {actorCanRespond ? (
+                            <option value="adult">Adult</option>
+                            <option value="child">Child</option>
+                            <option value="dependent">Dependent</option>
+                            <option value="primary_adult">Primary adult</option>
+                          </Select>
+                        )}
+                      </Field>
+                    </FieldRow>
+                    <div>
+                      <Button type="submit" disabled={saving}>
+                        {saving ? "Sending…" : "Send invite"}
+                      </Button>
+                    </div>
+                  </form>
+                </CardBody>
+              </Card>
+            ) : null}
+
+            <section>
+              <h3 style={{ margin: "var(--bk-space-2) 0" }}>Household members</h3>
+              <DataTable<FamilyOverview["members"][number]>
+                rows={o.members}
+                rowId={(r) => r.id}
+                columns={memberColumns}
+                exportFilename="household-members.csv"
+                emptyState="No active family members yet"
+              />
+            </section>
+
+            <section>
+              <Toolbar>
+                <ToolbarFilters>
+                  <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as InviteStatus | "")}>
+                    <option value="">All invites</option>
+                    <option value="pending">Pending</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="declined">Declined</option>
+                    <option value="expired">Expired</option>
+                    <option value="revoked">Revoked</option>
+                  </Select>
+                  {statusFilter && statusFilter !== "pending" ? (
+                    <FilterChip label="Reset to pending" onRemove={() => setStatusFilter("pending")} />
+                  ) : null}
+                </ToolbarFilters>
+              </Toolbar>
+              <h3 style={{ margin: "var(--bk-space-2) 0" }}>Invites</h3>
+              {filteredInvites.length === 0 ? (
+                <p style={{ color: "var(--bk-text-soft)" }}>No invites in this view.</p>
+              ) : (
+                <div style={{ display: "grid", gap: "var(--bk-space-2)" }}>
+                  {filteredInvites.map((invite) => {
+                    const label =
+                      `${invite.inviteeFirstName} ${invite.inviteeLastName}`.trim() ||
+                      invite.inviteeEmail ||
+                      "Pending invite";
+                    const canRespond = isInvitee(invite, o.actor);
+                    return (
+                      <Card key={invite.id} padded>
+                        <CardHeader
+                          title={
+                            <span>
+                              {label} <Badge tone={INVITE_TONES[invite.status]}>{invite.status}</Badge>
+                            </span>
+                          }
+                          description={
+                            <>
+                              {invite.roleInFamily}
+                              {invite.inviteeEmail ? ` · ${invite.inviteeEmail}` : " · Awaiting contact"}
+                              {` · Expires ${new Date(invite.expiresAt).toLocaleString()}`}
+                            </>
+                          }
+                          actions={
+                            <div style={{ display: "flex", gap: 8 }}>
+                              {canRespond && invite.status === "pending" ? (
+                                <>
+                                  <Button size="sm" disabled={busyInviteId === invite.id} onClick={() => runAction(invite.id, "accept")}>
+                                    Accept
+                                  </Button>
+                                  <Button size="sm" variant="secondary" disabled={busyInviteId === invite.id} onClick={() => runAction(invite.id, "decline")}>
+                                    Decline
+                                  </Button>
+                                </>
+                              ) : null}
+                              {o.canManageInvites && invite.status === "pending" ? (
+                                <Button size="sm" variant="dangerGhost" disabled={busyInviteId === invite.id} onClick={() => runAction(invite.id, "revoke")}>
+                                  Revoke
+                                </Button>
+                              ) : null}
+                            </div>
+                          }
+                        />
+                        {invite.contactRequired && o.canManageInvites ? (
+                          <CardBody>
+                            <FieldRow cols={2}>
+                              <Field label="Add invitee email">
+                                {(p) => (
+                                  <Input
+                                    {...p}
+                                    type="email"
+                                    value={contactEmails[invite.id] ?? ""}
+                                    onChange={(e) => setContactEmails((prev) => ({ ...prev, [invite.id]: e.target.value }))}
+                                    placeholder="invitee@example.com"
+                                  />
+                                )}
+                              </Field>
+                              <Field label="&nbsp;">
+                                {() => (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => updateContact(invite.id)}
+                                    disabled={busyInviteId === invite.id}
+                                  >
+                                    {busyInviteId === invite.id ? "Sending…" : "Save & send"}
+                                  </Button>
+                                )}
+                              </Field>
+                            </FieldRow>
+                          </CardBody>
+                        ) : null}
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+
+            {o.joinRequests.length > 0 ? (
+              <section>
+                <h3 style={{ margin: "var(--bk-space-2) 0" }}>Join requests</h3>
+                <div style={{ display: "grid", gap: "var(--bk-space-2)" }}>
+                  {o.joinRequests.map((request) => (
+                    <Card key={request.id} padded>
+                      <CardHeader
+                        title={request.requestorDisplayName}
+                        description={
                           <>
-                            <button type="button" onClick={() => runInviteAction(invite.id, "accept")}>
-                              Accept
-                            </button>
-                            <button type="button" onClick={() => runInviteAction(invite.id, "decline")}>
-                              Decline
-                            </button>
+                            {request.requestedRoleInFamily} · {request.status} · requested{" "}
+                            {new Date(request.createdAt).toLocaleString()}
                           </>
-                        ) : null}
-                        {overview.canManageInvites ? (
-                          <button type="button" onClick={() => runInviteAction(invite.id, "revoke")}>
-                            Revoke
-                          </button>
-                        ) : null}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </section>
-        </>
-      ) : null}
-    </MemberShell>
+                        }
+                      />
+                      {request.note ? <CardBody>{request.note}</CardBody> : null}
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+          </div>
+        )}
+      </DataState>
+    </AccountShell>
   );
 }

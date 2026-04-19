@@ -1,12 +1,21 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
-import { MemberShell } from "@/components/members/member-shell";
-import memberShellStyles from "@/components/members/member-shell.module.css";
-import styles from "./page.module.css";
+import { AccountShell } from "@/components/account/account-shell";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import { DataState } from "@/components/backend/data/data-state";
+import { DataTable, type DataTableColumn } from "@/components/backend/ui/data-table";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Select } from "@/components/backend/ui/field";
+import { Alert } from "@/components/backend/ui/feedback";
+import {
+  FilterChip,
+  Toolbar,
+  ToolbarActions,
+  ToolbarFilters,
+} from "@/components/backend/ui/toolbar";
 
 type Schedule = {
   id: number;
@@ -40,265 +49,296 @@ type Payment = {
   createdAt: string;
 };
 
-type DuesResponse = {
-  schedules: Schedule[];
-  openInvoices: OpenInvoice[];
-  payments: Payment[];
+type DuesResponse = { schedules: Schedule[]; openInvoices: OpenInvoice[]; payments: Payment[] };
+
+const INVOICE_TONES: Record<OpenInvoice["status"], BadgeTone> = {
+  open: "info",
+  overdue: "warning",
+  paid: "success",
+  void: "neutral",
+};
+const PAYMENT_TONES: Record<Payment["status"], BadgeTone> = {
+  pending: "info",
+  succeeded: "success",
+  failed: "danger",
+  refunded: "warning",
 };
 
-function toMoney(cents: number, currency: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
+function money(cents: number, currency: string) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: currency.toUpperCase() }).format(cents / 100);
 }
 
 export default function AccountDuesPage() {
-  const router = useRouter();
-  const [invoiceStatusFilter, setInvoiceStatusFilter] = useState<"" | OpenInvoice["status"]>("");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState<"" | Payment["status"]>("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [checkoutLoadingId, setCheckoutLoadingId] = useState<number | null>(null);
+  const [invoiceStatus, setInvoiceStatus] = useState<"" | OpenInvoice["status"]>("");
+  const [paymentStatus, setPaymentStatus] = useState<"" | Payment["status"]>("");
+  const [checkoutId, setCheckoutId] = useState<number | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
-  const [data, setData] = useState<DuesResponse>({ schedules: [], openInvoices: [], payments: [] });
+  const [error, setError] = useState("");
 
-  const totalDueCents = useMemo(
-    () => data.openInvoices.reduce((total, invoice) => total + invoice.amountCents, 0),
-    [data.openInvoices],
+  const resource = useResource<DuesResponse>(
+    (signal) => fetchJson<DuesResponse>("/api/account/dues", { signal }),
+    [],
+  );
+
+  const totalDue = useMemo(
+    () => (resource.data?.openInvoices ?? []).reduce((sum, inv) => sum + inv.amountCents, 0),
+    [resource.data],
   );
 
   const filteredInvoices = useMemo(
-    () => data.openInvoices.filter((invoice) => (invoiceStatusFilter ? invoice.status === invoiceStatusFilter : true)),
-    [data.openInvoices, invoiceStatusFilter],
+    () =>
+      (resource.data?.openInvoices ?? []).filter((inv) => (invoiceStatus ? inv.status === invoiceStatus : true)),
+    [resource.data, invoiceStatus],
   );
-
   const filteredPayments = useMemo(
-    () => data.payments.filter((payment) => (paymentStatusFilter ? payment.status === paymentStatusFilter : true)),
-    [data.payments, paymentStatusFilter],
+    () =>
+      (resource.data?.payments ?? []).filter((p) => (paymentStatus ? p.status === paymentStatus : true)),
+    [resource.data, paymentStatus],
   );
 
-  const primaryRenewalInvoice = data.openInvoices[0] ?? null;
-
-  useEffect(() => {
-    async function load() {
-      const response = await fetch("/api/account/dues");
-      if (response.status === 401) {
-        router.replace("/login?next=/account/dues");
-        return;
-      }
-      const payload = (await response.json().catch(() => ({}))) as DuesResponse & { error?: string };
-
-      if (!response.ok) {
-        setError(payload.error || "Unable to load dues");
-        setLoading(false);
-        return;
-      }
-
-      setData(payload);
-      setLoading(false);
-    }
-
-    load().catch(() => {
-      setError("Unable to load dues");
-      setLoading(false);
-    });
-  }, [router]);
+  const primaryRenewal = resource.data?.openInvoices[0] ?? null;
 
   async function payInvoice(invoiceId: number) {
-    setCheckoutLoadingId(invoiceId);
-    const response = await fetch(`/api/account/dues/${invoiceId}/checkout`, {
-      method: "POST",
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string; url?: string };
-
-    if (!response.ok || !payload.url) {
-      setError(payload.error || "Unable to start checkout");
-      setCheckoutLoadingId(null);
-      return;
+    setError("");
+    setCheckoutId(invoiceId);
+    try {
+      const body = await fetchJson<{ url?: string }>(`/api/account/dues/${invoiceId}/checkout`, { method: "POST" });
+      if (body.url) window.location.assign(body.url);
+      else setError("Checkout URL missing");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to start checkout");
+    } finally {
+      setCheckoutId(null);
     }
-
-    window.location.assign(payload.url);
   }
 
   async function openPortal() {
+    setError("");
     setPortalLoading(true);
-    const response = await fetch("/api/account/stripe/portal", {
-      method: "POST",
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string; url?: string };
-
-    if (!response.ok || !payload.url) {
-      setError(payload.error || "Unable to open portal");
+    try {
+      const body = await fetchJson<{ url?: string }>("/api/account/stripe/portal", { method: "POST" });
+      if (body.url) window.location.assign(body.url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to open portal");
+    } finally {
       setPortalLoading(false);
-      return;
     }
-
-    window.location.assign(payload.url);
   }
 
-  if (loading) {
-    return <main className={`${styles.page} internal-page`}>Loading dues...</main>;
-  }
-
-  const shellStats = [
-    { label: "Amount due", value: toMoney(totalDueCents, "usd"), hint: `${data.openInvoices.length} open invoice(s)` },
-    { label: "Schedules", value: String(data.schedules.length), hint: "Recurring dues rules" },
-    { label: "Payments", value: String(data.payments.length), hint: "Recorded payment history" },
+  const invoiceColumns: DataTableColumn<OpenInvoice>[] = [
+    {
+      id: "label",
+      header: "Invoice",
+      accessor: (r) => <strong>{r.label}</strong>,
+      exportValue: (r) => r.label,
+    },
+    {
+      id: "amount",
+      header: "Amount",
+      align: "right",
+      accessor: (r) => money(r.amountCents, r.currency),
+      sortValue: (r) => r.amountCents,
+      exportValue: (r) => r.amountCents / 100,
+    },
+    {
+      id: "dueDate",
+      header: "Due",
+      accessor: (r) => r.dueDate,
+      sortValue: (r) => r.dueDate,
+      exportValue: (r) => r.dueDate,
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessor: (r) => <Badge tone={INVOICE_TONES[r.status]}>{r.status}</Badge>,
+      sortValue: (r) => r.status,
+      exportValue: (r) => r.status,
+    },
   ];
 
+  const paymentColumns: DataTableColumn<Payment>[] = [
+    {
+      id: "invoice",
+      header: "Invoice",
+      accessor: (r) => `#${r.invoiceId}`,
+      exportValue: (r) => r.invoiceId,
+    },
+    {
+      id: "amount",
+      header: "Amount",
+      align: "right",
+      accessor: (r) => money(r.amountCents, r.currency),
+      sortValue: (r) => r.amountCents,
+      exportValue: (r) => r.amountCents / 100,
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessor: (r) => <Badge tone={PAYMENT_TONES[r.status]}>{r.status}</Badge>,
+      sortValue: (r) => r.status,
+      exportValue: (r) => r.status,
+    },
+    {
+      id: "date",
+      header: "When",
+      accessor: (r) => new Date(r.processedAt ?? r.createdAt).toLocaleString(),
+      sortValue: (r) => r.processedAt ?? r.createdAt,
+      exportValue: (r) => r.processedAt ?? r.createdAt,
+    },
+    {
+      id: "receipt",
+      header: "Receipt",
+      accessor: (r) =>
+        r.stripeReceiptUrl ? (
+          <a href={r.stripeReceiptUrl} target="_blank" rel="noreferrer noopener">Open</a>
+        ) : (
+          "—"
+        ),
+      exportValue: (r) => r.stripeReceiptUrl,
+    },
+  ];
+
+  const scheduleColumns: DataTableColumn<Schedule>[] = [
+    {
+      id: "frequency",
+      header: "Frequency",
+      accessor: (r) => <Badge tone={r.active ? "success" : "neutral"}>{r.frequency}</Badge>,
+      sortValue: (r) => r.frequency,
+      exportValue: (r) => r.frequency,
+    },
+    {
+      id: "amount",
+      header: "Amount",
+      align: "right",
+      accessor: (r) => money(r.amountCents, r.currency),
+      sortValue: (r) => r.amountCents,
+      exportValue: (r) => r.amountCents / 100,
+    },
+    {
+      id: "nextDue",
+      header: "Next due",
+      accessor: (r) => r.nextDueDate,
+      sortValue: (r) => r.nextDueDate,
+      exportValue: (r) => r.nextDueDate,
+    },
+    {
+      id: "notes",
+      header: "Notes",
+      accessor: (r) => r.notes || "—",
+      exportValue: (r) => r.notes,
+      hideOnMobile: true,
+    },
+  ];
+
+  const stats = resource.data
+    ? [
+        { label: "Amount due", value: money(totalDue, "usd"), hint: `${resource.data.openInvoices.length} open invoice(s)` },
+        { label: "Schedules", value: String(resource.data.schedules.length), hint: "Recurring dues rules" },
+        { label: "Payments", value: String(resource.data.payments.length), hint: "Recorded history" },
+      ]
+    : [];
+
   return (
-    <MemberShell
-      title="Dues & Payments"
-      description="Review open dues, payment history, and saved payment methods."
-      breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Members Area", href: "/members" },
-        { label: "Dues & Payments" },
-      ]}
-      activeSection="dues"
-      stats={shellStats}
+    <AccountShell
+      currentPath="/account/dues"
+      title="Dues"
+      description="Review open dues, recurring schedules, and payment history."
+      stats={stats}
       actions={
         <>
-          {primaryRenewalInvoice ? (
-            <button
-              type="button"
-              className={memberShellStyles.primaryButton}
-              disabled={checkoutLoadingId === primaryRenewalInvoice.id}
-              onClick={() => payInvoice(primaryRenewalInvoice.id)}
+          {primaryRenewal ? (
+            <Button
+              size="sm"
+              onClick={() => payInvoice(primaryRenewal.id)}
+              disabled={checkoutId === primaryRenewal.id}
             >
-              {checkoutLoadingId === primaryRenewalInvoice.id ? "Opening..." : "Click to Renew"}
-            </button>
+              {checkoutId === primaryRenewal.id ? "Opening…" : "Click to Renew"}
+            </Button>
           ) : null}
-          <button type="button" className={memberShellStyles.secondaryButton} disabled={portalLoading} onClick={openPortal}>
-            {portalLoading ? "Opening..." : "Manage payment methods"}
-          </button>
+          <Button size="sm" variant="secondary" disabled={portalLoading} onClick={openPortal}>
+            {portalLoading ? "Opening…" : "Payment methods"}
+          </Button>
         </>
       }
     >
+      {error ? <Alert tone="danger">{error}</Alert> : null}
 
-      <section className={memberShellStyles.toolbar}>
-        <div className={memberShellStyles.toolbarHeader}>
-          <p className={memberShellStyles.toolbarTitle}>Payment filters</p>
-          <p className={memberShellStyles.toolbarMeta}>Narrow open invoices and payment history by status.</p>
-        </div>
-        <div className={memberShellStyles.toolbarFields}>
-          <label>
-            Invoice status
-            <select value={invoiceStatusFilter} onChange={(event) => setInvoiceStatusFilter(event.target.value as "" | OpenInvoice["status"])}>
-              <option value="">All</option>
-              <option value="open">open</option>
-              <option value="overdue">overdue</option>
-              <option value="paid">paid</option>
-              <option value="void">void</option>
-            </select>
-          </label>
-          <label>
-            Payment status
-            <select value={paymentStatusFilter} onChange={(event) => setPaymentStatusFilter(event.target.value as "" | Payment["status"])}>
-              <option value="">All</option>
-              <option value="pending">pending</option>
-              <option value="succeeded">succeeded</option>
-              <option value="failed">failed</option>
-              <option value="refunded">refunded</option>
-            </select>
-          </label>
-        </div>
-        <div className={memberShellStyles.toolbarActions}>
-          <button type="button" className={memberShellStyles.secondaryButton} onClick={() => { setInvoiceStatusFilter(""); setPaymentStatusFilter(""); }}>
-            Clear filters
-          </button>
-        </div>
-      </section>
+      <Toolbar>
+        <ToolbarFilters>
+          <Select value={invoiceStatus} onChange={(e) => setInvoiceStatus(e.target.value as OpenInvoice["status"] | "")}>
+            <option value="">All invoice statuses</option>
+            <option value="open">Open</option>
+            <option value="overdue">Overdue</option>
+            <option value="paid">Paid</option>
+            <option value="void">Void</option>
+          </Select>
+          <Select value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value as Payment["status"] | "")}>
+            <option value="">All payment statuses</option>
+            <option value="pending">Pending</option>
+            <option value="succeeded">Succeeded</option>
+            <option value="failed">Failed</option>
+            <option value="refunded">Refunded</option>
+          </Select>
+          {(invoiceStatus || paymentStatus) ? (
+            <FilterChip
+              label="Clear filters"
+              onRemove={() => {
+                setInvoiceStatus("");
+                setPaymentStatus("");
+              }}
+            />
+          ) : null}
+        </ToolbarFilters>
+        <ToolbarActions>
+          <Button size="sm" variant="ghost" onClick={() => void resource.refresh()}>
+            Refresh
+          </Button>
+        </ToolbarActions>
+      </Toolbar>
 
-      {error ? <p className={styles.error}>{error}</p> : null}
+      <DataState resource={resource} empty={{ title: "No dues data", description: "We couldn't load your dues." }}>
+        {() => (
+          <div style={{ display: "grid", gap: "var(--bk-space-4)" }}>
+            <section>
+              <h3 style={{ margin: "var(--bk-space-2) 0" }}>Open invoices</h3>
+              <DataTable<OpenInvoice>
+                rows={filteredInvoices}
+                rowId={(r) => r.id}
+                columns={invoiceColumns}
+                rowActions={(r) => (
+                  <Button size="sm" disabled={checkoutId === r.id} onClick={() => payInvoice(r.id)}>
+                    {checkoutId === r.id ? "Redirecting…" : "Pay"}
+                  </Button>
+                )}
+                exportFilename="open-invoices.csv"
+                emptyState="No open invoices match the current filter"
+              />
+            </section>
 
-      <section className={`${styles.card} internal-card`}>
-        <h2>Amount due</h2>
-        <p className={styles.total}>{toMoney(totalDueCents, "usd")}</p>
-        <p>{filteredInvoices.length} invoice(s) visible with current filters.</p>
-      </section>
+            <section>
+              <h3 style={{ margin: "var(--bk-space-2) 0" }}>Recurring schedules</h3>
+              <DataTable<Schedule>
+                rows={resource.data?.schedules ?? []}
+                rowId={(r) => r.id}
+                columns={scheduleColumns}
+                exportFilename="dues-schedules.csv"
+                emptyState="No schedules configured"
+              />
+            </section>
 
-      <section className={`${styles.card} internal-card`}>
-        <h2>Open invoices</h2>
-        {filteredInvoices.length === 0 ? (
-          <p>No open invoices.</p>
-        ) : (
-          <ul className={styles.list}>
-            {filteredInvoices.map((invoice) => (
-              <li key={invoice.id} className={styles.listItem}>
-                <div>
-                  <strong>{invoice.label}</strong>
-                  <p>
-                    Due {invoice.dueDate} · {invoice.status}
-                  </p>
-                  <p>{toMoney(invoice.amountCents, invoice.currency)}</p>
-                </div>
-                <button
-                  type="button"
-                  className={styles.primaryButton}
-                  disabled={checkoutLoadingId === invoice.id}
-                  onClick={() => payInvoice(invoice.id)}
-                >
-                  {checkoutLoadingId === invoice.id ? "Redirecting..." : "Pay now"}
-                </button>
-              </li>
-            ))}
-          </ul>
+            <section>
+              <h3 style={{ margin: "var(--bk-space-2) 0" }}>Payment history</h3>
+              <DataTable<Payment>
+                rows={filteredPayments}
+                rowId={(r) => r.id}
+                columns={paymentColumns}
+                exportFilename="dues-payments.csv"
+                emptyState="No payments recorded yet"
+              />
+            </section>
+          </div>
         )}
-      </section>
-
-      <section className={`${styles.card} internal-card`}>
-        <h2>Schedules</h2>
-        {data.schedules.length === 0 ? (
-          <p>No schedules configured yet.</p>
-        ) : (
-          <ul className={styles.list}>
-            {data.schedules.map((schedule) => (
-              <li key={schedule.id} className={styles.listItem}>
-                <div>
-                  <strong>{schedule.frequency}</strong>
-                  <p>
-                    {toMoney(schedule.amountCents, schedule.currency)} · next due {schedule.nextDueDate}
-                  </p>
-                  {schedule.notes ? <p>{schedule.notes}</p> : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className={`${styles.card} internal-card`}>
-        <h2>Payment history</h2>
-        {filteredPayments.length === 0 ? (
-          <p>No payments yet.</p>
-        ) : (
-          <ul className={styles.list}>
-            {filteredPayments.map((payment) => (
-              <li key={payment.id} className={styles.listItem}>
-                <div>
-                  <strong>
-                    Invoice #{payment.invoiceId} · {toMoney(payment.amountCents, payment.currency)}
-                  </strong>
-                  <p>
-                    {payment.status} · {payment.processedAt || payment.createdAt}
-                  </p>
-                </div>
-                {payment.stripeReceiptUrl ? (
-                  <a href={payment.stripeReceiptUrl} target="_blank" rel="noreferrer noopener">
-                    Receipt
-                  </a>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <Link href="/account/profile" className={styles.backLink}>
-        ← Back to profile
-      </Link>
-    </MemberShell>
+      </DataState>
+    </AccountShell>
   );
 }

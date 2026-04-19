@@ -3,28 +3,54 @@ import type { ReactNode } from "react";
 
 import { AdminLogoutButton } from "@/components/admin/logout-button";
 import { AreaSwitcher } from "@/components/navigation/area-switcher";
-import styles from "./admin-shell.module.css";
+import {
+  BackendPageHeader,
+  BackendShell,
+  type BackendNavSection,
+} from "@/components/backend/shell/backend-shell";
+import { StatGrid, StatTile } from "@/components/backend/ui/stats";
 
 export type AdminRouteItem = {
   href: string;
   label: string;
+  section?: "workspace" | "crm" | "finance" | "communication" | "ops";
 };
 
 export const ADMIN_ROUTES: AdminRouteItem[] = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/membership-applications", label: "Applications" },
-  { href: "/admin/people", label: "People" },
-  { href: "/admin/users", label: "Users" },
-  { href: "/admin/campaigns", label: "Campaigns" },
-  { href: "/admin/payments", label: "Payments" },
-  { href: "/admin/invitations", label: "Invitations" },
-  { href: "/admin/messages", label: "Messages" },
-  { href: "/admin/ask-mekor", label: "Ask Mekor" },
-  { href: "/admin/dues", label: "Dues" },
-  { href: "/admin/events", label: "Events" },
-  { href: "/admin/templates", label: "Templates" },
-  { href: "/admin/settings", label: "Settings" },
+  { href: "/admin", label: "Dashboard", section: "workspace" },
+  { href: "/admin/membership-applications", label: "Applications", section: "crm" },
+  { href: "/admin/people", label: "People", section: "crm" },
+  { href: "/admin/users", label: "Users", section: "crm" },
+  { href: "/admin/campaigns", label: "Campaigns", section: "finance" },
+  { href: "/admin/payments", label: "Payments", section: "finance" },
+  { href: "/admin/dues", label: "Dues", section: "finance" },
+  { href: "/admin/invitations", label: "Invitations", section: "communication" },
+  { href: "/admin/messages", label: "Messages", section: "communication" },
+  { href: "/admin/ask-mekor", label: "Ask Mekor", section: "communication" },
+  { href: "/admin/templates", label: "Templates", section: "communication" },
+  { href: "/admin/events", label: "Events", section: "ops" },
+  { href: "/admin/audit", label: "Audit log", section: "ops" },
+  { href: "/admin/settings", label: "Settings", section: "ops" },
 ];
+
+const SECTION_ORDER: Array<{ key: NonNullable<AdminRouteItem["section"]>; label: string }> = [
+  { key: "workspace", label: "Workspace" },
+  { key: "crm", label: "People" },
+  { key: "finance", label: "Finance" },
+  { key: "communication", label: "Communication" },
+  { key: "ops", label: "Operations" },
+];
+
+function buildNavSections(): BackendNavSection[] {
+  return SECTION_ORDER.map((section) => ({
+    label: section.label,
+    items: ADMIN_ROUTES.filter((r) => r.section === section.key).map((r) => ({
+      href: r.href,
+      label: r.label,
+      matchPrefix: r.href !== "/admin",
+    })),
+  })).filter((s) => s.items.length > 0);
+}
 
 export type AdminBreadcrumb = {
   href?: string;
@@ -37,16 +63,17 @@ export type AdminStat = {
   hint?: string;
 };
 
-function isRouteActive(currentPath: string, href: string) {
-  if (href === "/admin") return currentPath === href;
-  return currentPath === href || currentPath.startsWith(`${href}/`);
-}
-
 function buildDefaultBreadcrumbs(currentPath: string, title: string): AdminBreadcrumb[] {
   if (currentPath === "/admin") return [{ label: "Dashboard" }];
-  const route = ADMIN_ROUTES.find((item) => isRouteActive(currentPath, item.href) && item.href !== "/admin");
-  if (!route) return [{ href: "/admin", label: "Dashboard" }, { label: title }];
-  return [{ href: "/admin", label: "Dashboard" }, { label: route.label }];
+  const route = ADMIN_ROUTES.find(
+    (item) =>
+      item.href !== "/admin" &&
+      (currentPath === item.href || currentPath.startsWith(`${item.href}/`)),
+  );
+  return [
+    { href: "/admin", label: "Dashboard" },
+    { label: route?.label ?? title },
+  ];
 }
 
 export function AdminShell({
@@ -71,58 +98,27 @@ export function AdminShell({
   const trail = breadcrumbs ?? buildDefaultBreadcrumbs(currentPath, title);
 
   return (
-    <main className={`internal-page ${styles.shell}`}>
-      <section className={styles.headerCard}>
-        <div className={styles.headerMeta}>
-          <div className={styles.breadcrumbs} aria-label="Breadcrumbs">
-            {trail.map((item, index) => (
-              <span key={`${item.label}-${index}`} className={item.href ? styles.breadcrumbLink : styles.breadcrumbCurrent}>
-                {item.href ? <Link href={item.href}>{item.label}</Link> : item.label}
-                {index < trail.length - 1 ? <span className={styles.breadcrumbSeparator}>/</span> : null}
-              </span>
-            ))}
-          </div>
+    <BackendShell
+      brand={<Link href="/admin" style={{ textDecoration: "none", color: "inherit" }}>Mekor Admin</Link>}
+      sections={buildNavSections()}
+      footer={
+        <>
           <AreaSwitcher currentPath={currentPath} currentArea="admin" variant="compact" />
-        </div>
-
-        <div className={styles.headerMain}>
-          <div className={styles.headerCopy}>
-            <p className={styles.eyebrow}>{eyebrow}</p>
-            <h1 className={styles.title}>{title}</h1>
-            {description ? <p className={styles.description}>{description}</p> : null}
-          </div>
-          <div className={styles.headerActions}>
-            {actions}
-            <AdminLogoutButton className={styles.actionPill} />
-          </div>
-        </div>
-
-        <nav className={styles.nav} aria-label="Admin navigation">
-          {ADMIN_ROUTES.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={isRouteActive(currentPath, item.href) ? styles.navLinkActive : styles.navLink}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </section>
-
+          <AdminLogoutButton />
+        </>
+      }
+      crumbs={trail}
+      topActions={actions}
+    >
+      <BackendPageHeader eyebrow={eyebrow} title={title} description={description} />
       {stats?.length ? (
-        <section className={styles.statsGrid} aria-label="Page summary">
+        <StatGrid>
           {stats.map((stat) => (
-            <article key={stat.label}>
-              <p className={styles.statLabel}>{stat.label}</p>
-              <p className={styles.statValue}>{stat.value}</p>
-              {stat.hint ? <p className={styles.statHint}>{stat.hint}</p> : null}
-            </article>
+            <StatTile key={stat.label} label={stat.label} value={stat.value} hint={stat.hint} />
           ))}
-        </section>
+        </StatGrid>
       ) : null}
-
       {children}
-    </main>
+    </BackendShell>
   );
 }
