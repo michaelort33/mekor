@@ -123,13 +123,17 @@ export default async function VisitUsPage() {
 
       <SectionCard title="Map" className={`${styles.flatSection} ${styles.mapSection}`}>
         <div className={styles.mapShell}>
-          <iframe
-            src={MAP_EMBED_SRC}
-            title="Mekor Habracha location map"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className={styles.mapFrame}
-          />
+          {process.env.NODE_ENV === "production" ? (
+            <iframe
+              src={MAP_EMBED_SRC}
+              title="Mekor Habracha location map"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className={styles.mapFrame}
+            />
+          ) : (
+            <div className={styles.mapFrame} aria-hidden />
+          )}
         </div>
       </SectionCard>
 
