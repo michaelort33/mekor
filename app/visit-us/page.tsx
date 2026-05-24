@@ -143,7 +143,7 @@ export default async function VisitUsPage() {
 
       <SectionCard
         className={`${styles.flatSection} ${styles.whatsAppSection}`}
-        title="Mekor Community WhatsApp"
+        title="Mekor Community WhatsApp Group"
         description="Click the WhatsApp logo to join one of our community groups. Whether you're looking for social events, meal matching, general chats, or updates on minyanim, there's a group for you."
       >
         <div className={styles.whatsAppGrid}>

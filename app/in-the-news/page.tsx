@@ -43,7 +43,7 @@ export default async function InTheNewsPage() {
         <div className="in-news__hero-grid">
           <div className="in-news__header">
             <Badge className="in-news__badge">Press Mentions</Badge>
-            <h1>In The News</h1>
+            <h1>In the News</h1>
             <p className="in-news__lede">
               Search and filter every archived story from our backend directory. Open each article on Mekor or jump to the original source.
             </p>
@@ -59,6 +59,7 @@ export default async function InTheNewsPage() {
         </div>
       </Card>
 
+      <h2 className="in-news__section-heading">Mekor In the News</h2>
       <InTheNewsDirectory articles={articles} />
     </NativeShell>
   );

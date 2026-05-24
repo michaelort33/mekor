@@ -62,7 +62,7 @@ export default async function KiddushPage() {
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         eyebrow="Support Mekor"
-        title="Sponsor a Kiddush"
+        title="How You Can Sponsor a Kiddush"
         subtitle="Bring community together in celebration"
         className={styles.heroFlat}
         image={{

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import { ContactForm } from "@/components/medium-pages/contact-form";
+import { MarketingFooter } from "@/components/marketing/page-shell";
 import type { MediumPageLink, MediumStaticPageConfig } from "@/lib/medium-pages/content";
 
 function ActionLink({ link }: { link: MediumPageLink }) {
@@ -198,6 +199,10 @@ export function MediumStaticTemplate({ page }: { page: MediumStaticPageConfig })
       {page.archetype === "info" ? <InfoTemplate page={page} /> : null}
       {page.archetype === "contact" ? <ContactTemplate page={page} /> : null}
       {page.archetype === "directory" ? <DirectoryTemplate page={page} /> : null}
+
+      <div className="mx-auto w-full max-w-[84rem] px-4 sm:px-6 lg:px-8">
+        <MarketingFooter newsletterSourcePath={page.path} />
+      </div>
     </main>
   );
 }

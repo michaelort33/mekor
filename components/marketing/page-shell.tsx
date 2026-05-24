@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 
 import { CurrentCivilYear, HebrewDateFooter } from "@/components/calendar/hebrew-date-footer";
+import { HomeNewsletterForm } from "@/components/home/home-newsletter-form";
 import type { CtaItem } from "@/components/marketing/primitives";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,8 @@ type MarketingPageShellProps = {
 
 type MarketingFooterProps = {
   ctas?: CtaItem[];
+  /** Path used by the newsletter form to record where the subscription came from. */
+  newsletterSourcePath?: string;
 };
 
 const DEFAULT_FOOTER_CTAS: CtaItem[] = [
@@ -98,7 +101,7 @@ export function MarketingPageShell({
   );
 }
 
-export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS }: MarketingFooterProps) {
+export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePath = "/" }: MarketingFooterProps) {
   return (
     <footer className="mt-10 pb-8">
       <Card className="overflow-hidden bg-[linear-gradient(145deg,rgba(18,35,59,0.97),rgba(33,58,87,0.95))] text-white">
@@ -152,6 +155,20 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS }: MarketingFooterP
                   Follow the life of the community
                 </h3>
               </div>
+            </div>
+
+            <div className="space-y-3 rounded-[26px] border border-white/12 bg-white/6 p-5">
+              <h4 className="text-xs font-semibold uppercase tracking-[0.26em] text-[rgba(255,255,255,0.78)]">
+                Subscribe to our weekly newsletter
+              </h4>
+              <HomeNewsletterForm
+                sourcePath={newsletterSourcePath}
+                className="flex flex-col gap-2 sm:flex-row sm:items-center"
+                inputClassName="flex-1 bg-white/95 text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)]"
+                submitClassName="sm:w-auto"
+                successClassName="text-sm text-[rgba(255,255,255,0.84)]"
+                errorClassName="text-sm text-[#ffd2d2]"
+              />
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
