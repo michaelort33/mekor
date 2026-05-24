@@ -50,7 +50,8 @@
   gap: 6px;
 }
 
-.field span {
+.field span,
+.fieldHeader label {
   font-weight: 600;
   color: #2c4258;
 }

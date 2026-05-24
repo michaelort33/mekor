@@ -63,11 +63,20 @@ function normalizeWebsiteLabel(website: string) {
     return "";
   }
 
+  // Some imported records put a long asset / CDN URL in the website field
+  // (e.g. *.public.blob.vercel-storage.com). Show a generic label for these
+  // so a 47-char unbreakable hostname doesn't blow out the card width.
+  const ASSET_HOST_PATTERNS = [/\.blob\.vercel-storage\.com$/i, /\.amazonaws\.com$/i];
+  const MAX_LABEL_LENGTH = 24;
+
   try {
-    const parsed = new URL(website);
-    return parsed.hostname.replace(/^www\./i, "");
+    const host = new URL(website).hostname.replace(/^www\./i, "");
+    if (ASSET_HOST_PATTERNS.some((pattern) => pattern.test(host))) {
+      return "Website";
+    }
+    return host.length > MAX_LABEL_LENGTH ? `${host.slice(0, MAX_LABEL_LENGTH - 1)}…` : host;
   } catch {
-    return website;
+    return website.length > MAX_LABEL_LENGTH ? `${website.slice(0, MAX_LABEL_LENGTH - 1)}…` : website;
   }
 }
 
