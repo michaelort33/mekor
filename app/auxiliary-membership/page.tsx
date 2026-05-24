@@ -47,6 +47,7 @@ export default async function AuxiliaryMembershipPage() {
       <HeroSection
         title="Auxiliary & Alumni Membership"
         subtitle="Mekor Alumni Membership"
+        tone="dark"
         className={styles.heroFlat}
         image={{
           src: PAGE_IMAGES.hero,

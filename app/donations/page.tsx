@@ -125,6 +125,7 @@ export default async function DonationsPage() {
         eyebrow="Support Mekor"
         title="How You Can Donate and Help Mekor"
         subtitle="Sustain Jewish life in Center City"
+        tone="dark"
         className={styles.heroFlat}
         image={{
           src: DONATION_IMAGES.hero,
