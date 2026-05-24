@@ -39,11 +39,19 @@ export function Skeleton({
   );
 }
 
+// Deterministic widths so the skeleton looks varied but renders are pure.
+// Math.random() in render trips react-hooks/purity in CI.
+const SKELETON_STACK_WIDTHS = ["88%", "72%", "94%", "65%", "82%", "76%", "90%"];
+
 export function SkeletonStack({ rows = 3, gap = 12 }: { rows?: number; gap?: number }) {
   return (
     <div style={{ display: "grid", gap }}>
       {Array.from({ length: rows }).map((_, idx) => (
-        <Skeleton key={idx} variant="line" width={`${60 + Math.random() * 40}%`} />
+        <Skeleton
+          key={idx}
+          variant="line"
+          width={SKELETON_STACK_WIDTHS[idx % SKELETON_STACK_WIDTHS.length]}
+        />
       ))}
     </div>
   );

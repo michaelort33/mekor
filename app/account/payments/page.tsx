@@ -178,9 +178,13 @@ export default function AccountPaymentsPage() {
           ) : null}
         </ToolbarFilters>
         <ToolbarActions>
+          {/* These anchors hit API route handlers that stream file downloads.
+              next/link is inappropriate here, so we suppress the page-link lint. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a href="/api/account/payments/export?format=csv" style={{ textDecoration: "none" }}>
             <Button size="sm" variant="ghost">Export CSV</Button>
           </a>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a href="/api/account/payments/export?format=pdf" style={{ textDecoration: "none" }}>
             <Button size="sm" variant="ghost">Export PDF</Button>
           </a>
@@ -188,6 +192,7 @@ export default function AccountPaymentsPage() {
             <Button size="sm" variant="ghost">Year-end letter</Button>
           </a>
           {resource.data?.familyAdmin ? (
+            // eslint-disable-next-line @next/next/no-html-link-for-pages
             <a href="/api/account/payments/export?format=csv&scope=family" style={{ textDecoration: "none" }}>
               <Button size="sm" variant="ghost">Household CSV</Button>
             </a>

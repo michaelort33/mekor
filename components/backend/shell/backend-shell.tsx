@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import styles from "./backend-shell.module.css";
 
@@ -40,10 +40,14 @@ export function BackendShell({
 }: BackendShellProps) {
   const pathname = usePathname() ?? "";
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
+  // Close the mobile nav whenever the route changes. Use the
+  // "adjusting state during render" pattern (preferred by React) instead of
+  // setState-in-effect, which is now an ESLint error under react-hooks/set-state-in-effect.
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   return (
     <div className={styles.layout}>
