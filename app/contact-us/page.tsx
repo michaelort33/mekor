@@ -44,7 +44,6 @@ export default async function ContactUsPage() {
           objectPosition: "50% 33%",
         }}
         description={[
-          "We'd love to hear from you.",
           "Reach out for membership questions, scheduling details, event inquiries, or general community support.",
         ]}
         actions={[
