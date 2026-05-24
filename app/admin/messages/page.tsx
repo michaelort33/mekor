@@ -1,20 +1,35 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
-import adminStyles from "@/components/admin/admin-shell.module.css";
-import { buildSendFeedback } from "@/lib/admin/send-feedback";
-import styles from "./page.module.css";
+import { DataState } from "@/components/backend/data/data-state";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/backend/ui/data-table";
+import { Field, Input, Select } from "@/components/backend/ui/field";
+import { Modal } from "@/components/backend/ui/modal";
+import {
+  FilterChip,
+  Toolbar,
+  ToolbarActions,
+  ToolbarFilters,
+  ToolbarSearch,
+} from "@/components/backend/ui/toolbar";
 
-type LogItem = {
+type Direction = "inbound" | "outbound";
+type MessageSource = "manual" | "newsletter" | "automated" | "dues" | "form_submission" | "mailchimp_signup";
+
+type MessageRow = {
   id: string;
-  direction: "inbound" | "outbound";
-  source: "manual" | "newsletter" | "automated" | "dues" | "form_submission" | "mailchimp_signup";
-  channel: "email";
-  status: "new" | "read" | "archived" | "sent" | "failed" | "skipped";
+  direction: Direction;
+  source: MessageSource;
+  channel: string;
+  status: string;
   recipientName: string;
   recipientEmail: string;
   subject: string;
@@ -28,503 +43,337 @@ type LogItem = {
   segmentLabel: string;
   category: string;
   summary: string;
-  payloadJson: Record<string, unknown>;
-  sourceRecordLabel: string;
-  sourceRecordHref: string;
 };
 
-type Segment = {
-  key: "all_people" | "prospects" | "invited_not_accepted" | "active_members" | "members_overdue";
-  label: string;
+type Segment = { key: string; label: string };
+type PageInfo = { nextCursor: string | null; hasNextPage: boolean; limit: number };
+
+type ListResponse = { items: MessageRow[]; pageInfo: PageInfo; segments: Segment[] };
+
+const STATUS_TONES: Record<string, BadgeTone> = {
+  new: "info",
+  read: "neutral",
+  archived: "neutral",
+  sent: "success",
+  failed: "danger",
+  skipped: "warning",
 };
 
-type NotificationPreference = {
-  category: string;
-  label: string;
-  enabled: boolean;
+const SOURCE_TONES: Record<MessageSource, BadgeTone> = {
+  manual: "accent",
+  newsletter: "info",
+  automated: "neutral",
+  dues: "warning",
+  form_submission: "info",
+  mailchimp_signup: "info",
 };
 
-const DEFAULT_SEGMENTS: Segment[] = [
-  { key: "active_members", label: "Active members/admins" },
-  { key: "members_overdue", label: "Members with overdue/open dues" },
-  { key: "invited_not_accepted", label: "Invited, not onboarded" },
-  { key: "prospects", label: "Prospects (leads)" },
-  { key: "all_people", label: "All people" },
-];
-
-type PageInfo = {
-  nextCursor: string | null;
-  hasNextPage: boolean;
-  limit: number;
-};
+function buildQuery(p: { q: string; direction: string; source: string; status: string; cursor?: string | null }) {
+  const sp = new URLSearchParams();
+  if (p.q) sp.set("q", p.q);
+  if (p.direction) sp.set("direction", p.direction);
+  if (p.source) sp.set("source", p.source);
+  if (p.status) sp.set("status", p.status);
+  sp.set("limit", "50");
+  if (p.cursor) sp.set("cursor", p.cursor);
+  return sp.toString();
+}
 
 export default function AdminMessagesPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const [q, setQ] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [sourceFilter, setSourceFilter] = useState("");
-  const [directionFilter, setDirectionFilter] = useState<"" | "inbound" | "outbound">(
-    (searchParams.get("direction") as "" | "inbound" | "outbound") || "",
-  );
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [focusedInboundId, setFocusedInboundId] = useState(searchParams.get("id") ?? "");
-  const [selectedItemId, setSelectedItemId] = useState(searchParams.get("id") ? `inbound:${searchParams.get("id")}` : "");
-  const [loading, setLoading] = useState(true);
-  const [working, setWorking] = useState(false);
-  const [savingStatus, setSavingStatus] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const [logs, setLogs] = useState<LogItem[]>([]);
-  const [segments, setSegments] = useState<Segment[]>([]);
-  const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
-  const [preferences, setPreferences] = useState<NotificationPreference[] | null>(null);
-  const [campaignName, setCampaignName] = useState("Member Update");
-  const [campaignSegment, setCampaignSegment] = useState<Segment["key"]>("active_members");
-  const [campaignSubject, setCampaignSubject] = useState("");
-  const [campaignBody, setCampaignBody] = useState("");
-  const availableSegments = segments.length > 0 ? segments : DEFAULT_SEGMENTS;
+  const [direction, setDirection] = useState<"" | Direction>("");
+  const [source, setSource] = useState("");
+  const [status, setStatus] = useState("");
+  const [appended, setAppended] = useState<MessageRow[]>([]);
+  const [appendCursor, setAppendCursor] = useState<string | null>(null);
+  const [composing, setComposing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  const selectedItem = useMemo(
-    () => logs.find((item) => item.id === selectedItemId) ?? null,
-    [logs, selectedItemId],
+  const resource = useResource<ListResponse>(
+    (signal) =>
+      fetchJson<ListResponse>(`/api/admin/messages?${buildQuery({ q, direction, source, status })}`, { signal }),
+    [q, direction, source, status],
   );
+
+  const baseItems = resource.data?.items ?? [];
+  const segments = resource.data?.segments ?? [];
+
+  const items = useMemo(() => {
+    const seen = new Set<string>();
+    const out: MessageRow[] = [];
+    for (const m of [...baseItems, ...appended]) {
+      if (seen.has(m.id)) continue;
+      seen.add(m.id);
+      out.push(m);
+    }
+    return out;
+  }, [baseItems, appended]);
+
+  const pageInfo =
+    appendCursor === null
+      ? resource.data?.pageInfo ?? null
+      : { hasNextPage: !!appendCursor, nextCursor: appendCursor, limit: 50 };
+
+  async function loadMore() {
+    const cursor = pageInfo?.nextCursor;
+    if (!cursor) return;
+    setLoadingMore(true);
+    try {
+      const next = await fetchJson<ListResponse>(
+        `/api/admin/messages?${buildQuery({ q, direction, source, status, cursor })}`,
+      );
+      setAppended((prev) => [...prev, ...next.items]);
+      setAppendCursor(next.pageInfo.nextCursor);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
+  function resetFilters() {
+    setQ("");
+    setDirection("");
+    setSource("");
+    setStatus("");
+    setAppended([]);
+    setAppendCursor(null);
+  }
+
+  const columns: DataTableColumn<MessageRow>[] = [
+    {
+      id: "when",
+      header: "When",
+      accessor: (m) => new Date(m.createdAt).toLocaleString(),
+      sortValue: (m) => m.createdAt,
+      exportValue: (m) => m.createdAt,
+    },
+    {
+      id: "direction",
+      header: "Dir",
+      accessor: (m) => (m.direction === "inbound" ? "←" : "→"),
+      exportValue: (m) => m.direction,
+    },
+    {
+      id: "source",
+      header: "Source",
+      accessor: (m) => <Badge tone={SOURCE_TONES[m.source] ?? "neutral"}>{m.source}</Badge>,
+      exportValue: (m) => m.source,
+    },
+    {
+      id: "recipient",
+      header: "Recipient",
+      accessor: (m) => (
+        <div>
+          <div style={{ fontWeight: 600 }}>{m.recipientName || "—"}</div>
+          <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>{m.recipientEmail}</div>
+        </div>
+      ),
+      exportValue: (m) => `${m.recipientName} <${m.recipientEmail}>`,
+    },
+    {
+      id: "subject",
+      header: "Subject",
+      accessor: (m) => m.subject,
+      exportValue: (m) => m.subject,
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessor: (m) => <Badge tone={STATUS_TONES[m.status] ?? "neutral"}>{m.status}</Badge>,
+      exportValue: (m) => m.status,
+    },
+    {
+      id: "actor",
+      header: "Actor",
+      accessor: (m) => m.actorEmail,
+      exportValue: (m) => m.actorEmail,
+      hideOnMobile: true,
+    },
+  ];
 
   const stats = useMemo(() => {
-    const inboundCount = logs.filter((log) => log.direction === "inbound").length;
-    const outboundCount = logs.filter((log) => log.direction === "outbound").length;
-    const newCount = logs.filter((log) => log.status === "new").length;
+    const sent = items.filter((m) => m.status === "sent").length;
+    const failed = items.filter((m) => m.status === "failed").length;
+    const inbound = items.filter((m) => m.direction === "inbound").length;
     return [
-      { label: "Loaded items", value: String(logs.length), hint: pageInfo?.hasNextPage ? "More available" : "Current result set" },
-      { label: "Inbound", value: String(inboundCount), hint: `${newCount} new in the loaded set` },
-      { label: "Outbound", value: String(outboundCount), hint: "Campaign and delivery history" },
+      { label: "Loaded messages", value: String(items.length), hint: pageInfo?.hasNextPage ? "More available" : "All matches" },
+      { label: "Delivered", value: String(sent), hint: `${failed} failed` },
+      { label: "Inbound", value: String(inbound), hint: "From forms & signups" },
     ];
-  }, [logs, pageInfo?.hasNextPage]);
-
-  async function loadPreferences() {
-    const response = await fetch("/api/admin/notification-preferences");
-    if (response.status === 403) {
-      setPreferences(null);
-      return;
-    }
-    if (response.status === 401) {
-      router.push("/login?next=/admin/messages");
-      return;
-    }
-
-    const payload = (await response.json().catch(() => ({}))) as {
-      preferences?: NotificationPreference[];
-    };
-    if (!response.ok) {
-      return;
-    }
-    setPreferences(payload.preferences ?? []);
-  }
-
-  async function loadLogs(options?: { reset?: boolean; cursor?: string | null }) {
-    setError("");
-    if (options?.reset) {
-      setLoading(true);
-      setLogs([]);
-      setPageInfo(null);
-    }
-
-    const params = new URLSearchParams();
-    params.set("limit", "25");
-    if (q.trim()) params.set("q", q.trim());
-    if (statusFilter) params.set("status", statusFilter);
-    if (sourceFilter) params.set("source", sourceFilter);
-    if (directionFilter) params.set("direction", directionFilter);
-    if (categoryFilter) params.set("category", categoryFilter);
-    if (focusedInboundId) params.set("id", focusedInboundId);
-    if (options?.cursor) params.set("cursor", options.cursor);
-
-    const response = await fetch(`/api/admin/messages?${params.toString()}`);
-    if (response.status === 401) {
-      router.push("/login?next=/admin/messages");
-      return;
-    }
-
-    const payload = (await response.json().catch(() => ({}))) as {
-      items?: LogItem[];
-      pageInfo?: PageInfo;
-      segments?: Segment[];
-      error?: string;
-    };
-    if (!response.ok) {
-      setError(payload.error || "Unable to load unified messages");
-      setLoading(false);
-      return;
-    }
-
-    const items = payload.items ?? [];
-    setLogs((prev) => (options?.reset ? items : [...prev, ...items]));
-    setSegments(payload.segments ?? []);
-    setPageInfo(payload.pageInfo ?? null);
-    setLoading(false);
-    if (focusedInboundId) {
-      setFocusedInboundId("");
-    }
-    if (items.length > 0 && !selectedItemId) {
-      setSelectedItemId(items[0]!.id);
-    }
-  }
-
-  useEffect(() => {
-    loadLogs({ reset: true }).catch(() => {
-      setError("Unable to load unified messages");
-      setLoading(false);
-    });
-    loadPreferences().catch(() => undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function runCampaign(mode: "preview" | "send") {
-    setWorking(true);
-    setError("");
-    setNotice("");
-
-    const response = await fetch("/api/admin/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mode,
-        channel: "email",
-        name: campaignName,
-        subject: campaignSubject,
-        body: campaignBody,
-        segmentKey: campaignSegment,
-      }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as {
-      error?: string;
-      recipientCount?: number;
-      successCount?: number;
-      failedCount?: number;
-      skippedCount?: number;
-    };
-    setWorking(false);
-    if (!response.ok) {
-      setError(payload.error || "Unable to run campaign");
-      return;
-    }
-
-    if (mode === "preview") {
-      setNotice(`Preview ready for ${payload.recipientCount ?? 0} recipients.`);
-      return;
-    }
-    const feedback = buildSendFeedback({
-      label: "Campaign",
-      successCount: payload.successCount ?? 0,
-      failedCount: payload.failedCount ?? 0,
-      skippedCount: payload.skippedCount ?? 0,
-    });
-    await loadLogs({ reset: true });
-    if (feedback.status === "failure") {
-      setError(feedback.message);
-      return;
-    }
-    setNotice(feedback.message);
-  }
-
-  async function resetFilters() {
-    setQ("");
-    setStatusFilter("");
-    setSourceFilter("");
-    setDirectionFilter("");
-    setCategoryFilter("");
-    setFocusedInboundId("");
-    setSelectedItemId("");
-    await loadLogs({ reset: true });
-  }
-
-  async function updateInboundStatus(status: "new" | "read" | "archived") {
-    if (!selectedItem || selectedItem.direction !== "inbound") {
-      return;
-    }
-
-    setSavingStatus(true);
-    setError("");
-    const eventId = selectedItem.id.replace("inbound:", "");
-    const response = await fetch(`/api/admin/messages/inbound/${eventId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    setSavingStatus(false);
-
-    if (!response.ok) {
-      setError(payload.error || "Unable to update inbox item");
-      return;
-    }
-
-    setLogs((current) =>
-      current.map((item) => (item.id === selectedItem.id ? { ...item, status } : item)),
-    );
-    setNotice(`Inbox item marked ${status}.`);
-  }
-
-  async function togglePreference(category: string, enabled: boolean) {
-    const response = await fetch("/api/admin/notification-preferences", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ category, enabled }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to update notification preference");
-      return;
-    }
-
-    setPreferences((current) =>
-      current?.map((item) => (item.category === category ? { ...item, enabled } : item)) ?? null,
-    );
-  }
+  }, [items, pageInfo?.hasNextPage]);
 
   return (
     <AdminShell
       currentPath="/admin/messages"
-      title="Unified Messages"
-      description="Review inbound submissions, manage admin alerts, and send quick outbound campaigns from one admin hub."
+      title="Messages"
+      description="Unified inbound/outbound log across manual campaigns, newsletters, automated mail, and dues notifications."
       stats={stats}
-      actions={<Link href="/admin/templates" className={adminStyles.actionPill}>Open templates</Link>}
     >
-      {preferences ? (
-        <section className={styles.preferences}>
-          <div>
-            <h2>Super Admin Alerts</h2>
-            <p>Choose which inbound categories should send you SendGrid email alerts.</p>
-          </div>
-          <div className={styles.preferenceGrid}>
-            {preferences.map((preference) => (
-              <label key={preference.category} className={styles.preferenceItem}>
-                <span>{preference.label}</span>
-                <input
-                  type="checkbox"
-                  checked={preference.enabled}
-                  onChange={(event) => void togglePreference(preference.category, event.target.checked)}
-                />
-              </label>
-            ))}
-          </div>
-        </section>
-      ) : null}
+      <Toolbar>
+        <ToolbarSearch value={q} onChange={setQ} placeholder="Search subject, recipient, sender…" />
+        <ToolbarFilters>
+          <Select value={direction} onChange={(e) => setDirection(e.target.value as "" | Direction)} style={{ minWidth: 130 }}>
+            <option value="">All directions</option>
+            <option value="outbound">Outbound</option>
+            <option value="inbound">Inbound</option>
+          </Select>
+          <Select value={source} onChange={(e) => setSource(e.target.value)} style={{ minWidth: 150 }}>
+            <option value="">All sources</option>
+            <option value="manual">Manual</option>
+            <option value="newsletter">Newsletter</option>
+            <option value="automated">Automated</option>
+            <option value="dues">Dues</option>
+            <option value="form_submission">Form submit</option>
+            <option value="mailchimp_signup">Mailchimp</option>
+          </Select>
+          <Select value={status} onChange={(e) => setStatus(e.target.value)} style={{ minWidth: 140 }}>
+            <option value="">Any status</option>
+            <option value="sent">Sent</option>
+            <option value="failed">Failed</option>
+            <option value="skipped">Skipped</option>
+            <option value="new">New</option>
+            <option value="read">Read</option>
+            <option value="archived">Archived</option>
+          </Select>
+          {(q || direction || source || status) ? <FilterChip label="Clear filters" onRemove={resetFilters} /> : null}
+        </ToolbarFilters>
+        <ToolbarActions>
+          <Button variant="ghost" size="sm" onClick={() => void resource.refresh()}>
+            Refresh
+          </Button>
+          <Button size="sm" onClick={() => setComposing(true)}>
+            Compose campaign
+          </Button>
+        </ToolbarActions>
+      </Toolbar>
 
-      <section className={styles.compose}>
-        <h2>Quick campaign</h2>
-        <div className={styles.composeGrid}>
-          <label>
-            Campaign name
-            <input value={campaignName} onChange={(event) => setCampaignName(event.target.value)} />
-          </label>
-          <label>
-            Segment
-            <select value={campaignSegment} onChange={(event) => setCampaignSegment(event.target.value as Segment["key"])}>
-              {availableSegments.map((segment) => (
-                <option key={segment.key} value={segment.key}>
-                  {segment.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className={styles.fullWidth}>
-            Subject
-            <input value={campaignSubject} onChange={(event) => setCampaignSubject(event.target.value)} />
-          </label>
-          <label className={styles.fullWidth}>
-            Message body
-            <textarea value={campaignBody} onChange={(event) => setCampaignBody(event.target.value)} rows={5} />
-          </label>
-        </div>
-        <div className={styles.composeActions}>
-          <button type="button" onClick={() => void runCampaign("preview")} disabled={working}>
-            Preview recipients
-          </button>
-          <button type="button" onClick={() => void runCampaign("send")} disabled={working}>
-            Send campaign
-          </button>
-        </div>
-      </section>
+      <DataState resource={resource} empty={{ title: "No messages", description: "Adjust filters to widen results." }}>
+        {() => (
+          <DataTable<MessageRow>
+            rows={items}
+            rowId={(m) => m.id}
+            columns={columns}
+            exportFilename="messages.csv"
+            emptyState="No matching messages"
+            pagination={{
+              pageSize: 50,
+              totalLoaded: items.length,
+              hasMore: !!pageInfo?.hasNextPage,
+              onLoadMore: () => void loadMore(),
+            }}
+          />
+        )}
+      </DataState>
 
-      <section className={adminStyles.toolbar}>
-        <div className={adminStyles.toolbarHeader}>
-          <p className={adminStyles.toolbarTitle}>Inbox filters</p>
-          <p className={adminStyles.toolbarMeta}>Filter inbound submissions and outbound deliveries from one table.</p>
-        </div>
-        <div className={adminStyles.toolbarFields}>
-          <label>
-            Search
-            <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="Name, email, subject" />
-          </label>
-          <label>
-            Direction
-            <select value={directionFilter} onChange={(event) => setDirectionFilter(event.target.value as typeof directionFilter)}>
-              <option value="">All</option>
-              <option value="inbound">inbound</option>
-              <option value="outbound">outbound</option>
-            </select>
-          </label>
-          <label>
-            Source
-            <select value={sourceFilter} onChange={(event) => setSourceFilter(event.target.value)}>
-              <option value="">All</option>
-              <option value="form_submission">form_submission</option>
-              <option value="mailchimp_signup">mailchimp_signup</option>
-              <option value="manual">manual</option>
-              <option value="newsletter">newsletter</option>
-              <option value="automated">automated</option>
-              <option value="dues">dues</option>
-            </select>
-          </label>
-          <label>
-            Status
-            <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-              <option value="">All</option>
-              <option value="new">new</option>
-              <option value="read">read</option>
-              <option value="archived">archived</option>
-              <option value="sent">sent</option>
-              <option value="failed">failed</option>
-              <option value="skipped">skipped</option>
-            </select>
-          </label>
-          <label>
-            Category
-            <input value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} placeholder="general_forms, kosher..." />
-          </label>
-        </div>
-        <div className={adminStyles.toolbarActions}>
-          <button type="button" className={adminStyles.primaryButton} onClick={() => void loadLogs({ reset: true })}>
-            Apply filters
-          </button>
-          <button type="button" className={adminStyles.secondaryButton} onClick={() => void resetFilters()}>
-            Clear filters
-          </button>
-        </div>
-      </section>
-
-      {error ? <p className={styles.error}>{error}</p> : null}
-      {notice ? <p className={styles.notice}>{notice}</p> : null}
-
-      {loading ? (
-        <p>Loading unified messages...</p>
-      ) : (
-        <>
-          <section className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Created</th>
-                  <th>Direction</th>
-                  <th>Source</th>
-                  <th>Person</th>
-                  <th>Subject</th>
-                  <th>Status</th>
-                  <th>Category</th>
-                  <th>Actor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.map((log) => (
-                  <tr
-                    key={log.id}
-                    className={log.id === selectedItemId ? styles.selectedRow : undefined}
-                    onClick={() => setSelectedItemId(log.id)}
-                  >
-                    <td>{new Date(log.createdAt).toLocaleString()}</td>
-                    <td>{log.direction}</td>
-                    <td>{log.source}</td>
-                    <td>
-                      {log.recipientName || "-"}
-                      <br />
-                      {log.recipientEmail || "-"}
-                    </td>
-                    <td>{log.subject}</td>
-                    <td>{log.status}</td>
-                    <td>{log.campaignName}</td>
-                    <td>{log.actorEmail}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-
-          {selectedItem ? (
-            <section className={styles.detailCard}>
-              <div className={styles.detailHeader}>
-                <div>
-                  <h2>{selectedItem.subject}</h2>
-                  <p>{selectedItem.summary || "No summary available."}</p>
-                </div>
-                {selectedItem.direction === "inbound" ? (
-                  <div className={styles.detailActions}>
-                    <button type="button" disabled={savingStatus} onClick={() => void updateInboundStatus("new")}>
-                      Mark new
-                    </button>
-                    <button type="button" disabled={savingStatus} onClick={() => void updateInboundStatus("read")}>
-                      Mark read
-                    </button>
-                    <button type="button" disabled={savingStatus} onClick={() => void updateInboundStatus("archived")}>
-                      Archive
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-              <div className={styles.detailGrid}>
-                <div>
-                  <strong>Source</strong>
-                  <p>{selectedItem.source}</p>
-                </div>
-                <div>
-                  <strong>Status</strong>
-                  <p>{selectedItem.status}</p>
-                </div>
-                <div>
-                  <strong>Person</strong>
-                  <p>
-                    {selectedItem.recipientName || "-"}
-                    <br />
-                    {selectedItem.recipientEmail || "-"}
-                  </p>
-                </div>
-                <div>
-                  <strong>Record</strong>
-                  <p>
-                    <Link href={selectedItem.sourceRecordHref}>{selectedItem.sourceRecordLabel}</Link>
-                  </p>
-                </div>
-                <div>
-                  <strong>Provider</strong>
-                  <p>{selectedItem.provider}</p>
-                </div>
-                <div>
-                  <strong>Provider message id</strong>
-                  <p>{selectedItem.providerMessageId || "-"}</p>
-                </div>
-              </div>
-              {selectedItem.errorMessage ? (
-                <div className={styles.detailError}>
-                  <strong>Error</strong>
-                  <p>{selectedItem.errorMessage}</p>
-                </div>
-              ) : null}
-              <div className={styles.payloadBlock}>
-                <strong>Payload</strong>
-                <pre>{JSON.stringify(selectedItem.payloadJson, null, 2)}</pre>
-              </div>
-            </section>
-          ) : null}
-
-          {pageInfo?.hasNextPage && pageInfo.nextCursor ? (
-            <div className={styles.loadMoreWrap}>
-              <button type="button" onClick={() => void loadLogs({ cursor: pageInfo.nextCursor })}>
-                Load more
-              </button>
-            </div>
-          ) : null}
-        </>
-      )}
+      <Modal
+        open={composing}
+        onClose={() => setComposing(false)}
+        title="Compose campaign"
+        description="Send a one-off email to a saved segment."
+        size="lg"
+      >
+        <ComposeForm
+          segments={segments}
+          onSaved={() => {
+            setComposing(false);
+            void resource.refresh();
+          }}
+        />
+      </Modal>
     </AdminShell>
+  );
+}
+
+function ComposeForm({ segments, onSaved }: { segments: Segment[]; onSaved: () => void }) {
+  const [name, setName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+  const [segmentKey, setSegmentKey] = useState(segments[0]?.key ?? "");
+  const [submitting, setSubmitting] = useState(false);
+  const [previewInfo, setPreviewInfo] = useState<{ recipientCount: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(mode: "preview" | "send") {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const result = await fetchJson<{ recipientCount: number; campaignId?: number }>(`/api/admin/messages`, {
+        method: "POST",
+        body: JSON.stringify({
+          mode,
+          channel: "email",
+          name: name || undefined,
+          subject,
+          body,
+          segmentKey: segmentKey || undefined,
+        }),
+      });
+      if (mode === "preview") {
+        setPreviewInfo({ recipientCount: result.recipientCount });
+      } else {
+        onSaved();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--bk-space-3)" }}>
+      <Field label="Campaign name" hint="Optional label for your records">
+        {(props) => <Input {...props} value={name} onChange={(e) => setName(e.target.value)} />}
+      </Field>
+      <Field label="Segment">
+        {(props) => (
+          <Select {...props} value={segmentKey} onChange={(e) => setSegmentKey(e.target.value)}>
+            {segments.map((s) => (
+              <option key={s.key} value={s.key}>
+                {s.label}
+              </option>
+            ))}
+          </Select>
+        )}
+      </Field>
+      <Field label="Subject" required>
+        {(props) => <Input {...props} value={subject} onChange={(e) => setSubject(e.target.value)} />}
+      </Field>
+      <Field label="Body" required hint="HTML allowed">
+        {(props) => (
+          <textarea
+            id={props.id}
+            aria-invalid={props["aria-invalid"]}
+            aria-describedby={props["aria-describedby"]}
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={10}
+            style={{
+              width: "100%",
+              fontFamily: "inherit",
+              fontSize: "var(--bk-text-sm)",
+              padding: "var(--bk-space-2)",
+              background: "var(--bk-surface)",
+              border: "1px solid var(--bk-border)",
+              borderRadius: "var(--bk-radius-sm)",
+              color: "var(--bk-text)",
+            }}
+          />
+        )}
+      </Field>
+      {previewInfo ? (
+        <div style={{ background: "var(--bk-surface-soft)", padding: "var(--bk-space-3)", borderRadius: "var(--bk-radius-md)" }}>
+          Preview ready: <strong>{previewInfo.recipientCount}</strong> recipients would receive this campaign.
+        </div>
+      ) : null}
+      {error ? <p style={{ color: "var(--bk-danger)", margin: 0 }}>{error}</p> : null}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--bk-space-2)" }}>
+        <Button type="button" variant="ghost" onClick={() => void submit("preview")} disabled={submitting}>
+          Preview
+        </Button>
+        <Button type="button" onClick={() => void submit("send")} disabled={submitting || !subject || !body}>
+          {submitting ? "Sending…" : "Send now"}
+        </Button>
+      </div>
+    </div>
   );
 }

@@ -1,0 +1,94 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 25, 39, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: var(--bk-z-modal);
+  display: grid;
+  place-items: center;
+  padding: var(--bk-space-4);
+  animation: fadeIn 160ms var(--bk-ease);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal {
+  background: var(--bk-surface);
+  border-radius: var(--bk-radius-xl);
+  box-shadow: var(--bk-shadow-xl);
+  border: 1px solid var(--bk-border);
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 200ms var(--bk-ease);
+}
+
+.modal.lg { max-width: 760px; }
+.modal.xl { max-width: 960px; }
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--bk-space-3);
+  padding: var(--bk-space-4) var(--bk-space-5);
+  border-bottom: 1px solid var(--bk-border);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--bk-text-md);
+  font-weight: 800;
+  color: var(--bk-text);
+}
+
+.description {
+  margin: var(--bk-space-1) 0 0;
+  color: var(--bk-text-muted);
+  font-size: var(--bk-text-sm);
+}
+
+.closeBtn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--bk-text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--bk-radius-md);
+}
+
+.closeBtn:hover {
+  background: var(--bk-surface-sunken);
+  color: var(--bk-text);
+}
+
+.body {
+  padding: var(--bk-space-5);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--bk-space-4);
+}
+
+.footer {
+  padding: var(--bk-space-3) var(--bk-space-5);
+  border-top: 1px solid var(--bk-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--bk-space-2);
+  background: var(--bk-surface-soft);
+  border-radius: 0 0 var(--bk-radius-xl) var(--bk-radius-xl);
+}

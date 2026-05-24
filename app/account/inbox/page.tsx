@@ -1,31 +1,34 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
-import { MemberShell } from "@/components/members/member-shell";
-import memberShellStyles from "@/components/members/member-shell.module.css";
-import styles from "./page.module.css";
+import { AccountShell } from "@/components/account/account-shell";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import { Card, CardBody, CardHeader } from "@/components/backend/ui/card";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Select, Textarea } from "@/components/backend/ui/field";
+import { Alert, EmptyState } from "@/components/backend/ui/feedback";
+import {
+  FilterChip,
+  Toolbar,
+  ToolbarActions,
+  ToolbarFilters,
+  ToolbarSearch,
+} from "@/components/backend/ui/toolbar";
+
+type ThreadType = "family_invite" | "family_chat" | "direct" | "system";
 
 type InboxThread = {
   threadId: number;
-  threadType: "family_invite" | "family_chat" | "direct" | "system";
+  threadType: ThreadType;
   subject: string;
   familyId: number | null;
   familyName: string;
   unread: boolean;
-  latestMessage: {
-    id: number;
-    body: string;
-    messageType: "text" | "system" | "action";
-    createdAt: string;
-  } | null;
+  latestMessage: { id: number; body: string; messageType: "text" | "system" | "action"; createdAt: string } | null;
   updatedAt: string;
-};
-
-type InboxThreadsResponse = {
-  items: InboxThread[];
 };
 
 type InboxMessage = {
@@ -38,459 +41,343 @@ type InboxMessage = {
   createdAt: string;
 };
 
+type InboxThreadsResponse = { items: InboxThread[] };
 type ThreadMessagesResponse = {
-  thread: {
-    id: number;
-    subject: string;
-    type: "family_invite" | "family_chat" | "direct" | "system";
-    familyName: string | null;
-  };
+  thread: { id: number; subject: string; type: ThreadType; familyName: string | null };
   messages: InboxMessage[];
 };
 
-type ThreadAction = {
-  type: "accept" | "decline" | "revoke" | "approve" | "reject";
-  label: string;
-};
+type ThreadAction = { type: "accept" | "decline" | "revoke" | "approve" | "reject"; label: string };
 
 type ThreadActionPayload =
-  | {
-      kind: "family_invite";
-      inviteId: number;
-      actions: ThreadAction[];
-    }
-  | {
-      kind: "member_event_request";
-      eventId: number;
-      requestId: number;
-      actions: ThreadAction[];
-    };
+  | { kind: "family_invite"; inviteId: number; actions: ThreadAction[] }
+  | { kind: "member_event_request"; eventId: number; requestId: number; actions: ThreadAction[] };
 
-function getThreadActionPayload(payload: Record<string, unknown>): ThreadActionPayload | null {
+const THREAD_TONES: Record<ThreadType, BadgeTone> = {
+  family_invite: "info",
+  family_chat: "success",
+  direct: "neutral",
+  system: "warning",
+};
+
+function getActionPayload(payload: Record<string, unknown>): ThreadActionPayload | null {
   const kind = payload.kind;
-  const inviteId = payload.inviteId;
-  const eventId = payload.eventId;
-  const requestId = payload.requestId;
-  const actions = payload.actions;
   if (kind !== "family_invite" && kind !== "member_event_request") return null;
-  if (!Array.isArray(actions)) return null;
-
-  const parsedActions: ThreadAction[] = actions
-    .map((action) => {
-      if (!action || typeof action !== "object") return null;
-      const value = action as Record<string, unknown>;
+  if (!Array.isArray(payload.actions)) return null;
+  const actions: ThreadAction[] = payload.actions
+    .map((a) => {
+      if (!a || typeof a !== "object") return null;
+      const v = a as Record<string, unknown>;
       if (
-        (value.type === "accept" ||
-          value.type === "decline" ||
-          value.type === "revoke" ||
-          value.type === "approve" ||
-          value.type === "reject") &&
-        typeof value.label === "string"
+        (v.type === "accept" || v.type === "decline" || v.type === "revoke" || v.type === "approve" || v.type === "reject") &&
+        typeof v.label === "string"
       ) {
-        return {
-          type: value.type,
-          label: value.label,
-        };
+        return { type: v.type, label: v.label };
       }
       return null;
     })
-    .filter((value): value is ThreadAction => Boolean(value));
-
-  if (parsedActions.length === 0) return null;
-
+    .filter((v): v is ThreadAction => Boolean(v));
+  if (actions.length === 0) return null;
   if (kind === "family_invite") {
-    if (typeof inviteId !== "number") return null;
-    return {
-      kind,
-      inviteId,
-      actions: parsedActions,
-    };
+    if (typeof payload.inviteId !== "number") return null;
+    return { kind, inviteId: payload.inviteId, actions };
   }
-
-  if (typeof eventId !== "number" || typeof requestId !== "number") return null;
-  return {
-    kind,
-    eventId,
-    requestId,
-    actions: parsedActions,
-  };
+  if (typeof payload.eventId !== "number" || typeof payload.requestId !== "number") return null;
+  return { kind, eventId: payload.eventId, requestId: payload.requestId, actions };
 }
 
 export default function AccountInboxPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const requestedThreadId = Number.parseInt(searchParams.get("thread") ?? "", 10);
+  const requestedId = Number.parseInt(searchParams.get("thread") ?? "", 10);
+
   const [search, setSearch] = useState("");
-  const [threadTypeFilter, setThreadTypeFilter] = useState<"" | InboxThread["threadType"]>("");
+  const [typeFilter, setTypeFilter] = useState<"" | ThreadType>("");
   const [readFilter, setReadFilter] = useState<"all" | "unread">("all");
-  const [loadingThreads, setLoadingThreads] = useState(true);
-  const [loadingMessages, setLoadingMessages] = useState(false);
-  const [threads, setThreads] = useState<InboxThread[]>([]);
-  const [selectedThreadId, setSelectedThreadId] = useState<number | null>(Number.isInteger(requestedThreadId) ? requestedThreadId : null);
-  const [messages, setMessages] = useState<InboxMessage[]>([]);
-  const [threadTitle, setThreadTitle] = useState("");
-  const [error, setError] = useState("");
-  const [sending, setSending] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(Number.isInteger(requestedId) ? requestedId : null);
   const [messageBody, setMessageBody] = useState("");
-  const [runningAction, setRunningAction] = useState<string>("");
+  const [sending, setSending] = useState(false);
+  const [actionKey, setActionKey] = useState("");
+  const [error, setError] = useState("");
 
-  async function loadThreads() {
-    const response = await fetch("/api/inbox/threads");
-    if (response.status === 401) {
+  const threadsResource = useResource<InboxThreadsResponse>(
+    (signal) => fetchJson<InboxThreadsResponse>("/api/inbox/threads", { signal }),
+    [],
+  );
+
+  useEffect(() => {
+    if (threadsResource.error?.includes("401")) {
       router.replace("/login?next=/account/inbox");
-      return;
     }
-    const payload = (await response.json().catch(() => ({}))) as InboxThreadsResponse & { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to load inbox threads.");
-      setLoadingThreads(false);
-      return;
-    }
-    setThreads(payload.items);
-    setLoadingThreads(false);
-    if (payload.items.length > 0 && !selectedThreadId) {
-      const preferredThread = payload.items.find((thread) => thread.threadId === requestedThreadId);
-      setSelectedThreadId(preferredThread?.threadId ?? payload.items[0].threadId);
-    }
-    if (payload.items.length === 0) {
-      setSelectedThreadId(null);
-      setMessages([]);
-    }
-  }
+  }, [threadsResource.error, router]);
+
+  const threads = threadsResource.data?.items ?? [];
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return threads.filter((t) => {
+      if (typeFilter && t.threadType !== typeFilter) return false;
+      if (readFilter === "unread" && !t.unread) return false;
+      if (q) {
+        return [t.subject, t.familyName, t.latestMessage?.body ?? ""].join(" ").toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }, [threads, search, typeFilter, readFilter]);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function initialLoad() {
-      try {
-        const response = await fetch("/api/inbox/threads");
-        if (response.status === 401) {
-          router.replace("/login?next=/account/inbox");
-          return;
-        }
-        const payload = (await response.json().catch(() => ({}))) as InboxThreadsResponse & { error?: string };
-        if (!response.ok) {
-          if (!cancelled) {
-            setError(payload.error || "Unable to load inbox threads.");
-            setLoadingThreads(false);
-          }
-          return;
-        }
-        if (!cancelled) {
-          setThreads(payload.items);
-          setLoadingThreads(false);
-          if (payload.items.length > 0) {
-            const preferredThread = payload.items.find((thread) => thread.threadId === requestedThreadId);
-            setSelectedThreadId(preferredThread?.threadId ?? payload.items[0].threadId);
-          } else {
-            setSelectedThreadId(null);
-            setMessages([]);
-          }
-        }
-      } catch {
-        if (!cancelled) {
-          setError("Unable to load inbox threads.");
-          setLoadingThreads(false);
-        }
-      }
+    if (filtered.length === 0) {
+      setSelectedId(null);
+      return;
     }
-
-    void initialLoad();
-    return () => {
-      cancelled = true;
-    };
-  }, [requestedThreadId, router]);
-
-  const filteredThreads = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
-    return threads.filter((thread) => {
-      if (threadTypeFilter && thread.threadType !== threadTypeFilter) return false;
-      if (readFilter === "unread" && !thread.unread) return false;
-      if (!query) return true;
-
-      const haystack = [thread.subject, thread.familyName, thread.latestMessage?.body ?? ""]
-        .join(" ")
-        .toLowerCase();
-
-      return haystack.includes(query);
-    });
-  }, [readFilter, search, threadTypeFilter, threads]);
-
-  const activeThreadId =
-    filteredThreads.length === 0
-      ? null
-      : filteredThreads.some((thread) => thread.threadId === selectedThreadId)
-        ? selectedThreadId
-        : filteredThreads[0]?.threadId ?? null;
-
-  useEffect(() => {
-    async function loadMessages() {
-      if (!activeThreadId) {
-        setThreadTitle("");
-        setMessages([]);
-        return;
-      }
-      setLoadingMessages(true);
-      const response = await fetch(`/api/inbox/threads/${activeThreadId}/messages`);
-      const payload = (await response.json().catch(() => ({}))) as ThreadMessagesResponse & { error?: string };
-      if (!response.ok) {
-        setError(payload.error || "Unable to load thread messages.");
-        setLoadingMessages(false);
-        return;
-      }
-      setThreadTitle(payload.thread.subject || `Thread #${payload.thread.id}`);
-      setMessages(payload.messages);
-      setLoadingMessages(false);
+    if (!selectedId || !filtered.some((t) => t.threadId === selectedId)) {
+      setSelectedId(filtered[0].threadId);
     }
+  }, [filtered, selectedId]);
 
-    loadMessages().catch(() => {
-      setError("Unable to load thread messages.");
-      setLoadingMessages(false);
-    });
-  }, [activeThreadId]);
+  const messagesResource = useResource<ThreadMessagesResponse>(
+    (signal) =>
+      selectedId
+        ? fetchJson<ThreadMessagesResponse>(`/api/inbox/threads/${selectedId}/messages`, { signal })
+        : Promise.resolve({ thread: { id: 0, subject: "", type: "system", familyName: null }, messages: [] }),
+    [selectedId],
+    { skip: !selectedId },
+  );
+
+  const messages = messagesResource.data?.messages ?? [];
+  const selectedThread = useMemo(() => threads.find((t) => t.threadId === selectedId) ?? null, [threads, selectedId]);
 
   async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!activeThreadId || !messageBody.trim()) return;
-
+    if (!selectedId || !messageBody.trim()) return;
+    setError("");
     setSending(true);
-    const response = await fetch(`/api/inbox/threads/${activeThreadId}/messages`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ body: messageBody }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to send message.");
+    try {
+      await fetchJson(`/api/inbox/threads/${selectedId}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ body: messageBody }),
+      });
+      setMessageBody("");
+      await Promise.all([threadsResource.refresh(), messagesResource.refresh()]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to send message");
+    } finally {
       setSending(false);
-      return;
-    }
-    setMessageBody("");
-    setSending(false);
-    await loadThreads();
-    if (activeThreadId) {
-      const refreshed = await fetch(`/api/inbox/threads/${activeThreadId}/messages`);
-      const refreshedPayload = (await refreshed.json().catch(() => ({}))) as ThreadMessagesResponse;
-      if (refreshed.ok) {
-        setMessages(refreshedPayload.messages);
-      }
     }
   }
 
-  async function runThreadAction(input: {
-    action: ThreadAction["type"];
-    inviteId?: number;
-    eventId?: number;
-    requestId?: number;
-  }) {
-    if (!activeThreadId) return;
-    const actionKey = `${activeThreadId}-${input.action}-${input.inviteId ?? 0}-${input.eventId ?? 0}-${input.requestId ?? 0}`;
-    setRunningAction(actionKey);
-    const response = await fetch(`/api/inbox/threads/${activeThreadId}/actions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    setRunningAction("");
-    if (!response.ok) {
-      setError(payload.error || "Unable to run action.");
-      return;
-    }
-    await loadThreads();
-    const refreshed = await fetch(`/api/inbox/threads/${activeThreadId}/messages`);
-    const refreshedPayload = (await refreshed.json().catch(() => ({}))) as ThreadMessagesResponse;
-    if (refreshed.ok) {
-      setMessages(refreshedPayload.messages);
+  async function runAction(input: { action: ThreadAction["type"]; inviteId?: number; eventId?: number; requestId?: number }) {
+    if (!selectedId) return;
+    const key = `${selectedId}-${input.action}-${input.inviteId ?? 0}-${input.eventId ?? 0}-${input.requestId ?? 0}`;
+    setActionKey(key);
+    setError("");
+    try {
+      await fetchJson(`/api/inbox/threads/${selectedId}/actions`, {
+        method: "POST",
+        body: JSON.stringify(input),
+      });
+      await Promise.all([threadsResource.refresh(), messagesResource.refresh()]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to run action");
+    } finally {
+      setActionKey("");
     }
   }
 
-  const selectedThread = useMemo(
-    () => threads.find((thread) => thread.threadId === activeThreadId) ?? null,
-    [activeThreadId, threads],
-  );
-
-  const shellStats = [
+  const stats = [
+    { label: "Visible", value: String(filtered.length), hint: `${threads.length} total` },
+    { label: "Unread", value: String(threads.filter((t) => t.unread).length), hint: "Needs review" },
     {
-      label: "Visible threads",
-      value: String(filteredThreads.length),
-      hint: `${threads.length} total thread(s)`,
-    },
-    {
-      label: "Unread",
-      value: String(threads.filter((thread) => thread.unread).length),
-      hint: "Needs review",
-    },
-    {
-      label: "Family threads",
-      value: String(threads.filter((thread) => thread.threadType === "family_invite" || thread.threadType === "family_chat").length),
-      hint: "Invites and household chat",
+      label: "Family",
+      value: String(threads.filter((t) => t.threadType === "family_invite" || t.threadType === "family_chat").length),
+      hint: "Invites + chat",
     },
   ];
 
   return (
-    <MemberShell
-      title="Member Inbox"
-      description="Manage family invites, member event requests, and household chat from one queue."
-      breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Members Area", href: "/members" },
-        { label: "Inbox" },
-      ]}
-      activeSection="inbox"
-      stats={shellStats}
-      actions={
-        <>
-          <Link href="/account/family" className={memberShellStyles.actionPill}>Family</Link>
-          <Link href="/account/member-events" className={memberShellStyles.actionPill}>Hosted events</Link>
-          <Link href="/account" className={memberShellStyles.actionPill}>Dashboard</Link>
-        </>
-      }
+    <AccountShell
+      currentPath="/account/inbox"
+      title="Inbox"
+      description="Family invites, member event requests, and household chat in one queue."
+      stats={stats}
     >
+      {error ? <Alert tone="danger">{error}</Alert> : null}
 
-      <section className={memberShellStyles.toolbar}>
-        <div className={memberShellStyles.toolbarHeader}>
-          <p className={memberShellStyles.toolbarTitle}>Thread filters</p>
-          <p className={memberShellStyles.toolbarMeta}>Search subject lines and latest messages, or narrow to unread and thread type.</p>
-        </div>
-        <div className={memberShellStyles.toolbarFields}>
-          <label>
-            Search
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search inbox threads" />
-          </label>
-          <label>
-            Thread type
-            <select
-              value={threadTypeFilter}
-              onChange={(event) => setThreadTypeFilter(event.target.value as "" | InboxThread["threadType"])}
-            >
-              <option value="">All</option>
-              <option value="family_invite">family invite</option>
-              <option value="family_chat">family chat</option>
-              <option value="direct">direct</option>
-              <option value="system">system</option>
-            </select>
-          </label>
-          <label>
-            Read state
-            <select value={readFilter} onChange={(event) => setReadFilter(event.target.value as "all" | "unread")}>
-              <option value="all">all</option>
-              <option value="unread">unread only</option>
-            </select>
-          </label>
-        </div>
-        <div className={memberShellStyles.toolbarActions}>
-          <button
-            type="button"
-            className={memberShellStyles.secondaryButton}
-            onClick={() => {
-              setSearch("");
-              setThreadTypeFilter("");
-              setReadFilter("all");
-            }}
-          >
-            Clear filters
-          </button>
-        </div>
-      </section>
-
-      {error ? <p className={styles.error}>{error}</p> : null}
-
-      <section className={styles.layout}>
-        <aside className={styles.sidebar}>
-          <h2>Threads</h2>
-          <p className={styles.sidebarMeta}>{filteredThreads.length} visible</p>
-          {loadingThreads ? <p>Loading threads...</p> : null}
-          {!loadingThreads && threads.length === 0 ? <p>No inbox threads yet.</p> : null}
-          {!loadingThreads && threads.length > 0 && filteredThreads.length === 0 ? <p>No threads match the current filters.</p> : null}
-          <ul className={styles.threadList}>
-            {filteredThreads.map((thread) => (
-              <li key={thread.threadId}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedThreadId(thread.threadId)}
-                  className={thread.threadId === activeThreadId ? styles.threadActive : ""}
-                >
-                  <strong>{thread.subject || "Conversation"}</strong>
-                  <span>{thread.latestMessage?.body || "No messages yet."}</span>
-                  <small>{new Date(thread.updatedAt).toLocaleString()}</small>
-                  {thread.unread ? <em>Unread</em> : null}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </aside>
-
-        <article className={styles.threadPane}>
-          <h2>{selectedThread ? threadTitle || selectedThread.subject : "Select a thread"}</h2>
-          {loadingMessages ? <p>Loading messages...</p> : null}
-
-          <div className={styles.messages}>
-            {messages.map((message) => {
-              const actionPayload = getThreadActionPayload(message.actionPayloadJson);
-              return (
-                <div key={message.id} className={styles.message}>
-                  <div className={styles.messageMeta}>
-                    <strong>{message.senderDisplayName || "System"}</strong>
-                    <span>{new Date(message.createdAt).toLocaleString()}</span>
-                  </div>
-                  <p>{message.body}</p>
-                  {actionPayload ? (
-                    <div className={styles.messageActions}>
-                      {actionPayload.actions.map((action) => (
-                        <button
-                          key={`${message.id}-${action.type}`}
-                          type="button"
-                          onClick={() =>
-                            runThreadAction(
-                              actionPayload.kind === "family_invite"
-                                ? {
-                                    action: action.type,
-                                    inviteId: actionPayload.inviteId,
-                                  }
-                                : {
-                                    action: action.type,
-                                    eventId: actionPayload.eventId,
-                                    requestId: actionPayload.requestId,
-                                  },
-                            )
-                          }
-                          disabled={
-                            runningAction ===
-                            `${activeThreadId}-${action.type}-${actionPayload.kind === "family_invite" ? actionPayload.inviteId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.eventId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.requestId : 0}`
-                          }
-                        >
-                          {runningAction ===
-                          `${activeThreadId}-${action.type}-${actionPayload.kind === "family_invite" ? actionPayload.inviteId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.eventId : 0}-${actionPayload.kind === "member_event_request" ? actionPayload.requestId : 0}`
-                            ? "Working..."
-                            : action.label}
-                        </button>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
-            {selectedThread && messages.length === 0 && !loadingMessages ? <p>No messages in this thread yet.</p> : null}
-            {!selectedThread && !loadingMessages ? <p>Pick a visible thread from the left to review messages or take action.</p> : null}
-          </div>
-
-          {selectedThread ? (
-            <form className={styles.compose} onSubmit={sendMessage}>
-              <textarea
-                value={messageBody}
-                onChange={(event) => setMessageBody(event.target.value)}
-                placeholder="Write a message..."
-                maxLength={4000}
-              />
-              <button type="submit" disabled={sending || !messageBody.trim()}>
-                {sending ? "Sending..." : "Send"}
-              </button>
-            </form>
+      <Toolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search subjects and messages…" />
+        <ToolbarFilters>
+          <Select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as ThreadType | "")}>
+            <option value="">All types</option>
+            <option value="family_invite">Family invite</option>
+            <option value="family_chat">Family chat</option>
+            <option value="direct">Direct</option>
+            <option value="system">System</option>
+          </Select>
+          <Select value={readFilter} onChange={(e) => setReadFilter(e.target.value as "all" | "unread")}>
+            <option value="all">All</option>
+            <option value="unread">Unread only</option>
+          </Select>
+          {(search || typeFilter || readFilter !== "all") ? (
+            <FilterChip
+              label="Clear filters"
+              onRemove={() => {
+                setSearch("");
+                setTypeFilter("");
+                setReadFilter("all");
+              }}
+            />
           ) : null}
-        </article>
-      </section>
-    </MemberShell>
+        </ToolbarFilters>
+        <ToolbarActions>
+          <Button size="sm" variant="ghost" onClick={() => void threadsResource.refresh()}>
+            Refresh
+          </Button>
+        </ToolbarActions>
+      </Toolbar>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(260px, 320px) 1fr",
+          gap: "var(--bk-space-4)",
+          marginTop: "var(--bk-space-4)",
+        }}
+      >
+        <Card padded>
+          <CardHeader title="Threads" description={`${filtered.length} visible`} />
+          <CardBody>
+            {threadsResource.loading ? (
+              <p style={{ color: "var(--bk-text-soft)" }}>Loading…</p>
+            ) : filtered.length === 0 ? (
+              <EmptyState title="No threads" description="No threads match the current filters." />
+            ) : (
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "var(--bk-space-2)" }}>
+                {filtered.map((t) => {
+                  const active = t.threadId === selectedId;
+                  return (
+                    <li key={t.threadId}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedId(t.threadId)}
+                        style={{
+                          width: "100%",
+                          textAlign: "left",
+                          padding: "var(--bk-space-2)",
+                          background: active ? "var(--bk-surface-soft)" : "transparent",
+                          border: active ? "1px solid var(--bk-border)" : "1px solid transparent",
+                          borderRadius: "var(--bk-radius-md)",
+                          cursor: "pointer",
+                          display: "grid",
+                          gap: 4,
+                        }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                          <strong style={{ fontWeight: t.unread ? 700 : 500 }}>{t.subject || "Conversation"}</strong>
+                          <Badge tone={THREAD_TONES[t.threadType]}>{t.threadType.replace("_", " ")}</Badge>
+                        </div>
+                        <span style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {t.latestMessage?.body || "No messages yet."}
+                        </span>
+                        <span style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>
+                          {new Date(t.updatedAt).toLocaleString()}
+                          {t.unread ? " · Unread" : ""}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </CardBody>
+        </Card>
+
+        <Card padded>
+          <CardHeader
+            title={selectedThread ? selectedThread.subject || `Thread #${selectedThread.threadId}` : "Select a thread"}
+            description={selectedThread?.familyName || undefined}
+          />
+          <CardBody>
+            {!selectedThread ? (
+              <EmptyState title="No thread selected" description="Pick a thread on the left to see messages." />
+            ) : messagesResource.loading ? (
+              <p style={{ color: "var(--bk-text-soft)" }}>Loading messages…</p>
+            ) : (
+              <div style={{ display: "grid", gap: "var(--bk-space-3)", maxHeight: 480, overflowY: "auto" }}>
+                {messages.map((m) => {
+                  const payload = getActionPayload(m.actionPayloadJson);
+                  return (
+                    <div
+                      key={m.id}
+                      style={{
+                        padding: "var(--bk-space-3)",
+                        borderRadius: "var(--bk-radius-md)",
+                        background: m.messageType === "system" ? "var(--bk-surface-soft)" : "var(--bk-surface)",
+                        border: "1px solid var(--bk-border)",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          fontSize: "var(--bk-text-xs)",
+                          color: "var(--bk-text-soft)",
+                          marginBottom: 4,
+                        }}
+                      >
+                        <strong>{m.senderDisplayName || "System"}</strong>
+                        <span>{new Date(m.createdAt).toLocaleString()}</span>
+                      </div>
+                      <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{m.body}</p>
+                      {payload ? (
+                        <div style={{ display: "flex", gap: 8, marginTop: "var(--bk-space-2)" }}>
+                          {payload.actions.map((action) => {
+                            const key = `${selectedId}-${action.type}-${payload.kind === "family_invite" ? payload.inviteId : 0}-${payload.kind === "member_event_request" ? payload.eventId : 0}-${payload.kind === "member_event_request" ? payload.requestId : 0}`;
+                            return (
+                              <Button
+                                key={`${m.id}-${action.type}`}
+                                size="sm"
+                                variant={action.type === "decline" || action.type === "reject" || action.type === "revoke" ? "secondary" : "primary"}
+                                disabled={actionKey === key}
+                                onClick={() =>
+                                  runAction(
+                                    payload.kind === "family_invite"
+                                      ? { action: action.type, inviteId: payload.inviteId }
+                                      : { action: action.type, eventId: payload.eventId, requestId: payload.requestId },
+                                  )
+                                }
+                              >
+                                {actionKey === key ? "Working…" : action.label}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+                {messages.length === 0 ? <p style={{ color: "var(--bk-text-soft)" }}>No messages in this thread yet.</p> : null}
+              </div>
+            )}
+
+            {selectedThread ? (
+              <form onSubmit={sendMessage} style={{ display: "grid", gap: "var(--bk-space-2)", marginTop: "var(--bk-space-3)" }}>
+                <Textarea
+                  value={messageBody}
+                  onChange={(e) => setMessageBody(e.target.value)}
+                  placeholder="Write a message…"
+                  maxLength={4000}
+                  rows={3}
+                />
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button type="submit" disabled={sending || !messageBody.trim()}>
+                    {sending ? "Sending…" : "Send"}
+                  </Button>
+                </div>
+              </form>
+            ) : null}
+          </CardBody>
+        </Card>
+      </div>
+    </AccountShell>
   );
 }

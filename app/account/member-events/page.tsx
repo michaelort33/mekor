@@ -1,12 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { MemberShell } from "@/components/members/member-shell";
-import memberShellStyles from "@/components/members/member-shell.module.css";
-import styles from "./page.module.css";
+import { AccountShell } from "@/components/account/account-shell";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import { Card, CardBody, CardHeader } from "@/components/backend/ui/card";
+import { DataState } from "@/components/backend/data/data-state";
+import { DataTable, type DataTableColumn } from "@/components/backend/ui/data-table";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Checkbox, Field, FieldRow, Input, Select, Textarea } from "@/components/backend/ui/field";
+import { Alert } from "@/components/backend/ui/feedback";
+import {
+  FilterChip,
+  Toolbar,
+  ToolbarFilters,
+  ToolbarSearch,
+} from "@/components/backend/ui/toolbar";
 
 type HostedEvent = {
   id: number;
@@ -19,12 +30,10 @@ type HostedEvent = {
   joinMode: "open_join" | "request_to_join";
   visibility: "members_only" | "public";
   status: "draft" | "published" | "cancelled" | "completed";
-  counts: {
-    approved: number;
-    requested: number;
-    waitlisted: number;
-  };
+  counts: { approved: number; requested: number; waitlisted: number };
 };
+
+type ListResponse = { items: HostedEvent[] };
 
 type CreateEventForm = {
   title: string;
@@ -33,9 +42,16 @@ type CreateEventForm = {
   endsAt: string;
   location: string;
   capacity: string;
-  joinMode: "open_join" | "request_to_join";
-  visibility: "members_only" | "public";
+  joinMode: HostedEvent["joinMode"];
+  visibility: HostedEvent["visibility"];
   publishNow: boolean;
+};
+
+const STATUS_TONES: Record<HostedEvent["status"], BadgeTone> = {
+  draft: "neutral",
+  published: "success",
+  cancelled: "warning",
+  completed: "info",
 };
 
 const initialForm: CreateEventForm = {
@@ -51,383 +67,342 @@ const initialForm: CreateEventForm = {
 };
 
 export default function AccountMemberEventsPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [working, setWorking] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const [items, setItems] = useState<HostedEvent[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"" | HostedEvent["status"]>("");
   const [joinModeFilter, setJoinModeFilter] = useState<"" | HostedEvent["joinMode"]>("");
   const [form, setForm] = useState<CreateEventForm>(initialForm);
+  const [working, setWorking] = useState(false);
+  const [busyId, setBusyId] = useState(0);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
 
-  const fetchHostedEventsData = useCallback(async () => {
-    const response = await fetch("/api/member-events?host=me&includeDraft=1&includePast=1&limit=60");
-    if (response.status === 401) {
-      router.replace("/login?next=/account/member-events");
-      return { redirected: true as const, items: [] as HostedEvent[], error: "" };
-    }
-    const payload = (await response.json().catch(() => ({}))) as {
-      error?: string;
-      items?: HostedEvent[];
-    };
-    if (!response.ok) {
-      return {
-        redirected: false as const,
-        items: [] as HostedEvent[],
-        error: payload.error || "Unable to load hosted events.",
-      };
-    }
-    return {
-      redirected: false as const,
-      items: payload.items ?? [],
-      error: "",
-    };
-  }, [router]);
+  const resource = useResource<ListResponse>(
+    (signal) => fetchJson<ListResponse>("/api/member-events?host=me&includeDraft=1&includePast=1&limit=60", { signal }),
+    [],
+  );
 
-  async function loadHostedEvents() {
-    const result = await fetchHostedEventsData();
-    if (result.redirected) return;
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
-    setItems(result.items);
-  }
+  const items = resource.data?.items ?? [];
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const result = await fetchHostedEventsData();
-      if (cancelled || result.redirected) return;
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setItems(result.items);
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return items.filter((ev) => {
+      if (statusFilter && ev.status !== statusFilter) return false;
+      if (joinModeFilter && ev.joinMode !== joinModeFilter) return false;
+      if (q) {
+        return [ev.title, ev.description, ev.location].join(" ").toLowerCase().includes(q);
       }
-      setLoading(false);
-    })().catch(() => {
-      if (cancelled) return;
-      setError("Unable to load hosted events.");
-      setLoading(false);
+      return true;
     });
-    return () => {
-      cancelled = true;
-    };
-  }, [fetchHostedEventsData]);
+  }, [items, search, statusFilter, joinModeFilter]);
 
   async function createEvent(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setNotice("");
     setWorking(true);
-
-    const response = await fetch("/api/member-events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: form.title,
-        description: form.description,
-        startsAt: new Date(form.startsAt).toISOString(),
-        endsAt: form.endsAt ? new Date(form.endsAt).toISOString() : null,
-        location: form.location,
-        capacity: form.capacity ? Number(form.capacity) : null,
-        joinMode: form.joinMode,
-        visibility: form.visibility,
-        publishNow: form.publishNow,
-      }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    setWorking(false);
-    if (!response.ok) {
-      setError(payload.error || "Unable to create event.");
-      return;
+    try {
+      await fetchJson("/api/member-events", {
+        method: "POST",
+        body: JSON.stringify({
+          title: form.title,
+          description: form.description,
+          startsAt: new Date(form.startsAt).toISOString(),
+          endsAt: form.endsAt ? new Date(form.endsAt).toISOString() : null,
+          location: form.location,
+          capacity: form.capacity ? Number(form.capacity) : null,
+          joinMode: form.joinMode,
+          visibility: form.visibility,
+          publishNow: form.publishNow,
+        }),
+      });
+      setForm(initialForm);
+      setNotice("Member event created.");
+      await resource.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to create event");
+    } finally {
+      setWorking(false);
     }
-
-    setNotice("Member event created.");
-    setForm(initialForm);
-    await loadHostedEvents();
   }
 
-  async function publishEvent(eventId: number) {
-    setWorking(true);
+  async function publishEvent(id: number) {
     setError("");
-    const response = await fetch(`/api/member-events/${eventId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "published" }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    setWorking(false);
-    if (!response.ok) {
-      setError(payload.error || "Unable to publish event.");
-      return;
+    setBusyId(id);
+    try {
+      await fetchJson(`/api/member-events/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ status: "published" }),
+      });
+      await resource.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to publish event");
+    } finally {
+      setBusyId(0);
     }
-    await loadHostedEvents();
   }
 
-  async function cancelEvent(eventId: number) {
-    setWorking(true);
+  async function cancelEvent(id: number) {
     setError("");
-    const response = await fetch(`/api/member-events/${eventId}/cancel`, {
-      method: "POST",
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    setWorking(false);
-    if (!response.ok) {
-      setError(payload.error || "Unable to cancel event.");
-      return;
+    setBusyId(id);
+    try {
+      await fetchJson(`/api/member-events/${id}/cancel`, { method: "POST" });
+      await resource.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to cancel event");
+    } finally {
+      setBusyId(0);
     }
-    await loadHostedEvents();
   }
 
-  const filteredItems = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return items.filter((item) => {
-      if (statusFilter && item.status !== statusFilter) return false;
-      if (joinModeFilter && item.joinMode !== joinModeFilter) return false;
-      if (!query) return true;
-
-      return [item.title, item.description, item.location].join(" ").toLowerCase().includes(query);
-    });
-  }, [items, joinModeFilter, search, statusFilter]);
-
-  const shellStats = [
+  const columns: DataTableColumn<HostedEvent>[] = [
     {
-      label: "Hosted events",
-      value: String(items.length),
-      hint: `${filteredItems.length} visible in current view`,
+      id: "event",
+      header: "Event",
+      accessor: (r) => (
+        <div>
+          <div style={{ fontWeight: 600 }}>{r.title}</div>
+          <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>
+            {new Date(r.startsAt).toLocaleString()}
+            {r.location ? ` · ${r.location}` : ""}
+          </div>
+        </div>
+      ),
+      sortValue: (r) => r.startsAt,
+      exportValue: (r) => r.title,
     },
     {
+      id: "status",
+      header: "Status",
+      accessor: (r) => <Badge tone={STATUS_TONES[r.status]}>{r.status}</Badge>,
+      sortValue: (r) => r.status,
+      exportValue: (r) => r.status,
+    },
+    {
+      id: "join",
+      header: "Join",
+      accessor: (r) => r.joinMode.replace("_", " "),
+      exportValue: (r) => r.joinMode,
+      hideOnMobile: true,
+    },
+    {
+      id: "attendance",
+      header: "Attendance",
+      accessor: (r) => (
+        <span>
+          {r.counts.approved} approved · {r.counts.requested} req · {r.counts.waitlisted} wl
+        </span>
+      ),
+      sortValue: (r) => r.counts.approved,
+      exportValue: (r) => r.counts.approved,
+    },
+  ];
+
+  const stats = [
+    { label: "Hosted", value: String(items.length), hint: `${filtered.length} in view` },
+    {
       label: "Published",
-      value: String(items.filter((item) => item.status === "published").length),
+      value: String(items.filter((i) => i.status === "published").length),
       hint: "Live to members",
     },
     {
       label: "Open requests",
-      value: String(items.reduce((sum, item) => sum + item.counts.requested, 0)),
-      hint: "Pending host review",
+      value: String(items.reduce((s, i) => s + i.counts.requested, 0)),
+      hint: "Pending approval",
     },
   ];
 
   return (
-    <MemberShell
-      title="Host a Member Event"
-      description="Create gatherings for the community and keep approvals, draft status, and logistics in one workflow."
-      breadcrumbs={[
-        { label: "Home", href: "/" },
-        { label: "Members Area", href: "/members" },
-        { label: "Host Events" },
-      ]}
-      activeSection="host-events"
-      stats={shellStats}
+    <AccountShell
+      currentPath="/account/member-events"
+      title="Host events"
+      description="Create community gatherings and manage approvals."
+      stats={stats}
       actions={
-        <>
-          <Link href="/events" className={memberShellStyles.actionPill}>Public events</Link>
-          <Link href="/account/inbox" className={memberShellStyles.actionPill}>Inbox</Link>
-          <Link href="/account" className={memberShellStyles.actionPill}>Dashboard</Link>
-        </>
+        <Link href="/events">
+          <Button size="sm" variant="secondary">Public events</Button>
+        </Link>
       }
     >
-      <section className={memberShellStyles.toolbar}>
-        <div className={memberShellStyles.toolbarHeader}>
-          <p className={memberShellStyles.toolbarTitle}>Hosted event filters</p>
-          <p className={memberShellStyles.toolbarMeta}>Search by title or location, or narrow to a specific status and join mode.</p>
-        </div>
-        <div className={memberShellStyles.toolbarFields}>
-          <label>
-            Search
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search hosted events" />
-          </label>
-          <label>
-            Status
-            <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as "" | HostedEvent["status"])}>
-              <option value="">All</option>
-              <option value="draft">draft</option>
-              <option value="published">published</option>
-              <option value="cancelled">cancelled</option>
-              <option value="completed">completed</option>
-            </select>
-          </label>
-          <label>
-            Join mode
-            <select value={joinModeFilter} onChange={(event) => setJoinModeFilter(event.target.value as "" | HostedEvent["joinMode"])}>
-              <option value="">All</option>
-              <option value="open_join">open join</option>
-              <option value="request_to_join">request to join</option>
-            </select>
-          </label>
-        </div>
-        <div className={memberShellStyles.toolbarActions}>
-          <button
-            type="button"
-            className={memberShellStyles.secondaryButton}
-            onClick={() => {
-              setSearch("");
-              setStatusFilter("");
-              setJoinModeFilter("");
-            }}
-          >
-            Clear filters
-          </button>
-        </div>
-      </section>
+      {error ? <Alert tone="danger">{error}</Alert> : null}
+      {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <section className={`${styles.card} internal-card`}>
-        <h1>Create a member event</h1>
-        <p>Use the fields below to publish a new gathering and start collecting registrations.</p>
+      <Card padded style={{ marginTop: "var(--bk-space-4)" }}>
+        <CardHeader title="Create a member event" description="Publish a new gathering and start collecting registrations." />
+        <CardBody>
+          <form onSubmit={createEvent} style={{ display: "grid", gap: "var(--bk-space-3)" }}>
+            <Field label="Title" required>
+              {(p) => (
+                <Input
+                  {...p}
+                  value={form.title}
+                  onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+                  required
+                  minLength={3}
+                  maxLength={160}
+                />
+              )}
+            </Field>
 
-        <form className={styles.form} onSubmit={createEvent}>
-          <label>
-            Title
-            <input
-              value={form.title}
-              onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
-              required
-              minLength={3}
-              maxLength={160}
-            />
-          </label>
+            <Field label="Description" optional>
+              {(p) => (
+                <Textarea
+                  {...p}
+                  value={form.description}
+                  onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+                  maxLength={4000}
+                  rows={4}
+                />
+              )}
+            </Field>
 
-          <label>
-            Description
-            <textarea
-              value={form.description}
-              onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
-              maxLength={4000}
-              rows={4}
-            />
-          </label>
+            <FieldRow cols={2}>
+              <Field label="Starts at" required>
+                {(p) => (
+                  <Input
+                    {...p}
+                    type="datetime-local"
+                    value={form.startsAt}
+                    onChange={(e) => setForm((prev) => ({ ...prev, startsAt: e.target.value }))}
+                    required
+                  />
+                )}
+              </Field>
+              <Field label="Ends at" optional>
+                {(p) => (
+                  <Input
+                    {...p}
+                    type="datetime-local"
+                    value={form.endsAt}
+                    onChange={(e) => setForm((prev) => ({ ...prev, endsAt: e.target.value }))}
+                  />
+                )}
+              </Field>
+            </FieldRow>
 
-          <div className={styles.row}>
-            <label>
-              Starts at
-              <input
-                type="datetime-local"
-                value={form.startsAt}
-                onChange={(event) => setForm((prev) => ({ ...prev, startsAt: event.target.value }))}
-                required
-              />
-            </label>
-            <label>
-              Ends at
-              <input
-                type="datetime-local"
-                value={form.endsAt}
-                onChange={(event) => setForm((prev) => ({ ...prev, endsAt: event.target.value }))}
-              />
-            </label>
-          </div>
+            <FieldRow cols={2}>
+              <Field label="Location" optional>
+                {(p) => (
+                  <Input
+                    {...p}
+                    value={form.location}
+                    onChange={(e) => setForm((prev) => ({ ...prev, location: e.target.value }))}
+                    maxLength={255}
+                  />
+                )}
+              </Field>
+              <Field label="Capacity" optional hint="Leave blank for unlimited">
+                {(p) => (
+                  <Input
+                    {...p}
+                    type="number"
+                    min={1}
+                    max={2000}
+                    value={form.capacity}
+                    onChange={(e) => setForm((prev) => ({ ...prev, capacity: e.target.value }))}
+                  />
+                )}
+              </Field>
+            </FieldRow>
 
-          <div className={styles.row}>
-            <label>
-              Location
-              <input
-                value={form.location}
-                onChange={(event) => setForm((prev) => ({ ...prev, location: event.target.value }))}
-                maxLength={255}
-              />
-            </label>
-            <label>
-              Capacity
-              <input
-                type="number"
-                min={1}
-                max={2000}
-                value={form.capacity}
-                onChange={(event) => setForm((prev) => ({ ...prev, capacity: event.target.value }))}
-                placeholder="Optional"
-              />
-            </label>
-          </div>
+            <FieldRow cols={2}>
+              <Field label="Join mode">
+                {(p) => (
+                  <Select
+                    {...p}
+                    value={form.joinMode}
+                    onChange={(e) => setForm((prev) => ({ ...prev, joinMode: e.target.value as HostedEvent["joinMode"] }))}
+                  >
+                    <option value="open_join">Open join</option>
+                    <option value="request_to_join">Request to join</option>
+                  </Select>
+                )}
+              </Field>
+              <Field label="Visibility">
+                {(p) => (
+                  <Select
+                    {...p}
+                    value={form.visibility}
+                    onChange={(e) => setForm((prev) => ({ ...prev, visibility: e.target.value as HostedEvent["visibility"] }))}
+                  >
+                    <option value="members_only">Members only</option>
+                    <option value="public">Public</option>
+                  </Select>
+                )}
+              </Field>
+            </FieldRow>
 
-          <div className={styles.row}>
-            <label>
-              Join mode
-              <select
-                value={form.joinMode}
-                onChange={(event) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    joinMode: event.target.value as CreateEventForm["joinMode"],
-                  }))
-                }
-              >
-                <option value="open_join">Open join</option>
-                <option value="request_to_join">Request to join</option>
-              </select>
-            </label>
-            <label>
-              Visibility
-              <select
-                value={form.visibility}
-                onChange={(event) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    visibility: event.target.value as CreateEventForm["visibility"],
-                  }))
-                }
-              >
-                <option value="members_only">Members only</option>
-                <option value="public">Public</option>
-              </select>
-            </label>
-          </div>
-
-          <label className={styles.checkbox}>
-            <input
-              type="checkbox"
+            <Checkbox
               checked={form.publishNow}
-              onChange={(event) => setForm((prev) => ({ ...prev, publishNow: event.target.checked }))}
+              onChange={(e) => setForm((prev) => ({ ...prev, publishNow: e.target.checked }))}
+              label="Publish immediately"
             />
-            Publish immediately
-          </label>
 
-          <button type="submit" disabled={working}>
-            {working ? "Creating..." : "Create member event"}
-          </button>
-        </form>
-      </section>
+            <div>
+              <Button type="submit" disabled={working}>
+                {working ? "Creating…" : "Create event"}
+              </Button>
+            </div>
+          </form>
+        </CardBody>
+      </Card>
 
-      <section className={`${styles.card} internal-card`}>
-        <h2>Your hosted events</h2>
-        <p>{filteredItems.length} event(s) visible with the current filters.</p>
-        {loading ? <p>Loading events...</p> : null}
-        {!loading && items.length === 0 ? <p>You have not hosted any events yet.</p> : null}
-        {!loading && items.length > 0 && filteredItems.length === 0 ? <p>No hosted events match the current filters.</p> : null}
-        <ul className={styles.list}>
-          {filteredItems.map((event) => (
-            <li key={event.id}>
-              <div>
-                <strong>{event.title}</strong>
-                <p>
-                  {new Date(event.startsAt).toLocaleString()} · {event.location || "Location TBD"} · {event.status}
-                </p>
-                <p>
-                  Approved: {event.counts.approved} · Requested: {event.counts.requested} · Waitlisted: {event.counts.waitlisted}
-                </p>
-              </div>
-              <div className={styles.itemActions}>
-                <Link href={`/member-events/${event.id}`}>View / Manage</Link>
-                {event.status === "draft" ? (
-                  <button type="button" onClick={() => publishEvent(event.id)} disabled={working}>
-                    Publish
-                  </button>
+      <div style={{ marginTop: "var(--bk-space-4)" }} />
+      <Toolbar>
+        <ToolbarSearch value={search} onChange={setSearch} placeholder="Search hosted events…" />
+        <ToolbarFilters>
+          <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as HostedEvent["status"] | "")}>
+            <option value="">All statuses</option>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="completed">Completed</option>
+          </Select>
+          <Select value={joinModeFilter} onChange={(e) => setJoinModeFilter(e.target.value as HostedEvent["joinMode"] | "")}>
+            <option value="">Any join mode</option>
+            <option value="open_join">Open join</option>
+            <option value="request_to_join">Request to join</option>
+          </Select>
+          {(search || statusFilter || joinModeFilter) ? (
+            <FilterChip
+              label="Clear filters"
+              onRemove={() => {
+                setSearch("");
+                setStatusFilter("");
+                setJoinModeFilter("");
+              }}
+            />
+          ) : null}
+        </ToolbarFilters>
+      </Toolbar>
+
+      <DataState resource={resource} empty={{ title: "No hosted events", description: "You haven't hosted any events yet." }}>
+        {() => (
+          <DataTable<HostedEvent>
+            rows={filtered}
+            rowId={(r) => r.id}
+            columns={columns}
+            rowActions={(r) => (
+              <div style={{ display: "flex", gap: 6 }}>
+                <Link href={`/member-events/${r.id}`}>
+                  <Button size="sm" variant="ghost">Manage</Button>
+                </Link>
+                {r.status === "draft" ? (
+                  <Button size="sm" disabled={busyId === r.id} onClick={() => publishEvent(r.id)}>
+                    {busyId === r.id ? "…" : "Publish"}
+                  </Button>
                 ) : null}
-                {event.status !== "cancelled" ? (
-                  <button type="button" onClick={() => cancelEvent(event.id)} disabled={working}>
+                {r.status !== "cancelled" && r.status !== "completed" ? (
+                  <Button size="sm" variant="dangerGhost" disabled={busyId === r.id} onClick={() => cancelEvent(r.id)}>
                     Cancel
-                  </button>
+                  </Button>
                 ) : null}
               </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {error ? <p className={styles.error}>{error}</p> : null}
-      {notice ? <p className={styles.notice}>{notice}</p> : null}
-    </MemberShell>
+            )}
+            exportFilename="hosted-events.csv"
+            emptyState="No hosted events match"
+          />
+        )}
+      </DataState>
+    </AccountShell>
   );
 }

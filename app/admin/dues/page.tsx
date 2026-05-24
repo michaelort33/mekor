@@ -1,14 +1,46 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
-import adminStyles from "@/components/admin/admin-shell.module.css";
-import styles from "./page.module.css";
+import { DataState } from "@/components/backend/data/data-state";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/backend/ui/data-table";
+import { Field, Input, Select } from "@/components/backend/ui/field";
+import { Modal } from "@/components/backend/ui/modal";
+import {
+  FilterChip,
+  Toolbar,
+  ToolbarActions,
+  ToolbarFilters,
+  ToolbarSearch,
+} from "@/components/backend/ui/toolbar";
 
-type Schedule = {
+type InvoiceStatus = "open" | "paid" | "void" | "overdue";
+
+type InvoiceRow = {
+  id: number;
+  userId: number;
+  userEmail: string;
+  userDisplayName: string;
+  label: string;
+  amountCents: number;
+  currency: string;
+  dueDate: string;
+  status: InvoiceStatus;
+  paidAt: string | null;
+  stripeReceiptUrl: string | null;
+  updatedAt: string;
+  reminderCount: number;
+  lastReminderSentAt: string | null;
+};
+
+type ScheduleRow = {
   id: number;
   userId: number;
   userEmail: string;
@@ -19,576 +51,531 @@ type Schedule = {
   nextDueDate: string;
   active: boolean;
   notes: string;
+  updatedAt: string;
 };
 
-type Invoice = {
-  id: number;
-  userId: number;
-  userEmail: string;
-  userDisplayName: string;
-  label: string;
-  amountCents: number;
-  currency: string;
-  dueDate: string;
-  status: "open" | "paid" | "void" | "overdue";
-  reminderCount: number;
-  lastReminderSentAt: string | null;
+type PageInfo = { nextCursor: string | null; hasNextPage: boolean; limit: number };
+type InvoiceListResponse = { items: InvoiceRow[]; pageInfo: PageInfo };
+type ScheduleListResponse = { items: ScheduleRow[]; pageInfo: PageInfo };
+
+const STATUS_TONES: Record<InvoiceStatus, BadgeTone> = {
+  open: "info",
+  paid: "success",
+  void: "neutral",
+  overdue: "danger",
 };
 
-type UserBalance = {
-  id: number;
-  email: string;
-  displayName: string;
-  outstandingBalanceCents: number;
-};
+const dollars = (cents: number, currency = "USD") =>
+  new Intl.NumberFormat("en-US", { style: "currency", currency: (currency || "USD").toUpperCase() }).format(cents / 100);
 
-type PageInfo = {
-  nextCursor: string | null;
-  hasNextPage: boolean;
-  limit: number;
-};
-
-type ScheduleRunResult = {
-  createdInvoices: number;
-  deduped: number;
-  notificationsSent: number;
-  notificationsFailed: number;
-  advancedSchedules: number;
-};
-
-function formatMoney(cents: number, currency: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
+function buildInvoiceQuery(p: { status: string; cursor?: string | null }) {
+  const sp = new URLSearchParams();
+  if (p.status) sp.set("status", p.status);
+  sp.set("limit", "50");
+  if (p.cursor) sp.set("cursor", p.cursor);
+  return sp.toString();
 }
 
 export default function AdminDuesPage() {
-  const router = useRouter();
-  const [search, setSearch] = useState("");
-  const [invoiceStatusFilter, setInvoiceStatusFilter] = useState<"" | Invoice["status"]>("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [users, setUsers] = useState<UserBalance[]>([]);
-  const [schedulesPageInfo, setSchedulesPageInfo] = useState<PageInfo | null>(null);
-  const [invoicesPageInfo, setInvoicesPageInfo] = useState<PageInfo | null>(null);
-  const [invoiceForm, setInvoiceForm] = useState({
-    userId: "",
-    label: "Membership dues",
-    amountCents: "",
-    dueDate: "",
-  });
-  const [scheduleForm, setScheduleForm] = useState({
-    userId: "",
-    frequency: "monthly" as "annual" | "monthly" | "custom",
-    amountCents: "",
-    nextDueDate: "",
-    notes: "",
-    active: true,
-  });
-  const [savingInvoice, setSavingInvoice] = useState(false);
-  const [savingSchedule, setSavingSchedule] = useState(false);
-  const [runningSchedules, setRunningSchedules] = useState(false);
-  const [runNotice, setRunNotice] = useState("");
-
-  const filteredUsers = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    if (!term) return users;
-    return users.filter((user) => [user.displayName, user.email].some((value) => value.toLowerCase().includes(term)));
-  }, [search, users]);
-
-  const filteredSchedules = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    if (!term) return schedules;
-    return schedules.filter((schedule) => [schedule.userDisplayName, schedule.userEmail, schedule.notes].some((value) => value.toLowerCase().includes(term)));
-  }, [schedules, search]);
-
-  const filteredInvoices = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    return invoices.filter((invoice) => {
-      if (invoiceStatusFilter && invoice.status !== invoiceStatusFilter) return false;
-      if (!term) return true;
-      return [invoice.userDisplayName, invoice.userEmail, invoice.label].some((value) => value.toLowerCase().includes(term));
-    });
-  }, [invoiceStatusFilter, invoices, search]);
-
-  const stats = useMemo(() => {
-    const activeSchedules = schedules.filter((schedule) => schedule.active).length;
-    const openInvoices = invoices.filter((invoice) => invoice.status === "open" || invoice.status === "overdue");
-    const totalOutstanding = users.reduce((sum, user) => sum + user.outstandingBalanceCents, 0);
-    return [
-      { label: "Outstanding", value: formatMoney(totalOutstanding, "usd"), hint: `${openInvoices.length} open/overdue invoices loaded` },
-      { label: "Schedules", value: String(schedules.length), hint: `${activeSchedules} active` },
-      { label: "Visible rows", value: String(filteredUsers.length + filteredSchedules.length + filteredInvoices.length), hint: "Across summaries, schedules, and invoices" },
-    ];
-  }, [filteredInvoices.length, filteredSchedules.length, filteredUsers.length, invoices, schedules, users]);
-
-  async function load(options?: { reset?: boolean; schedulesCursor?: string | null; invoicesCursor?: string | null }) {
-    setLoading(true);
-    setError("");
-
-    const schedulesParams = new URLSearchParams();
-    schedulesParams.set("limit", "25");
-    if (options?.schedulesCursor) schedulesParams.set("cursor", options.schedulesCursor);
-
-    const invoicesParams = new URLSearchParams();
-    invoicesParams.set("limit", "25");
-    if (options?.invoicesCursor) invoicesParams.set("cursor", options.invoicesCursor);
-
-    const [schedulesResponse, invoicesResponse, usersResponse] = await Promise.all([
-      fetch(`/api/admin/dues/schedules?${schedulesParams.toString()}`),
-      fetch(`/api/admin/dues/invoices?${invoicesParams.toString()}`),
-      fetch("/api/admin/users?limit=100"),
-    ]);
-
-    if (schedulesResponse.status === 401 || invoicesResponse.status === 401 || usersResponse.status === 401) {
-      router.push("/login?next=/admin/dues");
-      return;
-    }
-
-    const schedulesPayload = (await schedulesResponse.json().catch(() => ({}))) as {
-      items?: Schedule[];
-      pageInfo?: PageInfo;
-      error?: string;
-    };
-    const invoicesPayload = (await invoicesResponse.json().catch(() => ({}))) as {
-      items?: Invoice[];
-      pageInfo?: PageInfo;
-      error?: string;
-    };
-    const usersPayload = (await usersResponse.json().catch(() => ({}))) as {
-      items?: UserBalance[];
-      error?: string;
-    };
-
-    if (!schedulesResponse.ok || !invoicesResponse.ok || !usersResponse.ok) {
-      setError(schedulesPayload.error || invoicesPayload.error || usersPayload.error || "Unable to load dues admin data");
-      setLoading(false);
-      return;
-    }
-
-    setSchedules((prev) => {
-      if (options?.schedulesCursor) return [...prev, ...(schedulesPayload.items ?? [])];
-      if (options?.invoicesCursor && !options?.reset) return prev;
-      return schedulesPayload.items ?? [];
-    });
-    setInvoices((prev) => {
-      if (options?.invoicesCursor) return [...prev, ...(invoicesPayload.items ?? [])];
-      if (options?.schedulesCursor && !options?.reset) return prev;
-      return invoicesPayload.items ?? [];
-    });
-    setUsers(usersPayload.items ?? []);
-    setSchedulesPageInfo(schedulesPayload.pageInfo ?? null);
-    setInvoicesPageInfo(invoicesPayload.pageInfo ?? null);
-    setLoading(false);
-  }
-
-  async function updateInvoiceStatus(id: number, status: Invoice["status"]) {
-    const response = await fetch("/api/admin/dues/invoices", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status }),
-    });
-
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to update invoice");
-      return;
-    }
-
-    await load({ reset: true });
-  }
-
-  async function createInvoice(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-
-    const userId = Number.parseInt(invoiceForm.userId, 10);
-    const amountCents = Number.parseInt(invoiceForm.amountCents, 10);
-    if (!Number.isInteger(userId) || userId < 1 || !Number.isInteger(amountCents) || amountCents < 1) {
-      setError("Choose a user and enter a valid amount in cents.");
-      return;
-    }
-    if (!invoiceForm.dueDate) {
-      setError("Due date is required.");
-      return;
-    }
-
-    setSavingInvoice(true);
-    const response = await fetch(`/api/admin/users/${userId}/dues-balance`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        createInvoice: {
-          label: invoiceForm.label,
-          amountCents,
-          dueDate: invoiceForm.dueDate,
-          currency: "usd",
-        },
-      }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to create invoice");
-      setSavingInvoice(false);
-      return;
-    }
-    setInvoiceForm((prev) => ({
-      ...prev,
-      amountCents: "",
-      dueDate: "",
-    }));
-    setSavingInvoice(false);
-    await load({ reset: true });
-  }
-
-  async function createSchedule(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    setRunNotice("");
-
-    const userId = Number.parseInt(scheduleForm.userId, 10);
-    const amountCents = Number.parseInt(scheduleForm.amountCents, 10);
-    if (!Number.isInteger(userId) || userId < 1 || !Number.isInteger(amountCents) || amountCents < 1) {
-      setError("Choose a user and enter a valid schedule amount in cents.");
-      return;
-    }
-    if (!scheduleForm.nextDueDate) {
-      setError("Schedule next due date is required.");
-      return;
-    }
-
-    setSavingSchedule(true);
-    const response = await fetch("/api/admin/dues/schedules", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId,
-        frequency: scheduleForm.frequency,
-        amountCents,
-        currency: "usd",
-        nextDueDate: scheduleForm.nextDueDate,
-        active: scheduleForm.active,
-        notes: scheduleForm.notes,
-      }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to create schedule");
-      setSavingSchedule(false);
-      return;
-    }
-
-    setScheduleForm((prev) => ({
-      ...prev,
-      amountCents: "",
-      nextDueDate: "",
-      notes: "",
-    }));
-    setSavingSchedule(false);
-    await load({ reset: true });
-  }
-
-  async function runScheduleInvoicing() {
-    setError("");
-    setRunNotice("");
-    setRunningSchedules(true);
-
-    const response = await fetch("/api/admin/dues/schedules/generate", { method: "POST" });
-    const payload = (await response.json().catch(() => ({}))) as ScheduleRunResult & { error?: string };
-    if (!response.ok) {
-      setError(payload.error || "Unable to run schedule invoicing");
-      setRunningSchedules(false);
-      return;
-    }
-
-    setRunNotice(
-      `Created ${payload.createdInvoices} invoice(s), advanced ${payload.advancedSchedules} schedule(s), sent ${payload.notificationsSent} notification(s).`,
-    );
-    setRunningSchedules(false);
-    await load({ reset: true });
-  }
-
-  useEffect(() => {
-    load({ reset: true }).catch(() => {
-      setError("Unable to load dues admin data");
-      setLoading(false);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
+  const [tab, setTab] = useState<"invoices" | "schedules">("invoices");
 
   return (
     <AdminShell
       currentPath="/admin/dues"
-      title="Dues Admin"
-      description="Manage balances, schedules, invoices, and manual billing tasks from one screen."
-      stats={stats}
-      actions={<Link href="/admin/users" className={adminStyles.actionPill}>Open users</Link>}
+      title="Dues"
+      description="Manage member invoices, payment schedules, and overdue actions."
     >
+      <div style={{ display: "flex", gap: "var(--bk-space-2)", borderBottom: "1px solid var(--bk-border)" }}>
+        <TabButton active={tab === "invoices"} onClick={() => setTab("invoices")} label="Invoices" />
+        <TabButton active={tab === "schedules"} onClick={() => setTab("schedules")} label="Schedules" />
+      </div>
 
-      <section className={adminStyles.toolbar}>
-        <div className={adminStyles.toolbarHeader}>
-          <p className={adminStyles.toolbarTitle}>Dues filters</p>
-          <p className={adminStyles.toolbarMeta}>Search by user or label and isolate invoice states quickly.</p>
-        </div>
-        <div className={adminStyles.toolbarFields}>
-          <label>
-            Search
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="User, email, invoice label" />
-          </label>
-          <label>
-            Invoice status
-            <select value={invoiceStatusFilter} onChange={(event) => setInvoiceStatusFilter(event.target.value as "" | Invoice["status"])}>
-              <option value="">All</option>
-              <option value="open">open</option>
-              <option value="overdue">overdue</option>
-              <option value="paid">paid</option>
-              <option value="void">void</option>
-            </select>
-          </label>
-        </div>
-        <div className={adminStyles.toolbarActions}>
-          <button type="button" className={adminStyles.secondaryButton} onClick={() => {
-            setSearch("");
-            setInvoiceStatusFilter("");
-          }}>
-            Clear filters
-          </button>
-        </div>
-      </section>
-
-      {error ? <p className={styles.error}>{error}</p> : null}
-
-      {loading ? <p>Loading dues data...</p> : null}
-
-      {!loading ? (
-        <>
-          <section className={`${styles.card} internal-card`}>
-            <h2>User balance summary</h2>
-            {filteredUsers.length === 0 ? (
-              <p>No users found.</p>
-            ) : (
-              <ul className={styles.list}>
-                {filteredUsers.map((user) => (
-                  <li key={user.id} className={styles.listItem}>
-                    <strong>{user.displayName}</strong>
-                    <p>{user.email}</p>
-                    <p>{formatMoney(user.outstandingBalanceCents, "usd")} outstanding</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section className={`${styles.card} internal-card`}>
-            <h2>Add invoice</h2>
-            <form className={styles.formGrid} onSubmit={createInvoice}>
-              <label>
-                User
-                <select
-                  value={invoiceForm.userId}
-                  onChange={(event) => setInvoiceForm((prev) => ({ ...prev, userId: event.target.value }))}
-                  required
-                >
-                  <option value="">Select user</option>
-                  {filteredUsers.map((user) => (
-                    <option key={user.id} value={String(user.id)}>
-                      {user.displayName} ({user.email})
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Label
-                <input
-                  value={invoiceForm.label}
-                  onChange={(event) => setInvoiceForm((prev) => ({ ...prev, label: event.target.value }))}
-                  required
-                />
-              </label>
-              <label>
-                Amount (cents)
-                <input
-                  type="number"
-                  min={1}
-                  value={invoiceForm.amountCents}
-                  onChange={(event) => setInvoiceForm((prev) => ({ ...prev, amountCents: event.target.value }))}
-                  required
-                />
-              </label>
-              <label>
-                Due date
-                <input
-                  type="date"
-                  value={invoiceForm.dueDate}
-                  onChange={(event) => setInvoiceForm((prev) => ({ ...prev, dueDate: event.target.value }))}
-                  required
-                />
-              </label>
-              <button type="submit" disabled={savingInvoice}>
-                {savingInvoice ? "Saving..." : "Create invoice"}
-              </button>
-            </form>
-          </section>
-
-          <section className={`${styles.card} internal-card`}>
-            <h2>Add schedule</h2>
-            <form className={styles.formGrid} onSubmit={createSchedule}>
-              <label>
-                User
-                <select
-                  value={scheduleForm.userId}
-                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, userId: event.target.value }))}
-                  required
-                >
-                  <option value="">Select user</option>
-                  {filteredUsers.map((user) => (
-                    <option key={user.id} value={String(user.id)}>
-                      {user.displayName} ({user.email})
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Frequency
-                <select
-                  value={scheduleForm.frequency}
-                  onChange={(event) =>
-                    setScheduleForm((prev) => ({
-                      ...prev,
-                      frequency: event.target.value as "annual" | "monthly" | "custom",
-                    }))
-                  }
-                >
-                  <option value="monthly">monthly</option>
-                  <option value="annual">annual</option>
-                  <option value="custom">custom</option>
-                </select>
-              </label>
-              <label>
-                Amount (cents)
-                <input
-                  type="number"
-                  min={1}
-                  value={scheduleForm.amountCents}
-                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, amountCents: event.target.value }))}
-                  required
-                />
-              </label>
-              <label>
-                Next due date
-                <input
-                  type="date"
-                  value={scheduleForm.nextDueDate}
-                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, nextDueDate: event.target.value }))}
-                  required
-                />
-              </label>
-              <label>
-                Notes
-                <input
-                  value={scheduleForm.notes}
-                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, notes: event.target.value }))}
-                />
-              </label>
-              <label>
-                Active
-                <select
-                  value={scheduleForm.active ? "true" : "false"}
-                  onChange={(event) => setScheduleForm((prev) => ({ ...prev, active: event.target.value === "true" }))}
-                >
-                  <option value="true">true</option>
-                  <option value="false">false</option>
-                </select>
-              </label>
-              <button type="submit" disabled={savingSchedule}>
-                {savingSchedule ? "Saving..." : "Create schedule"}
-              </button>
-            </form>
-          </section>
-
-          <section className={`${styles.card} internal-card`}>
-            <div className={styles.scheduleHeader}>
-              <h2>Schedules</h2>
-              <button type="button" onClick={runScheduleInvoicing} disabled={runningSchedules}>
-                {runningSchedules ? "Running..." : "Generate invoices from schedules"}
-              </button>
-            </div>
-            {runNotice ? <p className={styles.notice}>{runNotice}</p> : null}
-            {filteredSchedules.length === 0 ? (
-              <p>No schedules created.</p>
-            ) : (
-              <>
-                <ul className={styles.list}>
-                  {filteredSchedules.map((schedule) => (
-                    <li key={schedule.id} className={styles.listItem}>
-                      <strong>{schedule.userDisplayName}</strong>
-                      <p>
-                        {schedule.frequency} · {formatMoney(schedule.amountCents, schedule.currency)} · due {schedule.nextDueDate}
-                      </p>
-                      <p>{schedule.active ? "active" : "inactive"}</p>
-                    </li>
-                  ))}
-                </ul>
-                {schedulesPageInfo?.hasNextPage && schedulesPageInfo.nextCursor ? (
-                  <div className={styles.loadMoreWrap}>
-                    <button type="button" onClick={() => load({ schedulesCursor: schedulesPageInfo.nextCursor })}>
-                      Load more schedules
-                    </button>
-                  </div>
-                ) : null}
-              </>
-            )}
-          </section>
-
-          <section className={`${styles.card} internal-card`}>
-            <h2>Invoices</h2>
-            {filteredInvoices.length === 0 ? (
-              <p>No invoices found.</p>
-            ) : (
-              <>
-                <ul className={styles.list}>
-                  {filteredInvoices.map((invoice) => (
-                    <li key={invoice.id} className={styles.listItem}>
-                      <div>
-                        <strong>
-                          {invoice.userDisplayName} · {invoice.label}
-                        </strong>
-                        <p>
-                          {formatMoney(invoice.amountCents, invoice.currency)} · due {invoice.dueDate}
-                        </p>
-                        <p>Status: {invoice.status}</p>
-                        <p>
-                          Reminders: {invoice.reminderCount}
-                          {invoice.lastReminderSentAt ? ` · last sent ${new Date(invoice.lastReminderSentAt).toLocaleString()}` : ""}
-                        </p>
-                      </div>
-                      <select
-                        value={invoice.status}
-                        onChange={(event) => updateInvoiceStatus(invoice.id, event.target.value as Invoice["status"])}
-                      >
-                        <option value="open">open</option>
-                        <option value="overdue">overdue</option>
-                        <option value="paid">paid</option>
-                        <option value="void">void</option>
-                      </select>
-                    </li>
-                  ))}
-                </ul>
-                {invoicesPageInfo?.hasNextPage && invoicesPageInfo.nextCursor ? (
-                  <div className={styles.loadMoreWrap}>
-                    <button type="button" onClick={() => load({ invoicesCursor: invoicesPageInfo.nextCursor })}>
-                      Load more invoices
-                    </button>
-                  </div>
-                ) : null}
-              </>
-            )}
-          </section>
-        </>
-      ) : null}
+      {tab === "invoices" ? <InvoicesPanel /> : <SchedulesPanel />}
     </AdminShell>
+  );
+}
+
+function TabButton({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        padding: "var(--bk-space-2) var(--bk-space-3)",
+        background: "transparent",
+        border: "none",
+        borderBottom: active ? "2px solid var(--bk-accent-strong)" : "2px solid transparent",
+        color: active ? "var(--bk-text)" : "var(--bk-text-soft)",
+        fontWeight: active ? 700 : 500,
+        cursor: "pointer",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+function InvoicesPanel() {
+  const [q, setQ] = useState("");
+  const [status, setStatus] = useState<"" | InvoiceStatus>("");
+  const [appended, setAppended] = useState<InvoiceRow[]>([]);
+  const [appendCursor, setAppendCursor] = useState<string | null>(null);
+  const [editing, setEditing] = useState<InvoiceRow | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const resource = useResource<InvoiceListResponse>(
+    (signal) =>
+      fetchJson<InvoiceListResponse>(`/api/admin/dues/invoices?${buildInvoiceQuery({ status })}`, { signal }),
+    [status],
+  );
+
+  const baseItems = resource.data?.items ?? [];
+  const items = useMemo(() => {
+    const seen = new Set<number>();
+    const out: InvoiceRow[] = [];
+    for (const row of [...baseItems, ...appended]) {
+      if (seen.has(row.id)) continue;
+      seen.add(row.id);
+      out.push(row);
+    }
+    if (q) {
+      const needle = q.toLowerCase();
+      return out.filter(
+        (r) =>
+          r.label.toLowerCase().includes(needle) ||
+          r.userEmail.toLowerCase().includes(needle) ||
+          r.userDisplayName.toLowerCase().includes(needle),
+      );
+    }
+    return out;
+  }, [baseItems, appended, q]);
+
+  const pageInfo =
+    appendCursor === null
+      ? resource.data?.pageInfo ?? null
+      : { hasNextPage: !!appendCursor, nextCursor: appendCursor, limit: 50 };
+
+  async function loadMore() {
+    const cursor = pageInfo?.nextCursor;
+    if (!cursor) return;
+    setLoadingMore(true);
+    try {
+      const next = await fetchJson<InvoiceListResponse>(
+        `/api/admin/dues/invoices?${buildInvoiceQuery({ status, cursor })}`,
+      );
+      setAppended((prev) => [...prev, ...next.items]);
+      setAppendCursor(next.pageInfo.nextCursor);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
+
+  function resetFilters() {
+    setQ("");
+    setStatus("");
+    setAppended([]);
+    setAppendCursor(null);
+  }
+
+  const stats = useMemo(() => {
+    const open = items.filter((i) => i.status === "open" || i.status === "overdue");
+    const overdue = items.filter((i) => i.status === "overdue");
+    const openCents = open.reduce((s, i) => s + i.amountCents, 0);
+    return { openCount: open.length, overdueCount: overdue.length, openCents };
+  }, [items]);
+
+  const columns: DataTableColumn<InvoiceRow>[] = [
+    {
+      id: "user",
+      header: "Member",
+      accessor: (r) => (
+        <div>
+          <div style={{ fontWeight: 700 }}>{r.userDisplayName || "—"}</div>
+          <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>{r.userEmail}</div>
+        </div>
+      ),
+      sortValue: (r) => r.userDisplayName.toLowerCase(),
+      exportValue: (r) => `${r.userDisplayName} <${r.userEmail}>`,
+    },
+    {
+      id: "label",
+      header: "Invoice",
+      accessor: (r) => r.label,
+      sortValue: (r) => r.label,
+      exportValue: (r) => r.label,
+    },
+    {
+      id: "amount",
+      header: "Amount",
+      accessor: (r) => <strong>{dollars(r.amountCents, r.currency)}</strong>,
+      sortValue: (r) => r.amountCents,
+      exportValue: (r) => (r.amountCents / 100).toFixed(2),
+      align: "right",
+    },
+    {
+      id: "due",
+      header: "Due",
+      accessor: (r) => r.dueDate,
+      sortValue: (r) => r.dueDate,
+      exportValue: (r) => r.dueDate,
+    },
+    {
+      id: "status",
+      header: "Status",
+      accessor: (r) => <Badge tone={STATUS_TONES[r.status]}>{r.status}</Badge>,
+      sortValue: (r) => r.status,
+      exportValue: (r) => r.status,
+    },
+    {
+      id: "reminders",
+      header: "Reminders",
+      accessor: (r) =>
+        r.reminderCount > 0 ? (
+          <span title={r.lastReminderSentAt ?? undefined}>{r.reminderCount} sent</span>
+        ) : (
+          "—"
+        ),
+      exportValue: (r) => String(r.reminderCount),
+      hideOnMobile: true,
+    },
+  ];
+
+  return (
+    <>
+      <Toolbar>
+        <ToolbarSearch value={q} onChange={setQ} placeholder="Search member or invoice label…" />
+        <ToolbarFilters>
+          <Select
+            value={status}
+            onChange={(e) => {
+              setAppended([]);
+              setAppendCursor(null);
+              setStatus(e.target.value as InvoiceStatus | "");
+            }}
+            style={{ minWidth: 160 }}
+          >
+            <option value="">All statuses</option>
+            <option value="open">Open</option>
+            <option value="overdue">Overdue</option>
+            <option value="paid">Paid</option>
+            <option value="void">Void</option>
+          </Select>
+          {(q || status) ? <FilterChip label="Clear filters" onRemove={resetFilters} /> : null}
+        </ToolbarFilters>
+        <ToolbarActions>
+          <Button variant="ghost" size="sm" onClick={() => void resource.refresh()}>
+            Refresh
+          </Button>
+        </ToolbarActions>
+      </Toolbar>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          gap: "var(--bk-space-3)",
+          margin: "var(--bk-space-3) 0",
+        }}
+      >
+        <StatCard label="Open invoices" value={String(stats.openCount)} hint="Includes overdue" />
+        <StatCard label="Overdue" value={String(stats.overdueCount)} hint="Needs follow-up" tone="danger" />
+        <StatCard label="Open balance" value={dollars(stats.openCents)} hint="Across loaded rows" />
+      </div>
+
+      <DataState resource={resource} empty={{ title: "No invoices", description: "Adjust filters or generate dues." }}>
+        {() => (
+          <DataTable<InvoiceRow>
+            rows={items}
+            rowId={(r) => r.id}
+            columns={columns}
+            rowActions={(r) => (
+              <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>
+                Edit
+              </Button>
+            )}
+            exportFilename="dues-invoices.csv"
+            emptyState="No matching invoices"
+            pagination={{
+              pageSize: 50,
+              totalLoaded: items.length,
+              hasMore: !!pageInfo?.hasNextPage,
+              onLoadMore: () => void loadMore(),
+            }}
+          />
+        )}
+      </DataState>
+
+      <Modal
+        open={!!editing}
+        onClose={() => setEditing(null)}
+        title={editing ? `Edit ${editing.label}` : "Edit invoice"}
+        description="Adjust label, amount, due date, or status. Marking as paid records a manual payment."
+        size="lg"
+      >
+        {editing ? (
+          <EditInvoiceForm
+            invoice={editing}
+            onSaved={() => {
+              setEditing(null);
+              void resource.refresh();
+            }}
+          />
+        ) : null}
+      </Modal>
+    </>
+  );
+}
+
+function EditInvoiceForm({ invoice, onSaved }: { invoice: InvoiceRow; onSaved: () => void }) {
+  const [label, setLabel] = useState(invoice.label);
+  const [amount, setAmount] = useState((invoice.amountCents / 100).toString());
+  const [dueDate, setDueDate] = useState(invoice.dueDate);
+  const [status, setStatus] = useState<InvoiceStatus>(invoice.status);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      const cents = Math.round(Number(amount) * 100);
+      if (!Number.isFinite(cents) || cents < 1) throw new Error("Amount must be > 0");
+      await fetchJson(`/api/admin/dues/invoices`, {
+        method: "PUT",
+        body: JSON.stringify({ id: invoice.id, label, amountCents: cents, dueDate, status }),
+      });
+      onSaved();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update invoice");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "var(--bk-space-3)" }}>
+      <Field label="Label">
+        {(props) => <Input {...props} value={label} onChange={(e) => setLabel(e.target.value)} />}
+      </Field>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--bk-space-3)" }}>
+        <Field label="Amount (USD)" required>
+          {(props) => <Input {...props} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />}
+        </Field>
+        <Field label="Due date">
+          {(props) => <Input {...props} type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />}
+        </Field>
+      </div>
+      <Field label="Status">
+        {(props) => (
+          <Select {...props} value={status} onChange={(e) => setStatus(e.target.value as InvoiceStatus)}>
+            <option value="open">Open</option>
+            <option value="overdue">Overdue</option>
+            <option value="paid">Paid</option>
+            <option value="void">Void</option>
+          </Select>
+        )}
+      </Field>
+      {error ? <p style={{ color: "var(--bk-danger)", margin: 0, fontSize: "var(--bk-text-sm)" }}>{error}</p> : null}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--bk-space-2)" }}>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? "Saving…" : "Save changes"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function SchedulesPanel() {
+  const [creating, setCreating] = useState(false);
+
+  const resource = useResource<ScheduleListResponse>(
+    (signal) => fetchJson<ScheduleListResponse>(`/api/admin/dues/schedules?limit=50`, { signal }),
+    [],
+  );
+
+  const items = resource.data?.items ?? [];
+
+  const columns: DataTableColumn<ScheduleRow>[] = [
+    {
+      id: "user",
+      header: "Member",
+      accessor: (r) => (
+        <div>
+          <div style={{ fontWeight: 700 }}>{r.userDisplayName || "—"}</div>
+          <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>{r.userEmail}</div>
+        </div>
+      ),
+      sortValue: (r) => r.userDisplayName.toLowerCase(),
+      exportValue: (r) => `${r.userDisplayName} <${r.userEmail}>`,
+    },
+    {
+      id: "freq",
+      header: "Frequency",
+      accessor: (r) => r.frequency,
+      sortValue: (r) => r.frequency,
+      exportValue: (r) => r.frequency,
+    },
+    {
+      id: "amount",
+      header: "Amount",
+      accessor: (r) => <strong>{dollars(r.amountCents, r.currency)}</strong>,
+      sortValue: (r) => r.amountCents,
+      exportValue: (r) => (r.amountCents / 100).toFixed(2),
+      align: "right",
+    },
+    {
+      id: "next",
+      header: "Next due",
+      accessor: (r) => r.nextDueDate,
+      sortValue: (r) => r.nextDueDate,
+      exportValue: (r) => r.nextDueDate,
+    },
+    {
+      id: "active",
+      header: "Active",
+      accessor: (r) => (r.active ? <Badge tone="success">active</Badge> : <Badge tone="neutral">paused</Badge>),
+      exportValue: (r) => (r.active ? "active" : "paused"),
+    },
+  ];
+
+  return (
+    <>
+      <Toolbar>
+        <ToolbarActions>
+          <Button variant="ghost" size="sm" onClick={() => void resource.refresh()}>
+            Refresh
+          </Button>
+          <Button size="sm" onClick={() => setCreating(true)}>
+            New schedule
+          </Button>
+        </ToolbarActions>
+      </Toolbar>
+
+      <DataState resource={resource} empty={{ title: "No schedules yet", description: "Create a schedule to start auto-generating invoices." }}>
+        {() => (
+          <DataTable<ScheduleRow>
+            rows={items}
+            rowId={(r) => r.id}
+            columns={columns}
+            exportFilename="dues-schedules.csv"
+            emptyState="No matching schedules"
+          />
+        )}
+      </DataState>
+
+      <Modal
+        open={creating}
+        onClose={() => setCreating(false)}
+        title="Create dues schedule"
+        description="Recurring schedule that drives invoice generation."
+        size="md"
+      >
+        <CreateScheduleForm
+          onSaved={() => {
+            setCreating(false);
+            void resource.refresh();
+          }}
+        />
+      </Modal>
+    </>
+  );
+}
+
+function CreateScheduleForm({ onSaved }: { onSaved: () => void }) {
+  const [userId, setUserId] = useState("");
+  const [frequency, setFrequency] = useState<"annual" | "monthly" | "custom">("annual");
+  const [amount, setAmount] = useState("");
+  const [nextDueDate, setNextDueDate] = useState("");
+  const [active, setActive] = useState(true);
+  const [notes, setNotes] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      const cents = Math.round(Number(amount) * 100);
+      const uid = Number(userId);
+      if (!Number.isInteger(uid) || uid < 1) throw new Error("Member ID required");
+      if (!Number.isFinite(cents) || cents < 1) throw new Error("Amount must be > 0");
+      if (!nextDueDate) throw new Error("Next due date required");
+      await fetchJson(`/api/admin/dues/schedules`, {
+        method: "POST",
+        body: JSON.stringify({ userId: uid, frequency, amountCents: cents, nextDueDate, active, notes }),
+      });
+      onSaved();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create schedule");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: "var(--bk-space-3)" }}>
+      <Field label="Member user ID" required hint="Numeric user ID. Use the Users page to find IDs.">
+        {(props) => <Input {...props} inputMode="numeric" value={userId} onChange={(e) => setUserId(e.target.value)} />}
+      </Field>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--bk-space-3)" }}>
+        <Field label="Frequency">
+          {(props) => (
+            <Select {...props} value={frequency} onChange={(e) => setFrequency(e.target.value as typeof frequency)}>
+              <option value="annual">Annual</option>
+              <option value="monthly">Monthly</option>
+              <option value="custom">Custom</option>
+            </Select>
+          )}
+        </Field>
+        <Field label="Amount (USD)" required>
+          {(props) => <Input {...props} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />}
+        </Field>
+      </div>
+      <Field label="Next due date" required>
+        {(props) => <Input {...props} type="date" value={nextDueDate} onChange={(e) => setNextDueDate(e.target.value)} />}
+      </Field>
+      <Field label="Notes">
+        {(props) => <Input {...props} value={notes} onChange={(e) => setNotes(e.target.value)} />}
+      </Field>
+      <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+        <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
+        <span>Active</span>
+      </label>
+      {error ? <p style={{ color: "var(--bk-danger)", margin: 0, fontSize: "var(--bk-text-sm)" }}>{error}</p> : null}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--bk-space-2)" }}>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? "Saving…" : "Create schedule"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function StatCard({ label, value, hint, tone }: { label: string; value: string; hint: string; tone?: "danger" }) {
+  return (
+    <div
+      style={{
+        background: "var(--bk-surface)",
+        border: "1px solid var(--bk-border)",
+        borderRadius: "var(--bk-radius-md)",
+        padding: "var(--bk-space-3)",
+      }}
+    >
+      <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)", textTransform: "uppercase", letterSpacing: 0.5 }}>
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: "var(--bk-text-xl)",
+          fontWeight: 700,
+          color: tone === "danger" ? "var(--bk-danger)" : "var(--bk-text)",
+        }}
+      >
+        {value}
+      </div>
+      <div style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>{hint}</div>
+    </div>
   );
 }

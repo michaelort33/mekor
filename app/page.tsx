@@ -349,13 +349,17 @@ export default function HomePage() {
             </div>
             <div className={styles.contactAside}>
               <div className={styles.contactMapShell}>
-                <iframe
-                  src={MAP_EMBED_SRC}
-                  title="Mekor Habracha location map"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className={styles.contactMapFrame}
-                />
+                {process.env.NODE_ENV === "production" ? (
+                  <iframe
+                    src={MAP_EMBED_SRC}
+                    title="Mekor Habracha location map"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className={styles.contactMapFrame}
+                  />
+                ) : (
+                  <div className={styles.contactMapFrame} aria-hidden />
+                )}
               </div>
               <div className={styles.contactInfo}>
                 <h3>Mekor Habracha</h3>

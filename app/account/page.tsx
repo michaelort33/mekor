@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
-import { MemberShell } from "@/components/members/member-shell";
-import memberShellStyles from "@/components/members/member-shell.module.css";
-import styles from "./page.module.css";
+import { AccountShell } from "@/components/account/account-shell";
+import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
+import { Button } from "@/components/backend/ui/button";
+import { Card, CardBody, CardHeader } from "@/components/backend/ui/card";
+import { DataState } from "@/components/backend/data/data-state";
+import { fetchJson, useResource } from "@/components/backend/data/use-resource";
 
 type DashboardResponse = {
   summary: {
@@ -80,6 +83,30 @@ type DashboardResponse = {
   }>;
 };
 
+type MemberStatsResponse = {
+  stats?: {
+    eventsHostedCount: number;
+    approvedAttendeesTotal: number;
+    uniqueAttendeesCount: number;
+    upcomingHostedCount: number;
+    attendanceRate: number;
+  };
+};
+
+const REGISTRATION_TONES: Record<DashboardResponse["events"]["upcomingRegistrations"][number]["status"], BadgeTone> = {
+  registered: "success",
+  waitlisted: "warning",
+  cancelled: "neutral",
+  payment_pending: "info",
+};
+
+const INVOICE_TONES: Record<DashboardResponse["dues"]["openInvoices"][number]["status"], BadgeTone> = {
+  open: "info",
+  overdue: "warning",
+  paid: "success",
+  void: "neutral",
+};
+
 function formatMoney(cents: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -87,297 +114,332 @@ function formatMoney(cents: number, currency: string) {
   }).format(cents / 100);
 }
 
+const cardListStyle: React.CSSProperties = {
+  listStyle: "none",
+  margin: 0,
+  padding: 0,
+  display: "grid",
+  gap: "var(--bk-space-3)",
+};
+
+const cardItemStyle: React.CSSProperties = {
+  display: "grid",
+  gap: "var(--bk-space-1)",
+  padding: "var(--bk-space-3)",
+  borderRadius: "var(--bk-radius-md)",
+  background: "var(--bk-surface-soft)",
+};
+
+const gridStyle: React.CSSProperties = {
+  display: "grid",
+  gap: "var(--bk-space-4)",
+  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  marginTop: "var(--bk-space-4)",
+};
+
 export default function AccountDashboardPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
-  const [memberStats, setMemberStats] = useState<{
-    eventsHostedCount: number;
-    approvedAttendeesTotal: number;
-    uniqueAttendeesCount: number;
-    upcomingHostedCount: number;
-    attendanceRate: number;
-  } | null>(null);
+
+  const dashboard = useResource<DashboardResponse>(
+    (signal) => fetchJson<DashboardResponse>("/api/account/dashboard", { signal }),
+    [],
+  );
+  const memberStats = useResource<MemberStatsResponse>(
+    (signal) => fetchJson<MemberStatsResponse>("/api/account/member-stats", { signal }),
+    [],
+  );
 
   useEffect(() => {
-    async function load() {
-      const [response, statsResponse] = await Promise.all([
-        fetch("/api/account/dashboard"),
-        fetch("/api/account/member-stats"),
-      ]);
-      if (response.status === 401) {
-        router.replace("/login?next=/account");
-        return;
-      }
-
-      const payload = (await response.json().catch(() => ({}))) as DashboardResponse & { error?: string };
-      if (!response.ok) {
-        setError(payload.error || "Unable to load dashboard");
-        setLoading(false);
-        return;
-      }
-
-      setDashboard(payload);
-      if (statsResponse.ok) {
-        const statsPayload = (await statsResponse.json().catch(() => ({}))) as {
-          stats?: {
-            eventsHostedCount: number;
-            approvedAttendeesTotal: number;
-            uniqueAttendeesCount: number;
-            upcomingHostedCount: number;
-            attendanceRate: number;
-          };
-        };
-        setMemberStats(statsPayload.stats ?? null);
-      }
-      setLoading(false);
+    if (dashboard.error?.toLowerCase().includes("unauth") || dashboard.error?.includes("401")) {
+      router.replace("/login?next=/account");
     }
+  }, [dashboard.error, router]);
 
-    load().catch(() => {
-      setError("Unable to load dashboard");
-      setLoading(false);
-    });
-  }, [router]);
+  const data = dashboard.data;
+  const stats = data?.summary;
+  const hasMemberAccess = !!stats?.canAccessMembersArea;
+  const totalRecentPayments = useMemo(
+    () => data?.dues.recentPayments.reduce((sum, p) => sum + p.amountCents, 0) ?? 0,
+    [data],
+  );
 
-  const totalRecentPayments = useMemo(() => {
-    if (!dashboard) return 0;
-    return dashboard.dues.recentPayments.reduce((sum, payment) => sum + payment.amountCents, 0);
-  }, [dashboard]);
-
-  const shellStats = dashboard
-    ? [
-        {
-          label: "Membership access",
-          value: dashboard.summary.canAccessMembersArea ? "approved" : dashboard.summary.accessState.replace("_", " "),
-          hint: dashboard.summary.canAccessMembersArea ? "Full member features are unlocked" : "Member tools unlock after approval",
-        },
-        {
-          label: "Role",
-          value: dashboard.summary.role,
-          hint: "Account permission level",
-        },
-        {
-          label: "Profile visibility",
-          value: dashboard.summary.profileVisibility,
-          hint: dashboard.summary.lastLoginAt
-            ? `Last login ${new Date(dashboard.summary.lastLoginAt).toLocaleString()}`
-            : "No prior login recorded",
-        },
-      ]
+  const shellStats = data
+    ? hasMemberAccess
+      ? [
+          {
+            label: "Amount due",
+            value: formatMoney(data.summary.totalDueCents, "usd"),
+            hint: `${data.summary.openInvoicesCount} open invoice(s)`,
+          },
+          {
+            label: "Upcoming events",
+            value: String(data.summary.upcomingRegistrationsCount),
+            hint: "On your calendar",
+          },
+          {
+            label: "Recent payments",
+            value: formatMoney(totalRecentPayments, "usd"),
+            hint: "Across latest activity",
+          },
+          {
+            label: "Membership",
+            value: data.summary.role,
+            hint: data.summary.lastLoginAt
+              ? `Last sign-in ${new Date(data.summary.lastLoginAt).toLocaleDateString()}`
+              : "Welcome",
+          },
+        ]
+      : [
+          {
+            label: "Status",
+            value: data.summary.accessState.replace("_", " "),
+            hint: "Member tools unlock after approval",
+          },
+          {
+            label: "Profile visibility",
+            value: data.summary.profileVisibility,
+            hint: "Adjust in profile",
+          },
+          {
+            label: "Application",
+            value: data.summary.latestMembershipApplicationStatus ?? "none",
+            hint: "Latest membership review",
+          },
+        ]
     : [];
 
-  if (loading) {
-    return <main className={styles.page}>Loading account dashboard...</main>;
-  }
-
-  if (!dashboard) {
-    return <main className={styles.page}>{error || "Dashboard unavailable"}</main>;
-  }
-
-  const hasMemberAccess = dashboard.summary.canAccessMembersArea;
-  const pendingAccessMessage =
-    dashboard.summary.accessState === "pending_approval"
-      ? "Your account is pending member approval. You can update your profile while Mekor reviews your application."
-      : dashboard.summary.accessState === "declined"
-        ? "Your most recent membership application was declined. Contact Mekor if you want to reapply."
-        : "This account does not yet have member approval.";
+  const heroTitle = data ? `Welcome, ${data.summary.displayName}` : "Welcome";
+  const heroDescription = hasMemberAccess
+    ? "Track dues, events, and community updates from one operational dashboard."
+    : "Manage your account while your membership access is being reviewed.";
 
   return (
-    <MemberShell
-      title={`Welcome, ${dashboard.summary.displayName}`}
-      description={
-        hasMemberAccess
-          ? "Track dues, events, and community updates from one operational dashboard."
-          : "Manage your account while your membership access is being reviewed."
-      }
+    <AccountShell
+      currentPath="/account"
+      title={heroTitle}
+      description={heroDescription}
       eyebrow={hasMemberAccess ? "Members Area" : "Account"}
-      breadcrumbs={[
-        { label: "Home", href: "/" },
-        hasMemberAccess ? { label: "Members Area", href: "/members" } : { label: "Account", href: "/account" },
-        { label: hasMemberAccess ? "Dashboard" : "Overview" },
-      ]}
-      activeSection="dashboard"
-      navigationContext={hasMemberAccess ? "member" : "authenticated"}
       stats={shellStats}
+      membersAreaEnabled={hasMemberAccess}
       actions={
         <>
-          <Link href="/account/profile" className={memberShellStyles.actionPill}>Profile</Link>
+          <Link href="/account/profile">
+            <Button size="sm" variant="ghost">Profile</Button>
+          </Link>
           {hasMemberAccess ? (
             <>
-              <Link href="/account/payments" className={memberShellStyles.actionPill}>Payments</Link>
-              <Link href="/account/dues" className={memberShellStyles.actionPill}>Dues</Link>
-              <Link href="/account/member-events" className={memberShellStyles.actionPill}>Host events</Link>
-              <Link href="/account/inbox" className={memberShellStyles.actionPill}>Inbox</Link>
+              <Link href="/account/payments">
+                <Button size="sm" variant="ghost">Payments</Button>
+              </Link>
+              <Link href="/account/inbox">
+                <Button size="sm" variant="ghost">Inbox</Button>
+              </Link>
             </>
           ) : null}
         </>
       }
     >
-
-      {error ? <p className={styles.error}>{error}</p> : null}
-
-      {!hasMemberAccess ? (
-        <section className={styles.grid}>
-          <article className={`${styles.card} internal-card`}>
-            <h2>
-              {dashboard.summary.accessState === "pending_approval"
-                ? "Your account is pending member approval"
-                : dashboard.summary.accessState === "declined"
-                  ? "Your membership application needs follow-up"
-                  : "Your account is active"}
-            </h2>
-            <p>{pendingAccessMessage}</p>
-            <Link href="/account/profile" className={styles.inlineLink}>
-              Update your profile
-            </Link>
-          </article>
-        </section>
-      ) : (
-        <>
-          <section className={styles.summaryGrid}>
-            <article className={`${styles.card} internal-card`}>
-              <h2>Amount Due</h2>
-              <p className={styles.metric}>{formatMoney(dashboard.summary.totalDueCents, "usd")}</p>
-              <p>{dashboard.summary.openInvoicesCount} open invoice(s)</p>
-            </article>
-            <article className={`${styles.card} internal-card`}>
-              <h2>Upcoming Registrations</h2>
-              <p className={styles.metric}>{dashboard.summary.upcomingRegistrationsCount}</p>
-              <p>events currently on your calendar</p>
-            </article>
-            <article className={`${styles.card} internal-card`}>
-              <h2>Recent Payments</h2>
-              <p className={styles.metric}>{formatMoney(totalRecentPayments, "usd")}</p>
-              <p>across your latest dues transactions</p>
-            </article>
-            {memberStats ? (
-              <article className={`${styles.card} internal-card`}>
-                <h2>Host Stats</h2>
-                <p className={styles.metric}>{memberStats.eventsHostedCount}</p>
-                <p>
-                  {memberStats.approvedAttendeesTotal} approved attendees · {memberStats.upcomingHostedCount} upcoming
-                </p>
-              </article>
-            ) : null}
-          </section>
-
-          <section className={styles.grid}>
-            <article className={`${styles.card} internal-card`}>
-              <h2>Dues Snapshot</h2>
-              {dashboard.dues.enabled ? (
-                dashboard.dues.openInvoices.length > 0 ? (
-                  <ul className={styles.list}>
-                    {dashboard.dues.openInvoices.map((invoice) => (
-                      <li key={invoice.id}>
-                        <strong>{invoice.label}</strong>
-                        <p>
-                          {formatMoney(invoice.amountCents, invoice.currency)} · due {invoice.dueDate}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No open dues invoices.</p>
-                )
-              ) : (
-                <p>Dues module is currently disabled.</p>
-              )}
-              <Link href="/account/dues" className={styles.inlineLink}>
-                Open dues page
-              </Link>
-            </article>
-
-            <article className={`${styles.card} internal-card`}>
-              <h2>Upcoming Events</h2>
-              {dashboard.events.enabled ? (
-                dashboard.events.upcomingRegistrations.length > 0 ? (
-                  <ul className={styles.list}>
-                    {dashboard.events.upcomingRegistrations.map((registration) => (
-                      <li key={registration.id}>
-                        <strong>{registration.eventTitle}</strong>
-                        <p>
-                          {registration.status}
-                          {registration.eventStartAt ? ` · ${new Date(registration.eventStartAt).toLocaleString()}` : ""}
-                        </p>
-                        <Link href={registration.eventPath} className={styles.inlineLink}>
-                          View event
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No upcoming registrations yet.</p>
-                )
-              ) : (
-                <p>Event signups are currently disabled.</p>
-              )}
-            </article>
-
-            <article className={`${styles.card} internal-card`}>
-              <h2>Suggested Events</h2>
-              {dashboard.events.suggestedEvents.length > 0 ? (
-                <ul className={styles.list}>
-                  {dashboard.events.suggestedEvents.map((event) => (
-                    <li key={event.id}>
-                      <strong>{event.title}</strong>
-                      <p>{event.startAt ? new Date(event.startAt).toLocaleString() : "Date TBD"}</p>
-                      <Link href={event.path} className={styles.inlineLink}>
-                        View event
+      <DataState resource={dashboard} empty={{ title: "Dashboard unavailable", description: "We couldn't load your account data." }}>
+        {(d) => (
+          <>
+            {!hasMemberAccess ? (
+              <Card padded style={{ marginTop: "var(--bk-space-4)" }}>
+                <CardHeader
+                  title={
+                    d.summary.accessState === "pending_approval"
+                      ? "Your account is pending member approval"
+                      : d.summary.accessState === "declined"
+                        ? "Your membership application needs follow-up"
+                        : "Your account is active"
+                  }
+                  description={
+                    d.summary.accessState === "pending_approval"
+                      ? "We're reviewing your application. You can update your profile while we work."
+                      : d.summary.accessState === "declined"
+                        ? "Reach out to Mekor leadership if you'd like to reapply."
+                        : "Member tools unlock once approval is complete."
+                  }
+                  actions={
+                    <Link href="/account/profile">
+                      <Button size="sm">Update profile</Button>
+                    </Link>
+                  }
+                />
+              </Card>
+            ) : (
+              <div style={gridStyle}>
+                <Card padded>
+                  <CardHeader
+                    title="Open dues"
+                    description={d.dues.enabled ? `${d.dues.openInvoices.length} pending` : "Disabled"}
+                    actions={
+                      <Link href="/account/dues">
+                        <Button size="sm" variant="ghost">Open</Button>
                       </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No suggested events at this time.</p>
-              )}
-            </article>
+                    }
+                  />
+                  <CardBody>
+                    {d.dues.enabled ? (
+                      d.dues.openInvoices.length > 0 ? (
+                        <ul style={cardListStyle}>
+                          {d.dues.openInvoices.slice(0, 4).map((invoice) => (
+                            <li key={invoice.id} style={cardItemStyle}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                                <strong>{invoice.label}</strong>
+                                <Badge tone={INVOICE_TONES[invoice.status]}>{invoice.status}</Badge>
+                              </div>
+                              <span style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>
+                                {formatMoney(invoice.amountCents, invoice.currency)} · due {invoice.dueDate}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p style={{ color: "var(--bk-text-soft)" }}>No open dues invoices.</p>
+                      )
+                    ) : (
+                      <p style={{ color: "var(--bk-text-soft)" }}>Dues module is disabled.</p>
+                    )}
+                  </CardBody>
+                </Card>
 
-            <article className={`${styles.card} internal-card`}>
-              <h2>Activity Feed</h2>
-              {dashboard.activity.length > 0 ? (
-                <ul className={styles.list}>
-                  {dashboard.activity.map((entry) => (
-                    <li key={entry.id}>
-                      <strong>{entry.label}</strong>
-                      <p>{new Date(entry.timestamp).toLocaleString()}</p>
-                      {entry.href ? (
-                        <Link href={entry.href} className={styles.inlineLink}>
-                          Open
-                        </Link>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No recent activity yet.</p>
-              )}
-            </article>
-
-            <article className={`${styles.card} internal-card`}>
-              <h2>Community Updates</h2>
-              {dashboard.announcements.length > 0 ? (
-                <ul className={styles.list}>
-                  {dashboard.announcements.map((announcement) => (
-                    <li key={announcement.id}>
-                      <strong>{announcement.title}</strong>
-                      <p>
-                        {announcement.publication}
-                        {announcement.publishedLabel ? ` · ${announcement.publishedLabel}` : ""}
-                      </p>
-                      <Link href={announcement.path} className={styles.inlineLink}>
-                        Read
+                <Card padded>
+                  <CardHeader
+                    title="Upcoming events"
+                    description={d.events.enabled ? `${d.events.upcomingRegistrations.length} registered` : "Disabled"}
+                    actions={
+                      <Link href="/events">
+                        <Button size="sm" variant="ghost">Browse</Button>
                       </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No announcements available.</p>
-              )}
-            </article>
-          </section>
-        </>
-      )}
-    </MemberShell>
+                    }
+                  />
+                  <CardBody>
+                    {d.events.enabled ? (
+                      d.events.upcomingRegistrations.length > 0 ? (
+                        <ul style={cardListStyle}>
+                          {d.events.upcomingRegistrations.slice(0, 4).map((reg) => (
+                            <li key={reg.id} style={cardItemStyle}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
+                                <strong>{reg.eventTitle}</strong>
+                                <Badge tone={REGISTRATION_TONES[reg.status]}>{reg.status.replace("_", " ")}</Badge>
+                              </div>
+                              <span style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>
+                                {reg.eventStartAt ? new Date(reg.eventStartAt).toLocaleString() : "Date TBD"}
+                              </span>
+                              <Link href={reg.eventPath} style={{ fontSize: "var(--bk-text-xs)" }}>View event →</Link>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p style={{ color: "var(--bk-text-soft)" }}>No upcoming registrations yet.</p>
+                      )
+                    ) : (
+                      <p style={{ color: "var(--bk-text-soft)" }}>Event signups are disabled.</p>
+                    )}
+                  </CardBody>
+                </Card>
+
+                <Card padded>
+                  <CardHeader title="Suggested events" />
+                  <CardBody>
+                    {d.events.suggestedEvents.length > 0 ? (
+                      <ul style={cardListStyle}>
+                        {d.events.suggestedEvents.slice(0, 4).map((event) => (
+                          <li key={event.id} style={cardItemStyle}>
+                            <strong>{event.title}</strong>
+                            <span style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>
+                              {event.startAt ? new Date(event.startAt).toLocaleString() : "Date TBD"}
+                              {event.location ? ` · ${event.location}` : ""}
+                            </span>
+                            <Link href={event.path} style={{ fontSize: "var(--bk-text-xs)" }}>View event →</Link>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p style={{ color: "var(--bk-text-soft)" }}>Nothing suggested right now.</p>
+                    )}
+                  </CardBody>
+                </Card>
+
+                <Card padded>
+                  <CardHeader title="Recent activity" />
+                  <CardBody>
+                    {d.activity.length > 0 ? (
+                      <ul style={cardListStyle}>
+                        {d.activity.slice(0, 6).map((entry) => (
+                          <li key={entry.id} style={cardItemStyle}>
+                            <strong>{entry.label}</strong>
+                            <span style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>
+                              {new Date(entry.timestamp).toLocaleString()}
+                            </span>
+                            {entry.href ? (
+                              <Link href={entry.href} style={{ fontSize: "var(--bk-text-xs)" }}>Open →</Link>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p style={{ color: "var(--bk-text-soft)" }}>No recent activity yet.</p>
+                    )}
+                  </CardBody>
+                </Card>
+
+                <Card padded>
+                  <CardHeader title="Community updates" />
+                  <CardBody>
+                    {d.announcements.length > 0 ? (
+                      <ul style={cardListStyle}>
+                        {d.announcements.slice(0, 4).map((announcement) => (
+                          <li key={announcement.id} style={cardItemStyle}>
+                            <strong>{announcement.title}</strong>
+                            <span style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>
+                              {announcement.publication}
+                              {announcement.publishedLabel ? ` · ${announcement.publishedLabel}` : ""}
+                            </span>
+                            <Link href={announcement.path} style={{ fontSize: "var(--bk-text-xs)" }}>Read →</Link>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p style={{ color: "var(--bk-text-soft)" }}>No announcements yet.</p>
+                    )}
+                  </CardBody>
+                </Card>
+
+                {memberStats.data?.stats ? (
+                  <Card padded>
+                    <CardHeader
+                      title="Hosting stats"
+                      description="Your impact as an event host"
+                      actions={
+                        <Link href="/account/member-events">
+                          <Button size="sm" variant="ghost">Manage</Button>
+                        </Link>
+                      }
+                    />
+                    <CardBody>
+                      <div style={{ display: "grid", gap: "var(--bk-space-2)" }}>
+                        <div>
+                          <strong>{memberStats.data.stats.eventsHostedCount}</strong> events hosted
+                        </div>
+                        <div>
+                          <strong>{memberStats.data.stats.approvedAttendeesTotal}</strong> approved attendees
+                        </div>
+                        <div>
+                          <strong>{memberStats.data.stats.upcomingHostedCount}</strong> upcoming
+                        </div>
+                        <div style={{ color: "var(--bk-text-soft)", fontSize: "var(--bk-text-xs)" }}>
+                          {Math.round(memberStats.data.stats.attendanceRate * 100)}% attendance rate
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                ) : null}
+              </div>
+            )}
+          </>
+        )}
+      </DataState>
+    </AccountShell>
   );
 }
