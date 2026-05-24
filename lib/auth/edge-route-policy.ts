@@ -11,7 +11,13 @@ const PUBLIC_EXACT_PATHS = new Set([
 ]);
 
 const PUBLIC_PREFIX_PATHS = ["/community"];
-const AUTHENTICATED_PAGE_EXACT_PATHS = new Set(["/account", "/account/profile"]);
+const AUTHENTICATED_PAGE_EXACT_PATHS = new Set([
+  "/account",
+  "/account/profile",
+  "/account/security",
+  "/account/notifications",
+  "/account/delete",
+]);
 const MEMBER_PAGE_PREFIX_PATHS = [
   "/members",
   "/account/dues",
