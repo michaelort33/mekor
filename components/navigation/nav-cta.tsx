@@ -24,7 +24,7 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   ];
 
   return (
-    <div className="flex flex-none items-center gap-2 whitespace-nowrap">
+    <div className="flex flex-none items-center gap-1.5 whitespace-nowrap">
       {links.map((link) => {
         const external = /^https?:\/\//i.test(link.href);
         const variant =
