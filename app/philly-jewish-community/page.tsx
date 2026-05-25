@@ -35,6 +35,7 @@ export default async function PhillyJewishCommunityPage() {
       <HeroSection
         title="Philly Jewish Community"
         subtitle="Center City resources and institutions"
+        tone="dark"
         className={styles.heroFlat}
         image={{
           src: COMMUNITY_IMAGES.hero,

@@ -93,14 +93,15 @@ export default function LoginPage() {
           />
         </label>
 
-        <label className={styles.field}>
-          <span className={styles.fieldHeader}>
-            <span>Password</span>
+        <div className={styles.field}>
+          <div className={styles.fieldHeader}>
+            <label htmlFor="login-password">Password</label>
             <Link href="/forgot-password" className={styles.secondaryLink}>
               Forgot password?
             </Link>
-          </span>
+          </div>
           <input
+            id="login-password"
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -108,7 +109,7 @@ export default function LoginPage() {
             minLength={8}
             autoComplete="current-password"
           />
-        </label>
+        </div>
 
         {resetNotice ? <p className={styles.notice}>{resetNotice}</p> : null}
         {error ? <p className={styles.error}>{error}</p> : null}

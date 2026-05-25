@@ -52,7 +52,7 @@ export default async function MekorCouplesPage() {
       <HeroSection
         eyebrow="Community Milestones"
         title="Mekor Couples"
-        subtitle="We celebrate our Mekor couples"
+        subtitle="We Celebrate Our Mekor Couples!*"
         className={styles.heroSection}
         image={{
           src: COUPLES_IMAGES.hero,

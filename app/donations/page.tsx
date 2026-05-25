@@ -125,6 +125,7 @@ export default async function DonationsPage() {
         eyebrow="Support Mekor"
         title="How You Can Donate and Help Mekor"
         subtitle="Sustain Jewish life in Center City"
+        tone="dark"
         className={styles.heroFlat}
         image={{
           src: DONATION_IMAGES.hero,
@@ -163,8 +164,9 @@ export default async function DonationsPage() {
             </a>
           ))}
         </div>
+        <h3 className={styles.methodHeading}>Via Check</h3>
         <p className={styles.copyText}>
-          By check: please send any checks payable to <strong>Mekor Habracha</strong> to <strong>Ellen Geller</strong>,
+          Please send any checks payable to <strong>Mekor Habracha</strong> to <strong>Ellen Geller</strong>,
           <strong> 3 Saint James Ct., Philadelphia, PA 19106</strong>.
         </p>
       </SectionCard>

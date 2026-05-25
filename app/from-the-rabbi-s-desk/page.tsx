@@ -30,8 +30,9 @@ export default async function FromTheRabbisDeskPage() {
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         eyebrow="Teachings"
-        title="From The Rabbi's Desk"
+        title="from the rabbi's desk"
         subtitle="Podcast teachings, insights, and weekly Torah reflections"
+        tone="dark"
         className={styles.heroFlat}
         image={{
           src: RABBI_DESK_IMAGE,

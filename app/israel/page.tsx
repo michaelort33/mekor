@@ -120,7 +120,7 @@ export default function IsraelPage() {
             "The project honors the 1200 souls and the soldiers and hostages who have died Al Kiddush Hashem. Mekor's commemorative event displayed the new cover and remembered the kadosh named on our me'il.",
             "May we merit to fulfill the words of Tehillim, 'You have turned my mourning into dancing,' and see the coming of Mashiach speedily in our days.",
           ]}
-          links={[{ label: "Rabbi Hirsch's Introduction to Oct 7 Commemoration", href: "/from-the-rabbi-s-desk" }]}
+          links={[{ label: "Rabbi Hirsch on Oct 7", href: "/from-the-rabbi-s-desk" }]}
         />
         <p className={styles.longCopy}>
           Mekor Habracha/Center City Synagogue Commemoration of October 7: 6:15pm Mincha, 6:45pm Program.

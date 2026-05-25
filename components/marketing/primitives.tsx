@@ -215,7 +215,7 @@ export function SplitMediaText({
   className,
 }: SplitMediaTextProps) {
   return (
-    <article className={cn("grid gap-6 lg:grid-cols-2 lg:gap-8", reverse && "lg:[&>*:first-child]:order-2", className)}>
+    <article className={cn("grid gap-6 lg:grid-cols-2 lg:gap-8 [&>*]:min-w-0", reverse && "lg:[&>*:first-child]:order-2", className)}>
       <div className="relative overflow-hidden rounded-[30px] bg-[var(--color-surface-soft)]">
         <Image
           src={media.src}

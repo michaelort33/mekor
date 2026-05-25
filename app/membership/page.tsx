@@ -80,7 +80,7 @@ export default async function MembershipPage() {
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.content}>
       <HeroSection
         eyebrow="Membership"
-        title="Join Mekor Habracha"
+        title="Join Mekor Habracha!"
         subtitle="Membership in Mekor Habracha"
         variant="quiet"
         image={{
@@ -90,7 +90,6 @@ export default async function MembershipPage() {
           objectPosition: "50% 44%",
         }}
         description={[
-          "We offer 2 simple ways to join or renew.",
           "Choose from annual membership options below or connect directly by email for payment support.",
         ]}
         actions={[
