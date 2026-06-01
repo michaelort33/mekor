@@ -21,7 +21,7 @@ export default function AboutUsPage() {
         title="About Us"
         className={styles.heroSection}
         image={{
-          src: "https://static.wixstatic.com/media/92f487_9d5ea30d3f994577b7580692f3db4cf1~mv2.jpg",
+          src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/74594fba27fee3125bc4cf6044cdc4e4270e7ad4-92f487_9d5ea30d3f994577b7580692f3db4cf1-mv2.jpg",
           alt: "Mekor Habracha sanctuary",
           objectFit: "cover",
         }}
@@ -32,7 +32,7 @@ export default function AboutUsPage() {
           className={styles.splitSection}
           title="Our History"
           media={{
-            src: "https://static.wixstatic.com/media/92f487_317cadc2e57a4f1e9320b1024d4cfa85~mv2.jpeg",
+            src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/4c2bb61e43e3725490ccf2d454906faaf001c2d1-92f487_317cadc2e57a4f1e9320b1024d4cfa85-mv2.jpeg",
             alt: "Historic Mekor community photo",
           }}
           paragraphs={[
@@ -67,7 +67,7 @@ export default function AboutUsPage() {
           kicker="Who we are"
           title="Vibrant and inclusive"
           media={{
-            src: "https://static.wixstatic.com/media/92f487_45d2dc5d59b343feb57c0f77fe10f5e5~mv2.jpeg",
+            src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/32304e8370d0cf97ecdd5870f164d1aea51b1d0d-92f487_45d2dc5d59b343feb57c0f77fe10f5e5-mv2.jpeg",
             alt: "Mekor community members together",
           }}
           paragraphs={[
@@ -91,7 +91,7 @@ export default function AboutUsPage() {
           kicker="Learning at Mekor"
           title="Profound and practical"
           media={{
-            src: "https://static.wixstatic.com/media/92f487_4028caf9a1a04e7aa4fdbdeaf23b9025~mv2.jpeg",
+            src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/bfc339d7c03e98b579b9a883170648d94dc72cc6-92f487_4028caf9a1a04e7aa4fdbdeaf23b9025-mv2.jpeg",
             alt: "Learning session at Mekor",
           }}
           paragraphs={[
@@ -109,7 +109,7 @@ export default function AboutUsPage() {
           kicker="Contact Us"
           title="We'd love to hear from you"
           media={{
-            src: "https://static.wixstatic.com/media/11062b_8135b27108d04d2a97adc750a341fb79~mv2.jpeg",
+            src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/c2c6235de9c6d719cd098e19d77b7f21c18899f1-11062b_8135b27108d04d2a97adc750a341fb79-mv2.jpeg",
             alt: "Mekor synagogue gathering",
           }}
           paragraphs={[

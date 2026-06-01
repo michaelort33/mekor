@@ -1,5 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 
+import { toBlobUrl } from "@/lib/assets/blob-rewrite";
 import { getDb } from "@/db/client";
 import { kosherPlaces, pageFreshness } from "@/db/schema";
 import {
@@ -93,7 +94,7 @@ function readSourceHeroImage(sourceJson: Record<string, unknown> | null | undefi
   try {
     const parsed = new URL(value);
     if (parsed.protocol === "http:" || parsed.protocol === "https:") {
-      return parsed.toString();
+      return toBlobUrl(parsed.toString());
     }
   } catch {
     return "";

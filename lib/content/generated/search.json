@@ -10699,5 +10699,23 @@
       "4246",
       "admin"
     ]
+  },
+  {
+    "path": "/events-1/an-evening-with-yaakov-zimmerman",
+    "type": "event",
+    "title": "An Evening with Yaakov Zimmerman",
+    "description": "Stories from the front lines to Shiloh — with a wine tasting featuring wines from Yaakov Zimmerman’s Shiloh Winery, plus conversation and Q&A.",
+    "excerpt": "Yaakov Zimmerman grew up in Passaic, New Jersey, and made aliyah to Israel, where he built his life around Zionism, leadership, and service. The evening includes a wine tasting featuring wines from his Shiloh Winery, alongside conversation and a Q&A.",
+    "terms": [
+      "yaakov",
+      "zimmerman",
+      "idf",
+      "paratrooper",
+      "shiloh",
+      "wine",
+      "aliyah",
+      "israel",
+      "event"
+    ]
   }
 ]

@@ -1,5 +1,6 @@
 import { asc, desc, eq } from "drizzle-orm";
 
+import { toBlobUrl } from "@/lib/assets/blob-rewrite";
 import { getDb } from "@/db/client";
 import { eventSignupSettings, events } from "@/db/schema";
 import { canAcceptEventSignup, isEventClosed, isEventPast } from "@/lib/events/status";
@@ -24,7 +25,7 @@ export type ManagedEvent = {
 
 function readSourceHeroImage(sourceJson: Record<string, unknown> | null | undefined) {
   const value = sourceJson?.heroImage;
-  return typeof value === "string" ? value : "";
+  return typeof value === "string" ? toBlobUrl(value) : "";
 }
 
 function toManagedEvent(row: {

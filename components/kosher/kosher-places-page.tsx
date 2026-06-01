@@ -28,7 +28,7 @@ type KosherPlacesPageProps = {
   neighborhoodLead?: string;
 };
 
-const KOSHER_FALLBACK_IMAGE_SRC = "/images/kosher/fallback-food.svg";
+const KOSHER_FALLBACK_IMAGE_SRC = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/fcd909c6286c1cb51d76acc1726731f3ca21d3d5-fallback-food.svg";
 
 function formatLastUpdatedDate(value: string | null) {
   if (!value) {

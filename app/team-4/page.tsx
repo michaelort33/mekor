@@ -12,8 +12,8 @@ import styles from "./page.module.css";
 const PATH = "/team-4" as const;
 
 const VOLUNTEER_IMAGES = {
-  hero: "/images/volunteer/hero.jpg",
-  banner: "/images/volunteer/banner.jpg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/4932c11a1fa2b7666c1e5aca3ac86619ebb75eb0-hero.jpg",
+  banner: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/6232f3d6a49758d6fe2d88551b5e72e6b5861a20-banner.jpg",
 } as const;
 
 export const dynamic = "force-static";

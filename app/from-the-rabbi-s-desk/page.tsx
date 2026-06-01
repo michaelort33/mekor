@@ -10,7 +10,7 @@ import styles from "./page.module.css";
 
 const PATH = "/from-the-rabbi-s-desk" as const;
 
-const RABBI_DESK_IMAGE = "/images/rabbi-desk/hero.jpg";
+const RABBI_DESK_IMAGE = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/dd7c59163e73552a54149d12a8eb0098dc6012e5-hero.jpg";
 
 export const dynamic = "force-static";
 

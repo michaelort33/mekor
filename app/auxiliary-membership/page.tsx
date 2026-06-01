@@ -13,8 +13,8 @@ import styles from "./page.module.css";
 const PATH = "/auxiliary-membership" as const;
 
 const PAGE_IMAGES = {
-  hero: "https://static.wixstatic.com/media/92f487_1b9e6a717396499c912c95ed541884b4~mv2.jpg",
-  community: "https://static.wixstatic.com/media/92f487_e06bca9eef7844c4b8dbaef89fa60417~mv2.jpeg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/a52c76f4e31a3d50a174447141becbdb4721aa85-92f487_1b9e6a717396499c912c95ed541884b4-mv2.jpg",
+  community: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8ddca325da346dbcab563b9d7d151a4acdadd4e0-92f487_e06bca9eef7844c4b8dbaef89fa60417-mv2.jpeg",
 } as const;
 
 const AUXILIARY_RATES = [

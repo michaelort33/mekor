@@ -27,7 +27,7 @@ export default function OurRabbiPage() {
           <article className={styles.profileLayout}>
             <div className={styles.profilePhotoWrap}>
               <Image
-                src="https://static.wixstatic.com/media/92f487_e03dc964305644a9b5eb3894502ed630~mv2.jpg"
+                src="https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/3e46359f1d8a8c9a5d886a6f6aa25c734c5de1d0-92f487_e03dc964305644a9b5eb3894502ed630-mv2.jpg"
                 alt="Rabbi Eliezer Hirsch"
                 width={900}
                 height={1200}
@@ -94,7 +94,7 @@ export default function OurRabbiPage() {
             reverse
             title="Rabbi Steven Gotlib"
             media={{
-              src: "https://static.wixstatic.com/media/66bc7c_7ded87b518b94c619c3f89f470cb4a9d~mv2.jpg",
+              src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/f6e2a6329cfc583701d5241a911d82f1a0cb2a88-66bc7c_7ded87b518b94c619c3f89f470cb4a9d-mv2.jpg",
               alt: "Rabbi Steven Gotlib",
             }}
             paragraphs={[

@@ -3653,5 +3653,22 @@
     "twitterTitle": "Visit Us | Mekor 3",
     "twitterDescription": "",
     "capturedAt": "2026-02-28T17:06:34.833Z"
+  },
+  {
+    "id": "a17e2026zimmermanevening0000000000abcdef",
+    "type": "event",
+    "path": "/events-1/an-evening-with-yaakov-zimmerman",
+    "url": "https://www.mekorhabracha.org/events-1/an-evening-with-yaakov-zimmerman",
+    "slug": "events-1__an-evening-with-yaakov-zimmerman",
+    "title": "An Evening with Yaakov Zimmerman",
+    "description": "Stories from the front lines to Shiloh — with a wine tasting featuring wines from Yaakov Zimmerman’s Shiloh Winery, plus conversation and Q&A.",
+    "canonical": "/events-1/an-evening-with-yaakov-zimmerman",
+    "ogTitle": "An Evening with Yaakov Zimmerman",
+    "ogDescription": "Stories from the front lines to Shiloh — with a wine tasting featuring wines from Yaakov Zimmerman’s Shiloh Winery, plus conversation and Q&A.",
+    "ogImage": "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/910986868b43185b7361bf978401d4ebe6af7a30-zimmerman-evening.png",
+    "twitterCard": "summary_large_image",
+    "twitterTitle": "An Evening with Yaakov Zimmerman",
+    "twitterDescription": "Stories from the front lines to Shiloh — with a wine tasting featuring wines from Yaakov Zimmerman’s Shiloh Winery, plus conversation and Q&A.",
+    "capturedAt": "2026-06-01T17:00:00.000Z"
   }
 ]

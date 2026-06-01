@@ -284,16 +284,6 @@
   line-height: 1.72;
 }
 
-.splitPanel :global(a) {
-  border-radius: 8px;
-  border: 1px solid #c8d2de;
-  background: #eef2f6;
-}
-
-.splitPanel :global(a:hover) {
-  background: #e6edf4;
-}
-
 .quickLinksCluster :global(a) {
   border-radius: 8px;
   border: 1px solid #ccd4dd;

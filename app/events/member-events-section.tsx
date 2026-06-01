@@ -29,6 +29,9 @@ type MemberEventItem = {
 
 export function MemberEventsSection() {
   const [loading, setLoading] = useState(true);
+  // Members-only area. Visitors (401) and signed-in non-members (403) shouldn't
+  // see this section at all, so we keep it hidden until we confirm access.
+  const [visible, setVisible] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [items, setItems] = useState<MemberEventItem[]>([]);
@@ -40,20 +43,29 @@ export function MemberEventsSection() {
       error?: string;
       items?: MemberEventItem[];
     };
+    if (response.status === 401 || response.status === 403) {
+      return { items: [] as MemberEventItem[], error: "", forbidden: true };
+    }
     if (!response.ok) {
       return {
         items: [] as MemberEventItem[],
         error: payload.error || "Unable to load member events.",
+        forbidden: false,
       };
     }
     return {
       items: payload.items ?? [],
       error: "",
+      forbidden: false,
     };
   }
 
   async function loadMemberEvents() {
     const result = await fetchMemberEventsData();
+    if (result.forbidden) {
+      setVisible(false);
+      return;
+    }
     if (result.error) {
       setError(result.error);
       return;
@@ -66,10 +78,15 @@ export function MemberEventsSection() {
     void (async () => {
       const result = await fetchMemberEventsData();
       if (cancelled) return;
-      if (result.error) {
-        setError(result.error);
+      if (result.forbidden) {
+        setVisible(false);
       } else {
-        setItems(result.items);
+        setVisible(true);
+        if (result.error) {
+          setError(result.error);
+        } else {
+          setItems(result.items);
+        }
       }
       setLoading(false);
     })().catch(() => {
@@ -118,6 +135,12 @@ export function MemberEventsSection() {
 
   const hasUpcoming = useMemo(() => items.some((item) => item.status === "published"), [items]);
 
+  // Stay out of the page for visitors and non-members — render nothing until we
+  // confirm the viewer has access (avoids a flash of the section then removal).
+  if (loading || !visible) {
+    return null;
+  }
+
   return (
     <section className="member-events" aria-labelledby="member-events-heading">
       <header className="member-events__header">
@@ -135,11 +158,10 @@ export function MemberEventsSection() {
         </div>
       </header>
 
-      {loading ? <p className="member-events__empty">Loading member events...</p> : null}
       {error ? <p className="member-events__error">{error}</p> : null}
       {notice ? <p className="member-events__notice">{notice}</p> : null}
 
-      {!loading && !hasUpcoming ? (
+      {!hasUpcoming ? (
         <p className="member-events__empty">No member events published yet.</p>
       ) : null}
 

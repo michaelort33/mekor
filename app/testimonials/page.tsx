@@ -11,8 +11,8 @@ import styles from "./page.module.css";
 const PATH = "/testimonials" as const;
 
 const TESTIMONIAL_IMAGES = {
-  hero: "/images/testimonials/hero.jpg",
-  banner: "/images/testimonials/banner.jpg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8f6095dacde5336ede21eca03b236b3baee040f1-hero.jpg",
+  banner: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/606d00884c50bd0bf7c802b228aa2a0be6372063-banner.jpg",
 } as const;
 
 const TESTIMONIALS = [

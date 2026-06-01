@@ -11,8 +11,8 @@ import styles from "./page.module.css";
 const PATH = "/mekorcouples" as const;
 
 const COUPLES_IMAGES = {
-  hero: "/images/mekor-couples/hero.jpg",
-  banner: "/images/mekor-couples/banner.svg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/6d7033f5d596ba044ad4159a267ea1248c97bd48-hero.jpg",
+  banner: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/e41308710e5aa85ee3e1efe3475cd2f0415fb2c0-banner.svg",
 } as const;
 
 const MARRIAGES = [

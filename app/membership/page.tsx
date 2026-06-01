@@ -15,13 +15,13 @@ const MEMBERSHIP_FORM_URL = "/membership/apply";
 
 const MEMBERSHIP_IMAGES = {
   hero:
-    "https://static.wixstatic.com/media/11062b_6ef3ee78b5784e3586f8a9366c89f5ee~mv2.jpeg",
+    "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/006a4828aa5979b285c868bad4007638a92662e1-11062b_6ef3ee78b5784e3586f8a9366c89f5ee-mv2.jpeg",
   community:
-    "https://static.wixstatic.com/media/92f487_1b9e6a717396499c912c95ed541884b4~mv2.jpg",
+    "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/a52c76f4e31a3d50a174447141becbdb4721aa85-92f487_1b9e6a717396499c912c95ed541884b4-mv2.jpg",
   benefits:
-    "https://static.wixstatic.com/media/92f487_e06bca9eef7844c4b8dbaef89fa60417~mv2.jpeg",
+    "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8ddca325da346dbcab563b9d7d151a4acdadd4e0-92f487_e06bca9eef7844c4b8dbaef89fa60417-mv2.jpeg",
   join:
-    "https://static.wixstatic.com/media/92f487_1b9e6a717396499c912c95ed541884b4~mv2.jpg",
+    "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/a52c76f4e31a3d50a174447141becbdb4721aa85-92f487_1b9e6a717396499c912c95ed541884b4-mv2.jpg",
 } as const;
 
 const MEMBERSHIP_RATE_ROWS = [
@@ -31,36 +31,39 @@ const MEMBERSHIP_RATE_ROWS = [
 ] as const;
 
 const AUXILIARY_MEMBERSHIP_RATES = [
-  ["Family / Couple", "$900"],
-  ["Single Adult", "$450"],
-  ["Single Student", "$225"],
+  ["Family / Couple", "$1,000"],
+  ["Single Adult", "$500"],
+  ["Single Student", "$250"],
 ] as const;
 
+// Verbatim from the old mekorhabracha.org/membership page — do not paraphrase.
 const COMMUNITY_BENEFITS = [
-  "A warm, inviting community that welcomes people of all ages and levels of observance.",
-  "Shabbat, holiday, and weekday services for you and your visiting family, in a beautiful, handicapped accessible space in the heart of Center City.",
-  "Shabbat and Yom Tov Kiddushim.",
-  "Community Shabbat and Yom Tov meals.",
-  "Special programming and holiday festivities for both children and adults.",
-  "Torah study and classes at all levels, from beginner to advanced.",
-  "Halachic, spiritual, and life guidance.",
-  "A plethora of Kosher eateries under responsible supervision.",
-  "A fully functioning Eruv that covers all of Center City and adjoining neighborhoods.",
+  "A warm, inviting community that welcomes people of all ages & levels of observance",
+  "Shabbat, holiday, and weekday services, for you and your visiting family, in a beautiful, handicapped accessible space in the heart of Center City",
+  "Kiddushim every Shabbat & Yom Tov",
+  "Community Shabbat & Yom Tov meals",
+  "Special programming & holiday festivities for both children & adults",
+  "Torah study and special classes at all levels, from beginner to advanced",
+  "Halachic, spiritual, and life guidance",
+  "A plethora of Kosher eateries under responsible supervision",
+  "A fully functioning Eruv that covers all of Center City and adjoining neighborhoods",
   "And the countless other ways Mekor Habracha enriches Jewish life in Center City and beyond!",
 ] as const;
 
+// Verbatim from the old mekorhabracha.org/membership page — do not paraphrase.
 const MEMBER_BENEFITS = [
-  "Free High Holiday seats and discounted guest rates.",
-  "Meaningful Jewish-oriented children's programming.",
-  "Community-wide announcements of life cycle events.",
-  "A warm, caring community to celebrate your joyful occasions and support you during difficult times.",
-  "Mekor's meal train to help during those events.",
-  "For life cycle ceremonies and celebrations, use of shul at no charge, conditions apply.",
-  "Discounts on Kiddush sponsorships and private event rentals.",
-  "Discounts on certain special programs and meals.",
-  "Invitation to Annual Mekor Habracha Meeting.",
-  "Classes to assist potential converts become productive members of the Jewish community.",
-  "And much, much more.",
+  "Free High Holiday seats & discounted guest rates",
+  "Meaningful, Jewish-oriented Children's Program",
+  "Community-wide announcements of life cycle events",
+  "A warm, caring community to celebrate your joyful occasions, such as graduations, weddings & births, and support you during difficult times, such as illness, loss of loved ones, & commemoration of yahrtzeits",
+  "Mekor's meal train to help during those events",
+  "For life cycle ceremonies & celebrations (e.g., bris; baby naming), use of shul at no charge (conditions apply)",
+  "Discounts on Kiddush sponsorships ($295 for members / $360 for non-members)",
+  "Discounts on shul rentals for private events",
+  "Discounts on certain special programs & meals",
+  "Invitation to Annual Mekor Habracha Meeting",
+  "Classes to assist potential converts become productive members of the Jewish community",
+  "And much, much more!",
 ] as const;
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -126,48 +129,6 @@ export default async function MembershipPage() {
             <p className={styles.asideNote}>
               Auxiliary Membership rates are available for those living outside Center City Philadelphia. <Link href="/auxiliary-membership">Please click here for info</Link>.
             </p>
-          </aside>
-        </div>
-      </SectionCard>
-
-      <SectionCard className={styles.auxiliaryCard}>
-        <div className={styles.auxiliaryGrid}>
-          <div className={styles.auxiliaryCopy}>
-            <p className={styles.sectionEyebrow}>Outside Center City?</p>
-            <h2 className={styles.panelTitle}>Auxiliary membership is a real join option.</h2>
-            <p className={styles.leadText}>
-              If you live outside Center City Philadelphia, auxiliary membership may be the right fit. It is intended
-              for alumni and others outside the Philadelphia region who want to stay connected to Mekor in a meaningful
-              way.
-            </p>
-            <p className={styles.bodyText}>
-              This should not feel like a hidden alternative. Review the auxiliary membership details, rates, and
-              request form on the dedicated page.
-            </p>
-            <div className={styles.actionRow}>
-              <Link href="/auxiliary-membership" className={styles.actionButton}>
-                View auxiliary membership
-              </Link>
-              <a
-                href="mailto:admin@mekorhabracha.org?subject=Auxiliary%20Membership"
-                className={styles.actionButtonSecondary}
-              >
-                Email about auxiliary membership
-              </a>
-            </div>
-          </div>
-
-          <aside className={styles.auxiliaryAside}>
-            <p className={styles.sectionEyebrow}>Auxiliary rates</p>
-            <div className={styles.auxiliaryRateGrid}>
-              {AUXILIARY_MEMBERSHIP_RATES.map(([label, amount]) => (
-                <article className={styles.auxiliaryRateCard} key={label}>
-                  <p className={styles.rateTitle}>{label}</p>
-                  <p className={styles.rateAmount}>{amount}</p>
-                </article>
-              ))}
-            </div>
-            <p className={styles.asideNote}>Auxiliary membership does not include High Holiday seats.</p>
           </aside>
         </div>
       </SectionCard>
@@ -296,6 +257,46 @@ export default async function MembershipPage() {
               </p>
             </div>
           </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard className={styles.auxiliaryCard}>
+        <div className={styles.auxiliaryGrid}>
+          <div className={styles.auxiliaryCopy}>
+            <p className={styles.sectionEyebrow}>Outside Center City?</p>
+            <h2 className={styles.panelTitle}>Auxiliary Membership</h2>
+            <p className={styles.leadText}>
+              Auxiliary Membership rates are available for those living outside Center City Philadelphia.
+            </p>
+            <p className={styles.bodyText}>
+              It is intended for alumni and others outside the Philadelphia region who want to stay connected to Mekor.
+              See the full details, rates, and request form on the dedicated page.
+            </p>
+            <div className={styles.actionRow}>
+              <Link href="/auxiliary-membership" className={styles.actionButton}>
+                View auxiliary membership
+              </Link>
+              <a
+                href="mailto:admin@mekorhabracha.org?subject=Auxiliary%20Membership"
+                className={styles.actionButtonSecondary}
+              >
+                Email about auxiliary membership
+              </a>
+            </div>
+          </div>
+
+          <aside className={styles.auxiliaryAside}>
+            <p className={styles.sectionEyebrow}>Auxiliary rates</p>
+            <div className={styles.auxiliaryRateGrid}>
+              {AUXILIARY_MEMBERSHIP_RATES.map(([label, amount]) => (
+                <article className={styles.auxiliaryRateCard} key={label}>
+                  <p className={styles.rateTitle}>{label}</p>
+                  <p className={styles.rateAmount}>{amount}</p>
+                </article>
+              ))}
+            </div>
+            <p className={styles.asideNote}>Auxiliary membership does not include High Holiday seats.</p>
+          </aside>
         </div>
       </SectionCard>
 

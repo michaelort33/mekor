@@ -27,7 +27,7 @@ type MarketingFooterProps = {
 const DEFAULT_FOOTER_CTAS: CtaItem[] = [
   {
     label: "Latest Newsletters",
-    href: "https://us2.campaign-archive.com/home/?u=f9fe87a16c42c24704c099073&id=94f3350887",
+    href: "/newsletters",
     description: "Read the weekly Mekor archive.",
   },
   {

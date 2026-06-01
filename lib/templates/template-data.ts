@@ -8,6 +8,7 @@ import {
   loadNativeContentIndex,
   type NativeDocumentType,
 } from "@/lib/native-content/content-loader";
+import { toBlobUrl } from "@/lib/assets/blob-rewrite";
 import { resolveKosherCertificateLink } from "@/lib/kosher/certificates";
 import type { PageDocument } from "@/lib/mirror/types";
 
@@ -323,7 +324,7 @@ function wixMediaUrlFromUri(uri: string) {
     return "";
   }
 
-  return `https://static.wixstatic.com/media/${encodeURI(uri)}`;
+  return toBlobUrl(`https://static.wixstatic.com/media/${encodeURI(uri)}`);
 }
 
 function isInternalUrl(value: string) {

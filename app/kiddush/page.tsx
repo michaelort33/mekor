@@ -13,8 +13,8 @@ const PATH = "/kiddush" as const;
 const PAYPAL_SPONSOR_URL = "https://www.paypal.com/ncp/payment/C5ZNZELMHX2A4";
 
 const KIDDUSH_IMAGES = {
-  hero: "/images/kiddush/hero.jpeg",
-  community: "/images/kiddush/community.jpg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/90e3feecd6e165adbd59c0523a4f1c72657f9b6e-hero.jpeg",
+  community: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/edd73d057d7ebf02932f1b4e196a543067a018ea-community.jpg",
 } as const;
 
 const SPONSOR_OPTIONS = [

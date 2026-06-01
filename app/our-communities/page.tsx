@@ -11,8 +11,8 @@ import styles from "./page.module.css";
 const PATH = "/our-communities" as const;
 
 const COMMUNITY_IMAGES = {
-  hero: "/images/our-communities/hero.jpg",
-  banner: "/images/our-communities/banner.jpg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/b6fdfae4e0d6bdd4d23ced2cf699f3d331cf3fa3-hero.jpg",
+  banner: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/63cd7b94969eaa298a70332422fdb794df814314-banner.jpg",
 } as const;
 
 export const dynamic = "force-static";

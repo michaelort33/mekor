@@ -1073,5 +1073,10 @@
     "path": "/visit-us",
     "type": "page",
     "file": "documents/page/visit-us--5f9e8413a860.json"
+  },
+  {
+    "path": "/events-1/an-evening-with-yaakov-zimmerman",
+    "type": "event",
+    "file": "documents/event/events-1__an-evening-with-yaakov-zimmerman--a17e2026zim.json"
   }
 ]

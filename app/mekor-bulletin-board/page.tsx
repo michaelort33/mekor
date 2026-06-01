@@ -17,8 +17,8 @@ type BulletinCard = {
 };
 
 const BULLETIN_IMAGES = {
-  hero: "/images/bulletin-board/hero.jpg",
-  banner: "/images/bulletin-board/banner.jpg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/cd923011bc83f65310ae6f95f70089297ac15123-hero.jpg",
+  banner: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/6232f3d6a49758d6fe2d88551b5e72e6b5861a20-banner.jpg",
 } as const;
 
 const ERUV_DONATION_LINK =

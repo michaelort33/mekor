@@ -11,9 +11,9 @@ const PATH = "/philly-jewish-community" as const;
 const ERUV_MAP_EMBED = "https://www.google.com/maps/d/embed?mid=1BYICpqwoJO1Ih4fOUKfTwm-gzeaCkBQG&ehbc=2E312F";
 
 const COMMUNITY_IMAGES = {
-  hero: "/images/community/hero.jpg",
-  eruv: "/images/community/eruv.jpeg",
-  mikvah: "/images/community/mikvah.jpeg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/f45232d3ec413a7ff32e7e78e4fc253ea6644a78-hero.jpg",
+  eruv: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/41138b8b7b55082f177266447913d1b86b776be1-eruv.jpeg",
+  mikvah: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/3756d0a298aac6431bc117d883a74b4776a8e84e-mikvah.jpeg",
 } as const;
 
 export const dynamic = "force-static";

@@ -19,7 +19,6 @@
 .heroImage,
 .featureImage,
 .daveningImage,
-.upcomingImage,
 .rabbiImage,
 .footerBannerImage {
   object-fit: cover;
@@ -28,7 +27,7 @@
 .heroOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(32, 38, 54, 0.3) 0%, rgba(23, 28, 41, 0.5) 100%);
+  background: linear-gradient(180deg, rgba(26, 48, 78, 0.16) 0%, rgba(20, 38, 64, 0.34) 100%);
 }
 
 .heroInner {
@@ -111,7 +110,7 @@
 }
 
 .aboutSection {
-  background: #43475d;
+  background: #2f6ea8;
   padding: 68px 0;
 }
 
@@ -135,7 +134,6 @@
 .aboutCopy p,
 .featureCopy p,
 .daveningCopy p,
-.upcomingCopy p,
 .contactInfo p,
 .footerContact p {
   margin: 0 0 16px;
@@ -145,7 +143,16 @@
 }
 
 .aboutCopy a {
-  color: inherit;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition: opacity 120ms ease;
+}
+
+.aboutCopy a:hover {
+  opacity: 0.82;
 }
 
 .aboutButton,
@@ -248,7 +255,6 @@
   margin-bottom: 2px;
 }
 
-.upcomingActions a,
 .rabbiLinks a,
 .contactInfo a,
 .socialLinks a {
@@ -259,7 +265,6 @@
 
 .featureVisual,
 .daveningVisual,
-.upcomingImageWrap,
 .rabbiImageWrap {
   position: relative;
   min-height: 320px;
@@ -356,34 +361,128 @@
   margin-bottom: 26px;
 }
 
-.upcomingCard {
+.eventsList {
   display: grid;
-  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  justify-items: center;
+  gap: 22px;
+}
+
+.eventRows {
+  width: 100%;
+  max-width: 720px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   border: 1px solid #d9dde8;
+  border-radius: 16px;
   background: #fff;
-  min-height: 320px;
-  align-items: stretch;
+  overflow: hidden;
 }
 
-.upcomingCopy {
+.eventRow {
   display: grid;
-  align-content: start;
-  gap: 12px;
-  padding: 28px 30px;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  padding: 18px 22px;
 }
 
-.upcomingTitle {
+.eventRow + .eventRow {
+  border-top: 1px solid #e7eaf1;
+}
+
+.eventDate {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: #eef2f8;
+  color: #2b5a81;
+  line-height: 1;
+}
+
+.eventMonth {
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eventDay {
+  margin-top: 4px;
+  font-family: avenir-lt-w01_85-heavy1475544, Arial, sans-serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+}
+
+.eventDateText {
+  padding: 0 4px;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.eventInfo {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.eventName {
   color: #2b5a81;
   font-family: avenir-lt-w01_85-heavy1475544, Arial, sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  line-height: 1.25;
   text-decoration: none;
 }
 
-.upcomingActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px 18px;
-  margin-top: 6px;
+.eventName:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.eventMeta {
+  margin: 0;
+  color: #5b6072;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.eventsEmpty {
+  margin: 0;
+  max-width: 38rem;
+  color: #5b6072;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.eventsMore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 26px;
+  border-radius: 10px;
+  background: #2b5a81;
+  color: #fff;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 120ms ease;
+}
+
+.eventsMore:hover {
+  background: #214766;
 }
 
 .rabbisGrid {
@@ -417,134 +516,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px 16px;
-}
-
-.bookSection {
-  padding: 0 0 64px;
-  background: #525672;
-}
-
-.bookSection .container {
-  display: grid;
-  justify-items: center;
-  gap: 28px;
-}
-
-.bookSectionHeader {
-  display: grid;
-  justify-items: center;
-  gap: 14px;
-  text-align: center;
-  color: #fff;
-}
-
-.bookSectionTitle {
-  margin: 0;
-  font-family: var(--font-body), "Avenir Next", Arial, sans-serif;
-  font-size: clamp(2rem, 4vw, 3.25rem);
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  line-height: 1.25;
-  text-transform: uppercase;
-}
-
-.bookSectionDivider {
-  width: 28px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.88);
-}
-
-.bookSectionIntro {
-  margin: 0;
-  max-width: 46rem;
-  color: rgba(255, 255, 255, 0.95);
-  font-family: helvetica-w01-light, Arial, sans-serif;
-  font-size: 1.125rem;
-  line-height: 1.8;
-}
-
-.bookGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(280px, 348px));
-  gap: 30px;
-  justify-content: center;
-}
-
-.bookItem {
-  display: grid;
-  justify-items: center;
-  align-content: start;
-  gap: 14px;
-  min-height: 510px;
-  padding: 34px 28px 30px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 22px;
-  background: #2f2f2f;
-  color: #fff;
-  text-align: center;
-}
-
-.bookCoverWrap {
-  display: grid;
-  place-items: center;
-  min-height: 256px;
-}
-
-.bookCover {
-  width: 165px;
-  height: 240px;
-  object-fit: cover;
-}
-
-.bookAuthor {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.9);
-  font-family: helvetica-w01-light, Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 1.2;
-}
-
-.bookItemTitle {
-  margin: 0;
-  color: #fff;
-  font-family: avenir-lt-w01_85-heavy1475544, Arial, sans-serif;
-  font-size: clamp(1.5rem, 2vw, 1.9rem);
-  line-height: 1.2;
-}
-
-.bookItemDescription {
-  margin: 0;
-  max-width: 15.5rem;
-  color: rgba(255, 255, 255, 0.88);
-  font-family: helvetica-w01-light, Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.bookButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 122px;
-  min-height: 40px;
-  margin-top: auto;
-  padding: 0 20px;
-  border: 1px solid #d7d7d7;
-  border-radius: 10px;
-  background: #fff;
-  color: #2b5a81;
-  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition:
-    background-color 120ms ease,
-    color 120ms ease;
-}
-
-.bookButton:hover {
-  background: #eef2f8;
-  color: #214766;
 }
 
 .contactGrid {
@@ -721,7 +692,6 @@
 @media (max-width: 960px) {
   .aboutGrid,
   .featureGrid,
-  .upcomingCard,
   .rabbisGrid,
   .contactGrid,
   .footerInner {
@@ -732,10 +702,6 @@
   .daveningCard,
   .rabbiCard {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .bookGrid {
-    grid-template-columns: minmax(280px, 348px);
   }
 
   .contactGrid {
@@ -765,7 +731,6 @@
 
   .featureVisual,
   .daveningVisual,
-  .upcomingImageWrap,
   .rabbiImageWrap {
     min-height: clamp(230px, 52vw, 340px);
   }
@@ -798,7 +763,6 @@
   .newsletterSection,
   .eventsSection,
   .rabbisSection,
-  .bookSection,
   .contactSection,
   .footer {
     padding-top: 36px;
@@ -811,28 +775,14 @@
   .footerNewsletter,
   .featureCopy,
   .daveningCopy,
-  .upcomingCopy,
-  .rabbiBody,
-  .bookItem {
+  .rabbiBody {
     padding-left: 20px;
     padding-right: 20px;
   }
 
-  .bookSectionTitle {
-    font-size: clamp(1.7rem, 8vw, 2.35rem);
-    letter-spacing: 0.08em;
-  }
-
-  .bookSectionIntro {
-    font-size: 1rem;
-    line-height: 1.65;
-  }
-
-  .bookItem {
-    min-height: 0;
-    gap: 12px;
-    padding-top: 28px;
-    padding-bottom: 26px;
+  .eventRow {
+    gap: 14px;
+    padding: 14px 16px;
   }
 
   .featureCopy,

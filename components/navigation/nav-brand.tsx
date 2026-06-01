@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 const NAV_LOGO_SRC =
-  "/images/branding/mekor-wordmark.jpg";
+  "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8d56cce33726c33d42709208275014f132a7859d-mekor-wordmark.png";
 
 export function NavBrand() {
   return (
@@ -16,7 +16,10 @@ export function NavBrand() {
         alt="Mekor Habracha"
         width={291}
         height={60}
-        className="h-auto w-[12rem] sm:w-[13.5rem]"
+        // Sized via inline style: this component's Tailwind width utilities don't
+        // get compiled, and the preflight `img { max-width: 100% }` collapses the
+        // logo inside the shrink-to-fit pill. maxWidth:none lets the width apply.
+        style={{ width: "clamp(11rem, 15vw, 14rem)", height: "auto", maxWidth: "none" }}
         priority
       />
     </Link>

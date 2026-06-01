@@ -1,6 +1,7 @@
 import { load, type Cheerio, type CheerioAPI } from "cheerio";
 import type { AnyNode } from "domhandler";
 
+import { rewriteHtmlAssets } from "@/lib/assets/blob-rewrite";
 import { sanitizeMirrorHtml } from "@/lib/mirror/html-security";
 import { KOSHER_NEIGHBORHOOD_PATHS } from "@/lib/mirror/kosher-map";
 import { normalizePath } from "@/lib/mirror/url";
@@ -537,5 +538,5 @@ export function prepareMirrorDocumentHtml(rawHtml: string, path: string) {
   applyPathSpecificFixes($, root, normalizePath(path));
   optimizeMediaLoading($, root);
 
-  return root.html() ?? "";
+  return rewriteHtmlAssets(root.html() ?? "");
 }

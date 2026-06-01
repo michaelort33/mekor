@@ -11,14 +11,14 @@ import styles from "./page.module.css";
 const PATH = "/our-leadership" as const;
 
 const LEADERSHIP_IMAGES = {
-  hero: "/images/leadership/hero.jpg",
-  bruce: "/images/leadership/bruce.jpeg",
-  ellen: "/images/leadership/ellen.png",
-  yoella: "/images/leadership/yoella.jpeg",
-  chana: "/images/leadership/chana.jpeg",
-  ethan: "/images/leadership/ethan.jpg",
-  jonathan: "/images/leadership/jonathan.jpeg",
-  david: "/images/leadership/david.jpeg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/540088ef6e80821eeeb9f7787159a92c0570653f-hero.jpg",
+  bruce: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/4c91174ef990388fbd7f9a873d07d9b42cc3eb94-bruce.jpeg",
+  ellen: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/169bee584bdc54e88cde0615d754d301609cf353-ellen.png",
+  yoella: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/36f31a337071ad37dbc2cb66d0bbd20cfef7927e-yoella.jpeg",
+  chana: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/d68db1bef37aed4b8c523a53b74f5dfd2075e685-chana.jpeg",
+  ethan: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/782dc7a074ec83df56bb82e6e6deeddc85292b6e-ethan.jpg",
+  jonathan: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/e83d1b519b8a11aa309835877898581ded6461cd-jonathan.jpeg",
+  david: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8f791777f6d2e5a45a4e6df36c32a70452afbcc3-david.jpeg",
 } as const;
 
 const LEADERSHIP_MEMBERS = [

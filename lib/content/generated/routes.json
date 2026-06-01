@@ -707,6 +707,10 @@
     {
       "path": "/visit-us",
       "sourceUrl": "https://www.mekorhabracha.org/visit-us"
+    },
+    {
+      "path": "/events-1/an-evening-with-yaakov-zimmerman",
+      "sourceUrl": "https://www.mekorhabracha.org/events-1/an-evening-with-yaakov-zimmerman"
     }
   ],
   "reachable": [

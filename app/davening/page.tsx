@@ -16,7 +16,7 @@ const MYZMANIM_WIDGET_EMBED_HTML =
 const MYZMANIM_WIDGET_URL = process.env.MYZMANIM_WIDGET_URL || process.env.NEXT_PUBLIC_MYZMANIM_WIDGET_URL || "";
 
 const DAVENING_IMAGES = {
-  hero: "/images/davening/hero.jpg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/b6fdfae4e0d6bdd4d23ced2cf699f3d331cf3fa3-hero.jpg",
 } as const;
 
 type ScheduleEntry = {

@@ -12,9 +12,9 @@ import styles from "./page.module.css";
 const PATH = "/donations" as const;
 
 const DONATION_IMAGES = {
-  hero: "/images/donations/hero.jpg",
-  support: "/images/donations/support.jpg",
-  dedication: "/images/donations/dedication.jpg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/d43b02c35fb655106f1526b072080f5d21050fb3-hero.jpg",
+  support: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/72e60b1c7c9d6e35cc4fdea7487556aaf895f0a9-support.jpg",
+  dedication: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/b6ed0ba040e93de5259b6bdc042d123950adc71e-dedication.jpg",
 } as const;
 
 const STRIPE_DONATION_URL = "https://donate.stripe.com/3cI6oz9ef0tU8qXdB35Ne00";

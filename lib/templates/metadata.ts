@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { toBlobUrl } from "@/lib/assets/blob-rewrite";
 import type { NativePageDocument } from "@/lib/native-content/content-loader";
 
 function normalizeBrandTitle(value: string | null | undefined) {
@@ -21,6 +22,8 @@ export function buildDocumentMetadata(document: NativePageDocument | null): Meta
     };
   }
 
+  const ogImage = document.ogImage ? toBlobUrl(document.ogImage) : "";
+
   return {
     title: normalizeBrandTitle(document.title),
     description: document.description,
@@ -30,7 +33,7 @@ export function buildDocumentMetadata(document: NativePageDocument | null): Meta
     openGraph: {
       title: normalizeBrandTitle(document.ogTitle),
       description: document.ogDescription,
-      images: document.ogImage ? [document.ogImage] : [],
+      images: ogImage ? [ogImage] : [],
       url: document.canonical,
       type: "website",
     },
@@ -39,7 +42,7 @@ export function buildDocumentMetadata(document: NativePageDocument | null): Meta
         (document.twitterCard as "summary" | "summary_large_image") || "summary_large_image",
       title: normalizeBrandTitle(document.twitterTitle),
       description: document.twitterDescription,
-      images: document.ogImage ? [document.ogImage] : [],
+      images: ogImage ? [ogImage] : [],
     },
   };
 }

@@ -14,12 +14,9 @@ import styles from "@/app/page.module.css";
 
 export const dynamic = "force-dynamic";
 
-const HERO_IMAGE = "https://static.wixstatic.com/media/11062b_8135b27108d04d2a97adc750a341fb79~mv2.jpeg";
-const DAVEING_IMAGE = "https://static.wixstatic.com/media/92f487_34e64b1fb2e94c56886578290ef2bcd0~mv2.jpeg";
-const FOOTER_BANNER = "https://static.wixstatic.com/media/92f487_22b1dca93b6045ad8ed3ce85337f5c74~mv2.jpg";
-const DEFAULT_EVENT_IMAGE = "https://static.wixstatic.com/media/92f487_518da3eb34cf4128806d9b17c5933881~mv2.jpg";
-const PESACH_WITHOUT_THE_PAIN_URL = "https://www.pesachwithoutthepain.com/";
-const BRINGING_ORDER_TO_THE_SEDER_URL = "https://www.pesachwithoutthepain.com/botts/";
+const HERO_IMAGE = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/c2c6235de9c6d719cd098e19d77b7f21c18899f1-11062b_8135b27108d04d2a97adc750a341fb79-mv2.jpeg";
+const DAVEING_IMAGE = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/b562092e8484e9d5c6e62671c670e606b2d338cc-92f487_34e64b1fb2e94c56886578290ef2bcd0-mv2.jpeg";
+const FOOTER_BANNER = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/0a9be858b1e298d3b7a1b327c4fc0225361917c6-92f487_22b1dca93b6045ad8ed3ce85337f5c74-mv2.jpg";
 const MAP_EMBED_SRC =
   "https://www.google.com/maps?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102&output=embed";
 
@@ -27,7 +24,7 @@ const RABBIS = [
   {
     name: "Rabbi Eliezer Hirsch",
     image:
-      "https://static.wixstatic.com/media/92f487_e03dc964305644a9b5eb3894502ed630~mv2.jpg/v1/crop/x_0,y_0,w_799,h_663/fill/w_799,h_662,al_c,q_85,enc_avif,quality_auto/92f487_d26f360d09cc45e4bebe89d9f14643d3~mv2 copy2 (Medium).jpg",
+      "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/ef834ae06e3c7cf8ff31c0d7f7ab16cf19592877-92f487_d26f360d09cc45e4bebe89d9f14643d3-mv2-copy2-Medium-.jpg",
     alt: "Rabbi Eliezer Hirsch",
     links: [
       { label: "Podcast", href: "https://rabbiehirsch.castos.com/" },
@@ -39,7 +36,7 @@ const RABBIS = [
   {
     name: "Rabbi Steven Gotlib",
     image:
-      "https://static.wixstatic.com/media/66bc7c_7ded87b518b94c619c3f89f470cb4a9d~mv2.jpg/v1/crop/x_0,y_0,w_763,h_632/fill/w_763,h_632,al_c,q_85,enc_avif,quality_auto/R Gotlib.jpg",
+      "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/34434149afbb96abbd5c8c3779b55dde432d98e9-R-Gotlib.jpg",
     alt: "Rabbi Steven Gotlib",
     links: [
       { label: "Facebook", href: "https://www.facebook.com/StevenJGotlib/" },
@@ -58,96 +55,86 @@ const SOCIAL_LINKS = [
   },
 ] as const;
 
-const PESACH_BOOKS = [
-  {
-    author: "Rabbi Eliezer Hirsch",
-    title: "Pesach Without the Pain",
-    description: "A practical guide to the laws and practices of Passover",
-    href: PESACH_WITHOUT_THE_PAIN_URL,
-    image:
-      "https://static.wixstatic.com/media/92f487_ef840eb47c0c4e2581677ab05dc5f9c9~mv2.png/v1/fill/w_330,h_480,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/pwop-ebook-cover_DuQZD75l.png",
-  },
-  {
-    author: "Rabbi Eliezer Hirsch",
-    title: "Bringing Order to the Seder",
-    description: "A Modern Guide to the Traditional Passover Haggadah",
-    href: BRINGING_ORDER_TO_THE_SEDER_URL,
-    image:
-      "https://static.wixstatic.com/media/92f487_d3f6b691d8f64994943822d1915b946c~mv2.jpg/v1/fill/w_330,h_480,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/botts-cover.jpg",
-  },
-] as const;
-
-function formatHomeEventDate(value: string | null, shortDate: string) {
-  if (!value) {
-    return shortDate;
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return shortDate;
-  }
-
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(date);
-}
-
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getNativeDocumentByPath("/");
   return buildDocumentMetadata(document);
 }
 
-function UpcomingEventCard({
-  upcomingEvent,
+const HOME_EVENTS_LIMIT = 5;
+
+function UpcomingEventsList({
+  events,
   loading = false,
 }: {
-  upcomingEvent: ManagedEvent | null;
+  events: ManagedEvent[];
   loading?: boolean;
 }) {
-  const href = upcomingEvent?.path ?? "/events";
-  const title = loading
-    ? "Loading upcoming events..."
-    : upcomingEvent?.title ?? "See what's next at Mekor";
-  const dateLabel = loading
-    ? "Fetching the latest event details"
-    : upcomingEvent
-      ? formatHomeEventDate(upcomingEvent.startAt, upcomingEvent.shortDate)
-      : "Check the events page for the latest posted dates";
-  const location = loading ? "Center City Philadelphia" : upcomingEvent?.location || "Center City Philadelphia";
+  if (loading) {
+    return (
+      <div className={styles.eventsList} aria-busy="true">
+        <p className={styles.eventsEmpty}>Loading upcoming events…</p>
+      </div>
+    );
+  }
+
+  if (events.length === 0) {
+    return (
+      <div className={styles.eventsList}>
+        <p className={styles.eventsEmpty}>
+          No upcoming events are posted right now — check the events page for the latest.
+        </p>
+        <Link href="/events" className={styles.eventsMore}>
+          View all events
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className={styles.upcomingCard} aria-busy={loading ? "true" : undefined}>
-      <div className={styles.upcomingImageWrap}>
-        <Image
-          src={upcomingEvent?.heroImage || DEFAULT_EVENT_IMAGE}
-          alt={upcomingEvent ? `${upcomingEvent.title} graphic` : "Upcoming event graphic"}
-          fill
-          sizes="(max-width: 900px) 100vw, 24rem"
-          className={styles.upcomingImage}
-        />
-      </div>
-      <div className={styles.upcomingCopy}>
-        <Link href={href} className={styles.upcomingTitle}>
-          {title}
-        </Link>
-        <p>{dateLabel}</p>
-        <p>{location}</p>
-        <div className={styles.upcomingActions}>
-          <Link href={href}>More info</Link>
-          <Link href={href}>{loading ? "Loading" : "RSVP"}</Link>
-        </div>
-      </div>
+    <div className={styles.eventsList}>
+      <ul className={styles.eventRows}>
+        {events.map((event) => {
+          const date = event.startAt ? new Date(event.startAt) : null;
+          const hasDate = date !== null && !Number.isNaN(date.getTime());
+          const meta = [event.timeLabel, event.location].map((value) => value?.trim()).filter(Boolean).join(" · ");
+
+          return (
+            <li key={event.path} className={styles.eventRow}>
+              <div className={styles.eventDate}>
+                {hasDate ? (
+                  <>
+                    <span className={styles.eventMonth}>
+                      {new Intl.DateTimeFormat("en-US", { month: "short" }).format(date)}
+                    </span>
+                    <span className={styles.eventDay}>
+                      {new Intl.DateTimeFormat("en-US", { day: "numeric" }).format(date)}
+                    </span>
+                  </>
+                ) : (
+                  <span className={styles.eventDateText}>{event.shortDate || "TBD"}</span>
+                )}
+              </div>
+              <div className={styles.eventInfo}>
+                <Link href={event.path} className={styles.eventName}>
+                  {event.title}
+                </Link>
+                {meta ? <p className={styles.eventMeta}>{meta}</p> : null}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <Link href="/events" className={styles.eventsMore}>
+        View all events
+      </Link>
     </div>
   );
 }
 
-async function HomeUpcomingEventCard() {
-  const upcomingManagedEvents = (await getManagedEvents()).filter((event) => !event.isPast);
-  const upcomingEvent = upcomingManagedEvents[0] ?? null;
+async function HomeUpcomingEvents() {
+  const upcoming = (await getManagedEvents()).filter((event) => !event.isPast).slice(0, HOME_EVENTS_LIMIT);
 
-  return <UpcomingEventCard upcomingEvent={upcomingEvent} />;
+  return <UpcomingEventsList events={upcoming} />;
 }
 
 export default function HomePage() {
@@ -251,14 +238,9 @@ export default function HomePage() {
               successClassName={styles.newsletterMessage}
               errorClassName={styles.newsletterError}
             />
-            <a
-              href="https://us2.campaign-archive.com/home/?u=f9fe87a16c42c24704c099073&id=94f3350887"
-              target="_blank"
-              rel="noreferrer noopener"
-              className={styles.newsletterArchive}
-            >
+            <Link href="/newsletters" className={styles.newsletterArchive}>
               Latest Newsletters
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -266,8 +248,8 @@ export default function HomePage() {
       <section className={styles.eventsSection}>
         <div className={styles.container}>
           <h2 className={styles.sectionTitle}>Don&apos;t miss our upcoming events:</h2>
-          <Suspense fallback={<UpcomingEventCard upcomingEvent={null} loading />}>
-            <HomeUpcomingEventCard />
+          <Suspense fallback={<UpcomingEventsList events={[]} loading />}>
+            <HomeUpcomingEvents />
           </Suspense>
         </div>
       </section>
@@ -297,34 +279,6 @@ export default function HomePage() {
                     )}
                   </div>
                 </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.bookSection}>
-        <div className={styles.container}>
-          <div className={styles.bookSectionHeader}>
-            <h2 className={styles.bookSectionTitle}>Rabbi Eliezer Hirsch - Pesach books</h2>
-            <div className={styles.bookSectionDivider} />
-            <p className={styles.bookSectionIntro}>
-              Explore both practical guides to Pesach from preparation to the Seder.
-            </p>
-          </div>
-
-          <div className={styles.bookGrid}>
-            {PESACH_BOOKS.map((book) => (
-              <article key={book.title} className={styles.bookItem}>
-                <div className={styles.bookCoverWrap}>
-                  <Image src={book.image} alt={book.title} width={165} height={240} className={styles.bookCover} />
-                </div>
-                <p className={styles.bookAuthor}>{book.author}</p>
-                <h3 className={styles.bookItemTitle}>{book.title}</h3>
-                <p className={styles.bookItemDescription}>{book.description}</p>
-                <a href={book.href} target="_blank" rel="noreferrer noopener" className={styles.bookButton}>
-                  Read Now
-                </a>
               </article>
             ))}
           </div>
@@ -414,14 +368,9 @@ export default function HomePage() {
                 successClassName={styles.footerMessage}
                 errorClassName={styles.footerError}
               />
-              <a
-                href="https://us2.campaign-archive.com/home/?u=f9fe87a16c42c24704c099073&id=94f3350887"
-                target="_blank"
-                rel="noreferrer noopener"
-                className={styles.footerArchive}
-              >
+              <Link href="/newsletters" className={styles.footerArchive}>
                 Latest Newsletters
-              </a>
+              </Link>
             </div>
           </div>
 

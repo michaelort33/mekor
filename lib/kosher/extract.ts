@@ -1,5 +1,6 @@
 import { load } from "cheerio";
 
+import { toBlobUrl } from "@/lib/assets/blob-rewrite";
 import { listDocumentsByType } from "@/lib/mirror/loaders";
 import type { PageDocument } from "@/lib/mirror/types";
 import {
@@ -403,13 +404,15 @@ function extractDetails(document: PageDocument) {
   const firstInlineImageNode = scope.find("img[src], img[srcset]").first();
   const firstInlineFromSrcset = parseBestSrcsetUrl(firstInlineImageNode.attr("srcset") ?? "");
   const firstInlineFromSrc = firstInlineImageNode.attr("src") ?? "";
-  const heroImage = pickBestWixImageUrl([
-    heroImageFromUri,
-    heroImageFromSrcset,
-    heroImageFromSrc,
-    firstInlineFromSrcset,
-    firstInlineFromSrc,
-  ]);
+  const heroImage = toBlobUrl(
+    pickBestWixImageUrl([
+      heroImageFromUri,
+      heroImageFromSrcset,
+      heroImageFromSrc,
+      firstInlineFromSrcset,
+      firstInlineFromSrc,
+    ]),
+  );
 
   return {
     title,

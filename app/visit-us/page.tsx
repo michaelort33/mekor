@@ -12,11 +12,11 @@ import styles from "./page.module.css";
 const PATH = "/visit-us" as const;
 
 const VISIT_IMAGES = {
-  hero: "/images/visit-us/hero.jpg",
-  banner: "/images/visit-us/banner.jpg",
-  whatsappEvents: "/images/visit-us/whatsapp-events.png",
-  whatsappMeals: "/images/visit-us/whatsapp-meals.png",
-  whatsappGeneral: "/images/visit-us/whatsapp-general.png",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8f6095dacde5336ede21eca03b236b3baee040f1-hero.jpg",
+  banner: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/1542981618300378c703655bb10fbc519923d5e9-banner.jpg",
+  whatsappEvents: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/915aeb7071de260567891a7ece51652cc01437da-whatsapp-events.png",
+  whatsappMeals: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8467762674698ddbb735746a2586fc79330efe1a-whatsapp-meals.png",
+  whatsappGeneral: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/e9e5b6ede6ab71e08d23509ded949d4e09ef8938-whatsapp-general.png",
 } as const;
 
 const MAP_EMBED_SRC =

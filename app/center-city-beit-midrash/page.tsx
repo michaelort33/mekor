@@ -11,8 +11,8 @@ import styles from "./page.module.css";
 const PATH = "/center-city-beit-midrash" as const;
 
 const CCBM_IMAGES = {
-  hero: "/images/beit-midrash/hero.jpeg",
-  banner: "/images/beit-midrash/banner.jpg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/ad9d76b19c126bc8aa73e96ddce52cf25a40d9a4-hero.jpeg",
+  banner: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/c97981efef0b1c409230bd4f75216b9ce6e4fa47-banner.jpg",
 } as const;
 
 const SUMMER_CLASSES = [

@@ -12,8 +12,8 @@ import styles from "./page.module.css";
 const PATH = "/contact-us" as const;
 
 const CONTACT_IMAGES = {
-  hero: "/images/contact-us/hero.jpg",
-  banner: "/images/contact-us/banner.jpg",
+  hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8f6095dacde5336ede21eca03b236b3baee040f1-hero.jpg",
+  banner: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/a4573f5cb926ef40adf09e73ba4c864d8d090ad9-banner.jpg",
 } as const;
 
 export const dynamic = "force-static";
