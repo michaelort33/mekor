@@ -201,6 +201,84 @@
   background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
 }
 
+.supportSection {
+  padding: 48px 0 52px;
+  background: #fbfcff;
+}
+
+.supportPanel {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 36px 24px;
+  border: 1px solid #d9dde8;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(47, 66, 97, 0.07);
+}
+
+.supportEyebrow {
+  margin: 0;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #5b6072;
+}
+
+.supportTitle {
+  margin: 0;
+  font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  letter-spacing: -0.04em;
+  color: #2b5a81;
+  max-width: 38rem;
+}
+
+.supportBody {
+  margin: 0;
+  max-width: 42rem;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.68;
+  color: #3f4359;
+}
+
+.supportBody a {
+  color: #2b5a81;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.supportLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 24px;
+  margin-top: 4px;
+}
+
+.supportLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: #2b5a81;
+  color: #fff;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 120ms ease;
+}
+
+.supportLink:hover {
+  background: #214766;
+}
+
 .featureGrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -501,8 +579,26 @@
 .rabbiBody {
   display: grid;
   align-content: center;
-  gap: 18px;
+  gap: 14px;
   padding: 28px;
+}
+
+.rabbiRole {
+  margin: 0;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5b6072;
+}
+
+.rabbiBio {
+  margin: 0;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #3f4359;
 }
 
 .rabbiBody h3 {
@@ -760,6 +856,7 @@
 
   .aboutSection,
   .featureSection,
+  .supportSection,
   .newsletterSection,
   .eventsSection,
   .rabbisSection,
@@ -775,7 +872,8 @@
   .footerNewsletter,
   .featureCopy,
   .daveningCopy,
-  .rabbiBody {
+  .rabbiBody,
+  .supportPanel {
     padding-left: 20px;
     padding-right: 20px;
   }

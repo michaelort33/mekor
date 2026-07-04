@@ -41,7 +41,7 @@ export default async function CenterCityBeitMidrashPage() {
       <HeroSection
         eyebrow="Learning"
         title="The Center City Beit Midrash (CCBM)"
-        subtitle="Serious Torah learning in a warm, accessible community setting"
+        subtitle="Summer Classes at Mekor!"
         className={styles.heroSection}
         image={{
           src: CCBM_IMAGES.hero,
@@ -50,8 +50,8 @@ export default async function CenterCityBeitMidrashPage() {
           objectPosition: "50% 30%",
         }}
         description={[
-          "CCBM offers weekly classes, daily Amud Yomi, and ongoing opportunities to engage deeply with Jewish texts.",
-          "All levels are welcome. If this is your first class, contact us and we will help you get started.",
+          "Daily Amud Yomi Shiur - With Cereal!",
+          "Upcoming (CCBM) Events",
         ]}
         actions={[
           { label: "Email for Class Details", href: "mailto:admin@mekorhabracha.org?subject=CCBM%20Classes" },
@@ -70,14 +70,14 @@ export default async function CenterCityBeitMidrashPage() {
           loading="lazy"
         />
         <div className={styles.bannerBody}>
-          <p className={styles.bannerTitle}>Summer Classes at Mekor</p>
+          <p className={styles.bannerTitle}>Summer Classes at Mekor!</p>
           <p className={styles.bannerText}>
-            Summer classes at Mekor with room for discussion, growth, and meaningful engagement with Jewish learning.
+            *Contact Rabbi Gotlib for Zoom Info
           </p>
         </div>
       </SectionCard>
 
-      <SectionCard title="Class Schedule" className={styles.sectionCard}>
+      <SectionCard title="Summer Classes" className={styles.sectionCard}>
         <div className={styles.scheduleGrid}>
           {SUMMER_CLASSES.map((item) => (
             <article key={item.name} className={styles.scheduleCard}>
@@ -93,17 +93,18 @@ export default async function CenterCityBeitMidrashPage() {
         </p>
       </SectionCard>
 
-      <SectionCard title="Daily Amud Yomi (With Cereal)" className={styles.sectionCard}>
+      <SectionCard title="Daily Amud Yomi Shiur - With Cereal!" className={styles.sectionCard}>
         <ul className={styles.bulletList}>
           <li>Join us each weekday morning after Shacharis for a brief and engaging Amud Yomi shiur, led by Rabbi Gotlib.</li>
           <li>The class is under 20 minutes and open to all levels.</li>
           <li>Cold cereal breakfast is served during the shiur.</li>
-          <li>Sunday: follows 8:30 AM Shacharit.</li>
-          <li>Monday-Friday: begins 7:40 AM and ends 8:00 AM.</li>
+          <li>Sunday: 8:30 AM Shacharis, shiur follows Shacharis.</li>
+          <li>Monday - Friday: 6:45 / 6:55 AM Shacharis, shiur begins 7:40 AM and ends 8:00 AM.</li>
+          <li>Start your day with Torah, and a bowl of cereal!</li>
         </ul>
       </SectionCard>
 
-      <SectionCard title="Mission" className={styles.sectionCard}>
+      <SectionCard title="Mission Statement" className={styles.sectionCard}>
         <p className={styles.bodyText}>
           The Center City Beit Midrash is an inclusive, learning-centered organization committed to providing
           high-quality educational experiences for those seeking meaningful engagement with Jewish texts and traditions.

@@ -18,7 +18,7 @@ const TESTIMONIAL_IMAGES = {
 const TESTIMONIALS = [
   {
     quote:
-      "This donation to your discretionary fund is in honor of the publication of your insightful guide, Bringing Order to the Seder. Kol Hakavod, Rabbi Eliezer. Keep writing. Your work is excellent.",
+      "This donation to your discretionary fund is in honor of the publication of your insightful guide, Bringing Order to the Seder. Kol Hakavod, Rabbi Eliezer. Keep writing. Your work is excellent. [My son] speaks of you often. You are a wonderful teacher/mentor to him and a good friend to him and many others. Thank you for all you do for amcha.",
     by: "Family of alum",
   },
   {
@@ -31,7 +31,32 @@ const TESTIMONIALS = [
     by: "Members",
   },
   {
-    quote: "Mekor Habracha will always hold a special place in our hearts, and we will forever feel part of the family there.",
+    quote:
+      "My zayde is a congregant of Mekor Habracha. My grandfather played a big part in my wedding, and as a gift, I let him pick an organization of his choice to make a donation in memory of our family members. Your synagogue has clearly made such a positive impact on his life, and I thank you for that.",
+    by: "Family of member",
+  },
+  {
+    quote: "With admiration for Rabbi Hirsch for his leadership and dedication. May your community continue to thrive.",
+    by: "Visitor",
+  },
+  {
+    quote:
+      "We are sponsoring kiddush to thank the Mekor Habracha community for being a source of socializing, support, and spirituality for over 7 years. Thanks; we will miss you!",
+    by: "Members",
+  },
+  {
+    quote:
+      "Rabbi Hirsch, I want to thank you not only for delivering a warm and thoughtful benediction during our Gala, but to tell you that after hearing you, I will never think of the word revenge in the same way again. What you had to say was extremely empowering.",
+    by: "Jewish organization",
+  },
+  {
+    quote:
+      "With admiration for Rabbi Eliezer Hirsch whose tireless efforts, sincere dedication, and unique wisdom have transformed Center City and Mekor Habracha into a flourishing community. It is a true honor to be a member of Mekor Habracha.",
+    by: "Member",
+  },
+  {
+    quote:
+      "Mekor Habracha will always hold a special place in our hearts, and we will forever feel part of the family there. We are so appreciative of this pillar of the Center City Jewish community and all Rabbi Hirsch has done for us and people like us over the years.",
     by: "Alum",
   },
   {
@@ -39,7 +64,18 @@ const TESTIMONIALS = [
     by: "Visitor",
   },
   {
-    quote: "We are sponsoring kiddush to thank the Mekor Habracha community for being a source of socializing, support, and spirituality for over 7 years.",
+    quote:
+      "We are so blessed to have Mekor Habracha as our extended family in Philly. The Torah and inspiration you bring us, your love and dedication to our community and the way you are always there for us is incredible. We are so grateful for you.",
+    by: "Member",
+  },
+  {
+    quote:
+      "My husband and I were in Philly for the last Shabbos in July - a truly unplanned event, since we couldn't get home in time for Shabbos. We had the pleasure of davening at your wonderful shul! My son and daughter-in-law recently moved to Philly for graduate school. I am enclosing a donation to cover their membership. I hope they come regularly! Much hatzlacha always!",
+    by: "Family of member",
+  },
+  {
+    quote:
+      "In honor of Rabbi Eliezer Hirsch. The way you live your life every day speaks volumes. Your incredible love and concern for every human being, your humility, your perseverance, and your tenacity to do the right thing are constant reminders of what we can strive for.",
     by: "Member",
   },
   {
@@ -47,12 +83,33 @@ const TESTIMONIALS = [
     by: "Visitor",
   },
   {
-    quote: "Dear Rabbi Hirsch and Mekor Habracha, thank you so much for the books you gave me for my Bat Mitzvah. I love that you have created a community where I can go daven every Shabbat.",
+    quote:
+      "We are sponsoring kiddush in thanks to Rabbi Hirsch, Bruce, the Board and the Mekor Habracha community, with the message, We love you very much, and even though we are leaving Philly, Mekor will always be our shul.",
+    by: "Member",
+  },
+  {
+    quote:
+      "Dear Rabbi Hirsch and Mekor Habracha, Thank you so much for the Jewish books you gave me for my Bat Mitzvah... I love that you have created a community where I can go daven every Shabbat.",
     by: "Bat Mitzvah Girl",
   },
   {
     quote:
-      "Thank you so much for the amazing, vibrant shul and community you provided over my last 5+ years in Philly. I wanted to express my appreciation.",
+      "Thank you for saving my life, and thank G-d there are Rabbis like you in the world. This is not to mention that you built a thriving community out of absolutely nothing in Philly. I can't even imagine how many people's lives you have changed. Please keep on doing what you do, because you have the right perspective, character and empathy to be a real light for the Jewish people.",
+    by: "Alum",
+  },
+  {
+    quote:
+      "Dear Rabbi Hirsch, Thank you for honoring my father with a beautiful service. You have been a rock for my mother, and I'm in awe of all the good you do for the community you lead.",
+    by: "Family member",
+  },
+  {
+    quote:
+      "I'm sponsoring kiddush on the occasion of my upcoming aliyah to Israel and to thank the Mekor community for six wonderful years.",
+    by: "Member",
+  },
+  {
+    quote:
+      "Thank you so much for the amazing, vibrant shul and community you provided over my last 5+ years in Philly. ...I wanted to express my appreciation. Shana Tova and Gmar Chatima Tova.",
     by: "Former community member",
   },
 ] as const;
@@ -74,19 +131,16 @@ export default async function TestimonialsPage() {
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
-        eyebrow="Community Voices"
-        title="A Few of Mekor's Eclectic Testimonials"
-        subtitle="What members, alumni, and visitors share about life at Mekor"
+        eyebrow="testimonials"
+        title="testimonials"
+        subtitle="A Few of Mekor's Eclectic Testimonials"
         image={{
           src: TESTIMONIAL_IMAGES.hero,
           alt: "Mekor community gathering",
           objectFit: "cover",
           objectPosition: "50% 34%",
         }}
-        description={[
-          "These reflections are preserved from years of member notes and community correspondence.",
-          "They represent the warmth, seriousness, and openness that define our shul.",
-        ]}
+        description=""
         actions={[
           {
             label: "Pre-Passover Letter (PDF)",
@@ -108,7 +162,7 @@ export default async function TestimonialsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Testimonials" className={styles.testimonialsSection}>
+      <SectionCard title="A Few of Mekor's Eclectic Testimonials" className={styles.testimonialsSection}>
         <div className={styles.quoteGrid}>
           {TESTIMONIALS.map((entry, index) => (
             <article key={`${entry.by}-${index}`} className={styles.quoteCard}>
@@ -117,6 +171,13 @@ export default async function TestimonialsPage() {
             </article>
           ))}
         </div>
+      </SectionCard>
+
+      <SectionCard title="More from members" className={styles.connectSection}>
+        <p>
+          You can visit this page for a pre-Passover letter from a Mekor member whose primary residence is in Israel.
+          Click here for the inspiring words of one of our members about Mekor community month.
+        </p>
       </SectionCard>
 
       <SectionCard title="Connect With Mekor" className={styles.connectSection}>

@@ -33,9 +33,9 @@ export default async function ContactUsPage() {
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
-        eyebrow="Get in Touch"
-        title="Contact Us"
-        subtitle="We would love to hear from you"
+        eyebrow="contact us"
+        title="contact us"
+        subtitle="Contact US"
         className={styles.heroFlat}
         image={{
           src: CONTACT_IMAGES.hero,
@@ -43,9 +43,7 @@ export default async function ContactUsPage() {
           objectFit: "cover",
           objectPosition: "50% 33%",
         }}
-        description={[
-          "Reach out for membership questions, scheduling details, event inquiries, or general community support.",
-        ]}
+        description={["We'd love to hear from you!"]}
         actions={[
           { label: "Email mekorhabracha@gmail.com", href: "mailto:mekorhabracha@gmail.com" },
           { label: "Call (215) 525-4246", href: "tel:+12155254246" },
@@ -64,7 +62,7 @@ export default async function ContactUsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Contact Details" className={`${styles.flatSection} ${styles.detailsSection}`}>
+      <SectionCard title="Contact US" className={`${styles.flatSection} ${styles.detailsSection}`}>
         <div className={styles.detailGrid}>
           <article className={styles.detailCard}>
             <h3>Phone</h3>
@@ -87,7 +85,7 @@ export default async function ContactUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Send a Message" className={`${styles.flatSection} ${styles.messageSection}`}>
+      <SectionCard title="Contact US" className={`${styles.flatSection} ${styles.messageSection}`}>
         <ContactForm sourcePath={PATH} />
       </SectionCard>
 
@@ -138,14 +136,14 @@ export default async function ContactUsPage() {
       </SectionCard>
 
       <SectionCard
-        title="Mekor Community WhatsApp"
+        title="Mekor Community Whatsapp Group"
         description="Click the WhatsApp logo to join our Mekor Community group and stay up to date with everything happening in our shul and community."
         className={`${styles.flatSection} ${styles.whatsAppSection}`}
       >
         <CTACluster
           className={styles.whatsAppLinks}
           items={[
-            { label: "Join Mekor WhatsApp", href: "https://chat.whatsapp.com/INZrPssTZeHK5xrx5ghECF" },
+            { label: "Join Us", href: "https://chat.whatsapp.com/INZrPssTZeHK5xrx5ghECF" },
             { label: "Open in Google Maps", href: "https://maps.google.com/?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102" },
             { label: "Visit Us", href: "/visit-us" },
             { label: "Latest Newsletters", href: "https://us2.campaign-archive.com/home/?u=f9fe87a16c42c24704c099073&id=94f3350887" },

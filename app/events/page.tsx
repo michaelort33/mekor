@@ -49,6 +49,40 @@ export default async function EventsHubPage() {
         title="Events"
         emptyMessage="There are no events scheduled right now. Check back later."
       />
+
+      <Card className="events-hub__calendar-card">
+        <div className="events-hub__calendar-inner">
+          <h2>Our Calendar</h2>
+          <p>Take a look at our calendar below, or click the link below to add our Google Calendar to yours.</p>
+          <Button asChild variant="outline">
+            <a
+              href="https://calendar.google.com/calendar/u/0?cid=bWVrb3JoYWJyYWNoYUBnbWFpbC5jb20"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Add Our Calendar
+            </a>
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="events-hub__whatsapp-card">
+        <div className="events-hub__whatsapp-inner">
+          <h2>Don&apos;t miss our coming events:</h2>
+          <p>Mekor Community Whatsapp Group</p>
+          <p>Click the WhatsApp Logo to join our Daily Minyan Group to stay up to date on meeting times and confirmation of Minyan.</p>
+          <Button asChild variant="outline">
+            <a
+              href="https://chat.whatsapp.com/invite"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Join WhatsApp Group
+            </a>
+          </Button>
+        </div>
+      </Card>
+
       <RecurringEventsSection
         title="Recurring Community Events"
         description="Some gatherings happen on an ongoing monthly cadence even when the next exact date has not been posted yet. Keep these on your radar alongside the dated calendar above."

@@ -1558,6 +1558,41 @@ body.native-nav--mobile-open {
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
 }
 
+.events-hub__calendar-card,
+.events-hub__whatsapp-card {
+  margin-top: 4px;
+  background: rgba(255, 252, 246, 0.95);
+  border: 1px solid #d7c8b0;
+  border-radius: 14px;
+  padding: clamp(18px, 3vw, 32px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+}
+
+.events-hub__calendar-inner,
+.events-hub__whatsapp-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.events-hub__calendar-inner h2,
+.events-hub__whatsapp-inner h2 {
+  margin: 0;
+  color: #22384f;
+  font-family: var(--native-font-heading);
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+  letter-spacing: -0.015em;
+}
+
+.events-hub__calendar-inner p,
+.events-hub__whatsapp-inner p {
+  margin: 0;
+  color: #3d4a5b;
+  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  line-height: 1.55;
+}
+
 .events-hub__section-title {
   margin: 0 0 12px;
   color: #22384f;

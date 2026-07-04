@@ -143,7 +143,7 @@ export default async function MembershipPage() {
             <article className={styles.rateCard} key={label}>
               <p className={styles.rateTitle}>{label}</p>
               <p className={styles.rateAmount}>{amount}</p>
-              <p className={styles.rateTerm}>Until Rosh Hashana {hebrewYear.nextRoshHashanaHebrewYearLabel}</p>
+              <p className={styles.rateTerm}>Until Rosh Hashana {hebrewYear.currentHebrewYearLabel}</p>
               <Link href={MEMBERSHIP_FORM_URL} className={styles.inlineAction}>
                 Join now
               </Link>
@@ -221,8 +221,8 @@ export default async function MembershipPage() {
             <p className={styles.sectionEyebrow}>How to join or renew</p>
             <h2 className={styles.panelTitle}>How to Join or Renew</h2>
             <p className={styles.bodyText}>
-              Use our form or email us directly. Please tell us if you are renewing or joining for the first time and
-              include your preferred membership type and payment method such as Venmo, PayPal, or personal check.
+              Use this form OR Email mekorhabracha@gmail.com. Tell us if you&apos;re renewing or joining for the first time,
+              and please specify the type of membership and method of payment you will use (Venmo, Paypal, personal check, etc.).
             </p>
             <ul className={styles.checkList}>
               <li>Tell us whether you are joining for the first time or renewing.</li>

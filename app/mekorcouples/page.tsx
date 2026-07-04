@@ -27,8 +27,8 @@ const MARRIAGES = [
   "Rebecca Berliner & Ben Falk — Dec. 30, 2018",
   "Rebecca Somach & Shaul Kushinsky — Sept. 1, 2019",
   "Marla Benedek & Adam Mayer — Sept. 22, 2019",
-  "Yael Leiner & David Parvey — Aug. 5, 2020",
-  "Talia Berday-Sacks & Sam Major — Oct. 24, 2021",
+  "Yael Leiner & David Parvey — August 5, 2020",
+  "Talia Berday-Sacks & Sam Major — October 24, 2021",
   "Gwenn Barney & Jonathan Goldstein — Sept. 18, 2022",
   "Elana Perlow & Corey Freeman — May 29, 2023",
 ] as const;
@@ -50,7 +50,7 @@ export default async function MekorCouplesPage() {
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
-        eyebrow="Community Milestones"
+        eyebrow="Mekor Couples"
         title="Mekor Couples"
         subtitle="We Celebrate Our Mekor Couples!*"
         className={styles.heroSection}
@@ -61,7 +61,7 @@ export default async function MekorCouplesPage() {
           objectPosition: "50% 28%",
         }}
         description={[
-          "We celebrate our Mekor couples.",
+          "Love blooms, promises made. We celebrate the joy of Mekor couples' engagements!",
           "We wish them endless happiness and blessings as they prepare to build their lives together.",
         ]}
         actions={[
@@ -84,7 +84,7 @@ export default async function MekorCouplesPage() {
 
       <SectionCard title="Engagements" className={styles.sectionCard}>
         <p className={styles.bodyText}>
-          Love blooms, promises made. We celebrate the joy of Mekor couples&apos; engagements and wish them endless
+          Love blooms, promises made. We celebrate the joy of Mekor couples&apos; engagements! We wish them endless
           happiness and blessings as they prepare to build their lives together.
         </p>
       </SectionCard>
@@ -96,8 +96,8 @@ export default async function MekorCouplesPage() {
           ))}
         </ol>
         <p className={styles.footnote}>
-          A &quot;Mekor Couple&quot; is a married, or soon to be married, couple who initially met at Mekor or at a
-          Mekor community event.
+          *A &quot;Mekor Couple&quot; is a married (or soon to be married) couple who initially met at Mekor or at a
+          Mekor community event :)
         </p>
       </SectionCard>
 

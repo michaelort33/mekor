@@ -22,25 +22,25 @@ const STRIPE_DONATION_URL = "https://donate.stripe.com/3cI6oz9ef0tU8qXdB35Ne00";
 const ONLINE_METHODS = [
   {
     label: "Credit / ACH / Apple Pay",
-    detail: "Secure Stripe checkout",
+    detail: "Donations may be made online by Credit, ACH or Apple Pay",
     href: STRIPE_DONATION_URL,
     brand: "stripe" as const,
   },
   {
     label: "Venmo",
-    detail: "@Mekor-Habracha",
+    detail: "Venmo",
     href: "https://www.venmo.com/u/Mekor-Habracha",
     brand: "venmo" as const,
   },
   {
     label: "PayPal Giving Fund",
-    detail: "Tax-efficient PayPal channel",
+    detail: "PayPal Giving Fund",
     href: "https://www.paypal.com/donate/?hosted_button_id=KUJ7EXBZP4MHC",
     brand: "paypal" as const,
   },
   {
     label: "PayPal Checkout",
-    detail: "One-time checkout flow",
+    detail: "regular PayPal",
     href: "https://www.paypal.com/ncp/payment/C5ZNZELMHX2A4",
     brand: "paypal" as const,
   },
@@ -138,9 +138,10 @@ export default async function DonationsPage() {
           "Making a donation is a wonderful way to celebrate special occasions, honor your friends and family, or commemorate the yahrtzeit of your loved ones.",
         ]}
         actions={[
-          { label: "Donate by Credit / ACH / Apple Pay", href: STRIPE_DONATION_URL },
-          { label: "Donate with Venmo", href: "https://www.venmo.com/u/Mekor-Habracha" },
-          { label: "Donate with PayPal Giving Fund", href: "https://www.paypal.com/donate/?hosted_button_id=KUJ7EXBZP4MHC" },
+          { label: "Zelle: mekorhabracha@gmail.com", href: "mailto:mekorhabracha@gmail.com" },
+          { label: "Credit / ACH / Apple Pay", href: STRIPE_DONATION_URL },
+          { label: "PayPal Giving Fund", href: "https://www.paypal.com/donate/?hosted_button_id=KUJ7EXBZP4MHC" },
+          { label: "Venmo", href: "https://www.venmo.com/u/Mekor-Habracha" },
         ]}
       />
 
@@ -166,8 +167,8 @@ export default async function DonationsPage() {
         </div>
         <h3 className={styles.methodHeading}>Via Check</h3>
         <p className={styles.copyText}>
-          Please send any checks payable to <strong>Mekor Habracha</strong> to <strong>Ellen Geller</strong>,
-          <strong> 3 Saint James Ct., Philadelphia, PA 19106</strong>.
+          Please send any checks to: <strong>Ellen Geller</strong>, <strong>3 Saint James Ct.</strong>,
+          <strong> Philadelphia, PA 19106</strong>.
         </p>
       </SectionCard>
 
@@ -184,8 +185,8 @@ export default async function DonationsPage() {
       <SectionCard className={styles.flatSection}>
         <SplitMediaText
           className={styles.splitPanel}
-          title="Sponsor and Dedicate"
-          kicker="Celebrate and Honor"
+          title="Sponsor/ Dedication"
+          kicker="Celebrate simchas"
           media={{
             src: DONATION_IMAGES.support,
             alt: "Community celebration and sponsorship moment",
@@ -195,7 +196,7 @@ export default async function DonationsPage() {
           paragraphs={[
             "Celebrate simchas with your Mekor community through Shabbat Kiddush sponsorships or honoring and memorializing those impactful individuals in one's life through sponsorship opportunities.",
             "All contributions are fully tax-deductible and will be acknowledged in a letter that may be used for tax purposes.",
-            "Donations may be made online, through our website by credit card, or by sending a check payable to Mekor Habracha. Please email the shul to let us know about your donation and any dedication you'd like to make.",
+            "Donations may be made online (Venmo, PayPal Giving Fund, regular PayPal, Zelle, Credit, ACH or Apple Pay), or through our website by credit card, or by sending a check payable to Mekor Habracha, c/o Ellen Geller, 1500 Walnut St #206, Philadelphia, PA 19102. Please email the shul to let us know about your donation and any dedication you'd like to make.",
           ]}
           links={[
             { label: "Kiddush Donation Page", href: "/kiddush" },
@@ -219,11 +220,11 @@ export default async function DonationsPage() {
             <p className={styles.dedicationKicker}>Legacy Giving</p>
             <h2 className={styles.dedicationTitle}>Building and Space Dedications</h2>
             <p className={styles.copyText}>
-              Major dedication opportunities are still available for families looking to honor loved ones, mark a milestone,
-              or make a lasting investment in Mekor&apos;s physical home.
+              Building spaces still available for dedication: Kitchen ($25,000); Library ($50,000); Synagogue Art
+              Exhibit Hall ($20,000); 1 of 2 Children&apos;s spaces ($25,000 each); Mekor Sanctuary & Event Space ($100,000).
             </p>
             <p className={styles.copyText}>
-              These gifts help shape the spaces where our community davens, learns, celebrates, and welcomes new people into Jewish life.
+              General contributions -- any amount is appreciated!
             </p>
             <div className={styles.dedicationActions}>
               <a href="mailto:admin@mekorhabracha.org?subject=Dedication%20Opportunity" className={styles.dedicationButton}>

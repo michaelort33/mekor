@@ -34,7 +34,6 @@ export default async function PhillyJewishCommunityPage() {
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         title="Philly Jewish Community"
-        subtitle="Center City resources and institutions"
         tone="dark"
         className={styles.heroFlat}
         image={{
@@ -60,8 +59,7 @@ export default async function PhillyJewishCommunityPage() {
           }}
           paragraphs={[
             "The Center City Eruv includes most of Center City and South Philadelphia, roughly between the Schuylkill and Delaware Rivers. It is maintained weekly and was originally constructed under the halachic guidance of Rav Dov Aaron Brisman zt\"l, former Av Beit Din of Philadelphia.",
-            "Please note that the map is not perfectly to scale and should be used together with weekly status updates and published boundary notes.",
-            "Carrying is permitted over the South Street Bridge, which connects the Center City Eruv with the University City Eruv. If this bridge extension is down, the rest of the Center City Eruv remains valid.",
+            "You can view the eruv boundaries using the interactive Google Map below. Please note the map is not perfectly to scale \u2014 refer to the following guidelines for accuracy:",
           ]}
           links={[
             { label: "Center City Eruv Website", href: "http://www.centercityeruv.org/map.asp" },
@@ -78,13 +76,38 @@ export default async function PhillyJewishCommunityPage() {
             allowFullScreen
           />
         </div>
-        <ul className={styles.guidelineList}>
-          <li>Western border: The Schuylkill River Trail is no longer included.</li>
-          <li>Southwest corner: South of Washington Avenue, areas west of 25th Street are no longer included. North of Washington, the eruv follows the train overpass.</li>
-          <li>Northern border: The eruv remains bounded by the south side of Poplar Street.</li>
-          <li>Eastern border: The eruv runs approximately along I-95. Columbus Boulevard and the waterfront are outside the eruv.</li>
-          <li>Southern border: The eruv continues to follow I-76.</li>
-        </ul>
+        <p className={styles.mapNote}>
+          This map shows the borders of the Center City Eruv. It is an interactive map powered by Google Maps; you can zoom in or out and move the map around by holding the left mouse button and dragging the cursor. The map is not perfectly to scale, so please use the following guidelines:
+        </p>
+        <div className={styles.guidelineList}>
+          <div className={styles.guidelineItem}>
+            <h4>Western Border</h4>
+            <p>The Schuylkill River Trail is no longer included in the eruv.</p>
+          </div>
+          <div className={styles.guidelineItem}>
+            <h4>Southwest Corner</h4>
+            <p>South of Washington Avenue, areas west of 25th Street are no longer included. North of Washington, the eruv follows the train overpass.</p>
+          </div>
+          <div className={styles.guidelineItem}>
+            <h4>Northern Border</h4>
+            <p>The eruv remains bounded by the south side of Poplar Street.</p>
+          </div>
+          <div className={styles.guidelineItem}>
+            <h4>Eastern Border</h4>
+            <p>The eruv runs approximately along I-95. Columbus Boulevard and the waterfront are outside the eruv.</p>
+          </div>
+          <div className={styles.guidelineItem}>
+            <h4>Southern Border</h4>
+            <p>The eruv continues to follow I-76.</p>
+          </div>
+          <div className={styles.guidelineItem}>
+            <h4>South Street Bridge</h4>
+            <p>Carrying is permitted over the South Street Bridge, which connects the Center City Eruv with the University City Eruv. Please note: if this bridge extension is down, the rest of the Center City Eruv remains valid. Please check the weekly eruv status before Shabbat and plan accordingly.</p>
+          </div>
+        </div>
+        <p className={styles.mapNote}>
+          Please note: We&apos;re currently working on an updated eruv map, which will be available soon, so please be on the lookout for it. The map on this page is out of date, given the above changes.
+        </p>
       </SectionCard>
 
       <SectionCard className={styles.flatSection}>
@@ -118,8 +141,9 @@ export default async function PhillyJewishCommunityPage() {
             alt: "Center City community mikvah",
           }}
           paragraphs={[
-            "A mikvah is a natural body of water or a gathering of water that has a designated connection to a pool designed specifically for immersion according to the rules and customs of Jewish law.",
-            "The Mei Shalva Center City Community Mikvah at 509 Pine Street offers a fully operational women's mikvah, men's mikvah, and keilim mikvah. Volunteers are welcome to assist with staffing the keilim mikvah. For scheduling or appointments, please visit philamikvah.org or call or text 267-225-2651.",
+            "A Mikvah is a natural body of water or a gathering of water that has a designated connection to a pool designed specifically for immersion, according to the rules and customs of Jewish law.",
+            "The above body of water consists of naturally collected water that was never stagnant or gathered by human means. It contains about 200 gallons of water.",
+            "The Mei Shalva Center City Community Mikvah at 509 Pine Street offers a fully operational women's mikvah, men's mikvah, and keilim mikvah. Volunteers are welcome to assist with staffing the keilim mikvah. For scheduling or appointments, please visit https://philamikvah.org or call/text 267-225-2651.",
           ]}
           links={[
             { label: "Mikvah Website", href: "https://philamikvah.org/" },
