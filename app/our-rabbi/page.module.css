@@ -129,6 +129,13 @@
   overflow: hidden;
   border: 1px solid #ccd3dc;
   box-shadow: 0 10px 24px rgba(24, 36, 53, 0.1);
+  max-height: 320px;
+}
+
+.splitProfile :global([data-media-wrap] img) {
+  max-height: 320px;
+  object-fit: cover;
+  width: 100%;
 }
 
 .linkCluster :global(a),
@@ -186,7 +193,15 @@
   }
 
   .profilePhotoWrap {
-    max-width: 560px;
+    max-width: 100%;
+    max-height: 320px;
+    overflow: hidden;
+  }
+
+  .profilePhotoWrap .profilePhoto {
+    max-height: 320px;
+    object-fit: cover;
+    width: 100%;
   }
 }
 
