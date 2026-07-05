@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const VOLUNTEER_SECTIONS = [
   {
     title: "Kiddush Preparation",
-    body: "We are famous for our wonderful kiddush every Shabbat, but it doesn't happen by itself. Thanks to our community volunteers, we enjoy an amazing kiddush week after week. Volunteering to set up kiddush is a great way to give back to the community. Please consider signing up to make cholent before candle lighting or to set up and take down kiddush on Shabbat and Yom Tov.",
+    body: "We are famous for our wonderful kiddush every Shabbat, but it doesn't happen by itself. Thanks to our community volunteers, we enjoy an amazing kiddush week after week. Volunteering to set up kiddush is a great way to give back to the community. Please, consider signing up to make cholent before candle lighting or to setup and take down kiddush on Shabbat and Yom Tov. Please contact mekorhabracha@gmail.com to volunteer or to send your suggestions and comments.",
     links: [
       { label: "Volunteer by email", href: "mailto:mekorhabracha@gmail.com?subject=Kiddush%20Volunteer" },
       { label: "Kiddush page", href: "/kiddush" },
@@ -34,7 +34,7 @@ const VOLUNTEER_SECTIONS = [
   },
   {
     title: "Torah and Haftorah Reading",
-    body: "In order to provide the community with quality Torah and haftarah reading, we need capable people from the community to provide this invaluable service. If you know how to read Torah or haftarah and would like to volunteer to lain, we would love to hear some new voices. If you are a little rusty or would like to learn, please reach out.",
+    body: "In order to provide the community with quality Torah and haftarah reading, we need capable people from the community to provide this invaluable service. If you know how to read Torah or haftarah, and would like to volunteer to lain, please send us an email for more information. We would love to hear some new voices! If you are a little rusty or do not know how to read Torah and would like to learn, please reach out.",
     links: [
       { label: "Laining coordinator", href: "mailto:mekorlaining@gmail.com" },
       { label: "General volunteer sign-up", href: "#volunteer-signup" },
@@ -42,7 +42,7 @@ const VOLUNTEER_SECTIONS = [
   },
   {
     title: "Meal Train and Shabbat Hospitality",
-    body: "Join the Meal Train. Our Meal Train volunteers provide meals to help families who recently had a baby or have undergone some other significant life event. Volunteer to host a meal. The Mekor community is very proud to be able to welcome new members, existing members, and visitors for Shabbat and holiday meals.",
+    body: "Join the Meal Train: Our Meal Train volunteers provide meals to help families who recently had a baby or have undergone some other significant life event. Volunteer to Host a Meal: The Mekor community is very proud to be able to welcome new members, existing members, and visitors for Shabbat & Holiday meals. If you want to contribute meals for the Meal Train or you would like to join our list of possible hosts for Shabbat hospitality, please email mekorhospitality@gmail.com. The Hospitality Committee will then email you when Meal Train or Shabbat hospitality requests are made to the shul. To request a Meal Train or Shabbat hospitality, please email mekorhospitality@gmail.com.",
     links: [
       { label: "Hospitality committee", href: "mailto:mekorhospitality@gmail.com" },
       { label: "Request hospitality", href: "mailto:mekorhospitality@gmail.com?subject=Hospitality%20Request" },
@@ -50,7 +50,7 @@ const VOLUNTEER_SECTIONS = [
   },
   {
     title: "Eruv Checking and Mashgichim",
-    body: "Become an Eruv Checker. If you have a bicycle or car, and you could help out once every 6 weeks or even less often, please sign up. Training will be provided. Become a Volunteer Mashgiach. Our list of Center City kosher establishments keeps expanding, but we rely on volunteers to help in this process. No experience necessary. Rabbi Hirsch will provide onsite training.",
+    body: "Become an Eruv Checker: If you have a bicycle or car, and you could help out once every 6 weeks, or even less often, please sign up! Training will be provided; please email Andres (andres.catalan@gmail.com) or Jon (jzgradman@gmail.com). Become a Volunteer Mashgiach! Our list of Center City kosher establishments keeps expanding, but we rely on volunteers to help in this process! No experience necessary -- Rabbi Hirsch will provide onsite training. For more info or to volunteer, please email the shul.",
     links: [
       { label: "Eruv (Andres)", href: "mailto:andres.catalan@gmail.com" },
       { label: "Eruv (Jon)", href: "mailto:jzgradman@gmail.com" },

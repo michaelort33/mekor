@@ -60,9 +60,9 @@ export default async function VisitUsPage() {
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
-        eyebrow="Center City Synagogue"
+        eyebrow="Visit Us"
         title="Visit Us"
-        subtitle="Services, classes, and community programs in the heart of Philadelphia"
+        subtitle="Contact US"
         className={styles.heroFlat}
         image={{
           src: VISIT_IMAGES.hero,
@@ -70,10 +70,7 @@ export default async function VisitUsPage() {
           objectFit: "cover",
           objectPosition: "50% 34%",
         }}
-        description={[
-          "Contact us if this is your first visit and we will help you get oriented.",
-          "We welcome members, out-of-town guests, and anyone looking for a warm Orthodox community in Center City.",
-        ]}
+        description={["1500 Walnut St, Suite 206", "Philadelphia, PA 19102", "215-525-4246", "admin@mekorhabracha.org"]}
         actions={[
           { label: "Email admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org" },
           { label: "Call (215) 525-4246", href: "tel:+12155254246" },
@@ -92,7 +89,7 @@ export default async function VisitUsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Location and Contact" className={`${styles.flatSection} ${styles.contactSection}`}>
+      <SectionCard title="Contact US" className={`${styles.flatSection} ${styles.contactSection}`}>
         <div className={styles.contactGrid}>
           <article className={styles.contactCard}>
             <h3>Address</h3>
@@ -137,14 +134,14 @@ export default async function VisitUsPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Send Us a Message" className={`${styles.flatSection} ${styles.messageSection}`}>
+      <SectionCard title="Contact US" className={`${styles.flatSection} ${styles.messageSection}`}>
         <ContactForm sourcePath={PATH} />
       </SectionCard>
 
       <SectionCard
         className={`${styles.flatSection} ${styles.whatsAppSection}`}
-        title="Mekor Community WhatsApp Group"
-        description="Click the WhatsApp logo to join one of our community groups. Whether you're looking for social events, meal matching, general chats, or updates on minyanim, there's a group for you."
+        title="Mekor Community Whatsapp Group"
+        description="Click the WhatsApp logo to join one of our community groups! Whether you're looking for social events, meal matching, general chats, or updates on minyanim, there's a group for you!"
       >
         <div className={styles.whatsAppGrid}>
           {WHATSAPP_GROUPS.map((group) => (

@@ -21,7 +21,7 @@ export default function IsraelPage() {
         tone="dark"
         align="center"
         title="Support of Israel"
-        subtitle="Events and Initiatives Online and in the Greater Philadelphia Jewish Community"
+        subtitle="Events & Initiatives Online & in the Greater Philadelphia Jewish Community"
         description="Updated 12/30/2024"
         image={{
           src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/75a8b93c54e785acf273abb9bf498ac450c1eb42-92f487_fe9c18db72464a00804c50ec36bba116-mv2.jpg",
@@ -38,9 +38,10 @@ export default function IsraelPage() {
             alt: "Mishmar volunteers in Israel",
           }}
           paragraphs={[
-            "While the IDF defends Israel's outer borders and police answer emergency calls, Mishmar civilian security volunteers patrol neighborhood borders against criminal and terrorist threats.",
-            "Ramot, Jerusalem's largest neighborhood, is exposed to assaults on all sides. Mishmar Ramot is raising funds to train 30 volunteers at a highly professional level and to purchase critical rescue and security equipment.",
-            "The following videos portray their work and impact.",
+            "While the IDF defends Israel's outer borders, and the police force answers emergency calls inside Israel's borders, it is Israel's Mishmar civilian security volunteers who patrol many neighborhood borders from criminals & terrorists.",
+            "Ramot, Israel's largest neighborhood, is located on Jerusalem's northern border and is exposed to terrorist assaults on all sides.",
+            "Mishmar Ramot now seeks to raise $50,000 for 2 goals. First, these funds will be used to train 30 volunteers to attain a highly professional level of skill, by using a curriculum tailored to the Ramot's needs. Secondly, the funds will enable Mishmar to purchase rescue & security equipment, as well as overhead for headquarters where security activities are coordinated.",
+            "The following videos vividly portray their work: Mishmar Video 1 (Hebrew); Mishmar Video 2; Mishmar Video 3 (Hebrew). To learn more, or to donate, please visit the following link.",
           ]}
           links={[
             { label: "Mishmar Video 1", href: "https://youtu.be/LiwJzESwMjg?si=m2WgAKtM8GH8ORQN" },
@@ -55,12 +56,13 @@ export default function IsraelPage() {
         <div className={styles.sparkGrid}>
           <div>
             <p className={styles.sparkParagraph}>
-              See the interview with Mekor member Joe Glyn explaining why he values helping Israeli small
-              businesses through SparkIL investment.
+              See the interview with Mekor member Joe Glyn on this video, explaining why he values the opportunity to
+              help Israeli small business by investing through Spark.
             </p>
             <p className={styles.sparkParagraph}>
-              If you visit the site and make a micro-loan, apply coupon code <strong>pro36</strong> at
-              checkout. Questions can be sent to YishaiGo@sparkil.org.
+              For more info, please view: video about the business, and a video about our lenders. If you visit the
+              site and make a micro-loan, you can apply a $36 coupon code - <strong>pro36</strong> - when you check out.
+              If you have questions, please email YishaiGo@sparkil.org.
             </p>
             <CTACluster
               items={[
@@ -97,8 +99,9 @@ export default function IsraelPage() {
           }}
           reverse
           paragraphs={[
-            "This free, three-part interactive workshop teaches a practical rhetorical technique to help you confidently respond to antisemitic or anti-Israel comments without engaging in debate.",
-            "Led by Dr. Julia Weinberg, a clinical and forensic psychologist with a legal background. Sessions are live, not recorded, and available remotely or in person by arrangement.",
+            "This free, three-part interactive workshop teaches a practical rhetorical technique to help you confidently respond to antisemitic or anti-Israel comments--without engaging in debate.",
+            "Led by Dr. Julia Weinberg, a clinical and forensic psychologist with a legal background, the sessions are live, not recorded, and available remotely or in person by arrangement.",
+            "The workshop helps you identify manipulative rhetoric, practice effective responses, and apply them to real-life scenarios.",
           ]}
           links={[
             { label: "Email drweinberg@outlook.com", href: "mailto:drweinberg@outlook.com" },
@@ -116,9 +119,9 @@ export default function IsraelPage() {
             alt: "Simchat Torah project commemorative image",
           }}
           paragraphs={[
-            "Updated 10/10/24: Mekor joined a global initiative commemorating the first anniversary of October 7, with a dedicated me'il created in Israel for participating synagogues worldwide.",
-            "The project honors the 1200 souls and the soldiers and hostages who have died Al Kiddush Hashem. Mekor's commemorative event displayed the new cover and remembered the kadosh named on our me'il.",
-            "May we merit to fulfill the words of Tehillim, 'You have turned my mourning into dancing,' and see the coming of Mashiach speedily in our days.",
+            "The Simchat Torah Project (Updated 10/10/24): We are pleased to bring you an update on the Simchat Torah Project, a global initiative to commemorate this first anniversary of October 7.",
+            "A new me'il (Torah cover) was created in Israel for each of the participating synagogues worldwide, including Mekor. This beautiful me'il proclaims that this Torah is dedicated in memory of the 1200 souls and the many soldiers and hostages who have since died, Al Kiddush Hashem.",
+            "On Simchat Torah, when we dance with our scroll, Mekor will connect with communities around the world who joined in this project. May we merit to fulfill the words of Tehillim, 'You have turned my mourning into dancing,' and see the coming of Mashiach speedily in our days.",
           ]}
           links={[{ label: "Rabbi Hirsch on Oct 7", href: "/from-the-rabbi-s-desk" }]}
         />

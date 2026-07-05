@@ -5,7 +5,6 @@ import Image from "next/image";
 import { AuxiliaryMembershipForm } from "@/components/forms/auxiliary-membership-form";
 import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/primitives";
 import { MarketingPageShell } from "@/components/marketing/page-shell";
-import { getHebrewYearContext } from "@/lib/calendar/hebrew-year";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
@@ -18,13 +17,13 @@ const PAGE_IMAGES = {
 } as const;
 
 const AUXILIARY_RATES = [
-  ["Family / Couple", "$900"],
+  ["Family/couple", "$900"],
   ["Single Adult", "$450"],
   ["Single Student", "$225"],
 ] as const;
 
 const FULL_MEMBERSHIP_RATES = [
-  ["Family / Couple", "$1,800"],
+  ["Family/couple", "$1800"],
   ["Single Adult", "$900"],
   ["Single Student", "$450"],
 ] as const;
@@ -36,7 +35,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AuxiliaryMembershipPage() {
   const document = await getNativeDocumentByPath(PATH);
-  const hebrewYear = getHebrewYearContext();
 
   if (!document) {
     notFound();
@@ -56,8 +54,9 @@ export default async function AuxiliaryMembershipPage() {
           objectPosition: "center center",
         }}
         description={[
-          "Every Mekor alumnus has a unique share in the zechut of our shul's accomplishments.",
+          "Every Mekor alumnus has a unique share in the zechut (merit) of our shul's accomplishments.",
           "We invite you to engage with us on a deeper level by becoming an official Mekor member or auxiliary member.",
+          "As you know, many people join Mekor as students or early in their professional careers, sometimes with limited financial means. We therefore rely on the generosity and the lasting commitment of our alumni population to ensure that our shul will continue to thrive.",
         ]}
         actions={[
           { label: "Email to Join", href: "mailto:admin@mekorhabracha.org?subject=Auxiliary%20Membership" },
@@ -66,7 +65,7 @@ export default async function AuxiliaryMembershipPage() {
         ]}
       />
 
-      <SectionCard title={`Auxiliary Membership Rates (${hebrewYear.currentHebrewYearLabel})`} className={styles.flatSection}>
+      <SectionCard title="Auxiliary Mekor Membership" className={styles.flatSection}>
         <p className={styles.copy}>
           This is available to alumni and others who live outside the Philadelphia region, at the following rates.
         </p>
@@ -83,7 +82,7 @@ export default async function AuxiliaryMembershipPage() {
         </p>
       </SectionCard>
 
-      <SectionCard title="Full Membership Rates" className={styles.flatSection}>
+      <SectionCard title="Full Mekor Membership" className={styles.flatSection}>
         <div className={styles.rateGrid}>
           {FULL_MEMBERSHIP_RATES.map(([label, amount]) => (
             <article className={styles.rateCard} key={label}>
@@ -94,19 +93,15 @@ export default async function AuxiliaryMembershipPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="How to Join" className={styles.flatSection}>
-        <ol className={styles.steps}>
-          <li>Email the shul to request membership.</li>
-          <li>Make payment online by Venmo, PayPal Giving Fund, or regular PayPal.</li>
-          <li>Or mail a check payable to Mekor Habracha.</li>
-        </ol>
+      <SectionCard className={styles.flatSection}>
         <p className={styles.copy}>
-          Many people join Mekor as students or early in their professional careers, sometimes with limited financial
-          means. We therefore rely on the generosity and lasting commitment of our alumni population to ensure that our
-          shul will continue to thrive.
+          To join, please email the shul to request membership, and make payment online (Venmo, PayPal Giving Fund, or regular PayPal), or by mailing a check payable to Mekor Habracha, c/o Ellen Geller, 1500 Walnut St #206, Philadelphia, PA 19102. (Please add service fees for Flipcause.)
         </p>
         <p className={styles.note}>
           Please email the shul to let us know about your donation and any dedication you&apos;d like to make.
+        </p>
+        <p className={styles.copy}>
+          WE THANK YOU FOR YOUR SUPPORT!
         </p>
         <Image
           src={PAGE_IMAGES.community}

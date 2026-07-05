@@ -34,7 +34,7 @@ export default async function OurCommunitiesPage() {
       <HeroSection
         eyebrow="Our Community"
         title="Mekor Habracha Community"
-        subtitle="A welcoming, growing Orthodox community in Center City"
+        subtitle="OUR HISTORY"
         className={styles.heroFlat}
         image={{
           src: COMMUNITY_IMAGES.hero,
@@ -43,8 +43,8 @@ export default async function OurCommunitiesPage() {
           objectPosition: "50% 34%",
         }}
         description={[
-          "Mekor serves students, professionals, families, and long-time residents from across Philadelphia.",
-          "Visitors are always welcome, and members are encouraged to get involved through learning, volunteering, and leadership.",
+          "Becoming a Community",
+          "Mekor Habracha emerged from a 1990s independent chavura in the Rittenhouse Square area of Philadelphia.",
         ]}
         actions={[
           { label: "Contact Us", href: "/contact-us" },
@@ -100,19 +100,19 @@ export default async function OurCommunitiesPage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Our Mission and Culture" className={styles.flatSection}>
+      <SectionCard title="Our Mission" className={styles.flatSection}>
         <div className={styles.valueGrid}>
           <article className={styles.valueCard}>
-            <h3>Mission</h3>
+            <h3>Serve the Center City Jewish Community</h3>
             <p>
-              Serve the Center City Jewish Community. The mission of Mekor Habracha is to serve the spiritual, social,
+              The mission of Mekor Habracha is to serve the spiritual, social,
               and educational needs of Center City&apos;s diverse Jewish community. We aspire to provide an environment
               where people of all ages and religious backgrounds are welcome to participate in the synagogue&apos;s
               activities and Orthodox services.
             </p>
           </article>
           <article className={styles.valueCard}>
-            <h3>Who We Are</h3>
+            <h3>WHO WE ARE</h3>
             <p>
               Mekor Habracha is a vibrant and inclusive congregation located in Center City, Philadelphia. Our
               membership is diverse, drawing people from all across the city, and visitors, whether local residents or
@@ -120,7 +120,7 @@ export default async function OurCommunitiesPage() {
             </p>
           </article>
           <article className={styles.valueCard}>
-            <h3>Participation</h3>
+            <h3>Vibrant and Inclusive</h3>
             <p>
               Since it was founded, the shul has attracted a dynamic group of students, young professionals, newlyweds,
               families, and empty nesters. We offer a range of religious, educational, and social activities, as well

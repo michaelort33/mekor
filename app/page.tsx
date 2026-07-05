@@ -22,7 +22,9 @@ const MAP_EMBED_SRC =
 
 const RABBIS = [
   {
+    role: "Senior Rabbi",
     name: "Rabbi Eliezer Hirsch",
+    bio: "Rabbi Eliezer Hirsch is Mekor Habracha\u2019s spiritual leader and founding rabbi. Since its inception...",
     image:
       "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/ef834ae06e3c7cf8ff31c0d7f7ab16cf19592877-92f487_d26f360d09cc45e4bebe89d9f14643d3-mv2-copy2-Medium-.jpg",
     alt: "Rabbi Eliezer Hirsch",
@@ -34,7 +36,9 @@ const RABBIS = [
     ],
   },
   {
+    role: "Associate Rabbi",
     name: "Rabbi Steven Gotlib",
+    bio: "Rabbi Steven Gotlib is Associate Rabbi at Mekor Habracha/Center City Synagogue\u200b and Marketing Manager...",
     image:
       "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/34434149afbb96abbd5c8c3779b55dde432d98e9-R-Gotlib.jpg",
     alt: "Rabbi Steven Gotlib",
@@ -197,6 +201,52 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className={styles.supportSection}>
+        <div className={styles.container}>
+          <div className={styles.supportPanel}>
+            <p className={styles.supportEyebrow}>About</p>
+            <h2 className={styles.supportTitle}>Support Mekor while buying wine and Judaica!</h2>
+            <p className={styles.supportBody}>
+              If you use the following Mekor-specific links when ordering from{" "}
+              <a
+                href="https://kosherwine.com"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                Kosherwine.com
+              </a>{" "}
+              and{" "}
+              <a
+                href="https://judaica.com"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                Judaica.com
+              </a>
+              , Mekor will earn 5% back!
+            </p>
+            <div className={styles.supportLinks}>
+              <a
+                href="https://tinyurl.com/mekorwine"
+                target="_blank"
+                rel="noreferrer noopener"
+                className={styles.supportLink}
+              >
+                Wine: tinyurl.com/mekorwine
+              </a>
+              <a
+                href="https://tinyurl.com/mekorjudaica"
+                target="_blank"
+                rel="noreferrer noopener"
+                className={styles.supportLink}
+              >
+                Judaica: tinyurl.com/mekorjudaica
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className={styles.featureSection}>
         <div className={styles.container}>
           <div className={styles.featureGrid}>
@@ -264,7 +314,9 @@ export default function HomePage() {
                   <Image src={rabbi.image} alt={rabbi.alt} fill sizes="(max-width: 900px) 100vw, 22rem" className={styles.rabbiImage} />
                 </div>
                 <div className={styles.rabbiBody}>
+                  <p className={styles.rabbiRole}>{rabbi.role}</p>
                   <h3>{rabbi.name}</h3>
+                  <p className={styles.rabbiBio}>{rabbi.bio}</p>
                   <div className={styles.rabbiLinks}>
                     {rabbi.links.map((link) =>
                       link.href.startsWith("/") ? (

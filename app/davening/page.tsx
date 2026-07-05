@@ -179,8 +179,8 @@ export default async function DaveningPage() {
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         eyebrow="Services"
-        title="Davening at Mekor"
-        subtitle="Shabbat and weekday minyanim in Center City"
+        title="Davening"
+        subtitle="Shabbat and Weekday Services Schedule"
         className={styles.heroSection}
         image={{
           src: DAVENING_IMAGES.hero,
@@ -202,7 +202,7 @@ export default async function DaveningPage() {
         <div className={styles.scheduleIntro}>
           <div>
             <p className={styles.scheduleEyebrow}>Shabbat Services</p>
-            <h2 className={styles.scheduleTitle}>Weekly Schedule Updates</h2>
+            <h2 className={styles.scheduleTitle}>Shabbat Services</h2>
           </div>
           <p className={styles.scheduleLead}>
             Exact zmanim can shift each week. For the most current service timing, use the minyan WhatsApp and email
@@ -317,8 +317,8 @@ export default async function DaveningPage() {
       </SectionCard>
 
       <SectionCard
-        title="RSVP or Participate"
-        description="Use this intake for weekday minyan interest, Shabbat attendance coordination, leining, leading davening, or yahrzeit-related requests."
+        title="Let Us Know!"
+        description="Interested in reading Torah or Haftorah, or leading davening? Have an upcoming yahrzeit?"
         className={styles.sectionCard}
       >
         <DaveningRsvpForm sourcePath={PATH} />
@@ -338,7 +338,7 @@ export default async function DaveningPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Participate in Davening" className={`${styles.sectionCard} ${styles.participateCard}`}>
+      <SectionCard title="Let Us Know!" className={`${styles.sectionCard} ${styles.participateCard}`}>
         <p className={styles.noteText}>
           Interested in reading Torah or Haftorah, or leading davening? Have an upcoming yahrzeit? Reach out and we
           will help coordinate.
