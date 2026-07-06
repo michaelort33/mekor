@@ -1,6 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 
 import { toBlobUrl } from "@/lib/assets/blob-rewrite";
+import { isHiddenContentPath } from "@/lib/content/hidden-paths";
 import { getDb } from "@/db/client";
 import { kosherPlaces, pageFreshness } from "@/db/schema";
 import {
@@ -318,7 +319,7 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
     throw new Error("DATABASE_URL is required for kosher places");
   }
 
-  const rows = await getDb()
+  const dbRows = await getDb()
     .select({
       slug: kosherPlaces.slug,
       path: kosherPlaces.path,
@@ -339,6 +340,8 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
     })
     .from(kosherPlaces)
     .orderBy(asc(kosherPlaces.neighborhood), asc(kosherPlaces.title));
+
+  const rows = dbRows.filter((row) => !isHiddenContentPath(row.path));
 
   const managed = rows.map((row) =>
     toManagedKosherPlace({

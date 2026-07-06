@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { listRoutesBySection } from "@/lib/content/native-content";
+import { isHiddenContentPath } from "@/lib/content/hidden-paths";
 
 export const dynamic = "force-dynamic";
 
@@ -23,13 +24,15 @@ export async function GET(
     return new NextResponse("Not Found", { status: 404 });
   }
 
-  const selected = await listRoutesBySection(
-    sectionSitemap as
-      | "blog-posts-sitemap"
-      | "event-pages-sitemap"
-      | "dynamic-news-sitemap"
-      | "pages-sitemap",
-  );
+  const selected = (
+    await listRoutesBySection(
+      sectionSitemap as
+        | "blog-posts-sitemap"
+        | "event-pages-sitemap"
+        | "dynamic-news-sitemap"
+        | "pages-sitemap",
+    )
+  ).filter((pathValue) => !isHiddenContentPath(pathValue));
   const lastmod = new Date().toISOString().slice(0, 10);
 
   const xml =

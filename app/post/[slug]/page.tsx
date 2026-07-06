@@ -6,6 +6,7 @@ import { BadRequestTemplate } from "@/components/templates/bad-request-template"
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { resolveTemplateRoute } from "@/lib/templates/resolve-template-route";
 import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
+import { isHiddenContentPath } from "@/lib/content/hidden-paths";
 
 export const dynamicParams = true;
 export const dynamic = "force-static";
@@ -30,6 +31,10 @@ export async function generateStaticParams() {
       continue;
     }
 
+    if (isHiddenContentPath(item.path)) {
+      continue;
+    }
+
     const slug = item.path.slice("/post/".length);
     if (!slug) {
       continue;
@@ -49,6 +54,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+  if (isHiddenContentPath(toPath(slug))) {
+    return buildDocumentMetadata(null);
+  }
   const route = await resolveTemplateRoute(toPath(slug));
   if (route.status !== "ok" || route.document.type !== "post") {
     return buildDocumentMetadata(null);
@@ -59,6 +67,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PostTemplatePage({ params }: PageProps) {
   const { slug } = await params;
+
+  if (isHiddenContentPath(toPath(slug))) {
+    notFound();
+  }
+
   const route = await resolveTemplateRoute(toPath(slug));
 
   if (route.status === "bad-request") {
