@@ -94,7 +94,7 @@ export function MarketingPageShell({
     >
       <SiteNavigation currentPath={currentPath} />
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[24rem] bg-[radial-gradient(circle_at_top_left,rgba(39,72,109,0.18),transparent_58%),radial-gradient(circle_at_top_right,rgba(191,149,92,0.16),transparent_40%)]" />
-      <div className={cn("mx-auto flex w-full max-w-[84rem] flex-col gap-8 px-4 pb-20 pt-6 sm:px-6 lg:px-8", contentClassName)}>
+      <div className={cn("mx-auto flex w-full max-w-[84rem] flex-col gap-8 px-4 pb-20 pt-6 sm:px-6 lg:px-8 [&>*]:min-w-0", contentClassName)}>
         {children}
       </div>
     </main>
