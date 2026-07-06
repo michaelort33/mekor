@@ -182,7 +182,7 @@ export default function HomePage() {
               </p>
               <p>
                 Our rabbis, Rabbi Hirsch and Rabbi Gotlib, are always happy to connect. You can reach them{" "}
-                <Link href="/our-rabbi">here.</Link>
+                <Link href="/our-rabbi" aria-label="Reach our rabbis">here.</Link>
               </p>
               <Link href="/about-us" className={styles.aboutButton}>
                 Read more

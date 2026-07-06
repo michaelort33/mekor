@@ -148,7 +148,7 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePa
           <section aria-label="Community links" className="space-y-5">
             <div className="flex items-end justify-between gap-4">
               <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[rgba(255,255,255,0.55)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[rgba(255,255,255,0.72)]">
                   Connect With Mekor
                 </p>
                 <h3 className="font-[family-name:var(--font-heading)] text-3xl tracking-[-0.03em]">
@@ -184,7 +184,7 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePa
                     style={cardStyle}
                     target={external ? "_blank" : undefined}
                     rel={external ? "noreferrer noopener" : undefined}
-                    className="group rounded-[26px] border border-white/12 bg-white/6 px-4 py-4 transition hover:-translate-y-0.5 hover:bg-white/10"
+                    className="group rounded-[26px] border border-white/12 bg-white/6 px-4 py-4 transition hover:-translate-y-0.5 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                   >
                     <div className="mb-3 h-1.5 w-14 rounded-full bg-[var(--footer-accent)]" />
                     <p className="text-sm font-semibold tracking-[0.02em] text-white">{cta.label}</p>
@@ -199,12 +199,12 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePa
         </div>
         <Separator className="bg-white/10" />
         <div className="flex flex-col gap-3 px-6 py-4 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
-          <div className="text-xs uppercase tracking-[0.2em] text-[rgba(255,255,255,0.52)]">
+          <div className="text-xs uppercase tracking-[0.2em] text-[rgba(255,255,255,0.72)]">
             Copyright ©<CurrentCivilYear /> by Mekor Habracha Synagogue
           </div>
           <HebrewDateFooter
-            className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[rgba(255,255,255,0.64)]"
-            labelClassName="text-[rgba(255,255,255,0.45)]"
+            className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[rgba(255,255,255,0.72)]"
+            labelClassName="text-[rgba(255,255,255,0.6)]"
             valueClassName="text-[rgba(255,255,255,0.84)]"
           />
         </div>

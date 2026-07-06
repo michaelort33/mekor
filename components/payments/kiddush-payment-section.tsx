@@ -45,6 +45,7 @@ export function KiddushPaymentSection({ options, returnPath }: KiddushPaymentSec
                 <p className={styles.optionBody}>{option.body}</p>
                 <button
                   type="button"
+                  aria-pressed={selected}
                   className={styles.optionAction}
                   onClick={() => {
                     setSelectedTitle(option.title);

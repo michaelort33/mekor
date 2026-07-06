@@ -120,8 +120,8 @@ export function HomeContactForm({
       <Button type="submit" className={submitClassName} disabled={state === "submitting"}>
         {state === "submitting" ? "Submitting..." : "Submit"}
       </Button>
-      {state === "success" ? <p className={successClassName}>Thanks for submitting.</p> : null}
-      {state === "error" ? <p className={errorClassName}>Unable to submit right now.</p> : null}
+      {state === "success" ? <p role="status" className={successClassName}>Thanks for submitting.</p> : null}
+      {state === "error" ? <p role="alert" className={errorClassName}>Unable to submit right now.</p> : null}
     </form>
   );
 }

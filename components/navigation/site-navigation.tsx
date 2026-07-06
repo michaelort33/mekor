@@ -1,5 +1,6 @@
 "use client";
 
+import { Menu } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
@@ -118,15 +119,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
           />
 
           <div className="flex flex-none items-center gap-2">
-            <div className="hidden 2xl:flex">
-              <UniversalSearch compact />
-            </div>
-            <div className="hidden md:flex 2xl:hidden">
-              <UniversalSearch compact />
-            </div>
-            <div className="md:hidden">
-              <UniversalSearch compact />
-            </div>
+            <UniversalSearch compact />
             <div className="hidden xl:flex">
               <NavCta isSignedIn={authenticated} isCheckingAuth={isCheckingAuth} />
             </div>
@@ -143,7 +136,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
               aria-label="Open main menu"
             >
               <span className="sr-only">Open menu</span>
-              <span aria-hidden="true">☰</span>
+              <Menu className="h-5 w-5" aria-hidden="true" />
             </Button>
           </div>
         </div>

@@ -286,8 +286,8 @@ export function KiddushSponsorshipForm({ sourcePath }: KiddushSponsorshipFormPro
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Submitting..." : "Request sponsorship"}
         </Button>
-        {status === "success" ? <p className="text-sm font-medium text-emerald-700">Thanks. We received your sponsorship request.</p> : null}
-        {status === "error" ? <p className="text-sm font-medium text-rose-700">Unable to submit right now. Please try again.</p> : null}
+        {status === "success" ? <p role="status" className="text-sm font-medium text-emerald-700">Thanks. We received your sponsorship request.</p> : null}
+        {status === "error" ? <p role="alert" className="text-sm font-medium text-rose-700">Unable to submit right now. Please try again.</p> : null}
       </div>
     </form>
   );

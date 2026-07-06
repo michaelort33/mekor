@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
@@ -48,7 +49,7 @@ export function DesktopNav({
   const focusFirstSubmenuLink = (groupId: string) => {
     window.requestAnimationFrame(() => {
       const firstSubmenuLink = rootRef.current?.querySelector<HTMLAnchorElement>(
-        `#native-nav-submenu-${groupId} .native-nav__submenu-link`,
+        `#native-nav-submenu-${groupId} a[href]`,
       );
       firstSubmenuLink?.focus();
     });
@@ -92,20 +93,24 @@ export function DesktopNav({
       <ul className="flex items-center gap-1 rounded-full border border-white/40 bg-white/72 px-2 py-2 shadow-[0_18px_44px_-32px_rgba(15,23,42,0.44)] backdrop-blur">
         {items.map((item) => {
           const active = isNavigationPathActive(currentPath, item.href);
+          const focusRing =
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]";
           const itemClassName =
             item.tone === "cta"
               ? cn(
                   "inline-flex items-center whitespace-nowrap rounded-full border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-2 text-[14px] font-semibold tracking-[0.02em] [color:#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] transition visited:[color:#f8fbff] hover:bg-[linear-gradient(180deg,#285f90_0%,#1c4368_100%)] hover:[color:#ffffff] focus-visible:[color:#ffffff]",
+                  focusRing,
                   active && "shadow-[0_20px_48px_-28px_rgba(15,23,42,0.55)]",
                 )
               : cn(
                   "inline-flex items-center whitespace-nowrap rounded-full px-3 py-2 text-[14px] font-medium tracking-[0.01em] text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]",
+                  focusRing,
                   active && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
                 );
           const toggleClassName =
             item.tone === "cta"
-              ? "mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full [color:#f8fbff] transition hover:bg-white/10 hover:[color:#ffffff]"
-              : "mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]";
+              ? cn("mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full [color:#f8fbff] transition hover:bg-white/10 hover:[color:#ffffff]", focusRing)
+              : cn("mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]", focusRing);
 
           if (!isNavGroup(item)) {
             return (
@@ -225,7 +230,10 @@ export function DesktopNav({
                   }}
                 >
                   <span className="sr-only">Toggle {item.label} submenu</span>
-                  <span aria-hidden="true">▾</span>
+                  <ChevronDown
+                    className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
+                    aria-hidden="true"
+                  />
                 </button>
               </div>
               <div
@@ -255,7 +263,7 @@ export function DesktopNav({
                           href={child.href}
                           prefetch={false}
                           className={cn(
-                            "block rounded-[20px] px-4 py-3 text-sm font-medium text-[var(--color-muted)] transition hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)]",
+                            "block rounded-[20px] px-4 py-3 text-sm font-medium text-[var(--color-muted)] transition hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]",
                             childActive && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)]",
                           )}
                           aria-current={childActive ? "page" : undefined}
