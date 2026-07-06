@@ -806,10 +806,36 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .rabbiCard {
+    justify-items: center;
+    padding-top: 22px;
+  }
+
+  .rabbiImageWrap {
+    position: relative;
+    width: min(64%, 236px);
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
   .rabbiCard img {
-    max-height: 260px;
+    max-height: none;
     width: 100%;
+    height: 100%;
     object-fit: cover;
+    object-position: 50% 16%;
+  }
+
+  .rabbiBody {
+    text-align: center;
+    justify-items: center;
+    padding: 18px 24px 24px;
+  }
+
+  .rabbiLinks {
+    justify-content: center;
   }
 
   .contactGrid {
@@ -847,8 +873,7 @@
   }
 
   .featureVisual,
-  .daveningVisual,
-  .rabbiImageWrap {
+  .daveningVisual {
     min-height: clamp(230px, 52vw, 340px);
   }
 }
