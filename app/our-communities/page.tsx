@@ -70,7 +70,7 @@ export default async function OurCommunitiesPage() {
         </p>
         <p className={styles.bodyText}>
           Mekor Habracha emerged from a 1990s independent chavura in the Rittenhouse Square area of Philadelphia. From
-          1999 to 2001 the group met under the auspices of Etz Chaim, currently Aish Chaim, and reverted to being mainly
+          1999 to 2001 the group met under the auspices of Etz Chaim (currently Aish Chaim), and reverted to being mainly
           lay-led until 2006, when Etz Chaim recruited Rabbi Eliezer Hirsch from New York to lead the group. Since Rabbi
           Hirsch&apos;s arrival, the congregation has grown and flourished, eventually becoming an independent synagogue in
           2007, and is now a critical contributing organization to the advancement of Jewish life in Center City.
@@ -115,14 +115,14 @@ export default async function OurCommunitiesPage() {
             <h3>WHO WE ARE</h3>
             <p>
               Mekor Habracha is a vibrant and inclusive congregation located in Center City, Philadelphia. Our
-              membership is diverse, drawing people from all across the city, and visitors, whether local residents or
-              out-of-towners, are always welcome.
+              membership is diverse, drawing people from all across the city, and visitors—whether local residents or
+              out-of-towners—are always welcome.
             </p>
           </article>
           <article className={styles.valueCard}>
             <h3>Vibrant and Inclusive</h3>
             <p>
-              Since it was founded, the shul has attracted a dynamic group of students, young professionals, newlyweds,
+              Since it was founded, the Shul has attracted a dynamic group of students, young professionals, newlyweds,
               families, and empty nesters. We offer a range of religious, educational, and social activities, as well
               as plenty of opportunities for community members to get involved. We are especially proud that a number of
               wonderfully matched married couples first met at Mekor.

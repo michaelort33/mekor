@@ -137,7 +137,7 @@ export default async function ContactUsPage() {
 
       <SectionCard
         title="Mekor Community Whatsapp Group"
-        description="Click the WhatsApp logo to join our Mekor Community group and stay up to date with everything happening in our shul and community."
+        description="Click the WhatsApp logo to join our Mekor Community group and stay up to date with everything happening in our shul and community!"
         className={`${styles.flatSection} ${styles.whatsAppSection}`}
       >
         <CTACluster

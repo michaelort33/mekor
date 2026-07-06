@@ -194,7 +194,7 @@ export default async function DonationsPage() {
             objectPosition: "center center",
           }}
           paragraphs={[
-            "Celebrate simchas with your Mekor community through Shabbat Kiddush sponsorships or honoring and memorializing those impactful individuals in one's life through sponsorship opportunities.",
+            "Celebrate simchas with your Mekor community through Shabbat Kiddush sponsorships or honoring/memorializing those impactful individuals in one's life through sponsorship opportunities!",
             "All contributions are fully tax-deductible and will be acknowledged in a letter that may be used for tax purposes.",
             "Donations may be made online (Venmo, PayPal Giving Fund, regular PayPal, Zelle, Credit, ACH or Apple Pay), or through our website by credit card, or by sending a check payable to Mekor Habracha, c/o Ellen Geller, 1500 Walnut St #206, Philadelphia, PA 19102. Please email the shul to let us know about your donation and any dedication you'd like to make.",
           ]}

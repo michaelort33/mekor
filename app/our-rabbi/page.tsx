@@ -100,11 +100,11 @@ export default function OurRabbiPage() {
               alt: "Rabbi Steven Gotlib",
             }}
             paragraphs={[
-              "Rabbi Steven Gotlib is Associate Rabbi at Mekor Habracha/Center City Synagogue and Director of the Center City Beit Midrash. Rabbi Gotlib studied Communication, Jewish Studies, and Philosophy at Rutgers University before receiving rabbinic ordination from the Rabbi Isaac Elchanan Theological Seminary at Yeshiva University, a Certificate in Mental Health Counseling from the Ferkauf Graduate School of Psychology in partnership with RIETS, and a START Certificate in Spiritual Entrepreneurship from the Glean Network in partnership with Columbia Business School.",
+              "Rabbi Steven Gotlib is Associate Rabbi at Mekor Habracha/Center City Synagogue and Director of the Center City Beit Midrash. Rabbi Gotlib studied Communication, Jewish Studies, and Philosophy at Rutgers University before receiving rabbinic ordination from the Rabbi Isaac Elchanan Theological Seminary at Yeshiva University (RIETS), a Certificate in Mental Health Counseling from the Ferkauf Graduate School of Psychology in partnership with RIETS, and a START Certificate in Spiritual Entrepreneurship from the Glean Network in partnership with Columbia Business School.",
               "Rabbi Gotlib previously served as Interim Rabbi at Young Israel of Ottawa, Assistant Rabbi at the Village Shul/Aish HaTorah Learning Centre in Toronto, a Community Scholar at Beit Midrash Zichron Dov of Toronto, and Head of the Beit Midrash Program at Congregation Shearith Israel: The Spanish and Portuguese Synagogue in New York City.",
               "As a RIETS student, he held rabbinic internships at Congregation Beth Abraham-Jacob of Albany and at Yeshiva University's Zahava and Moshael Straus Center for Torah and Western Thought while working as Webmaster and Social Media Manager for The Lehrhaus.",
-              "A popular guest speaker throughout the US and Canada, Rabbi Gotlib's writings can be read in The Lehrhaus, Jewish Action, Tradition Online, 18Forty, and more. He has contributed to several volumes, including Who by Plague: High Holy Days Sermons from COVID19 Times (Hamotzi Press, 2021), Nothing so Whole as a Broken Heart: Reflections for the Days of Awe (Izzun Books, 2024), A Quest for Our Times: The Louis Jacobs Haggadah (Izzun Books, 2024), and The Oxford Handbook of Jewish Law.",
-              "Rabbi Gotlib strongly believes in making Jewish theology, philosophy, and law as accessible as possible to all who seek guidance and comfort within our tradition. He can be reached at rabbisgotlib@mekorhabracha.org.",
+              "A popular guest speaker throughout the US and Canada, Rabbi Gotlib's writings can be read in the Lehrhaus, Jewish Action, Tradition Online, 18Forty, and more. He has contributed to several volumes, including Who by Plague: High Holy Days Sermons from COVID19 Times (Hamotzi Press, 2021), Nothing so Whole as a Broken Heart: Reflections for the Days of Awe (Izzun Books, 2024), A Quest for Our Times: The Louis Jacobs Haggadah (Izzun Books, 2024), and The Oxford Handbook of Jewish Law.",
+              "He strongly believes in making Jewish theology, philosophy, and law as accessible as possible to all who seek guidance and comfort within our tradition.",
             ]}
             links={[
               { label: "Email Rabbi Gotlib", href: "mailto:rabbisgotlib@mekorhabracha.org" },
@@ -112,7 +112,8 @@ export default function OurRabbiPage() {
             ]}
           />
           <p className={styles.subheading}>
-            Rabbi Gotlib lives in Center City with his wife, Ruth Malkah Rohde, and their daughter Zeriza.
+            Rabbi Gotlib lives in Center City with his wife, Ruth Malkah Rohde, and their daughter Zeriza. He can be
+            reached at rabbisgotlib@mekorhabracha.org.
           </p>
           <CTACluster
             className={styles.linkCluster}

@@ -71,9 +71,9 @@ export default function AboutUsPage() {
             alt: "Mekor community members together",
           }}
           paragraphs={[
-            "Mekor Habracha is a vibrant and inclusive congregation in Center City Philadelphia, with diverse membership from across the city.",
-            "Visitors, whether local residents or out-of-towners, are always welcome.",
-            "Since it was founded in 2007, the shul has attracted, and continues to attract, a diverse group of people including students, young professionals, newlyweds, families, and empty nesters. We offer a range of religious, educational, and social activities, as well as plenty of opportunities for community members to get involved.",
+            "Mekor Habracha is a vibrant and inclusive congregation located in Center City, Philadelphia.",
+            "We have a diverse membership from all across the city, and visitors, whether local residents or out-of-towners, are always welcome.",
+            "Since it was founded in 2007, the Shul has attracted, and continues to attract a diverse group of people including students, young professionals, newlyweds, families, and empty nesters. We offer a range of religious, educational, and social activities, as well as plenty of opportunities for community members to get involved.",
             "We are proud that a number of wonderfully matched married couples first met at Mekor.",
           ]}
           links={[
@@ -97,7 +97,7 @@ export default function AboutUsPage() {
           paragraphs={[
             "At Mekor, we strive for transformative Jewish learning, putting the texts of our tradition in dialogue with pressing issues in our lives. Our community is turned to for the unique philosophy we represent in our sermons, classes, and publications.",
             "Our approach to Jewish learning is both profound and practical, addressing real-life issues through a blend of substantive dialogue with Jewish tradition and texts, a desire for genuine and personal spiritual exploration, and a passion for truth.",
-            "This methodology, influenced by Rabbi Hirsch's esteemed teachers who were and are revolutionary thinkers and halachic experts, brings all of Torah in conversation with modern life, offering a holistic and profound religious education.",
+            "This methodology, influenced by Rabbi Hirsch's esteemed teachers who were and are revolutionary thinkers and halachic experts (poskim), brings all of Torah in conversation with modern life, offering a holistic and profound religious education.",
           ]}
           links={[{ label: "Mekor Couples", href: "/mekorcouples" }]}
         />

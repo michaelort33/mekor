@@ -107,7 +107,7 @@ export default async function MembershipPage() {
             <p className={styles.sectionEyebrow}>Join or renew</p>
             <h2 className={styles.panelTitle}>We offer 2 simple ways to join or renew:</h2>
             <p className={styles.leadText}>
-              We try to make everyone, member and nonmember alike, feel welcome in our community. Visitors to our shul
+              We try to make everyone, member &amp; nonmember alike, feel welcome in our community. Visitors to our shul
               speak glowingly about the way we assist them in so many ways.
             </p>
             <p className={styles.bodyText}>
@@ -152,7 +152,7 @@ export default async function MembershipPage() {
         </div>
         <div className={styles.noteStack}>
           <p className={styles.note}>We also request a suggested donation of <strong>$100</strong> as a security fee.</p>
-          <p className={styles.note}>If you joined during the year and paid for a full year, your following year&apos;s dues will be prorated.</p>
+          <p className={styles.note}>Please Note: If you joined sometime during the year and paid for a year&apos;s membership, your following year&apos;s dues will be prorated.</p>
         </div>
       </SectionCard>
 
@@ -166,7 +166,7 @@ export default async function MembershipPage() {
               shul speak glowingly about the way we assist them in so many ways.
             </p>
             <p className={styles.bodyText}>
-              But our shul can&apos;t live on love alone. Mekor Habracha cannot exist and provide so many services
+              But our shul can&apos;t live on love alone! Mekor Habracha cannot exist and provide so many services
               without paying members and the generosity of donors. The Center City Jewish life that you enjoy depends on
               Mekor Habracha, and Mekor Habracha depends on membership dues.
             </p>
