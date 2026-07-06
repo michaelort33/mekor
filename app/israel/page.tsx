@@ -126,7 +126,7 @@ export default function IsraelPage() {
           links={[{ label: "Rabbi Hirsch on Oct 7", href: "/from-the-rabbi-s-desk" }]}
         />
         <p className={styles.longCopy}>
-          Mekor Habracha/Center City Synagogue Commemoration of October 7: 6:15pm Mincha, 6:45pm Program.
+          Mekor Habracha/Center City Synagogue Commemoration of October 7: 6:15pm Mincha - 6:45pm Program.
         </p>
       </SectionCard>
 

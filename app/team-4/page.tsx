@@ -132,7 +132,7 @@ export default async function Team4Page() {
 
       <SectionCard title="A new volunteer opportunity is coming soon..." className={styles.flatSection}>
         <ol className={styles.stepsList}>
-          <li>Look out. This space will contain a new and special volunteer opportunity soon.</li>
+          <li>Look out - this space will contain a new and special volunteer opportunity soon.</li>
           <li>Choose an opportunity in the sign-up form below.</li>
           <li>Share your availability date and contact details.</li>
         </ol>

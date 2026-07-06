@@ -89,7 +89,7 @@ export default async function CenterCityBeitMidrashPage() {
           ))}
         </div>
         <p className={styles.note}>
-          Contact Rabbi Gotlib for Zoom info.
+          Contact Rabbi Gotlib for Zoom Info.
         </p>
       </SectionCard>
 
@@ -106,7 +106,7 @@ export default async function CenterCityBeitMidrashPage() {
 
       <SectionCard title="Mission Statement" className={styles.sectionCard}>
         <p className={styles.bodyText}>
-          The Center City Beit Midrash is an inclusive, learning-centered organization committed to providing
+          The Center City Beit Midrash (CCBM) is an inclusive, learning-centered organization committed to providing
           high-quality educational experiences for those seeking meaningful engagement with Jewish texts and traditions.
         </p>
         <p className={styles.bodyText}>

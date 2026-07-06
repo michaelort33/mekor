@@ -567,7 +567,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
     primaryLinks: [{ label: "Current CCBM Page", href: "/center-city-beit-midrash" }],
     sections: [
       {
-        heading: "Summer classes at Mekor",
+        heading: "Summer Classes at Mekor!",
         cards: [
           { title: "Talmud Brachot", body: "Tuesdays at 7:00 PM" },
           { title: "Religious Zionism", body: "Wednesdays at 7:00 PM" },
@@ -576,9 +576,9 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
         ],
       },
       {
-        heading: "Advocate for yourself workshop",
+        heading: "Advocate for Yourself",
         paragraphs: [
-          "A three-part interactive workshop on responding to antisemitism and anti-Israel rhetoric in practical, non-debate settings.",
+          "This free, three-part interactive workshop teaches a practical rhetorical technique to help you confidently respond to antisemitic or anti-Israel comments—without engaging in debate.",
         ],
         links: [
           { label: "drweinberg@outlook.com", href: "mailto:drweinberg@outlook.com" },
