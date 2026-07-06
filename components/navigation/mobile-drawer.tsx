@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -95,8 +96,8 @@ export function MobileDrawer({
               const isActive = isNavigationPathActive(currentPath, item.href);
               const itemClassName =
                 item.tone === "cta"
-                  ? "block rounded-[22px] border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-4 text-base font-semibold [color:#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] visited:[color:#f8fbff]"
-                  : "block rounded-[22px] border border-[var(--color-border)] bg-white/72 px-4 py-4 text-base font-medium text-[var(--color-foreground)] shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]";
+                  ? "block rounded-[22px] border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-4 text-base font-semibold [color:#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] visited:[color:#f8fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
+                  : "block rounded-[22px] border border-[var(--color-border)] bg-white/72 px-4 py-4 text-base font-medium text-[var(--color-foreground)] shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]";
 
               if (!isNavGroup(item)) {
                 return (
@@ -180,7 +181,7 @@ export function MobileDrawer({
                     <button
                       type="button"
                       className={cn(
-                        "inline-flex h-10 w-10 items-center justify-center rounded-full",
+                        "inline-flex h-10 w-10 items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]",
                         item.tone === "cta"
                           ? "border border-white/20 bg-white/10 text-white"
                           : "border border-[var(--color-border)] bg-white/85 text-[var(--color-muted)]",
@@ -201,7 +202,10 @@ export function MobileDrawer({
                       }}
                     >
                       <span className="sr-only">Toggle {item.label} submenu</span>
-                      <span aria-hidden="true">▾</span>
+                      <ChevronDown
+                        className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")}
+                        aria-hidden="true"
+                      />
                     </button>
                   </div>
 
@@ -240,7 +244,7 @@ export function MobileDrawer({
           <div className="mb-3">
             <button
               type="button"
-              className="flex w-full items-center justify-between rounded-[22px] border border-[var(--color-border)] bg-white/78 px-4 py-4 text-left text-sm font-semibold text-[var(--color-foreground)] shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)]"
+              className="flex w-full items-center justify-between rounded-[22px] border border-[var(--color-border)] bg-white/78 px-4 py-4 text-left text-sm font-semibold text-[var(--color-foreground)] shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
               onClick={() => {
                 onClose();
                 openUniversalSearch();

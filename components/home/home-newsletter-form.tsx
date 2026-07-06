@@ -67,6 +67,7 @@ export function HomeNewsletterForm({
         autoComplete="email"
         inputMode="email"
         maxLength={255}
+        aria-label="Email address"
         placeholder="Enter your email here"
         value={email}
         className={inputClassName}
@@ -75,8 +76,8 @@ export function HomeNewsletterForm({
       <Button type="submit" className={submitClassName} disabled={state === "submitting"}>
         {state === "submitting" ? "SUBSCRIBING..." : "SUBSCRIBE"}
       </Button>
-      {state === "success" ? <p className={successClassName}>Thanks for subscribing.</p> : null}
-      {state === "error" ? <p className={errorClassName}>Unable to subscribe right now.</p> : null}
+      {state === "success" ? <p role="status" className={successClassName}>Thanks for subscribing.</p> : null}
+      {state === "error" ? <p role="alert" className={errorClassName}>Unable to subscribe right now.</p> : null}
     </form>
   );
 }

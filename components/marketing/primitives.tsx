@@ -302,7 +302,7 @@ export function CTACluster({ title, items, className }: CTAClusterProps) {
           <RenderLink
             key={`${item.href}-${item.label}`}
             href={item.href}
-            className="group rounded-[24px] border border-[var(--color-border)] bg-white/80 px-4 py-4 shadow-[0_16px_40px_-32px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 hover:border-[var(--color-border-strong)] hover:bg-white"
+            className="group rounded-[24px] border border-[var(--color-border)] bg-white/80 px-4 py-4 shadow-[0_16px_40px_-32px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 hover:border-[var(--color-border-strong)] hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]"
           >
             <span className="block text-sm font-semibold tracking-[0.02em] text-[var(--color-foreground)]">
               {item.label}

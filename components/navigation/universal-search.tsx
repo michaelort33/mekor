@@ -186,7 +186,7 @@ export function UniversalSearch({ compact = false }: UniversalSearchProps) {
               <DialogPrimitive.Close asChild>
                 <button
                   type="button"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-white/82 text-[var(--color-muted)]"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-white/82 text-[var(--color-muted)] transition hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
                   aria-label="Close search"
                 >
                   <X className="h-4 w-4" />
@@ -216,7 +216,7 @@ export function UniversalSearch({ compact = false }: UniversalSearchProps) {
                     type="button"
                     onMouseEnter={() => setSelectedIndex(index)}
                     onClick={() => navigateTo(result.path)}
-                    className={`grid w-full gap-2 rounded-[22px] border px-4 py-4 text-left transition ${
+                    className={`grid w-full gap-2 rounded-[22px] border px-4 py-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] ${
                       index === selectedIndex
                         ? "border-[var(--color-border-strong)] bg-[var(--color-surface-strong)]"
                         : "border-[var(--color-border)] bg-white/78"
@@ -241,7 +241,11 @@ export function UniversalSearch({ compact = false }: UniversalSearchProps) {
           <div className="flex items-center justify-between gap-4 border-t border-[var(--color-border)] bg-white/55 px-4 py-3 text-xs uppercase tracking-[0.16em] text-[var(--color-muted)] sm:px-5">
             <span>Use ↑ ↓ to move</span>
             <span>Enter to open</span>
-            <Link href={query.trim() ? `/search?q=${encodeURIComponent(query)}` : "/search"} onClick={() => setOpen(false)}>
+            <Link
+              href={query.trim() ? `/search?q=${encodeURIComponent(query)}` : "/search"}
+              onClick={() => setOpen(false)}
+              className="rounded-sm underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
+            >
               Full search page
             </Link>
           </div>
