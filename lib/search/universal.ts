@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { getNativeSearchIndex } from "@/lib/native-content/content-loader";
+import { isHiddenContentPath } from "@/lib/content/hidden-paths";
 import type { NativeDocumentType } from "@/lib/content/types";
 import { SITE_MENU, isNavGroup } from "@/lib/navigation/site-menu";
 
@@ -289,6 +290,10 @@ async function buildUniversalDocuments() {
   return records.map((record) => {
     const normalizedPath = normalizePathname(record.path);
     if (!allowedPaths.has(normalizedPath)) {
+      return null;
+    }
+
+    if (isHiddenContentPath(record.path)) {
       return null;
     }
 
