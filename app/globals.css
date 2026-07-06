@@ -166,12 +166,6 @@ a {
   display: block;
 }
 
-.route-loading-shell {
-  min-height: 100svh;
-  width: 100%;
-  background: #f9f7f2;
-}
-
 .mirror-root img,
 .mirror-root video,
 .mirror-root iframe {
