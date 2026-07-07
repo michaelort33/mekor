@@ -30,11 +30,34 @@
 }
 
 .heroSection :global(a) {
-  border-radius: 5px !important;
-  border-color: #99acbf !important;
-  background: rgba(249, 252, 255, 0.94) !important;
-  color: #1d3e5e !important;
+  border-radius: 999px !important;
+  border-color: var(--color-border-strong) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  color: var(--color-accent) !important;
   box-shadow: none !important;
+}
+
+.heroSection :global(a:first-child) {
+  border-color: transparent !important;
+  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%) !important;
+  color: #f8fbff !important;
+  box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.45) !important;
+}
+
+.heroSection :global(a:hover) {
+  background: #ffffff !important;
+  border-color: var(--color-accent) !important;
+  transform: translateY(-1px) !important;
+}
+
+.heroSection :global(a:first-child:hover) {
+  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%) !important;
+  border-color: transparent !important;
+}
+
+.heroSection :global(a:focus-visible) {
+  outline: 2px solid var(--color-accent) !important;
+  outline-offset: 2px !important;
 }
 
 .sectionCard {
@@ -72,6 +95,16 @@
   font-size: clamp(2rem, 3.6vw, 3.05rem);
   line-height: 0.98;
   letter-spacing: -0.02em;
+}
+
+.scheduleTitle::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin: 14px 0 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 60%, transparent);
 }
 
 .scheduleLead {
@@ -329,9 +362,14 @@
 }
 
 .linkCluster :global(a:hover) {
-  transform: none !important;
-  border-color: #b9c9d9 !important;
-  background: #eff4fa !important;
+  transform: translateY(-1px) !important;
+  border-color: var(--color-accent) !important;
+  background: #ffffff !important;
+}
+
+.linkCluster :global(a:focus-visible) {
+  outline: 2px solid var(--color-accent) !important;
+  outline-offset: 2px !important;
 }
 
 .linkCluster :global(span) {

@@ -82,14 +82,15 @@
 
 .connectSection :global(a) {
   border-radius: 10px;
-  border: 1px solid #ccbda3;
-  background: #f8efde;
-  color: #5a4027;
+  border: 1px solid var(--color-border-strong);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--color-accent);
 }
 
 .connectSection :global(a:hover) {
-  border-color: #b9a78b;
-  background: #f0e0c9;
+  border-color: var(--color-accent);
+  background: #ffffff;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 760px) {

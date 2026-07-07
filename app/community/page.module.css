@@ -12,13 +12,23 @@
   font-size: 2rem;
 }
 
+.header h1::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  margin: 14px 0 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 60%, transparent);
+}
+
 .header p {
   margin-top: 0.5rem;
-  color: #4b5563;
+  color: var(--color-muted);
 }
 
 .empty {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 1rem;
   background: #fff;
@@ -31,7 +41,7 @@
 }
 
 .card {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 1rem;
   background: #fff;
@@ -39,6 +49,13 @@
   grid-template-columns: 64px 1fr;
   gap: 0.75rem;
   align-items: start;
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.card:hover {
+  border-color: var(--color-border-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(20, 32, 45, 0.08);
 }
 
 .avatar,
@@ -53,8 +70,8 @@
 }
 
 .avatarPlaceholder {
-  background: #111827;
-  color: #fff;
+  background: var(--color-accent);
+  color: #f8fbff;
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -65,14 +82,31 @@
   font-size: 1.05rem;
 }
 
+.body a {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.body a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.body a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .city {
   margin: 0.2rem 0 0;
-  color: #6b7280;
+  color: var(--color-muted);
 }
 
 .bio {
   margin: 0.45rem 0;
-  color: #1f2937;
+  color: var(--color-foreground);
 }
 
 .loadMoreWrap {
@@ -82,11 +116,23 @@
 }
 
 .loadMoreButton {
-  border: 1px solid #2f689d;
+  border: 1px solid var(--color-border-strong);
   border-radius: 999px;
   padding: 9px 16px;
   text-decoration: none;
   font-weight: 700;
-  color: #1f4f79;
-  background: #f6fbff;
+  color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.7);
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.loadMoreButton:hover {
+  background: #ffffff;
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+.loadMoreButton:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }

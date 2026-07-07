@@ -32,9 +32,30 @@
 
 .heroFlat :global(a) {
   border-radius: 7px !important;
-  border-color: #b6afa2 !important;
-  background: rgba(255, 254, 250, 0.94) !important;
-  color: #2f4d6d !important;
+  border: 1px solid var(--color-border-strong) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  color: var(--color-accent) !important;
+  box-shadow: none !important;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.heroFlat :global(a:hover) {
+  background: #ffffff !important;
+  border-color: var(--color-accent) !important;
+  transform: translateY(-1px);
+}
+
+.heroFlat :global(a:first-of-type) {
+  border-color: transparent !important;
+  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%) !important;
+  color: #f8fbff !important;
+  box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.45) !important;
+}
+
+.heroFlat :global(a:first-of-type:hover) {
+  border-color: transparent !important;
+  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%) !important;
+  transform: translateY(-1px);
 }
 
 .flatSection {
@@ -66,12 +87,13 @@
   background: #fffefb;
   box-shadow: none;
   min-height: 50px;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
 }
 
 .flatSection :global(a.group:hover) {
-  transform: none;
-  border-color: #b8ae9d;
-  background: #fffdf8;
+  transform: translateY(-1px);
+  border-color: var(--color-border-strong);
+  background: #ffffff;
 }
 
 .bannerCard {
@@ -113,6 +135,17 @@
   text-decoration: underline;
   text-underline-offset: 2px;
   font-weight: 500;
+  transition: color 160ms ease;
+}
+
+.linkRow a:hover {
+  color: var(--color-accent);
+}
+
+.linkRow a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 3px;
 }
 
 .valueGrid {

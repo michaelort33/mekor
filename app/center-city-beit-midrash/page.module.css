@@ -31,10 +31,36 @@
 
 .heroSection :global(a) {
   border-radius: 5px !important;
-  border-color: #99acbf !important;
-  background: rgba(249, 252, 255, 0.94) !important;
-  color: #1d3e5e !important;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease,
+    box-shadow 0.18s ease !important;
+}
+
+/* Primary hero action -> brand primary */
+.heroSection :global(a:first-of-type) {
+  border: 1px solid transparent !important;
+  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%) !important;
+  color: #f8fbff !important;
+  box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.45) !important;
+}
+
+.heroSection :global(a:first-of-type:hover) {
+  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Secondary hero action -> outline */
+.heroSection :global(a:last-of-type) {
+  border: 1px solid var(--color-border-strong) !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  color: var(--color-accent) !important;
   box-shadow: none !important;
+}
+
+.heroSection :global(a:last-of-type:hover) {
+  background: #ffffff !important;
+  border-color: var(--color-accent) !important;
+  transform: translateY(-1px) !important;
 }
 
 .sectionCard {
@@ -139,12 +165,13 @@
   background: #fff9ef !important;
   box-shadow: none !important;
   padding: 12px !important;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease !important;
 }
 
 .quickLinksCluster :global(a:hover) {
-  transform: none !important;
-  border-color: #c2b59c !important;
-  background: #f7efe2 !important;
+  transform: translateY(-1px) !important;
+  border-color: var(--color-border-strong) !important;
+  background: #fffdf8 !important;
 }
 
 .quickLinksCluster :global(span) {
