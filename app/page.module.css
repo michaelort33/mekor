@@ -166,21 +166,41 @@
   min-height: 48px;
   padding: 0 28px;
   border-radius: 999px;
-  background: #7f808a;
-  color: #fff;
   font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
   font-size: 0.9375rem;
   font-weight: 700;
   text-decoration: none;
-  transition: background-color 120ms ease;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.aboutButton,
+.featureButton,
+.daveningButton {
+  border: 1px solid transparent;
+  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%);
+  color: #f8fbff;
+  box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.45);
 }
 
 .aboutButton:hover,
 .featureButton:hover,
-.daveningButton:hover,
+.daveningButton:hover {
+  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%);
+  transform: translateY(-1px);
+}
+
+.newsletterArchive,
+.footerArchive {
+  border: 1px solid var(--color-border-strong);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--color-accent);
+}
+
 .newsletterArchive:hover,
 .footerArchive:hover {
-  background: #676975;
+  background: #ffffff;
+  border-color: var(--color-accent);
+  transform: translateY(-1px);
 }
 
 .videoShell {
@@ -404,12 +424,20 @@
 .footerNewsletterSubmit,
 .contactSubmit {
   min-height: 50px !important;
-  border-radius: 10px !important;
-  background: #7f808a !important;
-  color: #fff !important;
-  box-shadow: none !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%) !important;
+  color: #f8fbff !important;
+  box-shadow: 0 18px 45px -30px rgba(15, 23, 42, 0.5) !important;
   font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
   font-size: 0.9375rem;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.newsletterSubmit:hover,
+.footerNewsletterSubmit:hover,
+.contactSubmit:hover {
+  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%) !important;
+  transform: translateY(-1px);
 }
 
 .newsletterMessage,
@@ -437,6 +465,16 @@
 .sectionTitle {
   text-align: center;
   margin-bottom: 26px;
+}
+
+.sectionTitle::after {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 3px;
+  margin: 16px auto 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 60%, transparent);
 }
 
 .eventsList {

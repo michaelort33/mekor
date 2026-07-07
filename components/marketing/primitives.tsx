@@ -154,14 +154,26 @@ export function HeroSection({
         )}
       >
         {eyebrow ? (
-          <Badge className={cn(tone === "dark" ? "border-white/14 bg-white/10 text-[rgba(255,255,255,0.75)]" : "")}>
+          <Badge
+            className={cn(
+              align === "center" ? "self-center" : "self-start",
+              tone === "dark" ? "border-white/14 bg-white/10 text-[rgba(255,255,255,0.75)]" : "",
+            )}
+          >
             {eyebrow}
           </Badge>
         ) : null}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <h1 className="font-[family-name:var(--font-heading)] text-5xl leading-[0.92] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
             {title}
           </h1>
+          <span
+            aria-hidden
+            className={cn(
+              "block h-[3px] w-12 rounded-full",
+              tone === "dark" ? "bg-white/45" : "bg-[color-mix(in_srgb,var(--color-accent)_65%,transparent)]",
+            )}
+          />
           {subtitle ? (
             <p className={cn("text-lg font-medium tracking-[0.04em] sm:text-xl", tone === "dark" ? "text-[rgba(255,255,255,0.75)]" : "text-[var(--color-muted)]")}>
               {subtitle}
@@ -231,10 +243,13 @@ export function SplitMediaText({
         />
       </div>
       <div className="flex flex-col justify-center gap-5">
-        {kicker ? <Badge>{kicker}</Badge> : null}
-        <h2 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.03em] text-[var(--color-foreground)] sm:text-5xl">
-          {title}
-        </h2>
+        {kicker ? <Badge className="self-start">{kicker}</Badge> : null}
+        <div className="space-y-3">
+          <h2 className="font-[family-name:var(--font-heading)] text-4xl tracking-[-0.03em] text-[var(--color-foreground)] sm:text-5xl">
+            {title}
+          </h2>
+          <span aria-hidden className="block h-[2px] w-9 rounded-full bg-[color-mix(in_srgb,var(--color-accent)_60%,transparent)]" />
+        </div>
         <div className="space-y-4">
           {paragraphs.map((paragraph) => (
             <p key={`${title}-${paragraph}`} className="text-base leading-7 text-[var(--color-muted)] sm:text-lg sm:leading-8">
@@ -277,6 +292,15 @@ export function SectionCard({
           {title ? (
             <CardTitle className={cn(tone === "dark" ? "text-white" : "")}>{title}</CardTitle>
           ) : null}
+          {title ? (
+            <span
+              aria-hidden
+              className={cn(
+                "-mt-1 h-[2px] w-9 rounded-full",
+                tone === "dark" ? "bg-white/40" : "bg-[color-mix(in_srgb,var(--color-accent)_60%,transparent)]",
+              )}
+            />
+          ) : null}
           {description ? (
             <CardDescription className={cn(tone === "dark" ? "text-[rgba(255,255,255,0.72)]" : "")}>
               {description}
@@ -293,9 +317,12 @@ export function CTACluster({ title, items, className }: CTAClusterProps) {
   return (
     <section className={cn("space-y-4", className)}>
       {title ? (
-        <h3 className="font-[family-name:var(--font-heading)] text-2xl tracking-[-0.02em] text-[var(--color-foreground)]">
-          {title}
-        </h3>
+        <div className="space-y-2.5">
+          <h3 className="font-[family-name:var(--font-heading)] text-2xl tracking-[-0.02em] text-[var(--color-foreground)]">
+            {title}
+          </h3>
+          <span aria-hidden className="block h-[2px] w-8 rounded-full bg-[color-mix(in_srgb,var(--color-accent)_55%,transparent)]" />
+        </div>
       ) : null}
       <div className="grid gap-3 md:grid-cols-2">
         {items.map((item) => (

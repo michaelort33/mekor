@@ -38,26 +38,22 @@
 
 .splitPanel :global(a) {
   border-radius: 8px;
-  border: 1px solid #c8d2de;
-  background: #eef2f6;
-}
-
-.splitPanel :global(a:hover) {
-  background: #e6edf4;
 }
 
 .communityLinks :global(a) {
   border-radius: 8px;
-  border: 1px solid #ccd4dd;
-  background: #f5f6f2;
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.8);
   box-shadow: none;
   padding: 12px 14px;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
 .communityLinks :global(a:hover) {
-  transform: none;
-  border-color: #b7c1cd;
-  background: #eef1f4;
+  transform: translateY(-1px);
+  border-color: var(--color-border-strong);
+  background: #ffffff;
+  box-shadow: 0 12px 26px -20px rgba(15, 23, 42, 0.4);
 }
 
 .mapShell {

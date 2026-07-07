@@ -117,6 +117,13 @@
   padding: 16px;
   display: grid;
   gap: 10px;
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sectionCard:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 32%, #d4cdc0);
+  background: #fbfaf6;
+  box-shadow: 0 18px 40px -34px rgba(15, 23, 42, 0.4);
 }
 
 .sectionCard h3 {
@@ -144,6 +151,18 @@
   text-decoration: underline;
   text-underline-offset: 2px;
   font-weight: 500;
+  border-radius: 3px;
+  transition: color 0.18s ease, text-underline-offset 0.18s ease;
+}
+
+.sectionLinks a:hover {
+  color: var(--color-accent);
+  text-underline-offset: 3px;
+}
+
+.sectionLinks a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 .stepsList {
