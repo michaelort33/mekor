@@ -171,6 +171,10 @@ export function UniversalSearch({ compact = false }: UniversalSearchProps) {
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[rgba(16,24,32,0.52)] backdrop-blur-sm" />
         <DialogPrimitive.Content className="fixed left-1/2 top-[12vh] z-50 w-[min(720px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[28px] border border-[var(--color-border)] bg-[linear-gradient(180deg,#fffdf8_0%,#f7f2e8_100%)] shadow-[0_32px_90px_-34px_rgba(15,23,42,0.52)]">
+          <DialogPrimitive.Title className="sr-only">Search Mekor Habracha</DialogPrimitive.Title>
+          <DialogPrimitive.Description className="sr-only">
+            Search across page names, URLs, metadata, and indexed page content.
+          </DialogPrimitive.Description>
           <div className="border-b border-[var(--color-border)] px-4 py-4 sm:px-5">
             <div className="flex items-center gap-3">
               <Search className="h-5 w-5 text-[var(--color-muted)]" />

@@ -38,6 +38,13 @@ export default function RootLayout({
         className={`${bodyFont.variable} ${headingFont.variable}`}
         style={{ backgroundColor: "#f7f3eb", color: "#1f3043" }}
       >
+        <link
+          rel="preload"
+          href="/fonts/lulo-clean-w01-one-bold.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         {gtmId ? (
           <Script
             id="gtm-script"
