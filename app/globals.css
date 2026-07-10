@@ -1,5 +1,38 @@
 @import "tailwindcss";
 
+/* Original live-site fonts, self-hosted from the archived Wix export. */
+@font-face {
+  font-family: "lulo-clean-w01-one-bold";
+  src: url("/fonts/lulo-clean-w01-one-bold.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "avenir-lt-w01_35-light1475496";
+  src: url("/fonts/avenir-lt-w01_35-light1475496.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "avenir-lt-w01_85-heavy1475544";
+  src: url("/fonts/avenir-lt-w01_85-heavy1475544.woff2") format("woff2");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "helvetica-w01-light";
+  src: url("/fonts/helvetica-w01-light.woff2") format("woff2");
+  font-weight: 300 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   box-sizing: border-box;
 }

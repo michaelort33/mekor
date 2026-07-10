@@ -19,8 +19,7 @@
 .heroImage,
 .featureImage,
 .daveningImage,
-.rabbiImage,
-.footerBannerImage {
+.rabbiImage {
   object-fit: cover;
 }
 
@@ -41,8 +40,7 @@
   color: #fff;
 }
 
-.newsletterPanel h2,
-.footerNewsletter h3 {
+.newsletterPanel h2 {
   margin: 0;
   font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
   font-size: clamp(1rem, 1.5vw, 1.625rem);
@@ -53,47 +51,45 @@
 .heroTitle,
 .aboutCopy h2,
 .sectionTitle,
-.contactInfo h3,
-.footerContact h2 {
+.contactInfo h3 {
   margin: 0;
   font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
-  letter-spacing: -0.08em;
+  letter-spacing: 0em;
 }
 
 .heroEyebrow {
   margin: 0;
-  font-family: var(--font-body), "Avenir Next", Arial, sans-serif;
-  font-size: clamp(1rem, 1.5vw, 1.625rem);
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  line-height: 1;
+  font-family: lulo-clean-w01-one-bold, var(--font-body), sans-serif;
+  font-size: clamp(1rem, 2.6vw, 1.625rem);
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.1;
   text-transform: uppercase;
 }
 
 .heroTitle {
-  font-family: var(--font-body), "Avenir Next", Arial, sans-serif;
-  font-size: clamp(3.2rem, 9vw, 6.9rem);
-  font-weight: 800;
-  letter-spacing: -0.06em;
-  line-height: 0.92;
+  max-width: 770px;
+  font-size: clamp(2.5rem, 9.4vw, 5.875rem);
+  font-weight: 400;
+  letter-spacing: -0.12em;
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
 .heroDivider {
-  width: clamp(180px, 50vw, 1040px);
-  height: 2px;
-  margin-top: 8px;
-  background: rgba(255, 255, 255, 0.92);
+  width: min(750px, 78vw);
+  height: 11px;
+  background: #fff;
 }
 
 .heroSubtitle {
   margin: 0;
-  font-family: var(--font-body), "Avenir Next", Arial, sans-serif;
-  font-size: clamp(1.75rem, 4vw, 3.1rem);
-  font-weight: 800;
+  font-family: lulo-clean-w01-one-bold, var(--font-body), sans-serif;
+  font-size: clamp(1.35rem, 4.1vw, 2.5rem);
+  font-weight: 400;
   font-style: italic;
-  letter-spacing: 0.02em;
-  line-height: 1.08;
+  letter-spacing: -0.12em;
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
@@ -158,8 +154,7 @@
 .aboutButton,
 .featureButton,
 .daveningButton,
-.newsletterArchive,
-.footerArchive {
+.newsletterArchive {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -189,15 +184,13 @@
   transform: translateY(-1px);
 }
 
-.newsletterArchive,
-.footerArchive {
+.newsletterArchive {
   border: 1px solid var(--color-border-strong);
   background: rgba(255, 255, 255, 0.7);
   color: var(--color-accent);
 }
 
-.newsletterArchive:hover,
-.footerArchive:hover {
+.newsletterArchive:hover {
   background: #ffffff;
   border-color: var(--color-accent);
   transform: translateY(-1px);
@@ -337,10 +330,9 @@
   text-align: left;
 }
 
-.sectionTitle,
-.footerContact h2 {
-  font-size: clamp(2.2rem, 4.2vw, 3.25rem);
-  line-height: 1.05;
+.sectionTitle {
+  font-size: clamp(1.6rem, 2.8vw, 2.125rem);
+  line-height: 1.2;
   color: #2b5a81;
 }
 
@@ -399,7 +391,6 @@
 }
 
 .newsletterInput,
-.footerNewsletterInput,
 .contactInput,
 .contactTextarea {
   border-radius: 10px !important;
@@ -410,7 +401,6 @@
 }
 
 .newsletterInput,
-.footerNewsletterInput,
 .contactInput {
   height: 45px !important;
 }
@@ -421,7 +411,6 @@
 }
 
 .newsletterSubmit,
-.footerNewsletterSubmit,
 .contactSubmit {
   min-height: 50px !important;
   border-radius: 12px !important;
@@ -434,23 +423,20 @@
 }
 
 .newsletterSubmit:hover,
-.footerNewsletterSubmit:hover,
 .contactSubmit:hover {
   background: linear-gradient(180deg, #285f90 0%, #1c4368 100%) !important;
   transform: translateY(-1px);
 }
 
 .newsletterMessage,
-.contactMessage,
-.footerMessage {
+.contactMessage {
   margin: 0;
   color: #1f6b43;
   text-align: center;
 }
 
 .newsletterError,
-.contactError,
-.footerError {
+.contactError {
   margin: 0;
   color: #a12727;
   text-align: center;
@@ -723,31 +709,9 @@
 }
 
 .footer {
-  position: relative;
   background: #3f4359;
-  color: #b0b2b8;
+  color: #9b9eac;
   padding: 52px 0 28px;
-  overflow: hidden;
-}
-
-.footerBanner {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 468px;
-  pointer-events: none;
-}
-
-.footerBannerOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(63, 67, 89, 0.82) 0%, rgba(63, 67, 89, 0.97) 100%);
-}
-
-.footerInner,
-.footerContact,
-.footerNewsletter {
-  position: relative;
-  z-index: 1;
 }
 
 .footerInner {
@@ -760,48 +724,173 @@
 .footerContact,
 .footerNewsletter {
   display: grid;
-  gap: 14px;
 }
 
-.footerContact h2 {
-  color: #fff;
+.footerContact {
+  gap: 6px;
+}
+
+.footerNewsletter {
+  gap: 16px;
+  padding: 0 18px;
+}
+
+.footerContact h2,
+.footerContact .footerTagline {
+  margin: 0;
+  font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 1.7;
+  color: #b0b2b8;
+  text-transform: uppercase;
+}
+
+.footerRule {
+  width: 21px;
+  border-top: 3px solid #9b9eac;
+  margin: 10px 0 14px;
+}
+
+.footerContact p {
+  margin: 0;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #9b9eac;
 }
 
 .footerContact a {
   width: fit-content;
+  color: #9b9eac;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-.footerNewsletter {
-  padding: 0 18px;
+.footerContact a:hover {
+  color: #c6c8d5;
 }
 
 .footerNewsletter h3 {
+  margin: 0;
+  font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.7;
   color: #b0b2b8;
+  text-transform: uppercase;
+}
+
+.footerNewsletterInput {
+  height: 45px !important;
+  border-radius: 10px !important;
+  border: 2px solid #919191 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 16px;
+  color: #fff !important;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.875rem;
+}
+
+.footerNewsletterInput::placeholder {
+  color: #84858a;
+}
+
+.footerNewsletterInput:focus {
+  border-color: #b0b2b8 !important;
+}
+
+.footerNewsletterSubmit {
+  min-height: 50px !important;
+  border: 1px solid #2c2d2e !important;
+  border-radius: 10px !important;
+  background: #7f808a !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.footerNewsletterSubmit:hover {
+  background: #fff !important;
+  color: #2c2d2e !important;
+}
+
+.footerArchive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 458px);
+  min-height: 49px;
+  padding: 0 26px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: #373b4d;
+  color: #fff;
+  font-family: avenir-lt-w01_85-heavy1475544, Arial, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  text-decoration: none;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.footerArchive:hover {
+  background: #eaeaea;
+  border-color: #2c2d2e;
+  color: #3f4359;
+}
+
+.footerMessage {
+  margin: 0;
+  color: #a9dcbc;
+  text-align: center;
+}
+
+.footerError {
+  margin: 0;
+  color: #f0b3b3;
+  text-align: center;
 }
 
 .socialLinks {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 16px;
-  padding-top: 6px;
+  align-items: center;
+  gap: 14px;
+  padding-top: 12px;
 }
 
 .socialLinks a {
+  display: inline-flex;
   color: #fff;
 }
 
+.socialLinks a:hover {
+  color: #c6c8d5;
+}
+
+.socialLinks svg {
+  width: 26px;
+  height: 26px;
+}
+
 .copyright {
-  position: relative;
-  z-index: 1;
   margin: 0;
-  color: #b0b2b8;
+  color: #c6c8d5;
   font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
   font-size: 0.9375rem;
 }
 
 .footerMeta {
-  position: relative;
-  z-index: 1;
   margin: 36px 0 0;
   display: flex;
   flex-wrap: wrap;
@@ -929,12 +1018,8 @@
     padding-top: 56px;
   }
 
-  .heroEyebrow {
-    letter-spacing: 0.1em;
-  }
-
   .heroDivider {
-    height: 2px;
+    height: 6px;
     width: min(84vw, 520px);
   }
 
