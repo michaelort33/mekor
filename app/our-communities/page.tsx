@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/primitives";
+import { CTACluster, HeroSection, InlineLink, SectionCard } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
@@ -70,34 +70,14 @@ export default async function OurCommunitiesPage() {
         </p>
         <p className={styles.bodyText}>
           Mekor Habracha emerged from a 1990s independent chavura in the Rittenhouse Square area of Philadelphia. From
-          1999 to 2001 the group met under the auspices of Etz Chaim (currently Aish Chaim), and reverted to being mainly
+          1999 to 2001 the group met under the auspices of Etz Chaim (currently <InlineLink href="https://aishchaim.com/">Aish Chaim</InlineLink>), and reverted to being mainly
           lay-led until 2006, when Etz Chaim recruited Rabbi Eliezer Hirsch from New York to lead the group. Since Rabbi
           Hirsch&apos;s arrival, the congregation has grown and flourished, eventually becoming an independent synagogue in
           2007, and is now a critical contributing organization to the advancement of Jewish life in Center City.
         </p>
         <p className={styles.bodyText}>
-          You can read more about Mekor&apos;s origins and subsequent growth here, and a recent article about our
-          community here.
+          Read more about <InlineLink href="https://mekorhabracha.github.io/2013/10/16/modern-orthodox-community.html">Mekor&apos;s origins and subsequent growth</InlineLink> and the <InlineLink href="https://www.jewishexponent.com/mekor-habracha-continues-to-bring-orthodox-vibrancy-to-center-city/">Jewish Exponent&apos;s feature on the Mekor community</InlineLink>.
         </p>
-        <div className={styles.linkRow}>
-          <a href="https://aishchaim.com/" target="_blank" rel="noreferrer noopener">
-            Aish Chaim
-          </a>
-          <a
-            href="https://mekorhabracha.github.io/2013/10/16/modern-orthodox-community.html"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Read about Mekor&apos;s origins
-          </a>
-          <a
-            href="https://www.jewishexponent.com/mekor-habracha-continues-to-bring-orthodox-vibrancy-to-center-city/"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Jewish Exponent feature
-          </a>
-        </div>
       </SectionCard>
 
       <SectionCard title="Our Mission" className={styles.flatSection}>

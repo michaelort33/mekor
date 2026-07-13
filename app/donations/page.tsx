@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { DonationCheckoutForm } from "@/components/payments/donation-checkout-form";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
@@ -196,11 +196,9 @@ export default async function DonationsPage() {
           paragraphs={[
             "Celebrate simchas with your Mekor community through Shabbat Kiddush sponsorships or honoring/memorializing those impactful individuals in one's life through sponsorship opportunities!",
             "All contributions are fully tax-deductible and will be acknowledged in a letter that may be used for tax purposes.",
-            "Donations may be made online (Venmo, PayPal Giving Fund, regular PayPal, Zelle, Credit, ACH or Apple Pay), or through our website by credit card, or by sending a check payable to Mekor Habracha, c/o Ellen Geller, 1500 Walnut St #206, Philadelphia, PA 19102. Please email the shul to let us know about your donation and any dedication you'd like to make.",
-          ]}
-          links={[
-            { label: "Kiddush Donation Page", href: "/kiddush" },
-            { label: "Email the Shul Office", href: "mailto:mekorhabracha@gmail.com" },
+            <>
+              Donations may be made online by Venmo, PayPal Giving Fund, regular PayPal, Zelle, credit card, ACH, or Apple Pay; through the <InlineLink href="/kiddush">Kiddush sponsorship page</InlineLink>; or by sending a check payable to Mekor Habracha, c/o Ellen Geller, 1500 Walnut St #206, Philadelphia, PA 19102. Please <InlineLink href="mailto:mekorhabracha@gmail.com">email the shul office</InlineLink> with your donation details and any dedication you would like to make.
+            </>,
           ]}
         />
       </SectionCard>

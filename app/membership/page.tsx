@@ -127,7 +127,7 @@ export default async function MembershipPage() {
               <li>No one is turned away for lack of funds.</li>
             </ul>
             <p className={styles.asideNote}>
-              Auxiliary Membership rates are available for those living outside Center City Philadelphia. <Link href="/auxiliary-membership">Please click here for info</Link>.
+              <Link href="/auxiliary-membership">Auxiliary Membership rates</Link> are available for those living outside Center City Philadelphia.
             </p>
           </aside>
         </div>

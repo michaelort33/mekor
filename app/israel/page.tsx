@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import { HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "@/app/israel/page.module.css";
@@ -41,13 +41,9 @@ export default function IsraelPage() {
             "While the IDF defends Israel's outer borders, and the police force answers emergency calls inside Israel's borders, it is Israel's Mishmar civilian security volunteers who patrol many neighborhood borders from criminals & terrorists.",
             "Ramot, Israel's largest neighborhood, is located on Jerusalem's northern border and is exposed to terrorist assaults on all sides.",
             "Mishmar Ramot now seeks to raise $50,000 for 2 goals. First, these funds will be used to train 30 volunteers to attain a highly professional level of skill, by using a curriculum tailored to the Ramot's needs. Secondly, the funds will enable Mishmar to purchase rescue & security equipment, as well as overhead for headquarters where security activities are coordinated.",
-            "The following videos vividly portray their work: Mishmar Video 1 (Hebrew); Mishmar Video 2; Mishmar Video 3 (Hebrew). To learn more, or to donate, please visit the following link.",
-          ]}
-          links={[
-            { label: "Mishmar Video 1", href: "https://youtu.be/LiwJzESwMjg?si=m2WgAKtM8GH8ORQN" },
-            { label: "Mishmar Video 2", href: "https://youtube.com/shorts/-bDUKSgLMk4?si=HefvV8FtjSeoGI4n" },
-            { label: "Mishmar Video 3", href: "https://youtu.be/zFB8Jx9xm0g?si=2-hPc2UvWyEfc2qK" },
-            { label: "Donate Now", href: "https://my.israelgives.org/en/fundme/MISHMARRAMOT" },
+            <>
+              The following videos vividly portray their work: <InlineLink href="https://youtu.be/LiwJzESwMjg?si=m2WgAKtM8GH8ORQN">Mishmar Video 1 (Hebrew)</InlineLink>, <InlineLink href="https://youtube.com/shorts/-bDUKSgLMk4?si=HefvV8FtjSeoGI4n">Mishmar Video 2</InlineLink>, and <InlineLink href="https://youtu.be/zFB8Jx9xm0g?si=2-hPc2UvWyEfc2qK">Mishmar Video 3 (Hebrew)</InlineLink>. You can also <InlineLink href="https://my.israelgives.org/en/fundme/MISHMARRAMOT">support Mishmar Ramot&apos;s campaign</InlineLink>.
+            </>,
           ]}
         />
       </SectionCard>
@@ -56,26 +52,11 @@ export default function IsraelPage() {
         <div className={styles.sparkGrid}>
           <div>
             <p className={styles.sparkParagraph}>
-              See the interview with Mekor member Joe Glyn on this video, explaining why he values the opportunity to
-              help Israeli small business by investing through Spark.
+              See <InlineLink href="https://mail.google.com/mail/u/0/#label/ADMIN%2Fnewsltr%2FFB%2Fwebsite/WhctKLbMvJGMWbQhwLVHfgmVfZscGBNFNNNJpZQNJswfxsVkBkrKscqJFpQQqrjdBjDMvwL?projector=1">Mekor member Joe Glyn&apos;s interview</InlineLink>, explaining why he values the opportunity to help Israeli small businesses by investing through SparkIL.
             </p>
             <p className={styles.sparkParagraph}>
-              For more info, please view: video about the business, and a video about our lenders. If you visit the
-              site and make a micro-loan, you can apply a $36 coupon code - <strong>pro36</strong> - when you check out.
-              If you have questions, please email YishaiGo@sparkil.org.
+              For more information, watch the <InlineLink href="https://www.youtube.com/watch?v=nxbnMRfIacE">video about the business</InlineLink> and the <InlineLink href="https://www.youtube.com/watch?v=FWv1nfj7W-8">video about SparkIL lenders</InlineLink>. If you make a micro-loan, apply the $36 coupon code <strong>pro36</strong> at checkout. Questions can be sent to <InlineLink href="mailto:YishaiGo@sparkil.org">YishaiGo@sparkil.org</InlineLink>.
             </p>
-            <CTACluster
-              items={[
-                {
-                  label: "Interview",
-                  href: "https://mail.google.com/mail/u/0/#label/ADMIN%2Fnewsltr%2FFB%2Fwebsite/WhctKLbMvJGMWbQhwLVHfgmVfZscGBNFNNNJpZQNJswfxsVkBkrKscqJFpQQqrjdBjDMvwL?projector=1",
-                },
-                { label: "Video: The business", href: "https://www.youtube.com/watch?v=nxbnMRfIacE" },
-                { label: "Video: Our lenders", href: "https://www.youtube.com/watch?v=FWv1nfj7W-8" },
-                { label: "Email YishaiGo@sparkil.org", href: "mailto:YishaiGo@sparkil.org" },
-                { label: "Visit Us", href: "/visit-us" },
-              ]}
-            />
           </div>
           <div className={styles.sparkImage}>
             <Image
@@ -102,11 +83,9 @@ export default function IsraelPage() {
             "This free, three-part interactive workshop teaches a practical rhetorical technique to help you confidently respond to antisemitic or anti-Israel comments--without engaging in debate.",
             "Led by Dr. Julia Weinberg, a clinical and forensic psychologist with a legal background, the sessions are live, not recorded, and available remotely or in person by arrangement.",
             "The workshop helps you identify manipulative rhetoric, practice effective responses, and apply them to real-life scenarios.",
-          ]}
-          links={[
-            { label: "Email drweinberg@outlook.com", href: "mailto:drweinberg@outlook.com" },
-            { label: "Call (215) 219-6748", href: "tel:+12152196748" },
-            { label: "www.jweinbergjdphd.com", href: "http://www.jweinbergjdphd.com/" },
+            <>
+              Contact Dr. Weinberg by <InlineLink href="mailto:drweinberg@outlook.com">email</InlineLink>, at <InlineLink href="tel:+12152196748">(215) 219-6748</InlineLink>, or through <InlineLink href="http://www.jweinbergjdphd.com/">her website</InlineLink>.
+            </>,
           ]}
         />
       </SectionCard>
@@ -122,8 +101,10 @@ export default function IsraelPage() {
             "The Simchat Torah Project (Updated 10/10/24): We are pleased to bring you an update on the Simchat Torah Project, a global initiative to commemorate this first anniversary of October 7.",
             "A new me'il (Torah cover) was created in Israel for each of the participating synagogues worldwide, including Mekor. This beautiful me'il proclaims that this Torah is dedicated in memory of the 1200 souls and the many soldiers and hostages who have since died, Al Kiddush Hashem.",
             "On Simchat Torah, when we dance with our scroll, Mekor will connect with communities around the world who joined in this project. May we merit to fulfill the words of Tehillim, 'You have turned my mourning into dancing,' and see the coming of Mashiach speedily in our days.",
+            <>
+              Read <InlineLink href="/from-the-rabbi-s-desk">Rabbi Hirsch&apos;s reflections on October 7</InlineLink>.
+            </>,
           ]}
-          links={[{ label: "Rabbi Hirsch on Oct 7", href: "/from-the-rabbi-s-desk" }]}
         />
         <p className={styles.longCopy}>
           Mekor Habracha/Center City Synagogue Commemoration of October 7: 6:15pm Mincha - 6:45pm Program.

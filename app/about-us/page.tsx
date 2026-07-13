@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { ContactForm } from "@/components/medium-pages/contact-form";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "@/app/about-us/page.module.css";
@@ -37,17 +37,18 @@ export default function AboutUsPage() {
           }}
           paragraphs={[
             "Mekor Habracha began as an independent chavura in the Rittenhouse Square area of Philadelphia in the 1990s.",
-            "From 1999 to 2001, the group met under the auspices of Etz Chaim (now Aish Chaim), before returning to a primarily lay-led model. In 2006, Etz Chaim recruited Rabbi Eliezer Hirsch from New York to serve as the group's rabbi.",
-            "Since Rabbi Hirsch's arrival, the congregation has grown and flourished, becoming an independent synagogue in 2008, and is now a vital force in strengthening Jewish life in Center City. Mekor has played a key role in supporting the expansion of kosher dining, helping establish a community eruv, spearheading the building of a mikvah, and sponsoring many Orthodox converts to Judaism.",
+            <>
+              From 1999 to 2001, the group met under the auspices of Etz Chaim (now{" "}
+              <InlineLink href="https://aishchaim.com/">Aish Chaim</InlineLink>), before returning to a primarily lay-led
+              model. In 2006, Etz Chaim recruited Rabbi Eliezer Hirsch from New York to serve as the group&apos;s rabbi.
+            </>,
+            <>
+              Since Rabbi Hirsch&apos;s arrival, the congregation has grown and flourished, becoming an independent
+              synagogue in 2008, and is now a vital force in strengthening Jewish life in Center City. You can read more
+              about <InlineLink href="https://mekorhabracha.github.io/2013/10/16/modern-orthodox-community.html">Mekor&apos;s origins</InlineLink>
+              {" "}and its continuing impact in the <InlineLink href="https://www.jewishexponent.com/mekor-habracha-continues-to-bring-orthodox-vibrancy-to-center-city/">Jewish Exponent&apos;s feature</InlineLink>.
+            </>,
             "In 2024, Rabbi Steven Gotlib joined Mekor Habracha as Associate Rabbi. His thoughtful leadership, strong Torah scholarship, and deep sense of connection to the community have already made a meaningful impact, complementing Rabbi Hirsch's vision and helping guide the congregation into its next chapter.",
-          ]}
-          links={[
-            { label: "Aish Chaim", href: "https://aishchaim.com/" },
-            { label: "Read Mekor's origins", href: "https://mekorhabracha.github.io/2013/10/16/modern-orthodox-community.html" },
-            {
-              label: "Jewish Exponent feature",
-              href: "https://www.jewishexponent.com/mekor-habracha-continues-to-bring-orthodox-vibrancy-to-center-city/",
-            },
           ]}
         />
       </SectionCard>
@@ -73,13 +74,17 @@ export default function AboutUsPage() {
           paragraphs={[
             "Mekor Habracha is a vibrant and inclusive congregation located in Center City, Philadelphia.",
             "We have a diverse membership from all across the city, and visitors, whether local residents or out-of-towners, are always welcome.",
-            "Since it was founded in 2007, the Shul has attracted, and continues to attract a diverse group of people including students, young professionals, newlyweds, families, and empty nesters. We offer a range of religious, educational, and social activities, as well as plenty of opportunities for community members to get involved.",
-            "We are proud that a number of wonderfully matched married couples first met at Mekor.",
-          ]}
-          links={[
-            { label: "Center City kosher dining", href: "/center-city" },
-            { label: "Center City Eruv", href: "http://www.centercityeruv.org/" },
-            { label: "Philadelphia Mikvah", href: "https://philamikvah.org/" },
+            <>
+              Since it was founded in 2007, the Shul has attracted a diverse group of people including students, young
+              professionals, newlyweds, families, and empty nesters. Mekor has helped expand{" "}
+              <InlineLink href="/center-city">Center City kosher dining</InlineLink>, establish the{" "}
+              <InlineLink href="http://www.centercityeruv.org/">Center City Eruv</InlineLink>, and support the{" "}
+              <InlineLink href="https://philamikvah.org/">Philadelphia Mikvah</InlineLink>.
+            </>,
+            <>
+              We are proud that a number of wonderfully matched married couples first met at Mekor; read more about{" "}
+              <InlineLink href="/mekorcouples">Mekor Couples</InlineLink>.
+            </>,
           ]}
         />
       </SectionCard>
@@ -99,7 +104,6 @@ export default function AboutUsPage() {
             "Our approach to Jewish learning is both profound and practical, addressing real-life issues through a blend of substantive dialogue with Jewish tradition and texts, a desire for genuine and personal spiritual exploration, and a passion for truth.",
             "This methodology, influenced by Rabbi Hirsch's esteemed teachers who were and are revolutionary thinkers and halachic experts (poskim), brings all of Torah in conversation with modern life, offering a holistic and profound religious education.",
           ]}
-          links={[{ label: "Mekor Couples", href: "/mekorcouples" }]}
         />
       </SectionCard>
 
@@ -113,12 +117,12 @@ export default function AboutUsPage() {
             alt: "Mekor synagogue gathering",
           }}
           paragraphs={[
-            "Reach out to Mekor for membership, programs, and community involvement.",
-          ]}
-          links={[
-            { label: "Visit Us", href: "/visit-us" },
-            { label: "Call (215) 525-4246", href: "tel:+12155254246" },
-            { label: "Email admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org?subject=Join%20Us" },
+            <>
+              Reach out to Mekor for membership, programs, and community involvement. You can{" "}
+              <InlineLink href="/visit-us">plan your visit</InlineLink>,{" "}
+              <InlineLink href="tel:+12155254246">call (215) 525-4246</InlineLink>, or{" "}
+              <InlineLink href="mailto:admin@mekorhabracha.org?subject=Join%20Us">email the shul office</InlineLink>.
+            </>,
           ]}
         />
       </SectionCard>
