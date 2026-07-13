@@ -31,6 +31,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "content:generate": "node node_modules/tsx/dist/cli.mjs scripts/content/generate-native-content.ts",
+    "newsletters:import": "node scripts/newsletters/import-mailchimp-archive.mjs",
     "db:backfill:events": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-events.ts",
     "db:backfill:in-the-news": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-in-the-news.ts"
   },

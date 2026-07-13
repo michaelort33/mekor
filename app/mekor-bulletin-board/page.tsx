@@ -294,7 +294,7 @@ export default async function BulletinBoardPage() {
             { label: "General Shul Email", href: "mailto:mekorhabracha@gmail.com" },
             { label: "Call the Office: (215) 525-4246", href: "tel:+12155254246" },
             { label: "Mikvah Website", href: "https://philamikvah.org/" },
-            { label: "Latest Newsletters Archive", href: "https://us2.campaign-archive.com/home/?u=f9fe87a16c42c24704c099073&id=94f3350887" },
+            { label: "Latest Newsletters Archive", href: "/newsletters" },
           ]}
         />
       </SectionCard>

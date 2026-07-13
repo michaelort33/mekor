@@ -1,159 +1,156 @@
+import type { ElementType } from "react";
 import Link from "next/link";
 
-import type { Newsletter, NewsletterBlock, NewsletterRich } from "@/lib/newsletters/data";
+import {
+  formatNewsletterDate,
+  NEWSLETTER_CATEGORY_LABELS,
+  type Newsletter,
+  type NewsletterBlock,
+  type NewsletterContentNode,
+} from "@/lib/newsletters/data";
 import styles from "./newsletter-article.module.css";
 
 function isInternal(href: string) {
   return href.startsWith("/") && !href.startsWith("//");
 }
 
-function RichText({ value }: { value: NewsletterRich }) {
-  return (
-    <>
-      {value.map((part, index) => {
-        if (typeof part === "string") {
-          return <span key={index}>{part}</span>;
-        }
-        if (!part.href) {
-          return <span key={index}>{part.text}</span>;
-        }
-        if (isInternal(part.href)) {
-          return (
-            <Link key={index} href={part.href} className={styles.link}>
-              {part.text}
-            </Link>
-          );
-        }
-        return (
-          <a key={index} href={part.href} target="_blank" rel="noreferrer noopener" className={styles.link}>
-            {part.text}
-          </a>
-        );
-      })}
-    </>
+function LinkTarget({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
+  return isInternal(href) ? (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  ) : (
+    <a href={href} className={className} target="_blank" rel="noreferrer noopener">
+      {children}
+    </a>
   );
 }
 
-function Block({ block, embedded }: { block: NewsletterBlock; embedded: boolean }) {
-  switch (block.kind) {
-    case "image":
-      // External Mailchimp-hosted images kept verbatim; plain img avoids remote-domain config.
-      // eslint-disable-next-line @next/next/no-img-element
-      return <img src={block.src} alt={block.alt} loading="lazy" className={styles.image} />;
+const ELEMENT_TAGS: Record<string, ElementType> = {
+  div: "div",
+  p: "p",
+  span: "span",
+  strong: "strong",
+  b: "strong",
+  em: "em",
+  i: "em",
+  u: "u",
+  ul: "ul",
+  ol: "ol",
+  li: "li",
+  table: "table",
+  tbody: "tbody",
+  tr: "tr",
+  td: "td",
+  h1: "h2",
+  h2: "h3",
+  h3: "h4",
+  font: "span",
+  center: "div",
+};
 
-    case "section": {
-      const SectionTag = embedded ? "h3" : "h2";
-      return <SectionTag className={styles.sectionHeading}>{block.title}</SectionTag>;
-    }
-
-    case "paragraph": {
-      const className = [
-        styles.paragraph,
-        block.align === "center" ? styles.center : "",
-        block.italic ? styles.italic : "",
-        block.strong ? styles.strong : "",
-        block.small ? styles.small : "",
-      ]
-        .filter(Boolean)
-        .join(" ");
-      return (
-        <p className={className}>
-          <RichText value={block.text} />
-        </p>
-      );
-    }
-
-    case "schedule":
-      return (
-        <div className={styles.schedule}>
-          {block.heading ? <p className={styles.scheduleHeading}>{block.heading}</p> : null}
-          <dl className={styles.scheduleRows}>
-            {block.rows.map((row, index) => (
-              <div className={styles.scheduleRow} key={index}>
-                <dt className={styles.scheduleTime}>{row.time}</dt>
-                <dd className={styles.scheduleLabel}>
-                  <RichText value={row.label} />
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      );
-
-    case "list":
-      return (
-        <ul className={styles.list}>
-          {block.items.map((item, index) => (
-            <li key={index}>
-              <RichText value={item} />
-            </li>
-          ))}
-        </ul>
-      );
-
-    case "button":
-      return isInternal(block.href) ? (
-        <Link href={block.href} className={styles.button}>
-          {block.label}
-        </Link>
-      ) : (
-        <a href={block.href} target="_blank" rel="noreferrer noopener" className={styles.button}>
-          {block.label}
-        </a>
-      );
-
-    case "links":
-      return (
-        <div className={styles.linkRow}>
-          {block.items.map((item) =>
-            isInternal(item.href) ? (
-              <Link key={item.label} href={item.href} className={styles.linkChip}>
-                {item.label}
-              </Link>
-            ) : (
-              <a key={item.label} href={item.href} target="_blank" rel="noreferrer noopener" className={styles.linkChip}>
-                {item.label}
-              </a>
-            ),
-          )}
-        </div>
-      );
-
-    default:
-      return null;
+function ContentNode({ node }: { node: NewsletterContentNode }) {
+  if (node.type === "text") return node.value;
+  if (node.type === "break") return <br />;
+  if (node.type === "image") {
+    // Imported newsletter assets are local and keep their original aspect ratios.
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={node.src} alt={node.alt} loading="lazy" className={styles.inlineImage} />;
   }
+  if (node.type === "link") {
+    return (
+      <LinkTarget href={node.href} className={styles.link}>
+        {node.children.map((child, index) => (
+          <ContentNode node={child} key={index} />
+        ))}
+      </LinkTarget>
+    );
+  }
+
+  const Tag = ELEMENT_TAGS[node.tag] ?? "span";
+  const className = [
+    styles.richElement,
+    styles[`tag-${node.tag}`],
+    node.align ? styles[`align-${node.align}`] : "",
+    node.variant ? styles[`variant-${node.variant}`] : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  return (
+    <Tag className={className} id={node.id}>
+      {node.children.map((child, index) => (
+        <ContentNode node={child} key={index} />
+      ))}
+    </Tag>
+  );
 }
 
-export function NewsletterArticle({
-  newsletter,
-  embedded = false,
-}: {
-  newsletter: Newsletter;
-  embedded?: boolean;
-}) {
-  const TitleTag = embedded ? "h2" : "h1";
+function Block({ block }: { block: NewsletterBlock }) {
+  if (block.kind === "divider") return <hr className={styles.divider} />;
+
+  if (block.kind === "image") {
+    const image = (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={block.node.src} alt={block.node.alt} loading="lazy" className={styles.image} />
+    );
+    return block.href ? (
+      <LinkTarget href={block.href} className={styles.imageLink}>
+        {image}
+      </LinkTarget>
+    ) : (
+      image
+    );
+  }
+
+  if (block.kind === "button") {
+    return (
+      <div className={styles.buttonRow}>
+        <LinkTarget href={block.href} className={styles.button}>
+          {block.label}
+        </LinkTarget>
+      </div>
+    );
+  }
+
+  if (block.kind === "links") {
+    return (
+      <nav className={styles.originalLinks} aria-label="Links from the original newsletter">
+        {block.links.map((item) => (
+          <LinkTarget href={item.href} key={`${item.label}-${item.href}`}>
+            {item.label}
+          </LinkTarget>
+        ))}
+      </nav>
+    );
+  }
+
+  return (
+    <div className={styles.rich}>
+      {block.nodes.map((node, index) => (
+        <ContentNode node={node} key={index} />
+      ))}
+    </div>
+  );
+}
+
+export function NewsletterArticle({ newsletter }: { newsletter: Newsletter }) {
   return (
     <article className={styles.article}>
       <header className={styles.header}>
-        <p className={styles.eyebrow}>Weekly Newsletter</p>
-        <TitleTag className={styles.title}>{newsletter.parsha}</TitleTag>
-        <p className={styles.dateLine}>
-          {newsletter.dateRange}
-          <span className={styles.dot} aria-hidden="true">
-            ·
-          </span>
-          {newsletter.hebrewDate}
+        <div className={styles.headerMeta}>
+          <span>{NEWSLETTER_CATEGORY_LABELS[newsletter.category]}</span>
+          <time dateTime={newsletter.sentOn}>{formatNewsletterDate(newsletter.sentOn)}</time>
+          <span>{newsletter.readingMinutes} min read</span>
+        </div>
+        <h1>{newsletter.title}</h1>
+        <p>
+          Preserved from the original Mekor Habracha email archive. The wording below is unchanged and all newsletter
+          images are stored on this site.
         </p>
       </header>
-
-      {newsletter.leadImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={newsletter.leadImage} alt={`${newsletter.parsha} graphic`} className={styles.leadImage} />
-      ) : null}
-
       <div className={styles.body}>
         {newsletter.blocks.map((block, index) => (
-          <Block key={index} block={block} embedded={embedded} />
+          <Block block={block} key={index} />
         ))}
       </div>
     </article>
