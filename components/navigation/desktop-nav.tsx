@@ -80,7 +80,7 @@ export function DesktopNav({
 
   return (
     <div
-      className="hidden xl:block"
+      className="hidden min-[1441px]:block"
       ref={rootRef}
       onBlur={(event) => {
         const nextTarget = event.relatedTarget;

@@ -14,6 +14,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "output/**",
     ".vercel/**",
+    ".claude/**",
     "mirror-data/**",
     "old-archived-version/**",
   ]),

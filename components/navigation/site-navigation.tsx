@@ -120,7 +120,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
 
           <div className="flex flex-none items-center gap-2">
             <UniversalSearch compact />
-            <div className="hidden xl:flex">
+            <div className="hidden min-[1441px]:flex">
               <NavCta isSignedIn={authenticated} isCheckingAuth={isCheckingAuth} />
             </div>
             <Button
@@ -128,7 +128,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
               type="button"
               variant="secondary"
               size="icon"
-              className="xl:hidden"
+              className="min-[1441px]:hidden"
               onClick={() => setMobileOpen(true)}
               aria-expanded={mobileOpen}
               aria-controls="native-mobile-drawer"

@@ -46,6 +46,8 @@ next-env.d.ts
 .playwright-cli/
 output/
 /.codex/
+docs/design/newsletters/
+reports/newsletter-qa/
 
 # Mirror intermediates (keep structured manifests/docs, ignore heavy raw snapshots)
 mirror-data/raw/

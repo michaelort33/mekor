@@ -207,7 +207,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
     secondaryLinks: [
       {
         label: "Latest Newsletters",
-        href: "https://us2.campaign-archive.com/home/?u=f9fe87a16c42c24704c099073&id=94f3350887",
+        href: "/newsletters",
         external: true,
       },
     ],
@@ -257,7 +257,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
     secondaryLinks: [
       {
         label: "Latest Newsletters",
-        href: "https://us2.campaign-archive.com/home/?u=f9fe87a16c42c24704c099073&id=94f3350887",
+        href: "/newsletters",
         external: true,
       },
     ],
