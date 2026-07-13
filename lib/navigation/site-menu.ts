@@ -85,6 +85,7 @@ export const SITE_MENU: NavItem[] = [
       { label: "Kiddush", href: "/kiddush" },
       { label: "Volunteer", href: "/team-4" },
       { label: "Mekor Bulletin Board", href: "/mekor-bulletin-board" },
+      { label: "Past Newsletters", href: "/newsletters" },
       { label: "Ask Mekor", href: "/ask-mekor" },
       { label: "Israel", href: "/israel" },
       { label: "Testimonials", href: "/testimonials" },

@@ -300,7 +300,7 @@ export default function HomePage() {
               errorClassName={styles.newsletterError}
             />
             <Link href="/newsletters" className={styles.newsletterArchive}>
-              Latest Newsletters
+              Past Newsletters
             </Link>
           </div>
         </div>
@@ -437,7 +437,7 @@ export default function HomePage() {
                 errorClassName={styles.footerError}
               />
               <Link href="/newsletters" className={styles.footerArchive}>
-                Latest Newsletters
+                Past Newsletters
               </Link>
             </div>
           </div>

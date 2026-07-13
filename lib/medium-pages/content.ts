@@ -206,7 +206,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
     ],
     secondaryLinks: [
       {
-        label: "Latest Newsletters",
+        label: "Past Newsletters",
         href: "/newsletters",
         external: true,
       },
@@ -256,7 +256,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
     ],
     secondaryLinks: [
       {
-        label: "Latest Newsletters",
+        label: "Past Newsletters",
         href: "/newsletters",
         external: true,
       },

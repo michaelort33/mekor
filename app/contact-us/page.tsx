@@ -146,7 +146,7 @@ export default async function ContactUsPage() {
             { label: "Join Us", href: "https://chat.whatsapp.com/INZrPssTZeHK5xrx5ghECF" },
             { label: "Open in Google Maps", href: "https://maps.google.com/?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102" },
             { label: "Visit Us", href: "/visit-us" },
-            { label: "Latest Newsletters", href: "/newsletters" },
+            { label: "Past Newsletters", href: "/newsletters" },
           ]}
         />
       </SectionCard>
