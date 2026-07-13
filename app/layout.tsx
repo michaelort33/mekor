@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import Script from "next/script";
+
+import { BRAND_ASSETS } from "@/lib/brand-assets";
+
 import "./globals.css";
 
 const bodyFont = Manrope({
@@ -21,6 +24,13 @@ export const metadata: Metadata = {
   title: "Mekor Habracha | Center City Synagogue | Philadelphia | Synagogue",
   description:
     "Mekor Habracha / Center City Synagogue is a vibrant, inclusive Modern Orthodox community located in the heart of Center City, Philadelphia.",
+  icons: {
+    icon: [
+      { url: BRAND_ASSETS.faviconIco.url, type: "image/x-icon", sizes: "any" },
+      { url: BRAND_ASSETS.faviconPng.url, type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: BRAND_ASSETS.faviconPng.url, type: "image/png", sizes: "512x512" }],
+  },
 };
 
 export default function RootLayout({

@@ -1,11 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
+import { BRAND_ASSET_CATALOG } from "@/lib/brand-assets";
 import styles from "./page.module.css";
 
 type Setting = {
@@ -40,6 +42,7 @@ export default function AdminSettingsPage() {
       { label: "Settings", value: String(settings.length), hint: "Total configurable keys" },
       { label: "Boolean flags", value: String(booleanCount.length), hint: `${enabledCount} enabled` },
       { label: "Visible", value: String(filteredSettings.length), hint: "Matches current search" },
+      { label: "Brand assets", value: String(BRAND_ASSET_CATALOG.length), hint: "Published in Blob storage" },
     ];
   }, [filteredSettings.length, settings]);
 
@@ -129,6 +132,37 @@ export default function AdminSettingsPage() {
       </section>
 
       {error ? <p className={styles.error}>{error}</p> : null}
+
+      <section className={styles.brandAssets} aria-labelledby="brand-assets-title">
+        <div className={styles.brandAssetsHeader}>
+          <div>
+            <h2 id="brand-assets-title">Brand assets</h2>
+            <p>Current files published in Blob storage. Open any asset to copy or download its canonical file.</p>
+          </div>
+        </div>
+        <div className={styles.brandAssetGrid}>
+          {BRAND_ASSET_CATALOG.map((asset) => (
+            <article key={asset.filename} className={styles.brandAssetCard}>
+              <div className={styles.brandAssetPreview}>
+                <Image
+                  src={asset.previewUrl ?? asset.url}
+                  alt={asset.alt}
+                  width={asset.width}
+                  height={asset.height}
+                  sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 20rem"
+                />
+              </div>
+              <div className={styles.brandAssetDetails}>
+                <h3>{asset.label}</h3>
+                <p>{asset.description}</p>
+                <a href={asset.url} target="_blank" rel="noreferrer">
+                  Open {asset.filename}
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
       {loading ? (
         <p>Loading settings...</p>
