@@ -151,9 +151,6 @@
   opacity: 0.82;
 }
 
-.aboutButton,
-.featureButton,
-.daveningButton,
 .newsletterArchive {
   display: inline-flex;
   align-items: center;
@@ -166,22 +163,6 @@
   font-weight: 700;
   text-decoration: none;
   transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-}
-
-.aboutButton,
-.featureButton,
-.daveningButton {
-  border: 1px solid transparent;
-  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%);
-  color: #f8fbff;
-  box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.45);
-}
-
-.aboutButton:hover,
-.featureButton:hover,
-.daveningButton:hover {
-  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%);
-  transform: translateY(-1px);
 }
 
 .newsletterArchive {
@@ -260,77 +241,29 @@
   font-weight: 500;
 }
 
-.eruvBody {
-  display: grid;
-  gap: 14px;
-}
-
-.eruvBody p {
+.eruvOneLine,
+.classOneLine {
   margin: 0;
   font-size: 0.97rem;
   line-height: 1.65;
   color: #3f4359;
 }
 
-.eruvBenefits {
-  margin: 4px 0 0;
-  padding-left: 18px;
-  display: grid;
-  gap: 6px;
-  font-size: 0.95rem;
-  line-height: 1.55;
-  color: #3f4359;
-}
-
-.eruvBenefits li {
-  position: relative;
-}
-
-.eruvActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.eruvPrimaryButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 50px;
-  padding: 0 30px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%);
-  color: #f8fbff;
-  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.45);
-  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-}
-
-.eruvPrimaryButton:hover {
-  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%);
-  transform: translateY(-1px);
-}
-
-.eruvSecondaryLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 50px;
-  padding: 0 22px;
-  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.92rem;
-  font-weight: 600;
+.eruvOneLine a,
+.classOneLine a,
+.daveningCopy a,
+.eventsEmpty a {
   color: #2b5a81;
+  font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color 120ms ease;
 }
 
-.eruvSecondaryLink:hover {
+.eruvOneLine a:hover,
+.classOneLine a:hover,
+.daveningCopy a:hover,
+.eventsEmpty a:hover {
   color: #1c4368;
 }
 
@@ -361,24 +294,6 @@
   display: block;
   aspect-ratio: 16 / 10;
   object-fit: cover;
-}
-
-.eruvQuote {
-  font-family: helvetica-w01-light, Arial, sans-serif;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #3f4359;
-  font-style: italic;
-  padding-left: 4px;
-}
-
-.eruvQuote span {
-  display: block;
-  margin-top: 6px;
-  font-style: normal;
-  font-weight: 600;
-  color: #2b5a81;
-  font-size: 0.86rem;
 }
 
 .classPromoSection {
@@ -419,76 +334,6 @@
   line-height: 1.15;
 }
 
-.classBody {
-  display: grid;
-  gap: 12px;
-}
-
-.classBody p {
-  margin: 0;
-  font-size: 0.97rem;
-  line-height: 1.62;
-  color: #3f4359;
-}
-
-.classBody strong {
-  color: #2b5a81;
-}
-
-.classDetails {
-  background: rgba(47, 110, 168, 0.06);
-  padding: 12px 16px;
-  border-radius: 8px;
-  border-left: 3px solid #2f6ea8;
-}
-
-.classActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 8px;
-}
-
-.classPrimaryButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 28px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%);
-  color: #f8fbff;
-  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.94rem;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 16px 40px -26px rgba(15, 23, 42, 0.42);
-  transition: background 160ms ease, transform 160ms ease;
-}
-
-.classPrimaryButton:hover {
-  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%);
-  transform: translateY(-1px);
-}
-
-.classSecondaryLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0 18px;
-  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: #2b5a81;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.classSecondaryLink:hover {
-  color: #1c4368;
-}
-
 .classVisual {
   display: grid;
   align-content: center;
@@ -508,84 +353,6 @@
 
 .classQuote p {
   margin: 0;
-}
-
-.supportSection {
-  padding: 48px 0 52px;
-  background: #fbfcff;
-}
-
-.supportPanel {
-  display: grid;
-  justify-items: center;
-  gap: 14px;
-  text-align: center;
-  padding: 36px 24px;
-  border: 1px solid #d9dde8;
-  background: #fff;
-  box-shadow: 0 12px 28px rgba(47, 66, 97, 0.07);
-}
-
-.supportEyebrow {
-  margin: 0;
-  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #5b6072;
-}
-
-.supportTitle {
-  margin: 0;
-  font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
-  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
-  letter-spacing: -0.04em;
-  color: #2b5a81;
-  max-width: 38rem;
-}
-
-.supportBody {
-  margin: 0;
-  max-width: 42rem;
-  font-family: helvetica-w01-light, Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 1.68;
-  color: #3f4359;
-}
-
-.supportBody a {
-  color: #2b5a81;
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.supportLinks {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px 24px;
-  margin-top: 4px;
-}
-
-.supportLink {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 22px;
-  border-radius: 999px;
-  background: #2b5a81;
-  color: #fff;
-  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color 120ms ease;
-}
-
-.supportLink:hover {
-  background: #214766;
 }
 
 .featureGrid {
@@ -934,6 +701,13 @@
   font-size: 1.625rem;
 }
 
+.rabbiBody h3 a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
 .rabbiLinks {
   display: flex;
   flex-wrap: wrap;
@@ -1219,7 +993,9 @@
   .featureGrid,
   .rabbisGrid,
   .contactGrid,
-  .footerInner {
+  .footerInner,
+  .eruvGrid,
+  .classPromoGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -1321,7 +1097,6 @@
 
   .aboutSection,
   .featureSection,
-  .supportSection,
   .newsletterSection,
   .eventsSection,
   .rabbisSection,
@@ -1337,8 +1112,7 @@
   .footerNewsletter,
   .featureCopy,
   .daveningCopy,
-  .rabbiBody,
-  .supportPanel {
+  .rabbiBody {
     padding-left: 20px;
     padding-right: 20px;
   }

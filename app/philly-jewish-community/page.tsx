@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
@@ -59,11 +59,9 @@ export default async function PhillyJewishCommunityPage() {
           }}
           paragraphs={[
             "The Center City Eruv includes most of Center City and South Philadelphia, roughly between the Schuylkill and Delaware Rivers. It is maintained weekly and was originally constructed under the halachic guidance of Rav Dov Aaron Brisman zt\"l, former Av Beit Din of Philadelphia.",
-            "You can view the eruv boundaries using the interactive Google Map below. Please note the map is not perfectly to scale \u2014 refer to the following guidelines for accuracy:",
-          ]}
-          links={[
-            { label: "Center City Eruv Website", href: "http://www.centercityeruv.org/map.asp" },
-            { label: "Open Eruv Map in New Tab", href: ERUV_MAP_EMBED },
+            <>
+              Review the boundaries on the <InlineLink href="http://www.centercityeruv.org/map.asp">Center City Eruv website</InlineLink> or <InlineLink href={ERUV_MAP_EMBED}>open the interactive eruv map in a new tab</InlineLink>. The map is not perfectly to scale, so use the guidelines below for accuracy.
+            </>,
           ]}
         />
         <div className={styles.mapShell}>
@@ -122,11 +120,9 @@ export default async function PhillyJewishCommunityPage() {
           }}
           paragraphs={[
             "We are so lucky to have so many kosher options in and around Center City Philly with a special thank you to Rabbi Hirsch and his mashgiach volunteers that have greatly expanded the kosher options.",
-            "Browse the map of kosher establishments and the neighborhood directories for more local detail.",
-          ]}
-          links={[
-            { label: "Map of Kosher Establishments", href: "/kosher-map" },
-            { label: "Center City Kosher Directory", href: "/center-city" },
+            <>
+              Browse the <InlineLink href="/kosher-map">map of kosher establishments</InlineLink> and the <InlineLink href="/center-city">Center City kosher directory</InlineLink> for more local detail.
+            </>,
           ]}
         />
       </SectionCard>
@@ -143,11 +139,9 @@ export default async function PhillyJewishCommunityPage() {
           paragraphs={[
             "A Mikvah is a natural body of water or a gathering of water that has a designated connection to a pool designed specifically for immersion, according to the rules and customs of Jewish law.",
             "The above body of water consists of naturally collected water that was never stagnant or gathered by human means. It contains about 200 gallons of water.",
-            "The Mei Shalva Center City Community Mikvah at 509 Pine Street offers a fully operational women's mikvah, men's mikvah, and keilim mikvah. Volunteers are welcome to assist with staffing the keilim mikvah. For scheduling or appointments, please visit https://philamikvah.org or call/text 267-225-2651.",
-          ]}
-          links={[
-            { label: "Mikvah Website", href: "https://philamikvah.org/" },
-            { label: "Schedule Now", href: "https://philamikvah.org/appointments/" },
+            <>
+              The Mei Shalva Center City Community Mikvah at 509 Pine Street offers a fully operational women&apos;s mikvah, men&apos;s mikvah, and keilim mikvah. Volunteers are welcome to assist with staffing the keilim mikvah. Visit the <InlineLink href="https://philamikvah.org/">mikvah website</InlineLink>, <InlineLink href="https://philamikvah.org/appointments/">schedule an appointment</InlineLink>, or call or text <InlineLink href="tel:+12672252651">267-225-2651</InlineLink>.
+            </>,
           ]}
         />
       </SectionCard>

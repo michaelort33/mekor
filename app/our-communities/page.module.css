@@ -124,30 +124,6 @@
   color: #322c21;
 }
 
-.linkRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 16px;
-}
-
-.linkRow a {
-  color: #2f4c64;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  font-weight: 500;
-  transition: color 160ms ease;
-}
-
-.linkRow a:hover {
-  color: var(--color-accent);
-}
-
-.linkRow a:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 3px;
-  border-radius: 3px;
-}
-
 .valueGrid {
   display: grid;
   gap: 18px;
@@ -224,7 +200,4 @@
     gap: 14px;
   }
 
-  .linkRow {
-    gap: 9px 12px;
-  }
 }

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { KiddushSponsorshipForm } from "@/components/forms/kiddush-sponsorship-form";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { KiddushPaymentSection } from "@/components/payments/kiddush-payment-section";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
@@ -95,13 +95,10 @@ export default async function KiddushPage() {
           }}
           paragraphs={[
             "Your sponsorship helps provide a warm and welcoming environment for our community to connect, reflect, and share in the joy of Shabbat.",
-            "Please note: You can send payment via Venmo, PayPal, or through this website via this link.",
+            <>
+              You can send payment through <InlineLink href="https://www.venmo.com/u/Mekor-Habracha">Venmo</InlineLink>, <InlineLink href={PAYPAL_SPONSOR_URL}>PayPal</InlineLink>, or the <InlineLink href="#kiddush-payment">sponsorship form on this page</InlineLink>. Contact the <InlineLink href="mailto:admin@mekorhabracha.org?subject=Kiddush%20Sponsorship">shul office</InlineLink> with any questions.
+            </>,
             "For Birthday Kiddush, please make sure to tell us the exact birth date of the person you are celebrating.",
-          ]}
-          links={[
-            { label: "Sponsor via PayPal", href: PAYPAL_SPONSOR_URL },
-            { label: "Donate via Venmo", href: "https://www.venmo.com/u/Mekor-Habracha" },
-            { label: "Contact the Shul Office", href: "mailto:admin@mekorhabracha.org?subject=Kiddush%20Sponsorship" },
           ]}
         />
       </SectionCard>

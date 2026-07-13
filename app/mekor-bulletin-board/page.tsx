@@ -108,7 +108,7 @@ const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
       "For more info, contact (215) 589-5405 or akiladelphia@gmail.com.",
     ],
     links: [
-      { label: "Website", href: "http://akiladelphia.com/" },
+      { label: "Akiladelphia website", href: "http://akiladelphia.com/" },
       { label: "Call (215) 589-5405", href: "tel:+12155895405" },
       { label: "Email", href: "mailto:akiladelphia@gmail.com" },
     ],
@@ -142,7 +142,7 @@ const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
       "The Kiyum Initiative has tailored a program along with leading institutions in Jerusalem to enable the entry of Haredi individuals into the labor pool through a combination of living stipends, enhanced education, and job placement.",
       "We are raising funds and building awareness for the upcoming academic year to consist of 55 students, and so we are seeking donations to Sponsor-A-Scholar.",
     ],
-    links: [{ label: "Learn More", href: "http://www.kiyuminitiative.org/" }],
+    links: [{ label: "Kiyum Initiative website", href: "http://www.kiyuminitiative.org/" }],
   },
   {
     title: "Jewish Matchmaking -- Shiduch.org",

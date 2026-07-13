@@ -16,6 +16,8 @@ export const dynamic = "force-dynamic";
 
 const HERO_IMAGE = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/c2c6235de9c6d719cd098e19d77b7f21c18899f1-11062b_8135b27108d04d2a97adc750a341fb79-mv2.jpeg";
 const DAVEING_IMAGE = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/b562092e8484e9d5c6e62671c670e606b2d338cc-92f487_34e64b1fb2e94c56886578290ef2bcd0-mv2.jpeg";
+const ERUV_CAMPAIGN_IMAGE =
+  "https://storage.googleapis.com/download/storage/v1/b/tcf-backend-prod.appspot.com/o/centercityeruv-1782322025933.jpg?generation=1782322026074279&alt=media";
 const MAP_EMBED_SRC =
   "https://www.google.com/maps?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102&output=embed";
 
@@ -27,11 +29,11 @@ const RABBIS = [
     image:
       "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/ef834ae06e3c7cf8ff31c0d7f7ab16cf19592877-92f487_d26f360d09cc45e4bebe89d9f14643d3-mv2-copy2-Medium-.jpg",
     alt: "Rabbi Eliezer Hirsch",
+    profileHref: "/our-rabbi#rabbi-eliezer-hirsch",
     links: [
       { label: "Podcast", href: "https://rabbiehirsch.castos.com/" },
       { label: "Substack", href: "https://rabbieliezerhirsch.substack.com/" },
       { label: "Books", href: "https://www.amazon.com/Rabbi-Eliezer-Hirsch/e/B0876V66RG%3Fref=dbs_a_mng_rwt_scns_share" },
-      { label: "Read more", href: "/our-rabbi" },
     ],
   },
   {
@@ -41,10 +43,10 @@ const RABBIS = [
     image:
       "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/34434149afbb96abbd5c8c3779b55dde432d98e9-R-Gotlib.jpg",
     alt: "Rabbi Steven Gotlib",
+    profileHref: "/our-rabbi#rabbi-steven-gotlib",
     links: [
       { label: "Facebook", href: "https://www.facebook.com/StevenJGotlib/" },
       { label: "LinkedIn", href: "https://www.linkedin.com/in/steven-j-gotlib/" },
-      { label: "Read more", href: "/our-rabbi" },
     ],
   },
 ] as const;
@@ -96,11 +98,8 @@ function UpcomingEventsList({
     return (
       <div className={styles.eventsList}>
         <p className={styles.eventsEmpty}>
-          No upcoming events are posted right now — check the events page for the latest.
+          No upcoming events are posted right now — check the <Link href="/events">events page</Link> for the latest.
         </p>
-        <Link href="/events" className={styles.eventsMore}>
-          View all events
-        </Link>
       </div>
     );
   }
@@ -184,20 +183,16 @@ export default function HomePage() {
             <div className={styles.aboutCopy}>
               <h2>A Welcoming Community</h2>
               <p>
-                Mekor Habracha / Center City Synagogue is a vibrant, inclusive Modern Orthodox community located in
-                the heart of Center City, Philadelphia.
+                <Link href="/about-us">Mekor Habracha / Center City Synagogue</Link> is a vibrant, inclusive Modern
+                Orthodox community located in the heart of Center City, Philadelphia.
               </p>
               <p>
                 We offer a wide range of religious, educational, and social opportunities for a diverse and growing
                 membership. Visitors, whether from across the street or across the world, are always warmly welcomed.
               </p>
               <p>
-                Our rabbis, Rabbi Hirsch and Rabbi Gotlib, are always happy to connect. You can reach them{" "}
-                <Link href="/our-rabbi" aria-label="Reach our rabbis">here.</Link>
+                Our rabbis, <Link href="/our-rabbi">Rabbi Hirsch and Rabbi Gotlib</Link>, are always happy to connect.
               </p>
-              <Link href="/about-us" className={styles.aboutButton}>
-                Read more
-              </Link>
             </div>
 
             <div className={styles.videoShell}>
@@ -212,52 +207,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className={styles.supportSection}>
-        <div className={styles.container}>
-          <div className={styles.supportPanel}>
-            <p className={styles.supportEyebrow}>About</p>
-            <h2 className={styles.supportTitle}>Support Mekor while buying wine and Judaica!</h2>
-            <p className={styles.supportBody}>
-              If you use the following Mekor-specific links when ordering from{" "}
-              <a
-                href="https://kosherwine.com"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Kosherwine.com
-              </a>{" "}
-              and{" "}
-              <a
-                href="https://judaica.com"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                Judaica.com
-              </a>
-              , Mekor will earn 5% back!
-            </p>
-            <div className={styles.supportLinks}>
-              <a
-                href="https://tinyurl.com/mekorwine"
-                target="_blank"
-                rel="noreferrer noopener"
-                className={styles.supportLink}
-              >
-                Wine: tinyurl.com/mekorwine
-              </a>
-              <a
-                href="https://tinyurl.com/mekorjudaica"
-                target="_blank"
-                rel="noreferrer noopener"
-                className={styles.supportLink}
-              >
-                Judaica: tinyurl.com/mekorjudaica
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className={styles.eruvSection}>
         <div className={styles.container}>
           <div className={styles.eruvGrid}>
@@ -267,48 +216,37 @@ export default function HomePage() {
               <p className={styles.eruvIntro}>
                 Help us ensure this vital community resource remains reliable, durable, and halachically sound for generations to come.
               </p>
-              <div className={styles.eruvBody}>
-                <p>
-                  We are launching a major campaign to upgrade and strengthen the Greater Center City Eruv. Every contribution helps secure this mitzvah of priceless proportion.
-                </p>
-                <ul className={styles.eruvBenefits}>
-                  <li>Upgrade to more durable, longer-lasting materials</li>
-                  <li>Increase reliability and resilience of the eruv</li>
-                  <li>Make inspection and maintenance more efficient</li>
-                  <li>Ensure long-term halachic leadership and oversight</li>
-                </ul>
-              </div>
-              <div className={styles.eruvActions}>
+              <p className={styles.eruvOneLine}>
+                Join Mekor Habracha in strengthening the Center City Eruv by{" "}
                 <a
                   href="https://thechesedfund.com/centercityeruv/ep2026/teams/mekorhabracha"
                   target="_blank"
                   rel="noreferrer noopener"
-                  className={styles.eruvPrimaryButton}
                 >
-                  Donate to Mekor Habracha Team
+                  donating through our campaign team
                 </a>
+                , or{" "}
                 <a
                   href="https://thechesedfund.com/centercityeruv/ep2026"
                   target="_blank"
                   rel="noreferrer noopener"
-                  className={styles.eruvSecondaryLink}
                 >
-                  View full campaign
+                  read about the full campaign
                 </a>
-              </div>
+                .
+              </p>
               <p className={styles.eruvGoal}>Goal: $75,000 | Mekor Habracha Team</p>
             </div>
             <div className={styles.eruvVisual}>
               <div className={styles.eruvImageWrapper}>
-                <img
-                  src="https://storage.googleapis.com/download/storage/v1/b/tcf-backend-prod.appspot.com/o/centercityeruv-1782322025933.jpg?generation=1782322026074279&alt=media"
+                <Image
+                  src={ERUV_CAMPAIGN_IMAGE}
                   alt="Center City Eruv campaign"
+                  width={1600}
+                  height={1000}
+                  sizes="(max-width: 960px) 100vw, 28rem"
                   className={styles.eruvImage}
                 />
-              </div>
-              <div className={styles.eruvQuote}>
-                “Supporting a community eruv is a great mitzvah of priceless proportion.”<br />
-                <span>— Responsa Tashbetz 2:37</span>
               </div>
             </div>
           </div>
@@ -321,41 +259,22 @@ export default function HomePage() {
             <div className={styles.classPromoContent}>
               <p className={styles.classEyebrow}>New This Summer</p>
               <h2 className={styles.classTitle}>New Class on Zionism and Democracy</h2>
-              <div className={styles.classBody}>
-                <p>
-                  Join <strong>Rabbi Gotlib</strong> for a new class exploring <em>"The Sacred and the State: The Religious Zionism of Rabbi Dr. Nachum Rabinovitch."</em>
-                </p>
-                <p>
-                  Zionism and the State of Israel challenge Torah scholars to articulate a vision of state and society that embodies the highest standards of security, sanctity, and justice. Rav Rabinovitch spoke of these issues with rare sensitivity and wisdom.
-                </p>
-                <p>
-                  The class will explore Rav Rabinovitch's <em>"Pathways to God: Torah, Society, and State,"</em> a book that emphasizes the Torah's "vision of liberty, equality, rights, and responsibilities, which relates closely to modern democratic ideals but is not identical to them."
-                </p>
-                <p className={styles.classDetails}>
-                  <strong>Class meets Tuesday evenings at 7:00pm beginning July 14th.</strong>
-                </p>
-                <p>
-                  Sponsorship is available at any amount via Venmo (@Mekor-Habracha) or <a href="https://mekorhabracha.org/donations" target="_blank" rel="noreferrer noopener">donated to the shul here</a>. Sponsors of $180 or more will receive a complimentary copy of Rav Rabinovitch's book.
-                </p>
-              </div>
-              <div className={styles.classActions}>
+              <p className={styles.classOneLine}>
+                Join Rabbi Gotlib Tuesdays at 7pm starting July 14 for a new class on Zionism and Democracy. You can{" "}
                 <a
                   href="https://forms.gle/aDkUYeBj3qvudcMD9"
                   target="_blank"
                   rel="noreferrer noopener"
-                  className={styles.classPrimaryButton}
                 >
-                  RSVP Here
+                  RSVP for the class
                 </a>
-                <a
-                  href="https://www.mekorhabracha.org/newsletters/new-class-on-zionism-and-democracy-2026-07-05"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className={styles.classSecondaryLink}
-                >
-                  Read full announcement
-                </a>
-              </div>
+                {" "}
+                or{" "}
+                <Link href="/newsletters/new-class-on-zionism-and-democracy-2026-07-05">
+                  read the full announcement
+                </Link>
+                .
+              </p>
             </div>
             <div className={styles.classVisual}>
               <div className={styles.classQuote}>
@@ -385,12 +304,9 @@ export default function HomePage() {
                 <h2>Davening</h2>
                 <p>Shabbat and Weekday services schedule</p>
                 <p>
-                  Click below for our complete Shabbat and weekday davening schedules, including daily minyanim and
-                  classes.
+                  See our <Link href="/davening">complete Shabbat and weekday davening schedules</Link>, including daily
+                  minyanim and classes.
                 </p>
-                <Link href="/davening" className={styles.daveningButton}>
-                  Learn More
-                </Link>
               </div>
             </article>
           </div>
@@ -436,7 +352,9 @@ export default function HomePage() {
                 </div>
                 <div className={styles.rabbiBody}>
                   <p className={styles.rabbiRole}>{rabbi.role}</p>
-                  <h3>{rabbi.name}</h3>
+                  <h3>
+                    <Link href={rabbi.profileHref}>{rabbi.name}</Link>
+                  </h3>
                   <p className={styles.rabbiBio}>{rabbi.bio}</p>
                   <div className={styles.rabbiLinks}>
                     {rabbi.links.map((link) =>

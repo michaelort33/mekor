@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "@/app/our-rabbi/page.module.css";
@@ -44,16 +44,15 @@ export default function OurRabbiPage() {
                 <p>Rabbi Hirsch has made unwavering support for Israel a cornerstone of Mekor, articulating a fervent voice for Israel, and celebrating the many Mekor congregants who have made aliyah. In recognition of his pro-Israel advocacy efforts across the Philadelphia region, Rabbi Hirsch was honored in 2019 with the Guardian of Israel Award from the Philadelphia Chapter of the Zionist Organization of America (ZOA).</p>
                 <p>In addition to leading Congregation Mekor Habracha, Rabbi Hirsch serves as Dean of Jewish philosophy at Genesis University, a distance-learning college based in Suffern, NY.</p>
                 <p>Rabbi Hirsch received rabbinic ordination from Ner Israel Rabbinical College in Baltimore, Maryland, and Yeshivas Ohr Reuven in Monsey, NY. During his almost two decades of study in yeshiva, he forged close relationships with prominent rabbinic leaders and received years of training from renowned halachic authorities.</p>
-                <p>In 2010, Rabbi Hirsch was diagnosed with young-onset Parkinson&apos;s Disease, an incurable and progressive neurological condition. Since publicly sharing his diagnosis, Rabbi Hirsch has welcomed inquiries from individuals across the globe seeking halachic and spiritual guidance to cope with significant personal hardships. You can read some of Rabbi Hirsch&apos;s inspirational reflections on Parkinson&apos;s Disease <a href="https://rabbieliezerhirsch.substack.com/p/on-parkinsons-disease-and-emunah">here</a>.</p>
+                <p>In 2010, Rabbi Hirsch was diagnosed with young-onset Parkinson&apos;s Disease, an incurable and progressive neurological condition. Since publicly sharing his diagnosis, Rabbi Hirsch has welcomed inquiries from individuals across the globe seeking halachic and spiritual guidance to cope with significant personal hardships. You can read <InlineLink href="https://rabbieliezerhirsch.substack.com/p/on-parkinsons-disease-and-emunah">Rabbi Hirsch&apos;s reflections on Parkinson&apos;s Disease and emunah</InlineLink>.</p>
                 <p>Rabbi Hirsch has written three books about Jewish holidays to offer practical guidance and inspire a deeper, year-round connection to Torah and Jewish life:</p>
                 <p>Through his writing and teaching, Rabbi Hirsch illuminates the Torah&apos;s enduring relevance for Jews of all backgrounds.</p>
                 <p>Rabbi Hirsch and his wife Miriam have made Center City their home, finding deep meaning in building Jewish life and serving their beloved community.</p>
-                <p>You can access Rabbi Hirsch&apos;s Substack <a href="https://rabbieliezerhirsch.substack.com/">here</a>. You can reach him at rabbiehirsch@mekorhabracha.org.</p>
+                <p>Read more on <InlineLink href="https://rabbieliezerhirsch.substack.com/">Rabbi Hirsch&apos;s Substack</InlineLink>, or reach him at <InlineLink href="mailto:rabbiehirsch@mekorhabracha.org">rabbiehirsch@mekorhabracha.org</InlineLink>.</p>
               </div>
               <CTACluster
                 className={styles.linkCluster}
                 items={[
-                  { label: "Email Rabbi Hirsch", href: "mailto:rabbiehirsch@mekorhabracha.org" },
                   { label: "Davening schedule", href: "/davening" },
                   { label: "Center City Eruv", href: "http://www.centercityeruv.org/" },
                   { label: "Community Mikvah", href: "https://philamikvah.org/" },
@@ -105,15 +104,14 @@ export default function OurRabbiPage() {
               "As a RIETS student, he held rabbinic internships at Congregation Beth Abraham-Jacob of Albany and at Yeshiva University's Zahava and Moshael Straus Center for Torah and Western Thought while working as Webmaster and Social Media Manager for The Lehrhaus.",
               "A popular guest speaker throughout the US and Canada, Rabbi Gotlib's writings can be read in the Lehrhaus, Jewish Action, Tradition Online, 18Forty, and more. He has contributed to several volumes, including Who by Plague: High Holy Days Sermons from COVID19 Times (Hamotzi Press, 2021), Nothing so Whole as a Broken Heart: Reflections for the Days of Awe (Izzun Books, 2024), A Quest for Our Times: The Louis Jacobs Haggadah (Izzun Books, 2024), and The Oxford Handbook of Jewish Law.",
               "He strongly believes in making Jewish theology, philosophy, and law as accessible as possible to all who seek guidance and comfort within our tradition.",
-            ]}
-            links={[
-              { label: "Email Rabbi Gotlib", href: "mailto:rabbisgotlib@mekorhabracha.org" },
-              { label: "Rabbi Gotlib Substack", href: "https://rabbistevengotlib.substack.com/" },
+              <>
+                Read <InlineLink href="https://rabbistevengotlib.substack.com/">Rabbi Gotlib&apos;s Substack</InlineLink> for more of his writing.
+              </>,
             ]}
           />
           <p className={styles.subheading}>
             Rabbi Gotlib lives in Center City with his wife, Ruth Malkah Rohde, and their daughter Zeriza. He can be
-            reached at rabbisgotlib@mekorhabracha.org.
+            reached at <InlineLink href="mailto:rabbisgotlib@mekorhabracha.org">rabbisgotlib@mekorhabracha.org</InlineLink>.
           </p>
           <CTACluster
             className={styles.linkCluster}

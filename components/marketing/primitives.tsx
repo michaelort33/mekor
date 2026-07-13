@@ -35,14 +35,13 @@ type HeroSectionProps = {
 type SplitMediaTextProps = {
   kicker?: string;
   title: string;
-  paragraphs: string[];
+  paragraphs: ReactNode[];
   media: {
     src: string;
     alt: string;
     objectPosition?: string;
     objectFit?: "cover" | "contain" | "scale-down";
   };
-  links?: CtaItem[];
   reverse?: boolean;
   className?: string;
 };
@@ -94,6 +93,17 @@ function RenderLink({
     >
       {children}
     </a>
+  );
+}
+
+export function InlineLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <RenderLink
+      href={href}
+      className="font-semibold text-[var(--color-accent)] underline decoration-[1.5px] underline-offset-[3px] transition-colors hover:text-[var(--color-accent-strong)]"
+    >
+      {children}
+    </RenderLink>
   );
 }
 
@@ -222,7 +232,6 @@ export function SplitMediaText({
   title,
   paragraphs,
   media,
-  links,
   reverse = false,
   className,
 }: SplitMediaTextProps) {
@@ -251,21 +260,12 @@ export function SplitMediaText({
           <span aria-hidden className="block h-[2px] w-9 rounded-full bg-[color-mix(in_srgb,var(--color-accent)_60%,transparent)]" />
         </div>
         <div className="space-y-4">
-          {paragraphs.map((paragraph) => (
-            <p key={`${title}-${paragraph}`} className="text-base leading-7 text-[var(--color-muted)] sm:text-lg sm:leading-8">
+          {paragraphs.map((paragraph, index) => (
+            <p key={`${title}-${index}`} className="text-base leading-7 text-[var(--color-muted)] sm:text-lg sm:leading-8">
               {paragraph}
             </p>
           ))}
         </div>
-        {links?.length ? (
-          <div className="flex flex-wrap gap-3">
-            {links.map((link, index) => (
-              <Button key={`${link.href}-${link.label}`} asChild variant={index === 0 ? "default" : "ghost"}>
-                <RenderLink href={link.href}>{link.label}</RenderLink>
-              </Button>
-            ))}
-          </div>
-        ) : null}
       </div>
     </article>
   );
