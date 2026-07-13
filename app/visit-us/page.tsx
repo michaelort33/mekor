@@ -163,7 +163,7 @@ export default async function VisitUsPage() {
             { label: "Membership", href: "/membership" },
             { label: "Davening Schedule", href: "/davening" },
             { label: "Events", href: "/events" },
-            { label: "Latest Newsletters", href: "/newsletters" },
+            { label: "Past Newsletters", href: "/newsletters" },
           ]}
         />
       </SectionCard>
