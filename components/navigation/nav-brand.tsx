@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const NAV_LOGO_SRC =
-  "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/8d56cce33726c33d42709208275014f132a7859d-mekor-wordmark.png";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 export function NavBrand() {
   return (
@@ -12,10 +11,10 @@ export function NavBrand() {
       aria-label="Mekor Habracha home"
     >
       <Image
-        src={NAV_LOGO_SRC}
-        alt="Mekor Habracha"
-        width={291}
-        height={60}
+        src={BRAND_ASSETS.primaryWordmark.url}
+        alt={BRAND_ASSETS.primaryWordmark.alt}
+        width={BRAND_ASSETS.primaryWordmark.width}
+        height={BRAND_ASSETS.primaryWordmark.height}
         className="block h-8 w-auto self-center sm:h-9"
         style={{ maxWidth: "15rem" }}
         priority
