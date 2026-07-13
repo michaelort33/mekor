@@ -258,6 +258,116 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className={styles.eruvSection}>
+        <div className={styles.container}>
+          <div className={styles.eruvGrid}>
+            <div className={styles.eruvContent}>
+              <p className={styles.eruvEyebrow}>Community Campaign</p>
+              <h2 className={styles.eruvTitle}>Strengthen the Center City Eruv</h2>
+              <p className={styles.eruvIntro}>
+                Help us ensure this vital community resource remains reliable, durable, and halachically sound for generations to come.
+              </p>
+              <div className={styles.eruvBody}>
+                <p>
+                  We are launching a major campaign to upgrade and strengthen the Greater Center City Eruv. Every contribution helps secure this mitzvah of priceless proportion.
+                </p>
+                <ul className={styles.eruvBenefits}>
+                  <li>Upgrade to more durable, longer-lasting materials</li>
+                  <li>Increase reliability and resilience of the eruv</li>
+                  <li>Make inspection and maintenance more efficient</li>
+                  <li>Ensure long-term halachic leadership and oversight</li>
+                </ul>
+              </div>
+              <div className={styles.eruvActions}>
+                <a
+                  href="https://thechesedfund.com/centercityeruv/ep2026/teams/mekorhabracha"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className={styles.eruvPrimaryButton}
+                >
+                  Donate to Mekor Habracha Team
+                </a>
+                <a
+                  href="https://thechesedfund.com/centercityeruv/ep2026"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className={styles.eruvSecondaryLink}
+                >
+                  View full campaign
+                </a>
+              </div>
+              <p className={styles.eruvGoal}>Goal: $75,000 | Mekor Habracha Team</p>
+            </div>
+            <div className={styles.eruvVisual}>
+              <div className={styles.eruvImageWrapper}>
+                <img
+                  src="https://storage.googleapis.com/download/storage/v1/b/tcf-backend-prod.appspot.com/o/centercityeruv-1782322025933.jpg?generation=1782322026074279&alt=media"
+                  alt="Center City Eruv campaign"
+                  className={styles.eruvImage}
+                />
+              </div>
+              <div className={styles.eruvQuote}>
+                “Supporting a community eruv is a great mitzvah of priceless proportion.”<br />
+                <span>— Responsa Tashbetz 2:37</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.classPromoSection}>
+        <div className={styles.container}>
+          <div className={styles.classPromoGrid}>
+            <div className={styles.classPromoContent}>
+              <p className={styles.classEyebrow}>New This Summer</p>
+              <h2 className={styles.classTitle}>New Class on Zionism and Democracy</h2>
+              <div className={styles.classBody}>
+                <p>
+                  Join <strong>Rabbi Gotlib</strong> for a new class exploring <em>"The Sacred and the State: The Religious Zionism of Rabbi Dr. Nachum Rabinovitch."</em>
+                </p>
+                <p>
+                  Zionism and the State of Israel challenge Torah scholars to articulate a vision of state and society that embodies the highest standards of security, sanctity, and justice. Rav Rabinovitch spoke of these issues with rare sensitivity and wisdom.
+                </p>
+                <p>
+                  The class will explore Rav Rabinovitch's <em>"Pathways to God: Torah, Society, and State,"</em> a book that emphasizes the Torah's "vision of liberty, equality, rights, and responsibilities, which relates closely to modern democratic ideals but is not identical to them."
+                </p>
+                <p className={styles.classDetails}>
+                  <strong>Class meets Tuesday evenings at 7:00pm beginning July 14th.</strong>
+                </p>
+                <p>
+                  Sponsorship is available at any amount via Venmo (@Mekor-Habracha) or <a href="https://mekorhabracha.org/donations" target="_blank" rel="noreferrer noopener">donated to the shul here</a>. Sponsors of $180 or more will receive a complimentary copy of Rav Rabinovitch's book.
+                </p>
+              </div>
+              <div className={styles.classActions}>
+                <a
+                  href="https://forms.gle/aDkUYeBj3qvudcMD9"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className={styles.classPrimaryButton}
+                >
+                  RSVP Here
+                </a>
+                <a
+                  href="https://www.mekorhabracha.org/newsletters/new-class-on-zionism-and-democracy-2026-07-05"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className={styles.classSecondaryLink}
+                >
+                  Read full announcement
+                </a>
+              </div>
+            </div>
+            <div className={styles.classVisual}>
+              <div className={styles.classQuote}>
+                <p>
+                  A deep exploration of how Torah values intersect with modern democratic ideals — led by Rabbi Gotlib.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className={styles.featureSection}>
         <div className={styles.container}>
           <div className={styles.featureGrid}>
