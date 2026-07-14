@@ -756,7 +756,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
           {
             title: "Goldie",
             body: "Vegan falafel shop (IKC supervision)",
-            details: ["Multiple locations", "(267) 239-0777"],
+            details: ["1911 Sansom Street, Philadelphia, PA 19102", "(267) 239-0777"],
             links: [{ label: "goldiefalafel.com", href: "http://goldiefalafel.com/", external: true }],
           },
           {
@@ -863,10 +863,10 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
           },
           {
             title: "Goldie",
-            details: ["Multiple Philadelphia locations", "+1 267-239-0777"],
+            details: ["1911 Sansom Street, Philadelphia, PA 19102", "+1 267-239-0777"],
             links: [
               { label: "Website", href: "http://goldiefalafel.com/", external: true },
-              { label: "Map (Center City)", href: "https://maps.google.com/?cid=17810134926841026466", external: true },
+              { label: "Map (Sansom Street)", href: "https://maps.app.goo.gl/jvZTJCE5aRJMpesB9", external: true },
             ],
           },
           {
