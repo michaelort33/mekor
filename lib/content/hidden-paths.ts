@@ -9,6 +9,10 @@
  */
 export const HIDDEN_CONTENT_PATHS = new Set<string>([
   "/post/shalom-pizza", // Shalom Pizza — removed from the kosher directory.
+  "/post/goldie", // Goldie — Midtown Village.
+  "/post/goldie-2", // Goldie — Whole Foods.
+  "/post/goldie-3", // Goldie — Franklin's Table.
+  "/post/goldie-4", // Goldie — retired multi-location listing.
 ]);
 
 export function isHiddenContentPath(path: string | null | undefined): boolean {
