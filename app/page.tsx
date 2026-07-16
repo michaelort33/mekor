@@ -207,6 +207,28 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className={styles.supportSection} aria-labelledby="home-support-title">
+        <div className={styles.container}>
+          <div className={styles.supportPanel}>
+            <div className={styles.supportCopy}>
+              <h2 id="home-support-title">Support Jewish life in Center City</h2>
+              <p>
+                Your contribution sustains daily minyanim, Torah learning, community programming, and a welcoming
+                home for members and visitors.
+              </p>
+            </div>
+            <div className={styles.supportActions}>
+              <Link href="/donations" className={styles.supportPrimary}>
+                Donate or sponsor
+              </Link>
+              <Link href="/kiddush" className={styles.supportSecondary}>
+                Sponsor a Kiddush
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className={styles.eruvSection}>
         <div className={styles.container}>
           <div className={styles.eruvGrid}>

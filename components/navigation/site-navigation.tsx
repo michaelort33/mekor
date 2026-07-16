@@ -1,6 +1,7 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { HeartHandshake, Menu } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
@@ -12,7 +13,7 @@ import { UniversalSearch } from "@/components/navigation/universal-search";
 import { Button } from "@/components/ui/button";
 import type { AccountAccessState } from "@/lib/auth/account-access";
 import { normalizeNavigationPath } from "@/lib/navigation/path";
-import { SITE_MENU } from "@/lib/navigation/site-menu";
+import { SITE_MENU, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
 
 type SiteNavigationProps = {
   currentPath: string;
@@ -119,10 +120,22 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
           />
 
           <div className="flex flex-none items-center gap-2">
-            <UniversalSearch compact />
+            <div className="hidden sm:block">
+              <UniversalSearch compact />
+            </div>
             <div className="hidden min-[1441px]:flex">
               <NavCta isSignedIn={authenticated} isCheckingAuth={isCheckingAuth} />
             </div>
+            <Button
+              asChild
+              size="sm"
+              className="min-[1441px]:hidden max-[359px]:w-9 max-[359px]:px-0"
+            >
+              <Link href={SUPPORT_MEKOR_LINK.href} aria-label="Donate or sponsor Mekor">
+                <HeartHandshake className="h-4 w-4" aria-hidden="true" />
+                <span className="max-[359px]:sr-only">Donate</span>
+              </Link>
+            </Button>
             <Button
               ref={mobileTriggerRef}
               type="button"
