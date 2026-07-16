@@ -143,7 +143,6 @@ export default function OurRabbisPage() {
                 <p className={styles.resourceEyebrow}>Explore and connect</p>
                 <h3 id="rabbi-hirsch-resources">Rabbi Hirsch online</h3>
               </div>
-              <p>Writing, conversations, books, and practical resources for the Center City community.</p>
             </div>
             <div className={styles.primaryResourceGrid}>
               {HIRSCH_ONLINE_LINKS.map((item) => (
