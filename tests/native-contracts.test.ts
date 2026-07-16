@@ -6,6 +6,7 @@ import { getManagedEvents } from "../lib/events/store";
 import { getNativeSearchIndex } from "../lib/native-content/content-loader";
 import { getManagedInTheNews } from "../lib/in-the-news/store";
 import { getManagedKosherPlaces } from "../lib/kosher/store";
+import { getKosherMapLocation } from "../lib/kosher/map-locations";
 import {
   MIRROR_ONLY_FIELD_LIFECYCLE,
   NATIVE_CONTRACT_MATRIX,
@@ -56,6 +57,15 @@ test(
     assert.ok(validatedEvents.length >= 1, "expected at least one event for native events route");
     assert.ok(validatedArticles.length >= 20, "expected healthy in-the-news sample size");
     assert.ok(validatedPlaces.length >= 20, "expected healthy kosher place sample size");
+    assert.deepEqual(
+      validatedPlaces.filter((place) => !getKosherMapLocation(place.path)).map((place) => place.path),
+      [],
+      "every managed kosher place must have a map coordinate",
+    );
+    const saySheAte = validatedPlaces.filter((place) => place.path === "/post/say-she-ate-caf%C3%A9");
+    assert.equal(saySheAte.length, 1, "Say She Ate must remain a single listing");
+    assert.deepEqual(saySheAte[0]?.tags, ["Restaurants"]);
+    assert.deepEqual(saySheAte[0]?.tagPaths, ["/kosher-posts/tags/restaurants"]);
     assert.ok(validatedSearch.length >= 50, "expected healthy search index size");
   },
 );

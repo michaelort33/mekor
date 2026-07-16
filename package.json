@@ -36,6 +36,7 @@
     "db:backfill:in-the-news": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-in-the-news.ts"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^2.1.1",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.8",
@@ -59,6 +60,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/google.maps": "^3.65.2",
     "@types/node": "^20",
     "@types/pngjs": "^6.0.5",
     "@types/react": "^19",
