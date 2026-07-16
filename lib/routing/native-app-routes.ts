@@ -27,7 +27,7 @@ export const NATIVE_APP_ROUTE_PATHS = [
   "/old-yorkroad-northeast",
   "/our-communities",
   "/our-leadership",
-  "/our-rabbi",
+  "/our-rabbis",
   "/philly-jewish-community",
   "/search",
   "/team-4",

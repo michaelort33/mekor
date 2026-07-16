@@ -3,12 +3,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 
+import { buildSearchDocuments, listRoutesBySection } from "../lib/content/native-content";
+
 async function readSource(relativePath: string) {
   return fs.readFile(path.join(process.cwd(), relativePath), "utf8");
 }
 
 test("Rabbi Hirsch books and reflections retain the original wording and visible destinations", async () => {
-  const source = await readSource("app/our-rabbi/page.tsx");
+  const source = await readSource("app/our-rabbis/page.tsx");
 
   assert.match(source, /engaging Torah classes/);
   assert.match(source, /Rabbi Hirsch's Reflections/);
@@ -22,7 +24,7 @@ test("Rabbi Hirsch books and reflections retain the original wording and visible
 
 test("Rabbi links expose recognizable brands and external-link cues", async () => {
   const [pageSource, homepageSource, primitiveSource] = await Promise.all([
-    readSource("app/our-rabbi/page.tsx"),
+    readSource("app/our-rabbis/page.tsx"),
     readSource("app/page.tsx"),
     readSource("components/marketing/primitives.tsx"),
   ]);
@@ -48,4 +50,37 @@ test("Rabbi links expose recognizable brands and external-link cues", async () =
   assert.match(primitiveSource, /function AmazonMark/);
   assert.match(primitiveSource, /function SubstackMark/);
   assert.match(primitiveSource, /function EighteenFortyMark/);
+});
+
+test("Our Rabbis uses the plural canonical route everywhere public", async () => {
+  const [pageSource, configSource, homepageSource, menuSource, leadershipSource, mediumPageSource] =
+    await Promise.all([
+      readSource("app/our-rabbis/page.tsx"),
+      readSource("next.config.ts"),
+      readSource("app/page.tsx"),
+      readSource("lib/navigation/site-menu.ts"),
+      readSource("app/our-leadership/page.tsx"),
+      readSource("lib/medium-pages/content.ts"),
+    ]);
+
+  await fs.access(path.join(process.cwd(), "app/our-rabbis/page.tsx"));
+  await assert.rejects(fs.access(path.join(process.cwd(), "app/our-rabbi/page.tsx")));
+
+  assert.match(configSource, /source: "\/our-rabbi"[\s\S]*destination: "\/our-rabbis"/);
+  assert.match(configSource, /source: "\/our-rabbis\.html"[\s\S]*destination: "\/our-rabbis"/);
+  assert.match(pageSource, /const PATH = "\/our-rabbis"/);
+  assert.match(pageSource, /canonical: PATH/);
+
+  for (const source of [homepageSource, menuSource, leadershipSource, mediumPageSource]) {
+    assert.equal(source.includes('"/our-rabbi"'), false);
+  }
+
+  const searchDocuments = await buildSearchDocuments();
+  const rabbiSearchDocuments = searchDocuments.filter((record) => record.title.startsWith("Our Rabbis"));
+  assert.equal(rabbiSearchDocuments.length, 1);
+  assert.equal(rabbiSearchDocuments[0]?.path, "/our-rabbis");
+
+  const pageRoutes = await listRoutesBySection("pages-sitemap");
+  assert.equal(pageRoutes.includes("/our-rabbis"), true);
+  assert.equal(pageRoutes.includes("/our-rabbi"), false);
 });

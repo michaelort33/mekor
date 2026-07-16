@@ -53,7 +53,7 @@ export const SITE_MENU: NavItem[] = [
     children: [
       { label: "About Us", href: "/about-us" },
       { label: "Our Leadership", href: "/our-leadership" },
-      { label: "Our Rabbis", href: "/our-rabbi" },
+      { label: "Our Rabbis", href: "/our-rabbis" },
       { label: "Visit Us", href: "/visit-us" },
       { label: "Contact Us", href: "/contact-us" },
       { label: "In The News", href: "/in-the-news" },

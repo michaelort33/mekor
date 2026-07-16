@@ -30,7 +30,7 @@ const RABBIS = [
     image:
       "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/ef834ae06e3c7cf8ff31c0d7f7ab16cf19592877-92f487_d26f360d09cc45e4bebe89d9f14643d3-mv2-copy2-Medium-.jpg",
     alt: "Rabbi Eliezer Hirsch",
-    profileHref: "/our-rabbi#rabbi-eliezer-hirsch",
+    profileHref: "/our-rabbis#rabbi-eliezer-hirsch",
     links: [
       { label: "Podcast", href: "https://rabbiehirsch.castos.com/", brand: "podcast" },
       { label: "Substack", href: "https://rabbieliezerhirsch.substack.com/", brand: "substack" },
@@ -44,7 +44,7 @@ const RABBIS = [
     image:
       "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/34434149afbb96abbd5c8c3779b55dde432d98e9-R-Gotlib.jpg",
     alt: "Rabbi Steven Gotlib",
-    profileHref: "/our-rabbi#rabbi-steven-gotlib",
+    profileHref: "/our-rabbis#rabbi-steven-gotlib",
     links: [
       { label: "Substack", href: "https://rabbistevengotlib.substack.com/", brand: "substack" },
       { label: "18Forty", href: "https://18forty.org/author-name/steven-gotlib/", brand: "eighteenforty" },
@@ -194,7 +194,7 @@ export default function HomePage() {
                 membership. Visitors, whether from across the street or across the world, are always warmly welcomed.
               </p>
               <p>
-                Our rabbis, <Link href="/our-rabbi">Rabbi Hirsch and Rabbi Gotlib</Link>, are always happy to connect.
+                Our rabbis, <Link href="/our-rabbis">Rabbi Hirsch and Rabbi Gotlib</Link>, are always happy to connect.
               </p>
             </div>
 

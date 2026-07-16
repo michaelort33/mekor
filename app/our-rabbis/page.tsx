@@ -13,9 +13,12 @@ import {
 } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
-import styles from "@/app/our-rabbi/page.module.css";
+import styles from "@/app/our-rabbis/page.module.css";
 
 export const dynamic = "force-static";
+
+const PATH = "/our-rabbis";
+const LEGACY_CONTENT_PATH = "/our-rabbi";
 
 const HIRSCH_ONLINE_LINKS = [
   {
@@ -50,13 +53,23 @@ const HIRSCH_COMMUNITY_LINKS = [
 ] satisfies CtaItem[];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const document = await getNativeDocumentByPath("/our-rabbi");
-  return buildDocumentMetadata(document);
+  const document = await getNativeDocumentByPath(LEGACY_CONTENT_PATH);
+  return buildDocumentMetadata(
+    document
+      ? {
+          ...document,
+          path: PATH,
+          url: `https://www.mekorhabracha.org${PATH}`,
+          slug: "our-rabbis",
+          canonical: PATH,
+        }
+      : null,
+  );
 }
 
-export default function OurRabbiPage() {
+export default function OurRabbisPage() {
   return (
-    <MarketingPageShell currentPath="/our-rabbi" className={styles.page} contentClassName={styles.stack}>
+    <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         title="Our Rabbis"
         className={styles.heroGraphic}
