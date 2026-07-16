@@ -64,6 +64,9 @@ test(
     );
     const saySheAte = validatedPlaces.filter((place) => place.path === "/post/say-she-ate-caf%C3%A9");
     assert.equal(saySheAte.length, 1, "Say She Ate must remain a single listing");
+    assert.equal(saySheAte[0]?.slug, "say-she-ate");
+    assert.equal(saySheAte[0]?.title, "Say She Ate");
+    assert.doesNotMatch(saySheAte[0]?.summary ?? "", /caf(?:e|é)/i);
     assert.deepEqual(saySheAte[0]?.tags, ["Restaurants"]);
     assert.deepEqual(saySheAte[0]?.tagPaths, ["/kosher-posts/tags/restaurants"]);
     assert.ok(validatedSearch.length >= 50, "expected healthy search index size");

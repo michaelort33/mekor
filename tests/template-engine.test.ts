@@ -51,6 +51,32 @@ test("alias routes resolve to canonical template documents", async () => {
   assert.equal(resolved.document.path, "/post/Cinnaholic");
 });
 
+test("Say She Ate renders as a restaurant without Cafe in its public title", async () => {
+  const resolved = await resolveTemplateRoute("/post/say-she-ate-caf%C3%A9");
+  assert.equal(resolved.status, "ok");
+
+  if (resolved.status !== "ok") {
+    return;
+  }
+
+  assert.equal(resolved.document.title, "Say She Ate");
+  assert.equal(resolved.document.ogTitle, "Say She Ate");
+  assert.equal(resolved.document.twitterTitle, "Say She Ate");
+  assert.equal(resolved.template.kind, "article");
+
+  if (resolved.template.kind !== "article") {
+    return;
+  }
+
+  assert.equal(resolved.template.data.title, "Say She Ate");
+  assert.deepEqual(resolved.template.data.tags, [
+    {
+      href: "/kosher-posts/tags/restaurants",
+      label: "Restaurants",
+    },
+  ]);
+});
+
 test("metadata parity keeps canonical and social fields for template docs", async () => {
   const doc = await getDocumentByPath("/events-1/mekor-pesach-seders");
   assert.ok(doc, "expected event document");

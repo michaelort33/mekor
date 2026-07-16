@@ -45,7 +45,13 @@ test("Say She Ate stays a single restaurant listing", async () => {
   const matches = places.filter((row) => row.path === "/post/say-she-ate-caf%C3%A9");
 
   assert.equal(matches.length, 1);
-  assert.equal(matches[0]?.title, "Say She Ate Café");
+  assert.equal(matches[0]?.slug, "say-she-ate");
+  assert.equal(matches[0]?.title, "Say She Ate");
+  assert.equal(
+    matches[0]?.summary,
+    "Mumbai-inspired vegan restaurant. Tue-Sun 11 AM-9 PM; closed Monday.",
+  );
+  assert.doesNotMatch(matches[0]?.summary ?? "", /caf(?:e|é)/i);
   assert.equal(matches[0]?.address, "1408 South St, Philadelphia, PA 19146, United States");
   assert.deepEqual(matches[0]?.tags, ["Restaurants"]);
   assert.deepEqual(matches[0]?.tagPaths, ["/kosher-posts/tags/restaurants"]);

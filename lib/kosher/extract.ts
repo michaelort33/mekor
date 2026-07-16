@@ -1,6 +1,7 @@
 import { load } from "cheerio";
 
 import { toBlobUrl } from "@/lib/assets/blob-rewrite";
+import { getKosherPlaceCorrection } from "@/lib/kosher/corrections";
 import { listDocumentsByType } from "@/lib/mirror/loaders";
 import type { PageDocument } from "@/lib/mirror/types";
 import {
@@ -35,10 +36,6 @@ const STREET_PATTERN =
 
 const FOOTER_PHONE = "+12155254246";
 const POST_PATH_PREFIX = "/post/";
-const TAG_PATH_CORRECTIONS: Record<string, string[]> = {
-  "/post/say-she-ate-caf%C3%A9": ["/kosher-posts/tags/restaurants"],
-};
-
 export type ExtractedKosherPlace = {
   slug: string;
   path: string;
@@ -437,8 +434,9 @@ function extractKosherPlace(document: PageDocument): ExtractedKosherPlace | null
 
   const links = (document.links ?? []).filter((link): link is string => typeof link === "string");
   const path = normalizePath(document.path);
+  const correction = getKosherPlaceCorrection(path);
   const categoryPaths = parseCategoryPaths(links);
-  const tagPaths = TAG_PATH_CORRECTIONS[path] ?? parseTagPaths(links);
+  const tagPaths = correction?.tagPaths ?? parseTagPaths(links);
 
   if (categoryPaths.length === 0 && tagPaths.length === 0) {
     return null;
@@ -448,9 +446,9 @@ function extractKosherPlace(document: PageDocument): ExtractedKosherPlace | null
   const details = extractDetails(document);
 
   return {
-    slug: toPostSlug(path),
+    slug: correction?.slug ?? toPostSlug(path),
     path,
-    title: details.title,
+    title: correction?.title ?? details.title,
     neighborhood,
     neighborhoodLabel: KOSHER_NEIGHBORHOOD_LABELS[neighborhood],
     tags: parseTagLabels(tagPaths),
@@ -460,7 +458,7 @@ function extractKosherPlace(document: PageDocument): ExtractedKosherPlace | null
     phone: details.phone,
     website: details.website,
     supervision: details.supervision,
-    summary: details.summary,
+    summary: correction?.summary ?? details.summary,
     locationHref: details.locationHref,
     capturedAt: document.capturedAt,
     sourceJson: {
