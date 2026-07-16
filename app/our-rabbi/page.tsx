@@ -138,6 +138,18 @@ export default function OurRabbiPage() {
             className={styles.linkCluster}
             title="Rabbi Gotlib Online"
             items={[
+              {
+                label: "Book Talk with Rabbi Steven Gotlib",
+                href: "https://rabbistevengotlib.substack.com/",
+                description: "Brief thoughts on books, belief, and belonging.",
+                brand: "substack",
+              },
+              {
+                label: "Rabbi Gotlib on 18Forty",
+                href: "https://18forty.org/author-name/steven-gotlib/",
+                description: "Read his Faith in Reason essays and recent writing.",
+                brand: "eighteenforty",
+              },
               { label: "Facebook", href: "https://www.facebook.com/StevenJGotlib/", brand: "facebook" },
               { label: "LinkedIn", href: "https://www.linkedin.com/in/steven-j-gotlib/", brand: "linkedin" },
             ]}
