@@ -1,5 +1,42 @@
 import type { NativeContentDocument, NativeTemplateRecord } from "@/lib/content/types";
 import { resolveContentPath } from "@/lib/content/native-content";
+import { getKosherPlaceCorrection } from "@/lib/kosher/corrections";
+
+function applyKosherPlaceCorrection(
+  document: NativeContentDocument,
+  template: NativeTemplateRecord,
+) {
+  const correction = getKosherPlaceCorrection(document.path);
+  if (!correction) {
+    return { document, template };
+  }
+
+  const correctedDocument: NativeContentDocument = {
+    ...document,
+    title: correction.title,
+    ogTitle: correction.title,
+    twitterTitle: correction.title,
+  };
+
+  if (template.kind !== "article" || template.data.type !== "post") {
+    return { document: correctedDocument, template };
+  }
+
+  const correctedTemplate: NativeTemplateRecord = {
+    ...template,
+    document: correctedDocument,
+    data: {
+      ...template.data,
+      title: correction.title,
+      tags: correction.tagPaths.map((href) => ({
+        href,
+        label: "Restaurants",
+      })),
+    },
+  };
+
+  return { document: correctedDocument, template: correctedTemplate };
+}
 
 export type TemplateRouteResolution =
   | {
@@ -31,10 +68,12 @@ export async function resolveTemplateRoute(pathValue: string): Promise<TemplateR
     };
   }
 
+  const corrected = applyKosherPlaceCorrection(route.document, route.template);
+
   return {
     status: "ok",
-    document: route.document,
-    template: route.template,
+    document: corrected.document,
+    template: corrected.template,
     requestPath: route.requestPath,
     resolvedPath: route.resolvedPath,
   };
