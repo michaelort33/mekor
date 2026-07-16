@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, HeartHandshake } from "lucide-react";
+import { ChevronDown, Heart } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -96,9 +96,7 @@ export function MobileDrawer({
           onClick={onClose}
           aria-label="Donate or sponsor Mekor"
         >
-          <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-white/14">
-            <HeartHandshake className="h-5 w-5" aria-hidden="true" />
-          </span>
+          <Heart className="h-4 w-4 flex-none" strokeWidth={2.25} aria-hidden="true" />
           <span className="grid gap-0.5">
             <span className="text-base font-semibold">Donate or sponsor</span>
             <span className="text-xs text-white/75">Support Mekor</span>
