@@ -162,7 +162,6 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
           isOpen={mobileOpen}
           onClose={() => setMobileOpen(false)}
           drawerId="native-mobile-drawer"
-          titleId="native-mobile-drawer-title"
           authenticated={authenticated}
           canAccessMembersArea={canAccessMembersArea}
           accessState={accessState}

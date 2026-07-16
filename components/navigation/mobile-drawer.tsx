@@ -21,7 +21,6 @@ type MobileDrawerProps = {
   isOpen: boolean;
   onClose: () => void;
   drawerId: string;
-  titleId: string;
   authenticated: boolean;
   canAccessMembersArea: boolean;
   accessState: AccountAccessState | null;
@@ -38,7 +37,6 @@ export function MobileDrawer({
   isOpen,
   onClose,
   drawerId,
-  titleId,
   authenticated,
   isCheckingAuth,
 }: MobileDrawerProps) {
@@ -80,13 +78,13 @@ export function MobileDrawer({
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => (open ? null : onClose())}>
-      <SheetContent id={drawerId} aria-labelledby={titleId} className="gap-6">
+      <SheetContent id={drawerId} className="gap-6">
         <SheetHeader>
           <div className="flex items-center justify-between gap-4 pr-10">
             <NavBrand />
             <Badge>Public Site</Badge>
           </div>
-          <SheetTitle id={titleId}>Browse Mekor</SheetTitle>
+          <SheetTitle>Browse Mekor</SheetTitle>
           <SheetDescription>One clear path through community life, events, and the kosher guide.</SheetDescription>
         </SheetHeader>
 
