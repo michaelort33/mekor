@@ -1,0 +1,135 @@
+.link {
+  display: block;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 14px 16px;
+  color: var(--color-foreground);
+  text-decoration: none;
+  box-shadow: 0 12px 30px -26px rgba(15, 23, 42, 0.52);
+  transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.link:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-border-strong);
+  background: #fff;
+  box-shadow: 0 16px 32px -24px rgba(15, 23, 42, 0.44);
+}
+
+.link[data-brand] {
+  border-color: color-mix(in srgb, var(--link-brand) 26%, var(--color-border));
+  background:
+    linear-gradient(140deg, color-mix(in srgb, var(--link-brand) 7%, #fff) 0%, rgba(255, 255, 255, 0.96) 72%);
+}
+
+.link[data-brand]:hover {
+  border-color: color-mix(in srgb, var(--link-brand) 62%, var(--color-border));
+  box-shadow: 0 17px 34px -24px color-mix(in srgb, var(--link-brand) 42%, transparent);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--link-brand) 12%, #fff);
+  color: var(--link-brand);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--link-brand) 20%, transparent);
+}
+
+.icon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.copy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.label {
+  color: var(--color-foreground);
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.005em;
+}
+
+.destination {
+  color: var(--link-brand);
+  font-size: 0.69rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.description {
+  margin-top: 2px;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.external {
+  width: 16px;
+  height: 16px;
+  align-self: start;
+  color: color-mix(in srgb, var(--link-brand, var(--color-muted)) 72%, var(--color-muted));
+  transition: transform 140ms ease;
+}
+
+.link:hover .external {
+  transform: translate(1px, -1px);
+}
+
+.compact {
+  display: inline-block;
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+
+.compact .inner {
+  gap: 8px;
+}
+
+.compact .icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.compact .icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.compact .label {
+  font-size: 0.78rem;
+}
+
+.compact .destination {
+  font-size: 0.6rem;
+}
+
+.compact .external {
+  width: 13px;
+  height: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link,
+  .external {
+    transition: none;
+  }
+}

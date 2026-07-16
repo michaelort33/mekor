@@ -502,7 +502,7 @@
   margin-bottom: 2px;
 }
 
-.rabbiLinks a,
+.rabbiLinks > a:not([data-brand]),
 .contactInfo a,
 .socialLinks a {
   color: #2b5a81;

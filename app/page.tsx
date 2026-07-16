@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { CurrentCivilYear, HebrewDateFooter } from "@/components/calendar/hebrew-date-footer";
 import { HomeContactForm } from "@/components/home/home-contact-form";
 import { HomeNewsletterForm } from "@/components/home/home-newsletter-form";
+import { BrandedLink } from "@/components/marketing/primitives";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import { getManagedEvents, type ManagedEvent } from "@/lib/events/store";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
@@ -31,9 +32,9 @@ const RABBIS = [
     alt: "Rabbi Eliezer Hirsch",
     profileHref: "/our-rabbi#rabbi-eliezer-hirsch",
     links: [
-      { label: "Podcast", href: "https://rabbiehirsch.castos.com/" },
-      { label: "Substack", href: "https://rabbieliezerhirsch.substack.com/" },
-      { label: "Books", href: "https://www.amazon.com/Rabbi-Eliezer-Hirsch/e/B0876V66RG%3Fref=dbs_a_mng_rwt_scns_share" },
+      { label: "Podcast", href: "https://rabbiehirsch.castos.com/", brand: "podcast" },
+      { label: "Substack", href: "https://rabbieliezerhirsch.substack.com/", brand: "substack" },
+      { label: "Books", href: "https://www.amazon.com/Rabbi-Eliezer-Hirsch/e/B0876V66RG%3Fref=dbs_a_mng_rwt_scns_share", brand: "amazon" },
     ],
   },
   {
@@ -45,8 +46,8 @@ const RABBIS = [
     alt: "Rabbi Steven Gotlib",
     profileHref: "/our-rabbi#rabbi-steven-gotlib",
     links: [
-      { label: "Facebook", href: "https://www.facebook.com/StevenJGotlib/" },
-      { label: "LinkedIn", href: "https://www.linkedin.com/in/steven-j-gotlib/" },
+      { label: "Facebook", href: "https://www.facebook.com/StevenJGotlib/", brand: "facebook" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/in/steven-j-gotlib/", brand: "linkedin" },
     ],
   },
 ] as const;
@@ -379,17 +380,9 @@ export default function HomePage() {
                   </h3>
                   <p className={styles.rabbiBio}>{rabbi.bio}</p>
                   <div className={styles.rabbiLinks}>
-                    {rabbi.links.map((link) =>
-                      link.href.startsWith("/") ? (
-                        <Link key={link.label} href={link.href}>
-                          {link.label}
-                        </Link>
-                      ) : (
-                        <a key={link.label} href={link.href} target="_blank" rel="noreferrer noopener">
-                          {link.label}
-                        </a>
-                      ),
-                    )}
+                    {rabbi.links.map((link) => (
+                      <BrandedLink key={link.label} {...link} compact />
+                    ))}
                   </div>
                 </div>
               </article>
