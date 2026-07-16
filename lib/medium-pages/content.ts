@@ -273,7 +273,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
     ],
     primaryLinks: [
       { label: "Email the Board", href: "mailto:mekorboard@gmail.com" },
-      { label: "Our Rabbi", href: "/our-rabbi" },
+      { label: "Our Rabbis", href: "/our-rabbis" },
     ],
     groups: [
       {

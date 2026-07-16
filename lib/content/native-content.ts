@@ -26,6 +26,12 @@ const routeData = routesData as NativeGeneratedRouteData;
 const searchRecords = searchData as NativeSearchIndexRecord[];
 const templateRecords = templatesData as NativeTemplateRecord[];
 
+const PUBLIC_PATH_REWRITES = new Map([["/our-rabbi", "/our-rabbis"]]);
+
+function toPublicPath(pathValue: string) {
+  return PUBLIC_PATH_REWRITES.get(pathValue) ?? pathValue;
+}
+
 function isRetiredKosherBrowsePath(pathValue: string) {
   return pathValue.startsWith("/kosher-posts/categories/") || pathValue.startsWith("/kosher-posts/tags/");
 }
@@ -195,14 +201,23 @@ function matchesSection(pathValue: string, section: NativeSectionSitemap) {
 }
 
 export async function listRoutesBySection(section: NativeSectionSitemap) {
-  return routeData.canonical
-    .map((record) => record.path)
-    .filter((pathValue) => !isRetiredKosherBrowsePath(pathValue) && matchesSection(pathValue, section))
-    .sort((a, b) => a.localeCompare(b));
+  return [
+    ...new Set(
+      routeData.canonical
+        .map((record) => toPublicPath(record.path))
+        .filter(
+          (pathValue) =>
+            !isRetiredKosherBrowsePath(pathValue) && matchesSection(pathValue, section),
+        )
+        .sort((a, b) => a.localeCompare(b)),
+    ),
+  ];
 }
 
 export async function buildSearchDocuments() {
-  return searchRecords.filter((record) => !isRetiredKosherBrowsePath(record.path));
+  return searchRecords
+    .filter((record) => !isRetiredKosherBrowsePath(record.path))
+    .map((record) => ({ ...record, path: toPublicPath(record.path) }));
 }
 
 export async function loadContentIndex() {

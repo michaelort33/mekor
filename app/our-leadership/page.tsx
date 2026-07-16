@@ -102,7 +102,7 @@ export default async function OurLeadershipPage() {
         ]}
         actions={[
           { label: "Email the Board", href: "mailto:mekorboard@gmail.com" },
-          { label: "Meet Our Rabbis", href: "/our-rabbi" },
+          { label: "Meet Our Rabbis", href: "/our-rabbis" },
         ]}
       />
 

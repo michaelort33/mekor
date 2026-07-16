@@ -20,6 +20,16 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/our-rabbi",
+        destination: "/our-rabbis",
+        permanent: true,
+      },
+      {
+        source: "/our-rabbis.html",
+        destination: "/our-rabbis",
+        permanent: true,
+      },
+      {
         source: "/main-line-manyunk",
         destination: "/center-city?neighborhood=main-line-manyunk",
         permanent: true,

@@ -8,7 +8,7 @@ import { readFileSync } from "node:fs";
 const ROUTES = [
   "/",
   "/about-us",
-  "/our-rabbi",
+  "/our-rabbis",
   "/our-leadership",
   "/leadership",
   "/our-communities",

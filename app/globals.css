@@ -3590,25 +3590,25 @@ body.native-nav--mobile-open {
   max-width: 100% !important;
 }
 
-.mirror-root[data-path="/our-rabbi"] #PAGES_CONTAINER,
-.mirror-root[data-path="/our-rabbi"] #SITE_PAGES,
-.mirror-root[data-path="/our-rabbi"] #Containertrsfl,
-.mirror-root[data-path="/our-rabbi"] .wixui-section {
+.mirror-root[data-path="/our-rabbis"] #PAGES_CONTAINER,
+.mirror-root[data-path="/our-rabbis"] #SITE_PAGES,
+.mirror-root[data-path="/our-rabbis"] #Containertrsfl,
+.mirror-root[data-path="/our-rabbis"] .wixui-section {
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
 }
 
-.mirror-root[data-path="/our-rabbi"] #comp-m5zp625u,
-.mirror-root[data-path="/our-rabbi"] #comp-m5zpplrd {
+.mirror-root[data-path="/our-rabbis"] #comp-m5zp625u,
+.mirror-root[data-path="/our-rabbis"] #comp-m5zpplrd {
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
   height: auto !important;
 }
 
-.mirror-root[data-path="/our-rabbi"] #comp-m5zp627h,
-.mirror-root[data-path="/our-rabbi"] #comp-m5zpplsx {
+.mirror-root[data-path="/our-rabbis"] #comp-m5zp627h,
+.mirror-root[data-path="/our-rabbis"] #comp-m5zpplsx {
   width: min(1240px, 100%) !important;
   max-width: 100% !important;
   min-width: 0 !important;
@@ -3619,8 +3619,8 @@ body.native-nav--mobile-open {
   opacity: 1 !important;
 }
 
-.mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"],
-.mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] {
+.mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"],
+.mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] {
   display: grid !important;
   grid-template-columns: minmax(0, 320px) minmax(0, 1fr) !important;
   column-gap: 36px !important;
@@ -3631,8 +3631,8 @@ body.native-nav--mobile-open {
   min-height: auto !important;
 }
 
-.mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"] > *,
-.mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] > * {
+.mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"] > *,
+.mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] > * {
   position: relative !important;
   inset: auto !important;
   margin: 0 !important;
@@ -3643,13 +3643,13 @@ body.native-nav--mobile-open {
   max-width: 100% !important;
 }
 
-.mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"] > .wixui-image,
-.mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] > .wixui-image {
+.mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"] > .wixui-image,
+.mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] > .wixui-image {
   grid-column: 1 !important;
 }
 
-.mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"] > :not(.wixui-image),
-.mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] > :not(.wixui-image) {
+.mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"] > :not(.wixui-image),
+.mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] > :not(.wixui-image) {
   grid-column: 2 !important;
 }
 
@@ -3754,15 +3754,15 @@ body.native-nav--mobile-open {
     grid-column: 1 !important;
   }
 
-  .mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"],
-  .mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] {
+  .mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"],
+  .mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] {
     grid-template-columns: minmax(0, 1fr) !important;
     row-gap: 12px !important;
     padding-inline: 16px !important;
   }
 
-  .mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"] > *,
-  .mirror-root[data-path="/our-rabbi"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] > * {
+  .mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zp627hinlineContent-gridContainer"] > *,
+  .mirror-root[data-path="/our-rabbis"] [data-mesh-id="comp-m5zpplsxinlineContent-gridContainer"] > * {
     grid-column: 1 !important;
   }
 
