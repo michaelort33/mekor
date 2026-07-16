@@ -1,6 +1,10 @@
 {
   "crons": [
     {
+      "path": "/api/cron/newsletter-campaigns",
+      "schedule": "* * * * *"
+    },
+    {
       "path": "/api/cron/kosher-last-updated",
       "schedule": "0 0 */14 * *"
     },

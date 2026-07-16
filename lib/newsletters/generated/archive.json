@@ -1,9 +1,410 @@
 {
   "source": "https://us2.campaign-archive.com/home/?u=f9fe87a16c42c24704c099073&id=94f3350887",
-  "importedAt": "2026-07-13T02:11:34.790Z",
-  "issueCount": 20,
-  "assetCount": 18,
+  "importedAt": "2026-07-16T20:33:49.637Z",
+  "issueCount": 21,
+  "assetCount": 14,
   "issues": [
+    {
+      "slug": "reminder-rabbi-gotlib-s-new-class-begins-tomorrow-night-2026-07-13",
+      "campaignId": "52000a90dd",
+      "title": "Reminder: Rabbi Gotlib's New Class Begins Tomorrow Night!",
+      "category": "classes",
+      "sentOn": "2026-07-13",
+      "preview": "Dear Mekor Habracha Community, Remember to join Rabbi Gotlib this week for his new class exploring \"The Sacred and the State: The Religious Zionism of Rabbi Dr. Nachum Rabinovitch.\" Zionism and the establishment of th…",
+      "coverImage": "/newsletters/archive/assets/58eaddb0bbcf-87e0abbc-a2e4-d1d2-038b-8c0682c56128.png",
+      "readingMinutes": 1,
+      "searchText": "Dear Mekor Habracha Community, Remember to join Rabbi Gotlib this week for his new class exploring \"The Sacred and the State: The Religious Zionism of Rabbi Dr. Nachum Rabinovitch.\" Zionism and the establishment of the State of Israel challenge Torah scholars to articulate a vision of state and society that embodies the highest standards of security, sanctity, and justice. Rav Rabinovitch spoke of these issues with a rare sensitivity and wisdom. Join Rabbi Gotlib for an in-depth exploration of Rav Rabinovitch's \"Pathways to God: Torah, Society, and State,\" a book that emphasizes the Torah's \"vision of liberty, equality, rights, and responsibilities, which relates closely to modern democratic ideals but is not identical to them.\" Sponsorship for this class is available at any amount via venmo (@Mekor-Habracha) or donated to the shul here. Sponsors of $180 or more will receive a complimentary copy of Rav Rabinovitch's book. Class will meet Tuesday evenings at 7:00pm beginning tomorrow, July 14th. RSVP HERE! Sincerely, The Mekor Team Copyright © 2026 Mekor Habracha, All rights reserved. Our mailing address is: 1500 Walnut St. Suite 206 Philadelphia, PA 19102 Want to change how you receive these emails? You can update your preferences or unsubscribe from this list",
+      "toc": [
+        {
+          "id": "section-1-dear-mekor-habracha-community",
+          "label": "Dear Mekor Habracha Community,",
+          "level": 2
+        },
+        {
+          "id": "section-2-dear-mekor-habracha-community",
+          "label": "Dear Mekor Habracha Community,",
+          "level": 1
+        },
+        {
+          "id": "section-3-sincerely-the-mekor-team",
+          "label": "Sincerely, The Mekor Team",
+          "level": 2
+        }
+      ],
+      "blocks": [
+        {
+          "kind": "image",
+          "node": {
+            "type": "image",
+            "src": "/newsletters/archive/assets/238810f8b9cd-75d082cb-45f0-420c-95dd-3f153937e7ef.png",
+            "alt": "Mekor Habracha newsletter image"
+          }
+        },
+        {
+          "kind": "rich",
+          "nodes": [
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "element",
+              "tag": "h1",
+              "children": [
+                {
+                  "type": "element",
+                  "tag": "span",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Dear Mekor Habracha Community, "
+                    }
+                  ],
+                  "variant": "large",
+                  "id": "section-1-dear-mekor-habracha-community"
+                }
+              ],
+              "align": "justify",
+              "variant": "large",
+              "id": "section-2-dear-mekor-habracha-community"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "element",
+              "tag": "div",
+              "children": [
+                {
+                  "type": "break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                },
+                {
+                  "type": "element",
+                  "tag": "span",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Remember to join Rabbi Gotlib this week for his new class exploring \"The Sacred and the State: The Religious Zionism of Rabbi Dr. Nachum Rabinovitch.\" "
+                    },
+                    {
+                      "type": "break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
+                      "type": "break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " Zionism and the establishment of the State of Israel challenge Torah scholars to articulate a vision of state and society that embodies the highest standards of security, sanctity, and justice. Rav Rabinovitch spoke of these issues with a rare sensitivity and wisdom. Join Rabbi Gotlib for an in-depth exploration of Rav Rabinovitch's \"Pathways to God: Torah, Society, and State,\" a book that emphasizes the Torah's \"vision of liberty, equality, rights, and responsibilities, which relates closely to modern democratic ideals but is not identical to them.\""
+                    },
+                    {
+                      "type": "break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
+                      "type": "break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " Sponsorship for this class is available at any amount via venmo (@Mekor-Habracha) or "
+                    },
+                    {
+                      "type": "link",
+                      "href": "/donations",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "donated to the shul here."
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "value": " Sponsors of $180 or more will receive a complimentary copy of Rav Rabinovitch's book."
+                    },
+                    {
+                      "type": "break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
+                      "type": "break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " Class will meet Tuesday evenings at 7:00pm beginning tomorrow, July 14th."
+                    },
+                    {
+                      "type": "break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
+                      "type": "break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " "
+                    },
+                    {
+                      "type": "link",
+                      "href": "https://forms.gle/aDkUYeBj3qvudcMD9",
+                      "children": [
+                        {
+                          "type": "text",
+                          "value": "RSVP HERE!"
+                        }
+                      ]
+                    }
+                  ],
+                  "variant": "large"
+                },
+                {
+                  "type": "break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                }
+              ],
+              "align": "justify"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "element",
+              "tag": "div",
+              "children": [
+                {
+                  "type": "element",
+                  "tag": "span",
+                  "children": [
+                    {
+                      "type": "link",
+                      "href": "https://forms.gle/aDkUYeBj3qvudcMD9",
+                      "children": [
+                        {
+                          "type": "image",
+                          "src": "/newsletters/archive/assets/58eaddb0bbcf-87e0abbc-a2e4-d1d2-038b-8c0682c56128.png",
+                          "alt": "Mekor Habracha newsletter image"
+                        }
+                      ]
+                    }
+                  ],
+                  "variant": "large"
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "element",
+              "tag": "div",
+              "children": [
+                {
+                  "type": "break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                },
+                {
+                  "type": "element",
+                  "tag": "span",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Sincerely, "
+                    },
+                    {
+                      "type": "break"
+                    },
+                    {
+                      "type": "text",
+                      "value": " The Mekor Team"
+                    }
+                  ],
+                  "variant": "large",
+                  "id": "section-3-sincerely-the-mekor-team"
+                }
+              ],
+              "align": "justify"
+            },
+            {
+              "type": "text",
+              "value": " "
+            }
+          ]
+        },
+        {
+          "kind": "links",
+          "links": [
+            {
+              "label": "Twitter",
+              "href": "http://www.twitter.com/"
+            },
+            {
+              "label": "Facebook",
+              "href": "http://www.facebook.com"
+            },
+            {
+              "label": "Website",
+              "href": "http://mailchimp.com"
+            },
+            {
+              "label": "Instagram",
+              "href": "http://instagram.com"
+            }
+          ]
+        },
+        {
+          "kind": "divider"
+        },
+        {
+          "kind": "rich",
+          "nodes": [
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "element",
+              "tag": "div",
+              "children": [
+                {
+                  "type": "element",
+                  "tag": "em",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Copyright © 2026 Mekor Habracha, All rights reserved."
+                    }
+                  ]
+                },
+                {
+                  "type": "break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                },
+                {
+                  "type": "break"
+                },
+                {
+                  "type": "text",
+                  "value": " "
+                },
+                {
+                  "type": "element",
+                  "tag": "strong",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Our mailing address is: 1500 Walnut St. Suite 206 Philadelphia, PA 19102"
+                    }
+                  ]
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "element",
+              "tag": "h2",
+              "children": [
+                {
+                  "type": "element",
+                  "tag": "span",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Want to change how you receive these emails?"
+                    }
+                  ],
+                  "variant": "small"
+                }
+              ],
+              "align": "center",
+              "variant": "large"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "element",
+              "tag": "div",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "You can "
+                },
+                {
+                  "type": "link",
+                  "href": "https://ccshul.us2.list-manage.com/profile?u=f9fe87a16c42c24704c099073&id=94f3350887&e=[UNIQID]&c=52000a90dd",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "update your preferences"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "value": " or "
+                },
+                {
+                  "type": "link",
+                  "href": "https://ccshul.us2.list-manage.com/unsubscribe?u=f9fe87a16c42c24704c099073&id=94f3350887&t=b&e=[UNIQID]&c=52000a90dd",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "unsubscribe from this list"
+                    }
+                  ]
+                }
+              ],
+              "align": "center"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": " "
+            }
+          ]
+        }
+      ]
+    },
     {
       "slug": "matot-masei-mevarchim-av-2026-07-10",
       "campaignId": "8e79684b23",

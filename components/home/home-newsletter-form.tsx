@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-type FormState = "idle" | "submitting" | "success" | "error";
+type FormState = "idle" | "submitting" | "pending-confirmation" | "already-subscribed" | "error";
 
 type HomeNewsletterFormProps = {
   sourcePath: string;
@@ -54,8 +54,9 @@ export function HomeNewsletterForm({
       return;
     }
 
+    const payload = (await response.json().catch(() => ({}))) as { subscriptionStatus?: string };
     setEmail("");
-    setState("success");
+    setState(payload.subscriptionStatus === "subscribed" ? "already-subscribed" : "pending-confirmation");
   }
 
   return (
@@ -76,7 +77,8 @@ export function HomeNewsletterForm({
       <Button type="submit" className={submitClassName} disabled={state === "submitting"}>
         {state === "submitting" ? "SUBSCRIBING..." : "SUBSCRIBE"}
       </Button>
-      {state === "success" ? <p role="status" className={successClassName}>Thanks for subscribing.</p> : null}
+      {state === "pending-confirmation" ? <p role="status" className={successClassName}>Check your email to confirm your subscription.</p> : null}
+      {state === "already-subscribed" ? <p role="status" className={successClassName}>You’re already subscribed.</p> : null}
       {state === "error" ? <p role="alert" className={errorClassName}>Unable to subscribe right now.</p> : null}
     </form>
   );

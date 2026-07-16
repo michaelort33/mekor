@@ -142,8 +142,24 @@ export const membershipPipelineEventTypeEnum = pgEnum("membership_pipeline_event
 export const membershipApplicationStatusEnum = pgEnum("membership_application_status", ["pending", "approved", "declined"]);
 export const messageCampaignChannelEnum = pgEnum("message_campaign_channel", ["email", "sms", "whatsapp"]);
 export const messageCampaignSourceEnum = pgEnum("message_campaign_source", ["manual", "newsletter", "automated"]);
-export const messageCampaignStatusEnum = pgEnum("message_campaign_status", ["sending", "completed", "partial", "failed"]);
-export const messageDeliveryStatusEnum = pgEnum("message_delivery_status", ["queued", "sent", "failed", "skipped"]);
+export const messageCampaignStatusEnum = pgEnum("message_campaign_status", [
+  "draft",
+  "ready",
+  "scheduled",
+  "sending",
+  "completed",
+  "partial",
+  "failed",
+  "cancelled",
+]);
+export const messageDeliveryStatusEnum = pgEnum("message_delivery_status", ["queued", "processing", "sent", "failed", "skipped"]);
+export const newsletterSubscriptionStatusEnum = pgEnum("newsletter_subscription_status", [
+  "pending",
+  "subscribed",
+  "unsubscribed",
+  "bounced",
+  "complained",
+]);
 export const adminNotificationCategoryEnum = pgEnum("admin_notification_category", [
   "general_forms",
   "volunteer",
@@ -398,7 +414,11 @@ export const newsletterTemplates = pgTable("newsletter_templates", {
   shabbatDate: varchar("shabbat_date", { length: 120 }).notNull().default(""),
   hebrewDate: varchar("hebrew_date", { length: 120 }).notNull().default(""),
   candleLighting: varchar("candle_lighting", { length: 60 }).notNull().default(""),
+  slug: varchar("slug", { length: 255 }).notNull().default(""),
+  category: varchar("category", { length: 60 }).notNull().default("weekly"),
+  previewText: text("preview_text").notNull().default(""),
   bodyHtml: text("body_html").notNull().default(""),
+  publishOnSend: boolean("publish_on_send").notNull().default(true),
   status: templateStatusEnum("status").notNull().default("draft"),
   sentAt: timestamp("sent_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -599,6 +619,32 @@ export const communicationPreferences = pgTable(
       table.smsOptIn,
       table.whatsappOptIn,
     ),
+  }),
+);
+
+export const newsletterSubscriptions = pgTable(
+  "newsletter_subscriptions",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id")
+      .notNull()
+      .references(() => people.id),
+    topic: varchar("topic", { length: 80 }).notNull().default("weekly"),
+    status: newsletterSubscriptionStatusEnum("status").notNull().default("pending"),
+    source: varchar("source", { length: 120 }).notNull().default("website"),
+    confirmationTokenHash: varchar("confirmation_token_hash", { length: 64 }).unique(),
+    confirmationExpiresAt: timestamp("confirmation_expires_at"),
+    unsubscribeToken: varchar("unsubscribe_token", { length: 64 }).notNull().unique(),
+    confirmedAt: timestamp("confirmed_at"),
+    unsubscribedAt: timestamp("unsubscribed_at"),
+    lastProviderEventAt: timestamp("last_provider_event_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    personTopicUniqueIdx: uniqueIndex("newsletter_subscriptions_person_topic_unique_idx").on(table.personId, table.topic),
+    topicStatusIdx: index("newsletter_subscriptions_topic_status_idx").on(table.topic, table.status),
+    statusUpdatedIdx: index("newsletter_subscriptions_status_updated_idx").on(table.status, table.updatedAt),
   }),
 );
 
@@ -1448,12 +1494,18 @@ export const messageCampaigns = pgTable(
     createdByUserId: integer("created_by_user_id")
       .notNull()
       .references(() => users.id),
+    templateId: integer("template_id").references(() => newsletterTemplates.id),
     source: messageCampaignSourceEnum("source").notNull().default("manual"),
     channel: messageCampaignChannelEnum("channel").notNull().default("email"),
     name: varchar("name", { length: 180 }).notNull(),
     subject: varchar("subject", { length: 255 }).notNull().default(""),
     body: text("body").notNull().default(""),
     segmentKey: varchar("segment_key", { length: 80 }).notNull().default(""),
+    senderEmail: varchar("sender_email", { length: 255 }).notNull().default(""),
+    timezone: varchar("timezone", { length: 80 }).notNull().default("America/New_York"),
+    scheduledAt: timestamp("scheduled_at"),
+    cancelledAt: timestamp("cancelled_at"),
+    publishOnComplete: boolean("publish_on_complete").notNull().default(false),
     recipientCount: integer("recipient_count").notNull().default(0),
     successCount: integer("success_count").notNull().default(0),
     failedCount: integer("failed_count").notNull().default(0),
@@ -1467,6 +1519,8 @@ export const messageCampaigns = pgTable(
   (table) => ({
     creatorStartedIdx: index("message_campaigns_creator_started_idx").on(table.createdByUserId, table.startedAt),
     sourceChannelStartedIdx: index("message_campaigns_source_channel_started_idx").on(table.source, table.channel, table.startedAt),
+    statusScheduledIdx: index("message_campaigns_status_scheduled_idx").on(table.status, table.scheduledAt),
+    templateCreatedIdx: index("message_campaigns_template_created_idx").on(table.templateId, table.createdAt),
   }),
 );
 
@@ -1516,6 +1570,53 @@ export const messageSuppressions = pgTable(
     channelEmailUniqueIdx: uniqueIndex("message_suppressions_channel_email_unique_idx").on(table.channel, table.email),
     channelPhoneUniqueIdx: uniqueIndex("message_suppressions_channel_phone_unique_idx").on(table.channel, table.phone),
     personChannelIdx: index("message_suppressions_person_channel_idx").on(table.personId, table.channel),
+  }),
+);
+
+export const newsletterIssues = pgTable(
+  "newsletter_issues",
+  {
+    id: serial("id").primaryKey(),
+    templateId: integer("template_id").references(() => newsletterTemplates.id),
+    campaignId: integer("campaign_id").references(() => messageCampaigns.id),
+    slug: varchar("slug", { length: 255 }).notNull().unique(),
+    title: varchar("title", { length: 255 }).notNull(),
+    subject: varchar("subject", { length: 255 }).notNull().default(""),
+    category: varchar("category", { length: 60 }).notNull().default("weekly"),
+    previewText: text("preview_text").notNull().default(""),
+    coverImage: text("cover_image").notNull().default(""),
+    readingMinutes: integer("reading_minutes").notNull().default(1),
+    searchText: text("search_text").notNull().default(""),
+    contentJson: json("content_json").$type<Record<string, unknown>>().notNull().default({}),
+    bodyHtml: text("body_html").notNull().default(""),
+    source: varchar("source", { length: 60 }).notNull().default("native"),
+    externalCampaignId: varchar("external_campaign_id", { length: 255 }).notNull().default(""),
+    publishedAt: timestamp("published_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    publishedAtIdx: index("newsletter_issues_published_at_idx").on(table.publishedAt),
+    categoryPublishedIdx: index("newsletter_issues_category_published_idx").on(table.category, table.publishedAt),
+  }),
+);
+
+export const newsletterDeliveryEvents = pgTable(
+  "newsletter_delivery_events",
+  {
+    id: serial("id").primaryKey(),
+    deliveryId: integer("delivery_id").references(() => messageDeliveries.id),
+    providerMessageId: varchar("provider_message_id", { length: 255 }).notNull().default(""),
+    recipientEmail: varchar("recipient_email", { length: 255 }).notNull().default(""),
+    eventType: varchar("event_type", { length: 80 }).notNull(),
+    eventKey: varchar("event_key", { length: 255 }).notNull().unique(),
+    payloadJson: json("payload_json").$type<Record<string, unknown>>().notNull().default({}),
+    occurredAt: timestamp("occurred_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    providerMessageIdx: index("newsletter_delivery_events_provider_message_idx").on(table.providerMessageId),
+    recipientOccurredIdx: index("newsletter_delivery_events_recipient_occurred_idx").on(table.recipientEmail, table.occurredAt),
   }),
 );
 

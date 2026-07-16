@@ -7,11 +7,9 @@ import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page
 import { NewsletterArticle } from "@/components/newsletters/newsletter-article";
 import {
   formatNewsletterDate,
-  getAdjacentNewsletters,
-  getNewsletterBySlug,
   NEWSLETTER_CATEGORY_LABELS,
-  NEWSLETTERS,
 } from "@/lib/newsletters/data";
+import { getAdjacentNewslettersFromStore, getNewsletterFromStore } from "@/lib/newsletters/store";
 import styles from "./page.module.css";
 
 const PATH = "/newsletters";
@@ -20,13 +18,11 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-export function generateStaticParams() {
-  return NEWSLETTERS.map((item) => ({ slug: item.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const newsletter = getNewsletterBySlug(slug);
+  const newsletter = await getNewsletterFromStore(slug);
   if (!newsletter) return { title: "Newsletter | Mekor Habracha" };
   return {
     title: `${newsletter.title} | Mekor Habracha`,
@@ -57,9 +53,9 @@ function IssueLink({
 
 export default async function NewsletterPage({ params }: PageProps) {
   const { slug } = await params;
-  const newsletter = getNewsletterBySlug(slug);
+  const newsletter = await getNewsletterFromStore(slug);
   if (!newsletter) notFound();
-  const { newer, older } = getAdjacentNewsletters(slug);
+  const { newer, older } = await getAdjacentNewslettersFromStore(slug);
 
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.content}>

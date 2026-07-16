@@ -143,15 +143,10 @@ export function NewsletterArticle({ newsletter }: { newsletter: Newsletter }) {
           <span>{newsletter.readingMinutes} min read</span>
         </div>
         <h1>{newsletter.title}</h1>
-        <p>
-          Preserved from the original Mekor Habracha email archive. The wording below is unchanged and all newsletter
-          images are stored on this site.
-        </p>
+        {newsletter.campaignId.startsWith("native-") ? null : <p>Preserved from the original Mekor Habracha email archive. The wording below is unchanged and all newsletter images are stored on this site.</p>}
       </header>
       <div className={styles.body}>
-        {newsletter.blocks.map((block, index) => (
-          <Block block={block} key={index} />
-        ))}
+        {newsletter.bodyHtml ? <div dangerouslySetInnerHTML={{ __html: newsletter.bodyHtml }} /> : newsletter.blocks.map((block, index) => <Block block={block} key={index} />)}
       </div>
     </article>
   );

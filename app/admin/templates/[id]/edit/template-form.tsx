@@ -16,7 +16,7 @@ type EditTemplateFormProps = {
   template: TemplateRow;
 };
 
-type RecipientGroup = "all_members" | "admins_only" | "dues_outstanding" | "directory_visible";
+type RecipientGroup = "newsletter_subscribers" | "admins_only";
 
 type Campaign = {
   id: number;
@@ -24,7 +24,9 @@ type Campaign = {
   recipientCount: number;
   successCount: number;
   failedCount: number;
-  status: "sending" | "completed" | "partial" | "failed";
+  skippedCount: number;
+  status: "scheduled" | "sending" | "completed" | "partial" | "failed" | "cancelled";
+  scheduledAt: string | null;
   startedAt: string;
   completedAt: string | null;
   sentByDisplayName: string;
@@ -35,7 +37,7 @@ type Delivery = {
   id: number;
   recipientEmail: string;
   recipientName: string;
-  status: "sent" | "failed";
+  status: "queued" | "processing" | "sent" | "failed" | "skipped";
   errorMessage: string;
   sentAt: string | null;
 };
@@ -51,10 +53,8 @@ type ActivityLog = {
 };
 
 const GROUP_OPTIONS: Array<{ value: RecipientGroup; label: string }> = [
-  { value: "all_members", label: "All members" },
+  { value: "newsletter_subscribers", label: "Confirmed newsletter subscribers" },
   { value: "admins_only", label: "Admins only" },
-  { value: "dues_outstanding", label: "Members with dues outstanding" },
-  { value: "directory_visible", label: "Directory-visible members" },
 ];
 const GROUP_LABEL_MAP: Record<RecipientGroup, string> = Object.fromEntries(
   GROUP_OPTIONS.map((option) => [option.value, option.label]),
@@ -77,12 +77,14 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [deliveriesByCampaign, setDeliveriesByCampaign] = useState<Record<string, Delivery[]>>({});
-  const [sendGroup, setSendGroup] = useState<RecipientGroup>("all_members");
+  const [eventCountsByCampaign, setEventCountsByCampaign] = useState<Record<string, Record<string, number>>>({});
+  const [sendGroup, setSendGroup] = useState<RecipientGroup>("newsletter_subscribers");
   const [subjectOverride, setSubjectOverride] = useState("");
+  const [scheduledAt, setScheduledAt] = useState("");
   const [aiPrompt, setAiPrompt] = useState("");
   const [groupPreview, setGroupPreview] = useState<{
     count: number;
-    sample: Array<{ userId: number; email: string; displayName: string }>;
+    sample: Array<{ personId: number; email: string; displayName: string }>;
   } | null>(null);
 
   const [design, setDesign] = useState({
@@ -104,7 +106,11 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
     shabbatDate: template.shabbatDate,
     hebrewDate: template.hebrewDate,
     candleLighting: template.candleLighting,
+    slug: template.slug,
+    category: template.category,
+    previewText: template.previewText,
     bodyHtml: template.bodyHtml,
+    publishOnSend: template.publishOnSend,
     status: template.status,
   });
 
@@ -134,10 +140,12 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
     const payload = (await response.json().catch(() => ({}))) as {
       campaigns?: Campaign[];
       deliveriesByCampaign?: Record<string, Delivery[]>;
+      eventCountsByCampaign?: Record<string, Record<string, number>>;
     };
     if (response.ok) {
       setCampaigns(payload.campaigns ?? []);
       setDeliveriesByCampaign(payload.deliveriesByCampaign ?? {});
+      setEventCountsByCampaign(payload.eventCountsByCampaign ?? {});
     }
     setLoadingCampaigns(false);
   }
@@ -306,8 +314,8 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
       }),
     });
     const payload = (await response.json().catch(() => ({}))) as {
-      count?: number;
-      sample?: Array<{ userId: number; email: string; displayName: string }>;
+      recipientCount?: number;
+      sample?: Array<{ personId: number; email: string; displayName: string }>;
       error?: string;
     };
     if (!response.ok) {
@@ -316,7 +324,7 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
       return;
     }
     setGroupPreview({
-      count: payload.count ?? 0,
+      count: payload.recipientCount ?? 0,
       sample: payload.sample ?? [],
     });
     setPreviewingGroup(false);
@@ -376,6 +384,52 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
     router.refresh();
   }
 
+  async function scheduleCampaign() {
+    if (!scheduledAt) {
+      setCampaignError("Choose a future date and time.");
+      return;
+    }
+    const when = new Date(scheduledAt);
+    if (Number.isNaN(when.valueOf()) || when <= new Date()) {
+      setCampaignError("Choose a future date and time.");
+      return;
+    }
+    setCampaignError("");
+    setCampaignNotice("");
+    setSendingCampaign(true);
+    const saved = await persistTemplate();
+    if (!saved) {
+      setCampaignError("Save failed. Fix template issues before scheduling.");
+      setSendingCampaign(false);
+      return;
+    }
+    const response = await fetch("/api/admin/templates/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        templateId: form.id,
+        recipientGroup: sendGroup,
+        mode: "schedule",
+        scheduledAt: when.toISOString(),
+        subjectOverride: subjectOverride || undefined,
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as { error?: string; recipientCount?: number };
+    if (!response.ok) setCampaignError(payload.error || "Unable to schedule campaign.");
+    else setCampaignNotice(`Campaign scheduled for ${when.toLocaleString()} for ${payload.recipientCount ?? 0} recipients.`);
+    setSendingCampaign(false);
+    await loadCampaigns();
+  }
+
+  async function cancelCampaign(campaignId: number) {
+    if (!window.confirm("Cancel this scheduled newsletter?")) return;
+    const response = await fetch(`/api/admin/newsletters/campaigns/${campaignId}/cancel`, { method: "POST" });
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    if (!response.ok) setCampaignError(payload.error || "Unable to cancel campaign.");
+    else setCampaignNotice("Scheduled campaign cancelled.");
+    await loadCampaigns();
+  }
+
   return (
     <AdminShell
       currentPath="/admin/templates"
@@ -400,6 +454,32 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
             <label className={styles.field}>
               <span>Email Subject</span>
               <input type="text" value={form.subject} onChange={(e) => update("subject", e.target.value)} />
+            </label>
+            <div className={styles.fieldRow}>
+              <label className={styles.field}>
+                <span>Public archive slug</span>
+                <input type="text" value={form.slug} onChange={(e) => update("slug", e.target.value)} placeholder="weekly-newsletter-2026-07-17" />
+              </label>
+              <label className={styles.field}>
+                <span>Category</span>
+                <select value={form.category} onChange={(e) => update("category", e.target.value)}>
+                  <option value="weekly">Weekly newsletter</option>
+                  <option value="event">Event update</option>
+                  <option value="community">Community update</option>
+                </select>
+              </label>
+            </div>
+            <label className={styles.field}>
+              <span>Preview text</span>
+              <input type="text" value={form.previewText} onChange={(e) => update("previewText", e.target.value)} />
+            </label>
+            <label className={styles.field}>
+              <input
+                type="checkbox"
+                checked={form.publishOnSend}
+                onChange={(event) => setForm((previous) => ({ ...previous, publishOnSend: event.target.checked }))}
+              />
+              <span>Publish to Past Newsletters after a successful subscriber send</span>
             </label>
             <div className={styles.fieldRow}>
               <label className={styles.field}>
@@ -578,6 +658,15 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
                 {sendingCampaign ? "Sending..." : "Send via SendGrid"}
               </button>
             </div>
+            <div className={styles.fieldRow}>
+              <label className={styles.field}>
+                <span>Schedule for (your local time)</span>
+                <input type="datetime-local" value={scheduledAt} onChange={(event) => setScheduledAt(event.target.value)} />
+              </label>
+              <button type="button" className={styles.secondaryButton} onClick={scheduleCampaign} disabled={sendingCampaign || !scheduledAt}>
+                Schedule newsletter
+              </button>
+            </div>
             {campaignError ? <p className={styles.error}>{campaignError}</p> : null}
             {campaignNotice ? <p className={styles.notice}>{campaignNotice}</p> : null}
 
@@ -588,7 +677,7 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
                 </p>
                 <ul>
                   {groupPreview.sample.map((recipient) => (
-                    <li key={recipient.userId}>
+                    <li key={recipient.personId}>
                       {recipient.displayName} ({recipient.email})
                     </li>
                   ))}
@@ -609,12 +698,18 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
                       <strong>{campaign.status}</strong> · {campaign.successCount}/{campaign.recipientCount} sent
                     </p>
                     <p>
-                      Group: {GROUP_LABEL_MAP[campaign.recipientGroup]} · Started:{" "}
-                      {new Date(campaign.startedAt).toLocaleString()}
+                      Group: {GROUP_LABEL_MAP[campaign.recipientGroup] ?? campaign.recipientGroup} · {campaign.scheduledAt ? "Scheduled" : "Started"}: {" "}
+                      {new Date(campaign.scheduledAt || campaign.startedAt).toLocaleString()}
                     </p>
                     <p>
                       By {campaign.sentByDisplayName} ({campaign.sentByEmail})
                     </p>
+                    {eventCountsByCampaign[String(campaign.id)] ? (
+                      <p>Provider events: {Object.entries(eventCountsByCampaign[String(campaign.id)]!).map(([event, count]) => `${event} ${count}`).join(" · ")}</p>
+                    ) : null}
+                    {campaign.status === "scheduled" ? (
+                      <button type="button" className={styles.secondaryButton} onClick={() => cancelCampaign(campaign.id)}>Cancel scheduled send</button>
+                    ) : null}
                     {deliveriesByCampaign[String(campaign.id)]?.length ? (
                       <details>
                         <summary>Recent deliveries</summary>

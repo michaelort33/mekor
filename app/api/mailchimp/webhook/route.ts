@@ -1,3 +1,5 @@
+import { timingSafeEqual } from "node:crypto";
+
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -9,6 +11,7 @@ import {
   getCategoryLabel,
 } from "@/lib/admin/inbox";
 import { sendAdminInboxAlerts } from "@/lib/notifications/admin-alerts";
+import { syncNewsletterSubscriptionEvent } from "@/lib/newsletter/subscriptions";
 import { resolveSiteOriginFromRequest } from "@/lib/site-origin";
 
 type MailchimpEventType = "subscribe" | "profile" | "upemail" | "cleaned" | "unsubscribe";
@@ -60,11 +63,23 @@ function shouldCreateInboxEvent(eventType: MailchimpEventType) {
   return eventType === "subscribe" || eventType === "profile" || eventType === "upemail";
 }
 
-export async function GET() {
+function webhookIsAuthorized(request: Request) {
+  const expected = process.env.MAILCHIMP_WEBHOOK_SECRET || "";
+  const url = new URL(request.url);
+  const received = request.headers.get("x-mekor-webhook-secret") || url.searchParams.get("secret") || "";
+  if (!expected || expected.length !== received.length) return false;
+  return timingSafeEqual(Buffer.from(expected), Buffer.from(received));
+}
+
+export async function GET(request: Request) {
+  if (!webhookIsAuthorized(request)) return new NextResponse("Unauthorized", { status: 401 });
   return new NextResponse("ok", { status: 200 });
 }
 
 export async function POST(request: Request) {
+  if (!webhookIsAuthorized(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const rawPayload = await readWebhookPayload(request);
   const normalized = normalizeMailchimpPayload(rawPayload);
   if (!normalized.eventType || !normalized.email) {
@@ -100,6 +115,24 @@ export async function POST(request: Request) {
 
   if (!signupEvent) {
     throw new Error("Failed to store Mailchimp signup event");
+  }
+
+  const syncedStatus =
+    normalized.eventType === "subscribe"
+      ? "subscribed"
+      : normalized.eventType === "unsubscribe"
+        ? "unsubscribed"
+        : normalized.eventType === "cleaned"
+          ? "bounced"
+          : null;
+  if (syncedStatus) {
+    await syncNewsletterSubscriptionEvent({
+      email: normalized.email,
+      displayName: [normalized.firstName, normalized.lastName].filter(Boolean).join(" "),
+      source: "mailchimp_webhook",
+      status: syncedStatus,
+      occurredAt: normalized.occurredAt,
+    });
   }
 
   let inboxEventId: number | null = null;

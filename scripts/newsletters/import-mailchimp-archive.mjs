@@ -321,6 +321,7 @@ function extractBlocks($, assetMap, campaignPathByShortUrl) {
 async function main() {
   await mkdir(path.dirname(OUTPUT_PATH), { recursive: true });
   await mkdir(ASSET_DIR, { recursive: true });
+  const existingArchive = JSON.parse(await readFile(OUTPUT_PATH, "utf8").catch(() => '{"issues":[]}'));
 
   const { html: archiveHtml } = await fetchText(ARCHIVE_URL);
   const archive = load(archiveHtml);
@@ -406,18 +407,24 @@ async function main() {
     };
   });
 
+  const mergedByCampaign = new Map((existingArchive.issues || []).map((issue) => [issue.campaignId, issue]));
+  for (const issue of issues) mergedByCampaign.set(issue.campaignId, issue);
+  const mergedIssues = [...mergedByCampaign.values()].sort((a, b) => b.sentOn.localeCompare(a.sentOn));
+  const referencedAssets = new Set(
+    (JSON.stringify(mergedIssues).match(/\/newsletters\/archive\/assets\/[^"]+/g) || []),
+  );
   const output = {
     source: ARCHIVE_URL,
     importedAt: new Date().toISOString(),
-    issueCount: issues.length,
-    assetCount: assetMap.size,
-    issues,
+    issueCount: mergedIssues.length,
+    assetCount: referencedAssets.size,
+    issues: mergedIssues,
   };
   await writeFile(OUTPUT_PATH, `${JSON.stringify(output, null, 2)}\n`);
 
   const written = JSON.parse(await readFile(OUTPUT_PATH, "utf8"));
-  if (written.issueCount !== issueLinks.length) {
-    throw new Error(`Expected ${issueLinks.length} issues, wrote ${written.issueCount}`);
+  if (written.issueCount < issueLinks.length) {
+    throw new Error(`Expected at least ${issueLinks.length} issues, wrote ${written.issueCount}`);
   }
   const externalImages = JSON.stringify(written).match(/https?:\\?\/\\?\/[^\" ]+\.(png|jpe?g|gif|webp)/gi) || [];
   if (externalImages.length) throw new Error(`Generated archive still contains external images: ${externalImages[0]}`);

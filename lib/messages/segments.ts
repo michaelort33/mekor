@@ -4,6 +4,7 @@ export const MESSAGE_SEGMENTS = [
   "invited_not_accepted",
   "active_members",
   "members_overdue",
+  "newsletter_subscribers",
 ] as const;
 
 export type MessageSegmentKey = (typeof MESSAGE_SEGMENTS)[number];
@@ -14,4 +15,5 @@ export const MESSAGE_SEGMENT_LABELS: Record<MessageSegmentKey, string> = {
   invited_not_accepted: "Invited, not onboarded",
   active_members: "Active members/admins",
   members_overdue: "Members with overdue/open dues",
+  newsletter_subscribers: "Confirmed newsletter subscribers",
 };

@@ -325,6 +325,16 @@ export async function PUT(request: Request, context: RouteContext) {
         updatedAt: now,
       })
       .onConflictDoNothing();
+  } else {
+    await getDb()
+      .delete(messageSuppressions)
+      .where(
+        and(
+          eq(messageSuppressions.personId, personId),
+          eq(messageSuppressions.channel, "email"),
+          eq(messageSuppressions.reason, "hard_opt_out"),
+        ),
+      );
   }
 
   await getDb()

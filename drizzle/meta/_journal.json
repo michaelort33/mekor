@@ -169,6 +169,20 @@
       "when": 1773892000000,
       "tag": "0023_ask_mekor_board",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1784233798364,
+      "tag": "0024_strange_sentinel",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1784235777310,
+      "tag": "0025_nervous_vampiro",
+      "breakpoints": true
     }
   ]
 }

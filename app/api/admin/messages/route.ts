@@ -39,7 +39,7 @@ type UnifiedMessageLogItem = {
   direction: "inbound" | "outbound";
   source: "manual" | "newsletter" | "automated" | "dues" | "form_submission" | "mailchimp_signup";
   channel: "email";
-  status: "new" | "read" | "archived" | "sent" | "failed" | "skipped";
+  status: "new" | "read" | "archived" | "queued" | "processing" | "sent" | "failed" | "skipped";
   recipientName: string;
   recipientEmail: string;
   subject: string;
@@ -69,7 +69,9 @@ function getSegmentLabel(value: string) {
   return value || "Manual";
 }
 
-function normalizeManualStatus(value: string): "sent" | "failed" | "skipped" {
+function normalizeManualStatus(value: string): "queued" | "processing" | "sent" | "failed" | "skipped" {
+  if (value === "queued") return "queued";
+  if (value === "processing") return "processing";
   if (value === "sent") return "sent";
   if (value === "failed") return "failed";
   return "skipped";
@@ -144,7 +146,7 @@ export async function GET(request: Request) {
           .limit(perSourceLimit);
 
   const manualRows =
-    direction === "inbound" || (source && source !== "manual")
+    direction === "inbound" || (source && source !== "manual" && source !== "newsletter" && source !== "automated")
       ? []
       : await getDb()
           .select({
@@ -161,6 +163,7 @@ export async function GET(request: Request) {
             campaignName: messageCampaigns.name,
             segmentKey: messageCampaigns.segmentKey,
             actorEmail: users.email,
+            source: messageCampaigns.source,
           })
           .from(messageDeliveries)
           .innerJoin(messageCampaigns, eq(messageCampaigns.id, messageDeliveries.campaignId))
@@ -178,6 +181,9 @@ export async function GET(request: Request) {
                 ? eq(messageDeliveries.status, status)
                 : undefined,
               beforeDate ? lt(messageDeliveries.createdAt, beforeDate) : undefined,
+              source === "manual" || source === "newsletter" || source === "automated"
+                ? eq(messageCampaigns.source, source)
+                : undefined,
             ),
           )
           .orderBy(desc(messageDeliveries.createdAt), desc(messageDeliveries.id))
@@ -318,7 +324,7 @@ export async function GET(request: Request) {
     ...manualRows.map((row) => ({
       id: `manual:${row.id}`,
       direction: "outbound" as const,
-      source: "manual" as const,
+      source: row.source,
       channel: "email" as const,
       status: normalizeManualStatus(row.status),
       recipientName: row.recipientName,
@@ -330,13 +336,13 @@ export async function GET(request: Request) {
       createdAt: row.createdAt.toISOString(),
       sentAt: row.sentAt ? row.sentAt.toISOString() : null,
       actorEmail: row.actorEmail,
-      campaignName: row.campaignName,
+      campaignName: row.source === "newsletter" ? `Newsletter: ${row.campaignName}` : row.campaignName,
       segmentLabel: getSegmentLabel(row.segmentKey),
       category: "outbound",
       summary: row.subject,
       payloadJson: {},
-      sourceRecordLabel: `manual #${row.id}`,
-      sourceRecordHref: "/admin/messages?direction=outbound&source=manual",
+      sourceRecordLabel: `${row.source} #${row.id}`,
+      sourceRecordHref: `/admin/messages?direction=outbound&source=${row.source}`,
     })),
     ...newsletterRows.map((row) => ({
       id: `newsletter:${row.id}`,

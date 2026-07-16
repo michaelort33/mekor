@@ -4,25 +4,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/db/client";
 import { duesInvoices, duesReminderLog, users } from "@/db/schema";
 import { featureDisabledResponse, isFeatureEnabled } from "@/lib/config/features";
+import { isCronRequestAuthorized } from "@/lib/cron/auth";
 import { reminderTypeToDuesNotificationType, sendDuesNotification } from "@/lib/dues/notifications";
 import { dueReminderTypeForDate } from "@/lib/dues/reminders";
-
-function isAuthorized(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    return true;
-  }
-
-  const authorization = request.headers.get("authorization");
-  return authorization === `Bearer ${secret}`;
-}
 
 export async function GET(request: NextRequest) {
   if (!(await isFeatureEnabled("FEATURE_DUES"))) {
     return NextResponse.json(featureDisabledResponse("FEATURE_DUES"), { status: 404 });
   }
 
-  if (!isAuthorized(request)) {
+  if (!isCronRequestAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
