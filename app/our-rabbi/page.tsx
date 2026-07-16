@@ -2,12 +2,52 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import {
+  BrandedLink,
+  CTACluster,
+  HeroSection,
+  InlineLink,
+  SectionCard,
+  SplitMediaText,
+  type CtaItem,
+} from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "@/app/our-rabbi/page.module.css";
 
 export const dynamic = "force-static";
+
+const HIRSCH_ONLINE_LINKS = [
+  {
+    label: "Rabbi Hirsch's Substack",
+    href: "https://rabbieliezerhirsch.substack.com/",
+    description: "Essays, reflections, and Torah writing.",
+    brand: "substack",
+  },
+  {
+    label: "Rabbi Hirsch Podcast",
+    href: "https://rabbiehirsch.castos.com/",
+    description: "Conversations on Torah and Jewish life.",
+    brand: "podcast",
+  },
+  {
+    label: "Amazon Author Page",
+    href: "https://www.amazon.com/stores/Rabbi-Eliezer-Hirsch/author/B0876V66RG?ref=ap_rdr&store_ref=ap_rdr&isDramIntegrated=true&shoppingPortalEnabled=true",
+    description: "Browse Rabbi Hirsch's published books.",
+    brand: "amazon",
+  },
+] satisfies CtaItem[];
+
+const HIRSCH_COMMUNITY_LINKS = [
+  { label: "Davening schedule", href: "/davening" },
+  { label: "Center City Eruv", href: "http://www.centercityeruv.org/", brand: "website" },
+  { label: "Community Mikvah", href: "https://philamikvah.org/", brand: "website" },
+  {
+    label: "Guardian of Israel Award",
+    href: "https://www.youtube.com/watch?v=wweUZO6W1rE",
+    brand: "youtube",
+  },
+] satisfies CtaItem[];
 
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getNativeDocumentByPath("/our-rabbi");
@@ -82,30 +122,30 @@ export default function OurRabbiPage() {
                 <p>Rabbi Hirsch and his wife Miriam have made Center City their home, finding deep meaning in building Jewish life and serving their beloved community.</p>
                 <p>You can reach Rabbi Hirsch at <InlineLink href="mailto:rabbiehirsch@mekorhabracha.org">rabbiehirsch@mekorhabracha.org</InlineLink>.</p>
               </div>
-              <CTACluster
-                className={styles.linkCluster}
-                items={[
-                  { label: "Davening schedule", href: "/davening" },
-                  { label: "Center City Eruv", href: "http://www.centercityeruv.org/", brand: "website" },
-                  { label: "Community Mikvah", href: "https://philamikvah.org/", brand: "website" },
-                  { label: "Guardian of Israel Award video", href: "https://www.youtube.com/watch?v=wweUZO6W1rE", brand: "youtube" },
-                ]}
-              />
             </div>
           </article>
-          <CTACluster
-            className={styles.onlineCluster}
-            title="Rabbi Hirsch Online"
-            items={[
-              { label: "Rabbi Hirsch's Substack", href: "https://rabbieliezerhirsch.substack.com/", brand: "substack" },
-              { label: "Rabbi Hirsch Podcast", href: "https://rabbiehirsch.castos.com/", brand: "podcast" },
-              {
-                label: "Amazon Author Page",
-                href: "https://www.amazon.com/stores/Rabbi-Eliezer-Hirsch/author/B0876V66RG?ref=ap_rdr&store_ref=ap_rdr&isDramIntegrated=true&shoppingPortalEnabled=true",
-                brand: "amazon",
-              },
-            ]}
-          />
+          <aside className={styles.resourcePanel} aria-labelledby="rabbi-hirsch-resources">
+            <div className={styles.resourceHeader}>
+              <div>
+                <p className={styles.resourceEyebrow}>Explore and connect</p>
+                <h3 id="rabbi-hirsch-resources">Rabbi Hirsch online</h3>
+              </div>
+              <p>Writing, conversations, books, and practical resources for the Center City community.</p>
+            </div>
+            <div className={styles.primaryResourceGrid}>
+              {HIRSCH_ONLINE_LINKS.map((item) => (
+                <BrandedLink key={item.href} {...item} />
+              ))}
+            </div>
+            <div className={styles.communityResources}>
+              <p className={styles.communityResourcesLabel}>Community resources</p>
+              <nav className={styles.communityResourceLinks} aria-label="Rabbi Hirsch community resources">
+                {HIRSCH_COMMUNITY_LINKS.map((item) => (
+                  <BrandedLink key={item.href} {...item} compact />
+                ))}
+              </nav>
+            </div>
+          </aside>
         </SectionCard>
       </section>
 

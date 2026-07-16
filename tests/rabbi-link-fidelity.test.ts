@@ -32,6 +32,8 @@ test("Rabbi links expose recognizable brands and external-link cues", async () =
   assert.match(pageSource, /brand: "facebook"/);
   assert.match(pageSource, /brand: "linkedin"/);
   assert.match(pageSource, /Book Talk with Rabbi Steven Gotlib/);
+  assert.match(pageSource, /Explore and connect/);
+  assert.match(pageSource, /Rabbi Hirsch community resources/);
   assert.match(pageSource, /https:\/\/18forty\.org\/author-name\/steven-gotlib\//);
   assert.match(pageSource, /brand: "eighteenforty"/);
   assert.match(homepageSource, /<BrandedLink key=\{link\.label\} \{\.\.\.link\} compact \/>/);
@@ -42,6 +44,7 @@ test("Rabbi links expose recognizable brands and external-link cues", async () =
   assert.match(homepageSource, /brand: "eighteenforty"/);
   assert.match(primitiveSource, /data-brand=\{brand\}/);
   assert.match(primitiveSource, /<ExternalLink/);
+  assert.match(primitiveSource, /<ArrowRight/);
   assert.match(primitiveSource, /function AmazonMark/);
   assert.match(primitiveSource, /function SubstackMark/);
   assert.match(primitiveSource, /function EighteenFortyMark/);
