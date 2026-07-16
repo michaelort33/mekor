@@ -35,6 +35,10 @@
   gap: 12px;
 }
 
+.link:not([data-brand]) .inner {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .icon {
   display: grid;
   width: 40px;
@@ -103,6 +107,10 @@
   align-self: start;
   color: color-mix(in srgb, var(--link-brand, var(--color-muted)) 72%, var(--color-muted));
   transition: transform 140ms ease;
+}
+
+.link:not([data-brand]) .external {
+  color: var(--color-accent);
 }
 
 .link:hover .external {

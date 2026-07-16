@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ExternalLink, Facebook, Globe2, Linkedin, Podcast, Youtube } from "lucide-react";
+import { ArrowRight, ExternalLink, Facebook, Globe2, Linkedin, Podcast, Youtube } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -241,7 +241,11 @@ export function BrandedLink({ label, href, description, brand, className, compac
           {meta ? <span className={brandStyles.destination}>{meta.label}</span> : null}
           {description ? <span className={brandStyles.description}>{description}</span> : null}
         </span>
-        {external ? <ExternalLink aria-hidden="true" className={brandStyles.external} strokeWidth={2.2} /> : null}
+        {external ? (
+          <ExternalLink aria-hidden="true" className={brandStyles.external} strokeWidth={2.2} />
+        ) : (
+          <ArrowRight aria-hidden="true" className={brandStyles.external} strokeWidth={2.2} />
+        )}
       </span>
     </RenderLink>
   );
