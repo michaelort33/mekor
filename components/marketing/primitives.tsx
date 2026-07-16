@@ -10,7 +10,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import brandStyles from "@/components/marketing/brand-link.module.css";
 import { cn } from "@/lib/utils";
 
-export type LinkBrand = "amazon" | "substack" | "podcast" | "facebook" | "linkedin" | "youtube" | "website";
+export type LinkBrand =
+  | "amazon"
+  | "substack"
+  | "podcast"
+  | "eighteenforty"
+  | "facebook"
+  | "linkedin"
+  | "youtube"
+  | "website";
 
 export type CtaItem = {
   label: string;
@@ -128,6 +136,7 @@ const LINK_BRAND_META: Record<LinkBrand, { label: string; color: string }> = {
   amazon: { label: "Amazon", color: "#d97706" },
   substack: { label: "Substack", color: "#ff6719" },
   podcast: { label: "Podcast", color: "#6d5bd0" },
+  eighteenforty: { label: "18Forty", color: "#313b50" },
   facebook: { label: "Facebook", color: "#1877f2" },
   linkedin: { label: "LinkedIn", color: "#0a66c2" },
   youtube: { label: "YouTube", color: "#ff0000" },
@@ -168,6 +177,15 @@ function SubstackMark() {
   );
 }
 
+function EighteenFortyMark() {
+  return (
+    <span aria-hidden="true" className={brandStyles.eighteenFortyMark}>
+      <span>18</span>
+      <span>40</span>
+    </span>
+  );
+}
+
 function LinkBrandMark({ brand }: { brand: LinkBrand }) {
   switch (brand) {
     case "amazon":
@@ -176,6 +194,8 @@ function LinkBrandMark({ brand }: { brand: LinkBrand }) {
       return <SubstackMark />;
     case "podcast":
       return <Podcast aria-hidden="true" />;
+    case "eighteenforty":
+      return <EighteenFortyMark />;
     case "facebook":
       return <Facebook aria-hidden="true" />;
     case "linkedin":

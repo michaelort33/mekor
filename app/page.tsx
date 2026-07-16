@@ -46,6 +46,8 @@ const RABBIS = [
     alt: "Rabbi Steven Gotlib",
     profileHref: "/our-rabbi#rabbi-steven-gotlib",
     links: [
+      { label: "Substack", href: "https://rabbistevengotlib.substack.com/", brand: "substack" },
+      { label: "18Forty", href: "https://18forty.org/author-name/steven-gotlib/", brand: "eighteenforty" },
       { label: "Facebook", href: "https://www.facebook.com/StevenJGotlib/", brand: "facebook" },
       { label: "LinkedIn", href: "https://www.linkedin.com/in/steven-j-gotlib/", brand: "linkedin" },
     ],

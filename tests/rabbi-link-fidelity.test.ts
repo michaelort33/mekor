@@ -31,12 +31,18 @@ test("Rabbi links expose recognizable brands and external-link cues", async () =
   assert.match(pageSource, /brand: "youtube"/);
   assert.match(pageSource, /brand: "facebook"/);
   assert.match(pageSource, /brand: "linkedin"/);
+  assert.match(pageSource, /Book Talk with Rabbi Steven Gotlib/);
+  assert.match(pageSource, /https:\/\/18forty\.org\/author-name\/steven-gotlib\//);
+  assert.match(pageSource, /brand: "eighteenforty"/);
   assert.match(homepageSource, /<BrandedLink key=\{link\.label\} \{\.\.\.link\} compact \/>/);
   assert.match(homepageSource, /brand: "podcast"/);
   assert.match(homepageSource, /brand: "substack"/);
   assert.match(homepageSource, /brand: "amazon"/);
+  assert.match(homepageSource, /https:\/\/rabbistevengotlib\.substack\.com\//);
+  assert.match(homepageSource, /brand: "eighteenforty"/);
   assert.match(primitiveSource, /data-brand=\{brand\}/);
   assert.match(primitiveSource, /<ExternalLink/);
   assert.match(primitiveSource, /function AmazonMark/);
   assert.match(primitiveSource, /function SubstackMark/);
+  assert.match(primitiveSource, /function EighteenFortyMark/);
 });
