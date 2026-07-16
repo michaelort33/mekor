@@ -6,9 +6,10 @@ import { JOIN_US_LINK, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
 type NavCtaProps = {
   isSignedIn: boolean;
   isCheckingAuth: boolean;
+  showDonate?: boolean;
 };
 
-export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
+export function NavCta({ isSignedIn, isCheckingAuth, showDonate = true }: NavCtaProps) {
   const authAction = isCheckingAuth
     ? { label: "Checking…", href: "/login?next=%2Fmembers", variant: "signin" as const }
     : isSignedIn
@@ -17,7 +18,7 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   const signOutAction = { label: "Sign Out", href: "/logout", variant: "signout" as const };
 
   const links = [
-    { ...SUPPORT_MEKOR_LINK, label: "Donate", variant: "donate" as const },
+    ...(showDonate ? [{ ...SUPPORT_MEKOR_LINK, label: "Donate", variant: "donate" as const }] : []),
     { ...JOIN_US_LINK, label: "Join WhatsApp", variant: "join" as const },
     authAction,
     ...(isSignedIn && !isCheckingAuth ? [signOutAction] : []),
@@ -27,8 +28,9 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
     <div className="flex flex-none items-center gap-1.5 whitespace-nowrap">
       {links.map((link) => {
         const external = /^https?:\/\//i.test(link.href);
-        const variant =
-          link.variant === "join" || link.variant === "donate" || link.variant === "members"
+        const variant = link.variant === "donate"
+          ? "default"
+          : link.variant === "join" || link.variant === "members"
             ? "secondary"
             : "ghost";
         const className =

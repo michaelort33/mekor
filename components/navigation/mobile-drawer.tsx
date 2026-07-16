@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, HeartHandshake } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -10,7 +10,7 @@ import { NavCta } from "@/components/navigation/nav-cta";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { AccountAccessState } from "@/lib/auth/account-access";
-import type { NavItem } from "@/lib/navigation/site-menu";
+import { SUPPORT_MEKOR_LINK, type NavItem } from "@/lib/navigation/site-menu";
 import { cn } from "@/lib/utils";
 import { isNavGroup } from "@/lib/navigation/site-menu";
 import { openUniversalSearch } from "@/components/navigation/universal-search";
@@ -89,6 +89,23 @@ export function MobileDrawer({
           <SheetTitle id={titleId}>Browse Mekor</SheetTitle>
           <SheetDescription>One clear path through community life, events, and the kosher guide.</SheetDescription>
         </SheetHeader>
+
+        <Link
+          href={SUPPORT_MEKOR_LINK.href}
+          prefetch={false}
+          className="mt-6 flex items-center gap-3 rounded-[22px] border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-4 [color:#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] transition visited:[color:#f8fbff] hover:bg-[linear-gradient(180deg,#285f90_0%,#1c4368_100%)] hover:[color:#fff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2"
+          style={{ color: "#f8fbff" }}
+          onClick={onClose}
+          aria-label="Donate or sponsor Mekor"
+        >
+          <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-white/14">
+            <HeartHandshake className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <span className="grid gap-0.5">
+            <span className="text-base font-semibold">Donate or sponsor</span>
+            <span className="text-xs text-white/75">Support Mekor</span>
+          </span>
+        </Link>
 
         <nav className="mt-6 flex-1 overflow-y-auto" aria-label="Mobile site menu">
           <ul className="space-y-3">
@@ -254,7 +271,7 @@ export function MobileDrawer({
               <span className="text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">Command K</span>
             </button>
           </div>
-          <NavCta isSignedIn={authenticated} isCheckingAuth={isCheckingAuth} />
+          <NavCta isSignedIn={authenticated} isCheckingAuth={isCheckingAuth} showDonate={false} />
         </div>
       </SheetContent>
     </Sheet>
