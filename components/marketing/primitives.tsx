@@ -2,16 +2,21 @@ import type { ReactNode } from "react";
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ExternalLink, Facebook, Globe2, Linkedin, Podcast, Youtube } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import brandStyles from "@/components/marketing/brand-link.module.css";
 import { cn } from "@/lib/utils";
+
+export type LinkBrand = "amazon" | "substack" | "podcast" | "facebook" | "linkedin" | "youtube" | "website";
 
 export type CtaItem = {
   label: string;
   href: string;
   description?: string;
+  brand?: LinkBrand;
 };
 
 type HeroSectionProps = {
@@ -68,16 +73,18 @@ function RenderLink({
   href,
   className,
   style,
+  brand,
   children,
 }: {
   href: string;
   className?: string;
   style?: CSSProperties;
+  brand?: LinkBrand;
   children: ReactNode;
 }) {
   if (href.startsWith("/") && !href.startsWith("//")) {
     return (
-      <Link href={href} className={className} style={style}>
+      <Link href={href} className={className} style={style} data-brand={brand}>
         {children}
       </Link>
     );
@@ -88,6 +95,7 @@ function RenderLink({
       href={href}
       className={className}
       style={style}
+      data-brand={brand}
       target={isHttpLink(href) ? "_blank" : undefined}
       rel={isHttpLink(href) ? "noreferrer noopener" : undefined}
     >
@@ -97,12 +105,124 @@ function RenderLink({
 }
 
 export function InlineLink({ href, children }: { href: string; children: ReactNode }) {
+  const external = isHttpLink(href);
+
   return (
     <RenderLink
       href={href}
       className="font-semibold text-[var(--color-accent)] underline decoration-[1.5px] underline-offset-[3px] transition-colors hover:text-[var(--color-accent-strong)]"
     >
       {children}
+      {external ? (
+        <ExternalLink
+          aria-hidden="true"
+          className="ml-1 inline h-[0.82em] w-[0.82em] align-[-0.06em]"
+          strokeWidth={2.2}
+        />
+      ) : null}
+    </RenderLink>
+  );
+}
+
+const LINK_BRAND_META: Record<LinkBrand, { label: string; color: string }> = {
+  amazon: { label: "Amazon", color: "#d97706" },
+  substack: { label: "Substack", color: "#ff6719" },
+  podcast: { label: "Podcast", color: "#6d5bd0" },
+  facebook: { label: "Facebook", color: "#1877f2" },
+  linkedin: { label: "LinkedIn", color: "#0a66c2" },
+  youtube: { label: "YouTube", color: "#ff0000" },
+  website: { label: "External website", color: "#315f8a" },
+};
+
+function AmazonMark() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+      <path
+        d="M7.1 9.2c.2-2.5 1.8-3.8 4.5-3.8 2.5 0 4 1.1 4 3.2v5.6c0 .8.3 1.5.9 2l-2.1 1.8c-.6-.5-1-1-1.2-1.6-1.1 1.1-2.4 1.7-3.8 1.7-2.1 0-3.5-1.3-3.5-3.3 0-2.3 1.7-3.7 5-4.1l2.2-.3V9.2c0-1.1-.5-1.7-1.6-1.7-1.2 0-1.8.6-2 1.9L7.1 9.2Zm6 3.1-1.8.3c-1.8.3-2.7.9-2.7 1.9 0 .9.6 1.4 1.6 1.4 1.1 0 2.1-.5 2.9-1.5v-2.1Z"
+        fill="currentColor"
+      />
+      <path
+        d="M4.2 19.2c4.7 2.6 10.3 2.8 15.3.3"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.4"
+      />
+      <path
+        d="m17.6 18.7 2.3.2-.8 2"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.4"
+      />
+    </svg>
+  );
+}
+
+function SubstackMark() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+      <path d="M2.2 1h19.6v2.7H2.2V1Zm0 5h19.6v2.7H2.2V6Zm0 5h19.6v12L12 17.3 2.2 23V11Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+function LinkBrandMark({ brand }: { brand: LinkBrand }) {
+  switch (brand) {
+    case "amazon":
+      return <AmazonMark />;
+    case "substack":
+      return <SubstackMark />;
+    case "podcast":
+      return <Podcast aria-hidden="true" />;
+    case "facebook":
+      return <Facebook aria-hidden="true" />;
+    case "linkedin":
+      return <Linkedin aria-hidden="true" />;
+    case "youtube":
+      return <Youtube aria-hidden="true" />;
+    case "website":
+      return <Globe2 aria-hidden="true" />;
+  }
+}
+
+type BrandedLinkProps = CtaItem & {
+  className?: string;
+  compact?: boolean;
+};
+
+export function BrandedLink({ label, href, description, brand, className, compact = false }: BrandedLinkProps) {
+  const external = isHttpLink(href);
+  const effectiveBrand = brand ?? (external ? "website" : undefined);
+  const meta = effectiveBrand ? LINK_BRAND_META[effectiveBrand] : undefined;
+  const style = meta ? ({ "--link-brand": meta.color } as CSSProperties) : undefined;
+
+  return (
+    <RenderLink
+      href={href}
+      brand={effectiveBrand}
+      style={style}
+      className={cn(
+        brandStyles.link,
+        compact && brandStyles.compact,
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]",
+        className,
+      )}
+    >
+      <span className={brandStyles.inner}>
+        {effectiveBrand ? (
+          <span className={brandStyles.icon} aria-hidden="true">
+            <LinkBrandMark brand={effectiveBrand} />
+          </span>
+        ) : null}
+        <span className={brandStyles.copy}>
+          <span className={brandStyles.label}>{label}</span>
+          {meta ? <span className={brandStyles.destination}>{meta.label}</span> : null}
+          {description ? <span className={brandStyles.description}>{description}</span> : null}
+        </span>
+        {external ? <ExternalLink aria-hidden="true" className={brandStyles.external} strokeWidth={2.2} /> : null}
+      </span>
     </RenderLink>
   );
 }
@@ -326,18 +446,10 @@ export function CTACluster({ title, items, className }: CTAClusterProps) {
       ) : null}
       <div className="grid gap-3 md:grid-cols-2">
         {items.map((item) => (
-          <RenderLink
+          <BrandedLink
             key={`${item.href}-${item.label}`}
-            href={item.href}
-            className="group rounded-[24px] border border-[var(--color-border)] bg-white/80 px-4 py-4 shadow-[0_16px_40px_-32px_rgba(15,23,42,0.45)] transition hover:-translate-y-0.5 hover:border-[var(--color-border-strong)] hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]"
-          >
-            <span className="block text-sm font-semibold tracking-[0.02em] text-[var(--color-foreground)]">
-              {item.label}
-            </span>
-            {item.description ? (
-              <span className="mt-2 block text-sm leading-6 text-[var(--color-muted)]">{item.description}</span>
-            ) : null}
-          </RenderLink>
+            {...item}
+          />
         ))}
       </div>
     </section>
