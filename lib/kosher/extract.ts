@@ -35,6 +35,9 @@ const STREET_PATTERN =
 
 const FOOTER_PHONE = "+12155254246";
 const POST_PATH_PREFIX = "/post/";
+const TAG_PATH_CORRECTIONS: Record<string, string[]> = {
+  "/post/say-she-ate-caf%C3%A9": ["/kosher-posts/tags/restaurants"],
+};
 
 export type ExtractedKosherPlace = {
   slug: string;
@@ -433,8 +436,9 @@ function extractKosherPlace(document: PageDocument): ExtractedKosherPlace | null
   }
 
   const links = (document.links ?? []).filter((link): link is string => typeof link === "string");
+  const path = normalizePath(document.path);
   const categoryPaths = parseCategoryPaths(links);
-  const tagPaths = parseTagPaths(links);
+  const tagPaths = TAG_PATH_CORRECTIONS[path] ?? parseTagPaths(links);
 
   if (categoryPaths.length === 0 && tagPaths.length === 0) {
     return null;
@@ -442,7 +446,6 @@ function extractKosherPlace(document: PageDocument): ExtractedKosherPlace | null
 
   const neighborhood = parseNeighborhood(categoryPaths);
   const details = extractDetails(document);
-  const path = normalizePath(document.path);
 
   return {
     slug: toPostSlug(path),

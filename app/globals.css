@@ -3075,49 +3075,6 @@ body.native-nav--mobile-open {
   cursor: pointer;
 }
 
-.kosher-map-embed {
-  margin-top: 18px;
-  border: 1px solid #d8d0bf;
-  border-radius: 16px;
-  background: #fff;
-  padding: 16px;
-}
-
-.kosher-map-embed .elfsight-app-94318b42-b410-4983-8c4e-1eae94a93212 {
-  min-height: 560px;
-}
-
-.kosher-map-embed__loading {
-  margin: 8px 0 0;
-  color: #5e6672;
-  font-size: 0.9rem;
-}
-
-.kosher-map-embed__fallback {
-  display: grid;
-  gap: 12px;
-}
-
-.kosher-map-embed__fallback p {
-  margin: 0;
-  color: #4f5b69;
-  font-size: 0.9rem;
-}
-
-.kosher-map-embed__fallback iframe {
-  width: 100%;
-  min-height: 560px;
-  border: 1px solid #d8d0bf;
-  border-radius: 12px;
-}
-
-.kosher-map-embed__fallback-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-}
-
-.kosher-map-embed__fallback-links a,
 .kosher-map-page__regions a {
   color: #204d79;
   font-weight: 600;

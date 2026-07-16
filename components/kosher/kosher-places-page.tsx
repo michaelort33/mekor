@@ -189,7 +189,7 @@ export async function KosherPlacesPage({
           </div>
         </Card>
         <Card className="overflow-hidden rounded-[14px] border-[#d6cfbf] bg-[#fdf9f1] p-3 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset] sm:p-4">
-          <KosherMapEmbed />
+          <KosherMapEmbed places={places} />
         </Card>
       </section>
     </NativeShell>
