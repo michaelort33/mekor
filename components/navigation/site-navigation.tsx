@@ -1,6 +1,6 @@
 "use client";
 
-import { HeartHandshake, Menu } from "lucide-react";
+import { Heart, Menu } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -132,7 +132,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
               className="min-[1441px]:hidden max-[359px]:w-9 max-[359px]:px-0"
             >
               <Link href={SUPPORT_MEKOR_LINK.href} aria-label="Donate or sponsor Mekor">
-                <HeartHandshake className="h-4 w-4" aria-hidden="true" />
+                <Heart className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden="true" />
                 <span className="max-[359px]:sr-only">Donate</span>
               </Link>
             </Button>
