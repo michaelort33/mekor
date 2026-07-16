@@ -32,11 +32,12 @@ function normalize(value: string) {
 }
 
 test("the local newsletter archive contains every Mailchimp campaign", () => {
-  assert.equal(NEWSLETTER_ARCHIVE.issueCount, 20);
-  assert.equal(NEWSLETTER_ARCHIVE.assetCount, 18);
-  assert.equal(NEWSLETTERS.length, 20);
-  assert.equal(new Set(NEWSLETTERS.map((issue) => issue.slug)).size, 20);
-  assert.equal(new Set(NEWSLETTERS.map((issue) => issue.campaignId)).size, 20);
+  assert.equal(NEWSLETTER_ARCHIVE.issueCount, 21);
+  assert.equal(NEWSLETTER_ARCHIVE.assetCount, 14);
+  assert.equal(NEWSLETTERS.length, 21);
+  assert.equal(new Set(NEWSLETTERS.map((issue) => issue.slug)).size, 21);
+  assert.equal(new Set(NEWSLETTERS.map((issue) => issue.campaignId)).size, 21);
+  assert.equal(NEWSLETTERS[0]?.title, "Reminder: Rabbi Gotlib's New Class Begins Tomorrow Night!");
   assert.ok(NEWSLETTERS.every((issue) => issue.blocks.length > 0));
 });
 

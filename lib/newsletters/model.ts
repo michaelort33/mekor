@@ -47,6 +47,7 @@ export type Newsletter = {
   searchText: string;
   toc: NewsletterTocItem[];
   blocks: NewsletterBlock[];
+  bodyHtml?: string;
 };
 
 export type NewsletterSummary = Pick<

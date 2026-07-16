@@ -59,7 +59,11 @@ export async function POST(request: Request) {
       shabbatDate: body.shabbatDate || "",
       hebrewDate: body.hebrewDate || "",
       candleLighting: body.candleLighting || "",
+      slug: body.slug || "",
+      category: body.category || "weekly",
+      previewText: body.previewText || "",
       bodyHtml: body.bodyHtml || "",
+      publishOnSend: body.publishOnSend !== false,
       status: body.status || "draft",
     })
     .returning();
@@ -96,7 +100,11 @@ export async function PUT(request: Request) {
       shabbatDate: body.shabbatDate,
       hebrewDate: body.hebrewDate,
       candleLighting: body.candleLighting,
+      slug: body.slug,
+      category: body.category,
+      previewText: body.previewText,
       bodyHtml: body.bodyHtml,
+      publishOnSend: body.publishOnSend,
       status: body.status,
       updatedAt: new Date(),
     })

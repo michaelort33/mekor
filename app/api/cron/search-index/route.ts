@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getUniversalSearchDocuments, getUniversalSearchIndexStats } from "@/lib/search/universal";
-
-function isAuthorized(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    return true;
-  }
-
-  const authorization = request.headers.get("authorization");
-  return authorization === `Bearer ${secret}`;
-}
+import { isCronRequestAuthorized } from "@/lib/cron/auth";
 
 export async function GET(request: NextRequest) {
-  if (!isAuthorized(request)) {
+  if (!isCronRequestAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

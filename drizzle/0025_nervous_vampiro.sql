@@ -1,0 +1,1 @@
+ALTER TYPE "public"."message_delivery_status" ADD VALUE 'processing' BEFORE 'sent';

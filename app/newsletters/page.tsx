@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { NewsletterArchive } from "@/components/newsletters/newsletter-archive";
-import { getNewsletterSummaries } from "@/lib/newsletters/data";
+import { getNewsletterSummariesFromStore } from "@/lib/newsletters/store";
 import styles from "./page.module.css";
 
 const PATH = "/newsletters";
@@ -12,8 +12,10 @@ export const metadata: Metadata = {
     "Search and read Mekor Habracha weekly newsletters, community announcements, classes, events, and eruv updates in our complete local archive.",
 };
 
-export default function NewslettersPage() {
-  const newsletters = getNewsletterSummaries();
+export const dynamic = "force-dynamic";
+
+export default async function NewslettersPage() {
+  const newsletters = await getNewsletterSummariesFromStore();
 
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.content}>

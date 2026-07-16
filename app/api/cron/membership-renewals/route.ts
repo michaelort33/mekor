@@ -3,20 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
+import { isCronRequestAuthorized } from "@/lib/cron/auth";
 import { sendMembershipRenewalReminder, shouldSendRenewalReminder } from "@/lib/membership/renewal-messages";
 
-function isAuthorized(request: NextRequest) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    return true;
-  }
-
-  const authorization = request.headers.get("authorization");
-  return authorization === `Bearer ${secret}`;
-}
-
 export async function GET(request: NextRequest) {
-  if (!isAuthorized(request)) {
+  if (!isCronRequestAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

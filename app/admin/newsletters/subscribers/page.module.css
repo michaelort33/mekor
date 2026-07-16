@@ -1,0 +1,39 @@
+.tableWrap {
+  overflow-x: auto;
+  margin-top: 18px;
+  border: 1px solid #d8e0e7;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.table th,
+.table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid #e8edf1;
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  background: #f5f8fa;
+  color: #354c60;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.table button {
+  border: 1px solid #9eb2c4;
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: #fff;
+  color: #214d71;
+  cursor: pointer;
+  font-weight: 700;
+}

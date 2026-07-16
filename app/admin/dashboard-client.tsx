@@ -21,7 +21,7 @@ const DESCRIPTIONS: Record<string, string> = {
   "/admin/ask-mekor": "Triage public and private Ask Mekor questions.",
   "/admin/dues": "Manage dues schedules, invoices, balances, and actions.",
   "/admin/events": "Review event registrations and signup settings.",
-  "/admin/templates": "Author, preview, and send newsletter templates.",
+  "/admin/templates": "Manage newsletter drafts, subscribers, schedules, sends, and archive publishing.",
   "/admin/settings": "Manage system flags and admin-only configuration.",
 };
 
