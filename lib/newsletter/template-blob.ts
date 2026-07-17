@@ -17,7 +17,6 @@ export type TemplateBlobVersion = {
   downloadedUrl?: string;
   size: number;
   uploadedAt: string;
-  contentType?: string | null;
 };
 
 export type TemplateBlobMeta = {
@@ -74,7 +73,6 @@ export async function listTemplateBlobVersions(templateId: number): Promise<Temp
         downloadedUrl: "downloadUrl" in blob ? String((blob as { downloadUrl?: string }).downloadUrl ?? "") : undefined,
         size: blob.size,
         uploadedAt: blob.uploadedAt.toISOString(),
-        contentType: blob.contentType,
       });
     }
     cursor = page.hasMore ? page.cursor : undefined;

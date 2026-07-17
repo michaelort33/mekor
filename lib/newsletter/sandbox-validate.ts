@@ -29,10 +29,9 @@ export async function validateNewsletterHtmlInSandbox(html: string): Promise<San
 
   try {
     const { Sandbox } = await import("@vercel/sandbox");
-    const ms = (await import("ms")).default;
     const sandbox = await Sandbox.create({
       resources: { vcpus: 2 },
-      timeout: ms("45s"),
+      timeout: 45_000,
       runtime: "node22",
     });
 
