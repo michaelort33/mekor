@@ -8,11 +8,11 @@ import {
   HeroSection,
   InlineLink,
   SectionCard,
-  SplitMediaText,
   type CtaItem,
 } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
+import { cn } from "@/lib/utils";
 import styles from "@/app/our-rabbis/page.module.css";
 
 export const dynamic = "force-static";
@@ -41,6 +41,24 @@ const HIRSCH_ONLINE_LINKS = [
   },
 ] satisfies CtaItem[];
 
+const HIRSCH_BOOK_LINKS = [
+  {
+    label: "Pesach Without the Pain: A Practical Guide to the Laws and Practices of Passover",
+    href: "https://www.amazon.com/Pesach-Without-Pain-Practical-Practices-ebook/dp/B07CCYNKWN/ref=sr_1_1?s=digital-text&ie=UTF8&qid=1522369156&sr=1-1",
+    brand: "amazon",
+  },
+  {
+    label: "Bringing Order to the Seder: A Modern Guide to the Traditional Passover Haggadah",
+    href: "https://www.amazon.com/Bringing-Order-Seder-Traditional-Understanding-ebook/dp/B07PY85NJH/ref=sr_1_1?qid=1553724389&refinements=p_27%3ARabbi+Eliezer+Hirsch&s=digital-text&sr=1-1&text=Rabbi+Eliezer+Hirsch",
+    brand: "amazon",
+  },
+  {
+    label: "The Book of Life: A Transformative Guide to the High Holidays",
+    href: "https://www.amazon.com/dp/B08J8DZY9Q?fbclid=IwAR3OBueTFl9cQMrnAYOQbUvv1VzBTuRpMgpg6zk0En1jS_Z5ySoX4k93BYw",
+    brand: "amazon",
+  },
+] satisfies CtaItem[];
+
 const HIRSCH_COMMUNITY_LINKS = [
   { label: "Davening schedule", href: "/davening" },
   { label: "Center City Eruv", href: "http://www.centercityeruv.org/", brand: "website" },
@@ -50,6 +68,23 @@ const HIRSCH_COMMUNITY_LINKS = [
     href: "https://www.youtube.com/watch?v=wweUZO6W1rE",
     brand: "youtube",
   },
+] satisfies CtaItem[];
+
+const GOTLIB_ONLINE_LINKS = [
+  {
+    label: "Book Talk with Rabbi Steven Gotlib",
+    href: "https://rabbistevengotlib.substack.com/",
+    description: "Brief thoughts on books, belief, and belonging.",
+    brand: "substack",
+  },
+  {
+    label: "Rabbi Gotlib on 18Forty",
+    href: "https://18forty.org/author-name/steven-gotlib/",
+    description: "Read his Faith in Reason essays and recent writing.",
+    brand: "eighteenforty",
+  },
+  { label: "Facebook", href: "https://www.facebook.com/StevenJGotlib/", brand: "facebook" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/steven-j-gotlib/", brand: "linkedin" },
 ] satisfies CtaItem[];
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -83,7 +118,7 @@ export default function OurRabbisPage() {
                 src="https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/3e46359f1d8a8c9a5d886a6f6aa25c734c5de1d0-92f487_e03dc964305644a9b5eb3894502ed630-mv2.jpg"
                 alt="Rabbi Eliezer Hirsch"
                 width={900}
-                height={1200}
+                height={1125}
                 className={styles.profilePhoto}
               />
             </div>
@@ -109,28 +144,7 @@ export default function OurRabbisPage() {
                     },
                   ]}
                 />
-                <p>Rabbi Hirsch has written three books about Jewish holidays to offer practical guidance and inspire a deeper, year-round connection to Torah and Jewish life:</p>
-                <CTACluster
-                  className={styles.editorialCluster}
-                  title="Rabbi Hirsch's Books"
-                  items={[
-                    {
-                      label: "Pesach Without the Pain: A Practical Guide to the Laws and Practices of Passover",
-                      href: "https://www.amazon.com/Pesach-Without-Pain-Practical-Practices-ebook/dp/B07CCYNKWN/ref=sr_1_1?s=digital-text&ie=UTF8&qid=1522369156&sr=1-1",
-                      brand: "amazon",
-                    },
-                    {
-                      label: "Bringing Order to the Seder: A Modern Guide to the Traditional Passover Haggadah",
-                      href: "https://www.amazon.com/Bringing-Order-Seder-Traditional-Understanding-ebook/dp/B07PY85NJH/ref=sr_1_1?qid=1553724389&refinements=p_27%3ARabbi+Eliezer+Hirsch&s=digital-text&sr=1-1&text=Rabbi+Eliezer+Hirsch",
-                      brand: "amazon",
-                    },
-                    {
-                      label: "The Book of Life: A Transformative Guide to the High Holidays",
-                      href: "https://www.amazon.com/dp/B08J8DZY9Q?fbclid=IwAR3OBueTFl9cQMrnAYOQbUvv1VzBTuRpMgpg6zk0En1jS_Z5ySoX4k93BYw",
-                      brand: "amazon",
-                    },
-                  ]}
-                />
+                <p>Rabbi Hirsch has written three books about Jewish holidays to offer practical guidance and inspire a deeper, year-round connection to Torah and Jewish life.</p>
                 <p>Through his writing and teaching, Rabbi Hirsch illuminates the Torah&apos;s enduring relevance for Jews of all backgrounds.</p>
                 <p>Rabbi Hirsch and his wife Miriam have made Center City their home, finding deep meaning in building Jewish life and serving their beloved community.</p>
                 <p>You can reach Rabbi Hirsch at <InlineLink href="mailto:rabbiehirsch@mekorhabracha.org">rabbiehirsch@mekorhabracha.org</InlineLink>.</p>
@@ -139,15 +153,21 @@ export default function OurRabbisPage() {
           </article>
           <aside className={styles.resourcePanel} aria-labelledby="rabbi-hirsch-resources">
             <div className={styles.resourceHeader}>
-              <div>
-                <p className={styles.resourceEyebrow}>Explore and connect</p>
-                <h3 id="rabbi-hirsch-resources">Rabbi Hirsch online</h3>
-              </div>
+              <p className={styles.resourceEyebrow}>Explore and connect</p>
+              <h3 id="rabbi-hirsch-resources">Rabbi Hirsch online</h3>
             </div>
             <div className={styles.primaryResourceGrid}>
               {HIRSCH_ONLINE_LINKS.map((item) => (
                 <BrandedLink key={item.href} {...item} />
               ))}
+            </div>
+            <div className={styles.resourceGroup}>
+              <p className={styles.resourceGroupLabel}>Books by Rabbi Hirsch</p>
+              <div className={styles.booksGrid}>
+                {HIRSCH_BOOK_LINKS.map((item) => (
+                  <BrandedLink key={item.href} {...item} />
+                ))}
+              </div>
             </div>
             <div className={styles.communityResources}>
               <p className={styles.communityResourcesLabel}>Community resources</p>
@@ -163,49 +183,40 @@ export default function OurRabbisPage() {
 
       <section id="rabbi-steven-gotlib" className={styles.anchorSection}>
         <SectionCard className={styles.profileSectionCard}>
-          <SplitMediaText
-            className={styles.splitProfile}
-            reverse
-            title="Rabbi Steven Gotlib"
-            media={{
-              src: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/f6e2a6329cfc583701d5241a911d82f1a0cb2a88-66bc7c_7ded87b518b94c619c3f89f470cb4a9d-mv2.jpg",
-              alt: "Rabbi Steven Gotlib",
-            }}
-            paragraphs={[
-              "Rabbi Steven Gotlib is Associate Rabbi at Mekor Habracha/Center City Synagogue and Director of the Center City Beit Midrash. Rabbi Gotlib studied Communication, Jewish Studies, and Philosophy at Rutgers University before receiving rabbinic ordination from the Rabbi Isaac Elchanan Theological Seminary at Yeshiva University (RIETS), a Certificate in Mental Health Counseling from the Ferkauf Graduate School of Psychology in partnership with RIETS, and a START Certificate in Spiritual Entrepreneurship from the Glean Network in partnership with Columbia Business School.",
-              "Rabbi Gotlib previously served as Interim Rabbi at Young Israel of Ottawa, Assistant Rabbi at the Village Shul/Aish HaTorah Learning Centre in Toronto, a Community Scholar at Beit Midrash Zichron Dov of Toronto, and Head of the Beit Midrash Program at Congregation Shearith Israel: The Spanish and Portuguese Synagogue in New York City.",
-              "As a RIETS student, he held rabbinic internships at Congregation Beth Abraham-Jacob of Albany and at Yeshiva University's Zahava and Moshael Straus Center for Torah and Western Thought while working as Webmaster and Social Media Manager for The Lehrhaus.",
-              "A popular guest speaker throughout the US and Canada, Rabbi Gotlib's writings can be read in the Lehrhaus, Jewish Action, Tradition Online, 18Forty, and more. He has contributed to several volumes, including Who by Plague: High Holy Days Sermons from COVID19 Times (Hamotzi Press, 2021), Nothing so Whole as a Broken Heart: Reflections for the Days of Awe (Izzun Books, 2024), A Quest for Our Times: The Louis Jacobs Haggadah (Izzun Books, 2025), and The Oxford Handbook of Jewish Law (Oxford University Press, 2025).",
-              "He strongly believes in making Jewish theology, philosophy, and law as accessible as possible to all who seek guidance and comfort within our tradition.",
-              <>
-                Read <InlineLink href="https://rabbistevengotlib.substack.com/">Rabbi Gotlib&apos;s Substack</InlineLink> for more of his writing.
-              </>,
-            ]}
-          />
-          <p className={styles.subheading}>
-            Rabbi Gotlib lives in Center City with his wife, Ruth Malkah Rohde, and their daughter Zeriza. He can be
-            reached at <InlineLink href="mailto:rabbisgotlib@mekorhabracha.org">rabbisgotlib@mekorhabracha.org</InlineLink>.
-          </p>
-          <CTACluster
-            className={styles.linkCluster}
-            title="Rabbi Gotlib Online"
-            items={[
-              {
-                label: "Book Talk with Rabbi Steven Gotlib",
-                href: "https://rabbistevengotlib.substack.com/",
-                description: "Brief thoughts on books, belief, and belonging.",
-                brand: "substack",
-              },
-              {
-                label: "Rabbi Gotlib on 18Forty",
-                href: "https://18forty.org/author-name/steven-gotlib/",
-                description: "Read his Faith in Reason essays and recent writing.",
-                brand: "eighteenforty",
-              },
-              { label: "Facebook", href: "https://www.facebook.com/StevenJGotlib/", brand: "facebook" },
-              { label: "LinkedIn", href: "https://www.linkedin.com/in/steven-j-gotlib/", brand: "linkedin" },
-            ]}
-          />
+          <article className={cn(styles.profileLayout, styles.profileLayoutReverse)}>
+            <div className={styles.profilePhotoWrap}>
+              <Image
+                src="https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/f6e2a6329cfc583701d5241a911d82f1a0cb2a88-66bc7c_7ded87b518b94c619c3f89f470cb4a9d-mv2.jpg"
+                alt="Rabbi Steven Gotlib"
+                width={900}
+                height={1125}
+                className={styles.profilePhoto}
+              />
+            </div>
+            <div className={styles.profileBody}>
+              <h2 className={styles.profileTitle}>Rabbi Steven Gotlib</h2>
+              <div className={styles.profileText}>
+                <p>Rabbi Steven Gotlib is Associate Rabbi at Mekor Habracha/Center City Synagogue and Director of the Center City Beit Midrash. Rabbi Gotlib studied Communication, Jewish Studies, and Philosophy at Rutgers University before receiving rabbinic ordination from the Rabbi Isaac Elchanan Theological Seminary at Yeshiva University (RIETS), a Certificate in Mental Health Counseling from the Ferkauf Graduate School of Psychology in partnership with RIETS, and a START Certificate in Spiritual Entrepreneurship from the Glean Network in partnership with Columbia Business School.</p>
+                <p>Rabbi Gotlib previously served as Interim Rabbi at Young Israel of Ottawa, Assistant Rabbi at the Village Shul/Aish HaTorah Learning Centre in Toronto, a Community Scholar at Beit Midrash Zichron Dov of Toronto, and Head of the Beit Midrash Program at Congregation Shearith Israel: The Spanish and Portuguese Synagogue in New York City.</p>
+                <p>As a RIETS student, he held rabbinic internships at Congregation Beth Abraham-Jacob of Albany and at Yeshiva University&apos;s Zahava and Moshael Straus Center for Torah and Western Thought while working as Webmaster and Social Media Manager for The Lehrhaus.</p>
+                <p>A popular guest speaker throughout the US and Canada, Rabbi Gotlib&apos;s writings can be read in the Lehrhaus, Jewish Action, Tradition Online, 18Forty, and more. He has contributed to several volumes, including Who by Plague: High Holy Days Sermons from COVID19 Times (Hamotzi Press, 2021), Nothing so Whole as a Broken Heart: Reflections for the Days of Awe (Izzun Books, 2024), A Quest for Our Times: The Louis Jacobs Haggadah (Izzun Books, 2025), and The Oxford Handbook of Jewish Law (Oxford University Press, 2025).</p>
+                <p>He strongly believes in making Jewish theology, philosophy, and law as accessible as possible to all who seek guidance and comfort within our tradition.</p>
+                <p>Read <InlineLink href="https://rabbistevengotlib.substack.com/">Rabbi Gotlib&apos;s Substack</InlineLink> for more of his writing.</p>
+                <p>Rabbi Gotlib lives in Center City with his wife, Ruth Malkah Rohde, and their daughter Zeriza. He can be reached at <InlineLink href="mailto:rabbisgotlib@mekorhabracha.org">rabbisgotlib@mekorhabracha.org</InlineLink>.</p>
+              </div>
+            </div>
+          </article>
+          <aside className={styles.resourcePanel} aria-labelledby="rabbi-gotlib-resources">
+            <div className={styles.resourceHeader}>
+              <p className={styles.resourceEyebrow}>Explore and connect</p>
+              <h3 id="rabbi-gotlib-resources">Rabbi Gotlib online</h3>
+            </div>
+            <div className={cn(styles.primaryResourceGrid, styles.resourceGridTwo)}>
+              {GOTLIB_ONLINE_LINKS.map((item) => (
+                <BrandedLink key={item.href} {...item} />
+              ))}
+            </div>
+          </aside>
         </SectionCard>
       </section>
 
