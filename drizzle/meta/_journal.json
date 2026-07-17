@@ -190,6 +190,13 @@
       "when": 1784279936953,
       "tag": "0028_mailchimp_crm",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1784300000000,
+      "tag": "0029_newsletter_template_blob",
+      "breakpoints": true
     }
   ]
 }

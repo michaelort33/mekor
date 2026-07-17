@@ -182,6 +182,9 @@ export default async function AdminTemplatesPage({ searchParams }: TemplatesPage
                 Updated {new Date(template.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })}
               </p>
               <div className={styles.cardActions}>
+                <Link href={`/admin/templates/${template.id}/studio`} className={styles.actionLink}>
+                  Chat Studio
+                </Link>
                 <Link href={`/admin/templates/${template.id}/edit`} className={styles.actionLink}>
                   Edit & Send
                 </Link>

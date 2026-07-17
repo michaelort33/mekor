@@ -440,7 +440,16 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
         { href: "/admin/templates", label: "Templates" },
         { label: "Edit template" },
       ]}
-      actions={<Link href="/admin/templates" className={adminStyles.actionPill}>Back to templates</Link>}
+      actions={
+        <>
+          <Link href={`/admin/templates/${template.id}/studio`} className={adminStyles.actionPill}>
+            Open Chat Studio
+          </Link>
+          <Link href="/admin/templates" className={adminStyles.actionPill}>
+            Back to templates
+          </Link>
+        </>
+      }
     >
 
       <div className={styles.layout}>
