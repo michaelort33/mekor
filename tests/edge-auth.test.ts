@@ -101,7 +101,7 @@ test("expired session token is rejected and cookie is cleared", async () => {
   assert.match(response.headers.get("set-cookie") ?? "", /mekor_user_session=;/);
 });
 
-test("visitor user session is redirected from member pages to pending account state", async () => {
+test("visitor user session is redirected from member pages to the active account dashboard", async () => {
   process.env.USER_SESSION_SECRET = "test-user-session-secret";
   const token = await signUserSessionToken(
     {
@@ -120,7 +120,7 @@ test("visitor user session is redirected from member pages to pending account st
 
   const response = await proxy(request);
   assert.equal(response.status, 307);
-  assert.equal(response.headers.get("location"), "http://localhost:3000/account?membership=pending");
+  assert.equal(response.headers.get("location"), "http://localhost:3000/account?member_access=required");
 });
 
 test("visitor user session gets 403 for member-only APIs", async () => {

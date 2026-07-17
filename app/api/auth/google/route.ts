@@ -232,11 +232,15 @@ export async function executeGoogleLogin(
   }
 
   await dependencies.markUserLoggedIn(user.id);
-  await dependencies.ensurePersonForUser({
-    userId: user.id,
-    source: "google_login_sync",
-    actorUserId: user.id,
-  });
+  try {
+    await dependencies.ensurePersonForUser({
+      userId: user.id,
+      source: "google_login_sync",
+      actorUserId: user.id,
+    });
+  } catch {
+    // Account access must not depend on the auxiliary CRM profile sync.
+  }
   await dependencies.createSession({ userId: user.id, role: user.role });
 
   if (parsed.data.familyInviteToken) {

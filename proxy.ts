@@ -45,7 +45,7 @@ function membershipApprovalRequiredResponse(request: NextRequest, isApi: boolean
     );
   }
 
-  return NextResponse.redirect(new URL("/account?membership=pending", request.url));
+  return NextResponse.redirect(new URL("/account?member_access=required", request.url));
 }
 
 function resolveStatusOverride(request: NextRequest) {

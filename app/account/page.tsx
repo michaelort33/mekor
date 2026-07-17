@@ -211,7 +211,11 @@ export default function AccountDashboardPage() {
   const heroTitle = data ? `Welcome, ${data.summary.displayName}` : "Welcome";
   const heroDescription = hasMemberAccess
     ? "Track dues, events, and community updates from one operational dashboard."
-    : "Manage your account while your membership access is being reviewed.";
+    : stats?.accessState === "pending_approval"
+      ? "Manage your account while your membership application is being reviewed."
+      : stats?.accessState === "declined"
+        ? "Manage your account and follow up with Mekor leadership about membership."
+        : "Your account is active. Manage your profile here; member features unlock after approval.";
 
   return (
     <AccountShell
