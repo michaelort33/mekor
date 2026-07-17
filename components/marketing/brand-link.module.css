@@ -1,37 +1,34 @@
 .link {
   display: block;
-  border: 1px solid var(--color-border);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #d5dce6;
+  border-radius: 12px;
+  background: #fff;
   padding: 14px 16px;
   color: var(--color-foreground);
   text-decoration: none;
-  box-shadow: 0 12px 30px -26px rgba(15, 23, 42, 0.52);
-  transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+  box-shadow: none;
+  transition: border-color 140ms ease, background-color 140ms ease;
 }
 
 .link:hover {
-  transform: translateY(-1px);
-  border-color: var(--color-border-strong);
-  background: #fff;
-  box-shadow: 0 16px 32px -24px rgba(15, 23, 42, 0.44);
+  border-color: #9eb0c4;
+  background: #f8fafc;
 }
 
 .link[data-brand] {
-  border-color: color-mix(in srgb, var(--link-brand) 26%, var(--color-border));
-  background:
-    linear-gradient(140deg, color-mix(in srgb, var(--link-brand) 7%, #fff) 0%, rgba(255, 255, 255, 0.96) 72%);
+  border-color: #d5dce6;
+  background: #fff;
 }
 
 .link[data-brand]:hover {
-  border-color: color-mix(in srgb, var(--link-brand) 62%, var(--color-border));
-  box-shadow: 0 17px 34px -24px color-mix(in srgb, var(--link-brand) 42%, transparent);
+  border-color: #9eb0c4;
+  box-shadow: none;
 }
 
 .inner {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
+  align-items: start;
   gap: 12px;
 }
 
@@ -41,18 +38,26 @@
 
 .icon {
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  max-width: 36px;
+  max-height: 36px;
   place-items: center;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--link-brand) 12%, #fff);
-  color: var(--link-brand);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--link-brand) 20%, transparent);
+  align-self: start;
+  border-radius: 10px;
+  background: #eef3f8;
+  color: #2b5a81;
+  box-shadow: inset 0 0 0 1px #d7e0ea;
+  overflow: hidden;
 }
 
 .icon svg {
-  width: 21px;
-  height: 21px;
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex: none;
 }
 
 .eighteenFortyMark {
@@ -86,11 +91,11 @@
 }
 
 .destination {
-  color: var(--link-brand);
+  color: #6a7b8f;
   font-size: 0.69rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.2;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -102,57 +107,75 @@
 }
 
 .external {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   align-self: start;
-  color: color-mix(in srgb, var(--link-brand, var(--color-muted)) 72%, var(--color-muted));
-  transition: transform 140ms ease;
+  color: #7a8798;
+  transition: color 140ms ease;
 }
 
 .link:not([data-brand]) .external {
-  color: var(--color-accent);
+  color: #7a8798;
 }
 
 .link:hover .external {
-  transform: translate(1px, -1px);
+  color: #2b5a81;
 }
 
 .compact {
-  display: inline-block;
-  border-radius: 12px;
-  padding: 8px 10px;
+  display: inline-flex;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #2b5a81;
+}
+
+.compact[data-brand] {
+  border: none;
+  background: transparent;
+}
+
+.compact:hover,
+.compact[data-brand]:hover {
+  transform: none;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
 .compact .inner {
-  gap: 8px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;
+  grid-template-columns: none;
 }
 
-.compact .icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+.compact .icon,
+.compact .external,
+.compact .destination,
+.compact .description {
+  display: none;
 }
 
-.compact .icon svg {
-  width: 16px;
-  height: 16px;
-}
-
-.compact .eighteenFortyMark {
-  font-size: 0.53rem;
+.compact .copy {
+  display: inline;
 }
 
 .compact .label {
-  font-size: 0.78rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #2b5a81;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, #2b5a81 42%, transparent);
+  padding-bottom: 1px;
 }
 
-.compact .destination {
-  font-size: 0.6rem;
-}
-
-.compact .external {
-  width: 13px;
-  height: 13px;
+.compact:hover .label {
+  color: #214766;
+  border-bottom-color: #214766;
 }
 
 @media (prefers-reduced-motion: reduce) {

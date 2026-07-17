@@ -28,7 +28,7 @@ const RABBIS = [
     name: "Rabbi Eliezer Hirsch",
     bio: "Rabbi Eliezer Hirsch is Mekor Habracha\u2019s spiritual leader and founding rabbi. Since its inception...",
     image:
-      "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/ef834ae06e3c7cf8ff31c0d7f7ab16cf19592877-92f487_d26f360d09cc45e4bebe89d9f14643d3-mv2-copy2-Medium-.jpg",
+      "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/3e46359f1d8a8c9a5d886a6f6aa25c734c5de1d0-92f487_e03dc964305644a9b5eb3894502ed630-mv2.jpg",
     alt: "Rabbi Eliezer Hirsch",
     profileHref: "/our-rabbis#rabbi-eliezer-hirsch",
     links: [
@@ -42,7 +42,7 @@ const RABBIS = [
     name: "Rabbi Steven Gotlib",
     bio: "Rabbi Steven Gotlib is Associate Rabbi at Mekor Habracha/Center City Synagogue\u200b and Marketing Manager...",
     image:
-      "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/34434149afbb96abbd5c8c3779b55dde432d98e9-R-Gotlib.jpg",
+      "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/f6e2a6329cfc583701d5241a911d82f1a0cb2a88-66bc7c_7ded87b518b94c619c3f89f470cb4a9d-mv2.jpg",
     alt: "Rabbi Steven Gotlib",
     profileHref: "/our-rabbis#rabbi-steven-gotlib",
     links: [
@@ -149,6 +149,10 @@ function UpcomingEventsList({
 }
 
 async function HomeUpcomingEvents() {
+  if (!process.env.DATABASE_URL) {
+    return <UpcomingEventsList events={[]} />;
+  }
+
   const upcoming = (await getManagedEvents()).filter((event) => !event.isPast).slice(0, HOME_EVENTS_LIMIT);
 
   return <UpcomingEventsList events={upcoming} />;
@@ -373,7 +377,13 @@ export default function HomePage() {
             {RABBIS.map((rabbi) => (
               <article key={rabbi.name} className={styles.rabbiCard}>
                 <div className={styles.rabbiImageWrap}>
-                  <Image src={rabbi.image} alt={rabbi.alt} fill sizes="(max-width: 900px) 100vw, 22rem" className={styles.rabbiImage} />
+                  <Image
+                    src={rabbi.image}
+                    alt={rabbi.alt}
+                    fill
+                    sizes="(max-width: 960px) 100vw, 30rem"
+                    className={styles.rabbiImage}
+                  />
                 </div>
                 <div className={styles.rabbiBody}>
                   <p className={styles.rabbiRole}>{rabbi.role}</p>

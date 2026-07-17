@@ -238,7 +238,9 @@ export function BrandedLink({ label, href, description, brand, className, compac
         ) : null}
         <span className={brandStyles.copy}>
           <span className={brandStyles.label}>{label}</span>
-          {meta ? <span className={brandStyles.destination}>{meta.label}</span> : null}
+          {meta && effectiveBrand !== "website" ? (
+            <span className={brandStyles.destination}>{meta.label}</span>
+          ) : null}
           {description ? <span className={brandStyles.description}>{description}</span> : null}
         </span>
         {external ? (
