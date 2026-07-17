@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { getDb } from "@/db/client";
 import { newsletterTemplates } from "@/db/schema";
-import { seedTemplateBlobFromBodyHtml } from "@/lib/newsletter/template-blob";
 import { NewsletterStudioClient } from "./studio-client";
 
 type PageProps = {
@@ -26,7 +25,7 @@ export default async function NewsletterStudioPage({ params }: PageProps) {
       <AdminShell
         currentPath="/admin/templates"
         title="Newsletter Chat Studio"
-        description="Chat-driven newsletter editing with Blob versions."
+        description="Chat-driven newsletter editing against the database HTML snapshot."
         breadcrumbs={[
           { href: "/admin", label: "Dashboard" },
           { href: "/admin/templates", label: "Templates" },
@@ -48,26 +47,5 @@ export default async function NewsletterStudioPage({ params }: PageProps) {
     notFound();
   }
 
-  let seedNotice: string | null = null;
-  if (process.env.BLOB_READ_WRITE_TOKEN && template.bodyHtml.trim()) {
-    try {
-      const seeded = await seedTemplateBlobFromBodyHtml({
-        templateId: template.id,
-        bodyHtml: template.bodyHtml,
-      });
-      if (seeded.seeded) {
-        seedNotice = "Seeded the first private Blob version from the current database HTML.";
-      }
-    } catch {
-      seedNotice = "Blob seeding skipped (Blob may be unavailable). Studio can still edit database HTML once Blob is configured.";
-    }
-  }
-
-  const [fresh] = await getDb()
-    .select()
-    .from(newsletterTemplates)
-    .where(eq(newsletterTemplates.id, templateId))
-    .limit(1);
-
-  return <NewsletterStudioClient template={fresh ?? template} seedNotice={seedNotice} />;
+  return <NewsletterStudioClient template={template} />;
 }

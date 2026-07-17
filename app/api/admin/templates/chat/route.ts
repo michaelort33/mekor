@@ -24,7 +24,7 @@ Rules:
 - Keep HTML email-safe: tables/inline styles, no scripts, no iframes, no javascript: URLs.
 - After substantive HTML changes, call validateHtml.
 - Use updateTemplateMetadata for title/subject/parsha/dates.
-- Blob versions are private; activateBlobVersion syncs a version into the sendable body_html.
+- The database body_html field is the sendable source of truth (no separate Blob version store).
 - Never invent personal member data. Keep tone warm, clear, and professional.
 - Summarize what you changed in plain language after tools finish.`;
 

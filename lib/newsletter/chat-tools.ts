@@ -7,16 +7,9 @@ import { newsletterTemplates } from "@/db/schema";
 import { writeAdminAuditLog } from "@/lib/admin/actor";
 import {
   assertSafeNewsletterHtml,
+  lintNewsletterHtml,
   sanitizeNewsletterHtml,
 } from "@/lib/newsletter/html-sanitize";
-import { validateNewsletterHtmlInSandbox } from "@/lib/newsletter/sandbox-validate";
-import {
-  activateTemplateBlobVersion,
-  isTemplateVersionPath,
-  listTemplateBlobVersions,
-  readTemplateBlobHtml,
-  writeTemplateBlobVersion,
-} from "@/lib/newsletter/template-blob";
 
 export type NewsletterChatToolContext = {
   templateId: number;
@@ -35,6 +28,30 @@ async function loadTemplate(templateId: number) {
   return row;
 }
 
+async function saveBodyHtml(templateId: number, html: string) {
+  const sanitized = assertSafeNewsletterHtml(html);
+  const [row] = await getDb()
+    .update(newsletterTemplates)
+    .set({
+      bodyHtml: sanitized,
+      updatedAt: new Date(),
+    })
+    .where(eq(newsletterTemplates.id, templateId))
+    .returning({
+      id: newsletterTemplates.id,
+      title: newsletterTemplates.title,
+      subject: newsletterTemplates.subject,
+      bodyHtml: newsletterTemplates.bodyHtml,
+    });
+  if (!row) throw new Error("Template not found");
+  return row;
+}
+
+/**
+ * DB-first newsletter chat tools.
+ * Working HTML lives in `newsletter_templates.body_html` (same send snapshot).
+ * Validation uses local sanitize/lint — no Sandbox or Blob version store.
+ */
 export function createNewsletterChatTools(ctx: NewsletterChatToolContext) {
   return {
     getTemplateHtml: tool({
@@ -52,7 +69,6 @@ export function createNewsletterChatTools(ctx: NewsletterChatToolContext) {
           candleLighting: template.candleLighting,
           previewText: template.previewText,
           status: template.status,
-          activeBlobPathname: template.activeBlobPathname,
           bodyHtml: template.bodyHtml,
           bodyHtmlLength: template.bodyHtml.length,
         };
@@ -60,57 +76,41 @@ export function createNewsletterChatTools(ctx: NewsletterChatToolContext) {
     }),
 
     setTemplateHtml: tool({
-      description:
-        "Replace the newsletter HTML. Writes a private Blob version and activates it into body_html for send.",
+      description: "Replace the newsletter HTML in the database (sendable body_html snapshot).",
       inputSchema: z.object({
         html: z.string().min(1).describe("Complete email-safe HTML"),
-        label: z.string().trim().max(80).optional().describe("Short version label"),
         summary: z.string().trim().max(280).optional().describe("What changed"),
       }),
-      execute: async ({ html, label, summary }) => {
-        const sanitized = assertSafeNewsletterHtml(html);
-        const written = await writeTemplateBlobVersion({
-          templateId: ctx.templateId,
-          html: sanitized,
-          label: label || "ai-set",
-          promptSummary: summary,
-          actorUserId: ctx.actorUserId,
-          activate: true,
-        });
-
+      execute: async ({ html, summary }) => {
+        const row = await saveBodyHtml(ctx.templateId, html);
         await writeAdminAuditLog({
           actorUserId: ctx.actorUserId,
-          action: "newsletter.template.blob.write",
+          action: "newsletter.template.html_set",
           targetType: "newsletter_template",
           targetId: String(ctx.templateId),
           payload: {
             source: "chat.setTemplateHtml",
-            pathname: written.pathname,
-            bytes: written.meta.byteLength,
+            bytes: row.bodyHtml.length,
             summary: summary ?? null,
           },
         });
-
         return {
           ok: true,
-          pathname: written.pathname,
-          bodyHtmlLength: sanitized.length,
-          title: written.template?.title,
-          subject: written.template?.subject,
+          bodyHtmlLength: row.bodyHtml.length,
+          title: row.title,
+          subject: row.subject,
         };
       },
     }),
 
     patchTemplateHtml: tool({
-      description:
-        "Apply an allowlisted find/replace patch to the current HTML, then save and activate a Blob version.",
+      description: "Apply an allowlisted find/replace patch to the current HTML, then save to the database.",
       inputSchema: z.object({
         find: z.string().min(1).max(20_000),
         replace: z.string().max(20_000),
-        label: z.string().trim().max(80).optional(),
         summary: z.string().trim().max(280).optional(),
       }),
-      execute: async ({ find, replace, label, summary }) => {
+      execute: async ({ find, replace, summary }) => {
         const template = await loadTemplate(ctx.templateId);
         if (!template.bodyHtml.includes(find)) {
           return {
@@ -120,33 +120,24 @@ export function createNewsletterChatTools(ctx: NewsletterChatToolContext) {
           };
         }
 
-        const nextHtml = assertSafeNewsletterHtml(template.bodyHtml.split(find).join(replace));
-        const written = await writeTemplateBlobVersion({
-          templateId: ctx.templateId,
-          html: nextHtml,
-          label: label || "ai-patch",
-          promptSummary: summary,
-          actorUserId: ctx.actorUserId,
-          activate: true,
-        });
-
+        const nextHtml = template.bodyHtml.split(find).join(replace);
+        const row = await saveBodyHtml(ctx.templateId, nextHtml);
         await writeAdminAuditLog({
           actorUserId: ctx.actorUserId,
-          action: "newsletter.template.blob.write",
+          action: "newsletter.template.html_patched",
           targetType: "newsletter_template",
           targetId: String(ctx.templateId),
           payload: {
             source: "chat.patchTemplateHtml",
-            pathname: written.pathname,
-            bytes: written.meta.byteLength,
+            bytes: row.bodyHtml.length,
             summary: summary ?? null,
+            replacements: template.bodyHtml.split(find).length - 1,
           },
         });
 
         return {
           ok: true,
-          pathname: written.pathname,
-          bodyHtmlLength: nextHtml.length,
+          bodyHtmlLength: row.bodyHtml.length,
           replacements: template.bodyHtml.split(find).length - 1,
         };
       },
@@ -207,112 +198,8 @@ export function createNewsletterChatTools(ctx: NewsletterChatToolContext) {
       },
     }),
 
-    listBlobVersions: tool({
-      description: "List private Blob HTML versions for this template.",
-      inputSchema: z.object({}),
-      execute: async () => {
-        const versions = await listTemplateBlobVersions(ctx.templateId);
-        const template = await loadTemplate(ctx.templateId);
-        return {
-          activeBlobPathname: template.activeBlobPathname,
-          versions: versions.map((version) => ({
-            pathname: version.pathname,
-            size: version.size,
-            uploadedAt: version.uploadedAt,
-          })),
-        };
-      },
-    }),
-
-    readBlobVersion: tool({
-      description: "Read HTML for a specific Blob version pathname belonging to this template.",
-      inputSchema: z.object({
-        pathname: z.string().trim().min(1),
-      }),
-      execute: async ({ pathname }) => {
-        if (!isTemplateVersionPath(ctx.templateId, pathname)) {
-          throw new Error("Invalid template version pathname");
-        }
-        const html = sanitizeNewsletterHtml(await readTemplateBlobHtml(pathname));
-        return { pathname, html, bodyHtmlLength: html.length };
-      },
-    }),
-
-    writeBlobVersion: tool({
-      description: "Write a Blob HTML version. Set activate=true to sync into body_html for sending.",
-      inputSchema: z.object({
-        html: z.string().min(1),
-        label: z.string().trim().max(80).optional(),
-        activate: z.boolean().optional().default(false),
-        summary: z.string().trim().max(280).optional(),
-      }),
-      execute: async ({ html, label, activate, summary }) => {
-        const sanitized = assertSafeNewsletterHtml(html);
-        const written = await writeTemplateBlobVersion({
-          templateId: ctx.templateId,
-          html: sanitized,
-          label: label || "ai-write",
-          promptSummary: summary,
-          actorUserId: ctx.actorUserId,
-          activate: Boolean(activate),
-        });
-
-        await writeAdminAuditLog({
-          actorUserId: ctx.actorUserId,
-          action: "newsletter.template.blob.write",
-          targetType: "newsletter_template",
-          targetId: String(ctx.templateId),
-          payload: {
-            source: "chat.writeBlobVersion",
-            pathname: written.pathname,
-            activated: Boolean(activate),
-            bytes: written.meta.byteLength,
-          },
-        });
-
-        return {
-          ok: true,
-          pathname: written.pathname,
-          activated: Boolean(activate),
-          bodyHtmlLength: sanitized.length,
-        };
-      },
-    }),
-
-    activateBlobVersion: tool({
-      description: "Activate a Blob version into the sendable body_html snapshot.",
-      inputSchema: z.object({
-        pathname: z.string().trim().min(1),
-      }),
-      execute: async ({ pathname }) => {
-        const activated = await activateTemplateBlobVersion({
-          templateId: ctx.templateId,
-          pathname,
-        });
-
-        await writeAdminAuditLog({
-          actorUserId: ctx.actorUserId,
-          action: "newsletter.template.blob.activate",
-          targetType: "newsletter_template",
-          targetId: String(ctx.templateId),
-          payload: {
-            source: "chat.activateBlobVersion",
-            pathname: activated.activeBlobPathname,
-            versionId: activated.activeBlobVersionId,
-          },
-        });
-
-        return {
-          ok: true,
-          pathname: activated.activeBlobPathname,
-          bodyHtmlLength: activated.bodyHtml.length,
-        };
-      },
-    }),
-
     validateHtml: tool({
-      description:
-        "Validate and sanitize newsletter HTML in Vercel Sandbox when available (local lint fallback otherwise).",
+      description: "Sanitize and lint newsletter HTML locally (email-safe checks; no Sandbox).",
       inputSchema: z.object({
         html: z
           .string()
@@ -321,7 +208,14 @@ export function createNewsletterChatTools(ctx: NewsletterChatToolContext) {
       }),
       execute: async ({ html }) => {
         const source = html ?? (await loadTemplate(ctx.templateId)).bodyHtml;
-        return validateNewsletterHtmlInSandbox(source);
+        const sanitizedHtml = sanitizeNewsletterHtml(source);
+        const issues = lintNewsletterHtml(sanitizedHtml);
+        return {
+          ok: issues.every((issue) => issue.level !== "error"),
+          mode: "local" as const,
+          sanitizedHtml,
+          issues,
+        };
       },
     }),
   };

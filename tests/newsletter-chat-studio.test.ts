@@ -2,25 +2,16 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { getEdgeProtectionType } from "../lib/auth/edge-route-policy";
+import { createNewsletterChatModel } from "../lib/newsletter/chat-model";
 import {
   assertSafeNewsletterHtml,
   lintNewsletterHtml,
   sanitizeNewsletterHtml,
 } from "../lib/newsletter/html-sanitize";
-import { validateNewsletterHtmlInSandbox } from "../lib/newsletter/sandbox-validate";
-import { createNewsletterChatModel } from "../lib/newsletter/chat-model";
-import {
-  buildVersionPathname,
-  isTemplateVersionPath,
-  templateVersionsPrefix,
-} from "../lib/newsletter/template-blob";
 
-test("admin newsletter studio and blob APIs are admin-protected", () => {
+test("admin newsletter studio and chat API are admin-protected", () => {
   assert.equal(getEdgeProtectionType("/admin/templates/12/studio"), "admin");
   assert.equal(getEdgeProtectionType("/api/admin/templates/chat"), "admin");
-  assert.equal(getEdgeProtectionType("/api/admin/templates/12/blob"), "admin");
-  assert.equal(getEdgeProtectionType("/api/admin/templates/12/blob/activate"), "admin");
-  assert.equal(getEdgeProtectionType("/api/admin/templates/12/blob/content"), "admin");
 });
 
 test("sanitizeNewsletterHtml strips scripts and handlers", () => {
@@ -48,16 +39,6 @@ test("assertSafeNewsletterHtml accepts table email HTML", () => {
   assert.match(html, /Shabbat Shalom/);
 });
 
-test("blob path helpers scope versions per template", () => {
-  assert.equal(templateVersionsPrefix(42), "mekor/newsletters/templates/42/versions/");
-  const pathname = buildVersionPathname(42, "AI Draft!!");
-  assert.equal(isTemplateVersionPath(42, pathname), true);
-  assert.equal(isTemplateVersionPath(43, pathname), false);
-  assert.equal(isTemplateVersionPath(42, "mekor/newsletters/templates/42/versions/../secret.html"), false);
-  assert.equal(pathname.endsWith(".html"), true);
-  assert.match(pathname, /ai-draft/);
-});
-
 test("createNewsletterChatModel requires gateway or OpenAI auth", () => {
   const previous = {
     AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
@@ -80,23 +61,10 @@ test("createNewsletterChatModel requires gateway or OpenAI auth", () => {
   }
 });
 
-test("sandbox validate falls back locally without OIDC", async () => {
-  const previousOidc = process.env.VERCEL_OIDC_TOKEN;
-  const previousToken = process.env.VERCEL_TOKEN;
-  delete process.env.VERCEL_OIDC_TOKEN;
-  delete process.env.VERCEL_TOKEN;
-
-  try {
-    const result = await validateNewsletterHtmlInSandbox(
-      `<table style="width:100%"><tr><td>Ok</td></tr></table><script>nope()</script>`,
-    );
-    assert.equal(result.mode, "local-fallback");
-    assert.equal(result.ok, true);
-    assert.equal(/<script/i.test(result.sanitizedHtml), false);
-  } finally {
-    if (previousOidc === undefined) delete process.env.VERCEL_OIDC_TOKEN;
-    else process.env.VERCEL_OIDC_TOKEN = previousOidc;
-    if (previousToken === undefined) delete process.env.VERCEL_TOKEN;
-    else process.env.VERCEL_TOKEN = previousToken;
-  }
+test("studio architecture does not depend on Sandbox or Blob version APIs", async () => {
+  const { access } = await import("node:fs/promises");
+  await assert.rejects(() => access("lib/newsletter/template-blob.ts"));
+  await assert.rejects(() => access("lib/newsletter/sandbox-validate.ts"));
+  await assert.rejects(() => access("app/api/admin/templates/[id]/blob/route.ts"));
+  await assert.rejects(() => access("drizzle/0029_newsletter_template_blob.sql"));
 });

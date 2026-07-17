@@ -1,8 +1,11 @@
-# Newsletter Chat Editor (Full Vision) — Design Spec
+# Newsletter Chat Editor — Design Spec
 
 **Date:** 2026-07-17  
-**Status:** Awaiting approval  
-**Scope choice:** Option C — chat + Sandbox + Blob browser + send in one delivery track (phased internally, but designed end-to-end)
+**Status:** Corrected post-audit (implemented)  
+**Scope choice (original):** Option C — chat + Sandbox + Blob browser + send  
+**Scope choice (corrected):** DB-first Chat Studio — AI SDK chat tools edit `body_html`, local sanitize/lint, existing SendGrid send. **No Vercel Sandbox dependency and no Blob HTML version store/migration.**
+
+> Historical sections below still describe the original Option C vision. The shipped architecture intentionally drops Sandbox + Blob versioning so production does not require new DB columns, OIDC Sandbox, or private Blob HTML versioning.
 
 ## 1. Problem
 

@@ -12,19 +12,11 @@ import type { newsletterTemplates } from "@/db/schema";
 import styles from "./page.module.css";
 
 type TemplateRow = typeof newsletterTemplates.$inferSelect;
-type WorkspaceTab = "preview" | "source" | "versions" | "details";
+type WorkspaceTab = "preview" | "source" | "details";
 type RecipientGroup = "newsletter_subscribers" | "admins_only";
-
-type BlobVersion = {
-  pathname: string;
-  url: string;
-  size: number;
-  uploadedAt: string;
-};
 
 type StudioClientProps = {
   template: TemplateRow;
-  seedNotice?: string | null;
 };
 
 function messageText(message: UIMessage) {
@@ -42,7 +34,7 @@ function toolSummaries(message: UIMessage) {
   });
 }
 
-export function NewsletterStudioClient({ template, seedNotice }: StudioClientProps) {
+export function NewsletterStudioClient({ template }: StudioClientProps) {
   const [tab, setTab] = useState<WorkspaceTab>("preview");
   const [draft, setDraft] = useState("");
   const [html, setHtml] = useState(template.bodyHtml);
@@ -57,13 +49,10 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
     status: template.status,
     publishOnSend: template.publishOnSend,
   });
-  const [activeBlobPathname, setActiveBlobPathname] = useState(template.activeBlobPathname);
-  const [versions, setVersions] = useState<BlobVersion[]>([]);
-  const [notice, setNotice] = useState(seedNotice || "");
+  const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [savingSource, setSavingSource] = useState(false);
   const [savingMeta, setSavingMeta] = useState(false);
-  const [loadingVersions, setLoadingVersions] = useState(false);
   const [sendGroup, setSendGroup] = useState<RecipientGroup>("newsletter_subscribers");
   const [subjectOverride, setSubjectOverride] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
@@ -88,7 +77,6 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
     };
     if (!response.ok || !payload.template) return;
     setHtml(payload.template.bodyHtml);
-    setActiveBlobPathname(payload.template.activeBlobPathname);
     setMeta({
       title: payload.template.title,
       subject: payload.template.subject,
@@ -102,37 +90,9 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
     });
   }
 
-  async function loadVersions() {
-    setLoadingVersions(true);
-    setError("");
-    try {
-      const response = await fetch(`/api/admin/templates/${template.id}/blob`);
-      const payload = (await response.json().catch(() => ({}))) as {
-        versions?: BlobVersion[];
-        activeBlobPathname?: string | null;
-        error?: string;
-      };
-      if (!response.ok) {
-        setError(payload.error || "Unable to load Blob versions.");
-        setVersions([]);
-      } else {
-        setVersions(payload.versions ?? []);
-        setActiveBlobPathname(payload.activeBlobPathname ?? null);
-      }
-    } finally {
-      setLoadingVersions(false);
-    }
-  }
-
-  useEffect(() => {
-    void loadVersions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial load only
-  }, [template.id]);
-
   useEffect(() => {
     if (status === "ready") {
       void refreshTemplate();
-      void loadVersions();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- refresh after chat turns
   }, [status, messages.length]);
@@ -146,74 +106,32 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
     await sendMessage({ text });
   }
 
-  async function saveSourceVersion(activate: boolean) {
+  async function saveSource() {
     setSavingSource(true);
     setError("");
     setNotice("");
     try {
-      const response = await fetch(`/api/admin/templates/${template.id}/blob`, {
-        method: "POST",
+      const response = await fetch("/api/admin/templates", {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          html,
-          label: activate ? "studio-activate" : "studio-draft",
-          activate,
+          id: template.id,
+          ...meta,
+          bodyHtml: html,
+          slug: template.slug,
+          category: template.category,
         }),
       });
-      const payload = (await response.json().catch(() => ({}))) as {
-        error?: string;
-        activeBlobPathname?: string | null;
-      };
+      const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) {
-        setError(payload.error || "Unable to save HTML version.");
+        setError(payload.error || "Unable to save HTML.");
         return;
       }
-      setActiveBlobPathname(payload.activeBlobPathname ?? activeBlobPathname);
-      setNotice(activate ? "Saved and activated HTML for send." : "Saved Blob version without activating.");
+      setNotice("Saved HTML to the database send snapshot.");
       await refreshTemplate();
-      await loadVersions();
     } finally {
       setSavingSource(false);
     }
-  }
-
-  async function activateVersion(pathname: string) {
-    setError("");
-    setNotice("");
-    const response = await fetch(`/api/admin/templates/${template.id}/blob/activate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pathname }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as {
-      error?: string;
-      html?: string;
-      activeBlobPathname?: string | null;
-    };
-    if (!response.ok) {
-      setError(payload.error || "Unable to activate version.");
-      return;
-    }
-    if (payload.html) setHtml(payload.html);
-    setActiveBlobPathname(payload.activeBlobPathname ?? pathname);
-    setNotice("Activated Blob version into the sendable template.");
-    await refreshTemplate();
-    await loadVersions();
-  }
-
-  async function previewVersion(pathname: string) {
-    setError("");
-    const response = await fetch(
-      `/api/admin/templates/${template.id}/blob/content?pathname=${encodeURIComponent(pathname)}`,
-    );
-    const payload = (await response.json().catch(() => ({}))) as { html?: string; error?: string };
-    if (!response.ok || !payload.html) {
-      setError(payload.error || "Unable to read Blob version.");
-      return;
-    }
-    setHtml(payload.html);
-    setTab("preview");
-    setNotice(`Loaded version preview (not activated): ${pathname}`);
   }
 
   async function saveMetadata() {
@@ -237,7 +155,7 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
         setError(payload.error || "Unable to save metadata.");
         return;
       }
-      setNotice("Template metadata saved.");
+      setNotice("Template details saved.");
       await refreshTemplate();
     } finally {
       setSavingMeta(false);
@@ -301,7 +219,7 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
     <AdminShell
       currentPath="/admin/templates"
       title="Newsletter Chat Studio"
-      description="Chat with an AI agent to edit HTML, manage Blob versions, validate, and send."
+      description="Chat with an AI agent to edit newsletter HTML stored in the database, then send with the existing campaign pipeline."
       breadcrumbs={[
         { href: "/admin", label: "Dashboard" },
         { href: "/admin/templates", label: "Templates" },
@@ -327,8 +245,8 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
           <div className={styles.chatBody}>
             {messages.length === 0 ? (
               <p className={styles.emptyChat}>
-                Ask for a rewrite, a parsha update, or a layout tweak. The agent can read and write the
-                HTML through tools.
+                Ask for a rewrite, a parsha update, or a layout tweak. The agent reads and writes the
+                database HTML through tools.
               </p>
             ) : (
               messages.map((message) => {
@@ -359,7 +277,7 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
             />
             <div className={styles.composerRow}>
               <span className={styles.statusText}>
-                {chatError ? chatError.message : "Session-only chat history"}
+                {chatError ? chatError.message : "Session-only chat · DB HTML source of truth"}
               </span>
               <div className={styles.sendActions}>
                 {busy ? (
@@ -383,7 +301,6 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
                 [
                   ["preview", "Preview"],
                   ["source", "Source"],
-                  ["versions", "Versions"],
                   ["details", "Details"],
                 ] as const
               ).map(([key, label]) => (
@@ -418,71 +335,12 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
                 <div className={styles.sendActions}>
                   <button
                     type="button"
-                    className={styles.secondaryButton}
-                    disabled={savingSource}
-                    onClick={() => void saveSourceVersion(false)}
-                  >
-                    Save version
-                  </button>
-                  <button
-                    type="button"
                     className={styles.primaryButton}
                     disabled={savingSource}
-                    onClick={() => void saveSourceVersion(true)}
+                    onClick={() => void saveSource()}
                   >
-                    Save & activate
+                    Save HTML
                   </button>
-                </div>
-              </>
-            ) : null}
-
-            {tab === "versions" ? (
-              <>
-                <div className={styles.composerRow}>
-                  <p className={styles.statusText}>
-                    Active: {activeBlobPathname || "none"} · {loadingVersions ? "Loading…" : `${versions.length} versions`}
-                  </p>
-                  <button type="button" className={styles.secondaryButton} onClick={() => void loadVersions()}>
-                    Refresh
-                  </button>
-                </div>
-                <div className={styles.versionList}>
-                  {versions.length === 0 ? (
-                    <p className={styles.statusText}>No Blob versions yet. Save from Source or ask the agent to write HTML.</p>
-                  ) : (
-                    versions.map((version) => (
-                      <article key={version.pathname} className={styles.versionRow}>
-                        <div>
-                          <p className={styles.versionMeta}>
-                            <strong>
-                              {version.pathname === activeBlobPathname ? "Active · " : ""}
-                              {new Date(version.uploadedAt).toLocaleString()}
-                            </strong>
-                            {version.pathname}
-                            <br />
-                            {version.size} bytes
-                          </p>
-                        </div>
-                        <div className={styles.versionActions}>
-                          <button
-                            type="button"
-                            className={styles.secondaryButton}
-                            onClick={() => void previewVersion(version.pathname)}
-                          >
-                            Preview
-                          </button>
-                          <button
-                            type="button"
-                            className={styles.primaryButton}
-                            disabled={version.pathname === activeBlobPathname}
-                            onClick={() => void activateVersion(version.pathname)}
-                          >
-                            Activate
-                          </button>
-                        </div>
-                      </article>
-                    ))
-                  )}
                 </div>
               </>
             ) : null}
@@ -547,7 +405,7 @@ export function NewsletterStudioClient({ template, seedNotice }: StudioClientPro
                 <div className={styles.sendBox}>
                   <strong>Finalize & send</strong>
                   <p className={styles.statusText}>
-                    Uses the activated database HTML snapshot via the existing campaign pipeline.
+                    Uses the database HTML snapshot via the existing campaign pipeline.
                   </p>
                   <label className={styles.field}>
                     <span>Recipient group</span>

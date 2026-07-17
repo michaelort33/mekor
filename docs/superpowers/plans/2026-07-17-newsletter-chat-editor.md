@@ -1,49 +1,27 @@
-# Newsletter Chat Studio Implementation Plan
+# Newsletter Chat Studio Implementation Plan (corrected)
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> Post-audit architecture: **DB-first Chat Studio** — no Vercel Sandbox dependency and no Blob HTML version store/migration.
 
-**Goal:** Ship Option C — admin newsletter chat studio with AI SDK agent, Blob versions, Sandbox validate, and existing SendGrid send.
+**Goal:** Ship an admin newsletter chat studio with AI SDK tools editing `newsletter_templates.body_html`, local HTML sanitize/lint, and the existing SendGrid send path.
 
-**Architecture:** New `/admin/templates/[id]/studio` split view. Chat via AI SDK `useChat` → `/api/admin/templates/chat` with tools. Working HTML in DB; versions in private Blob; activate syncs Blob→DB; send unchanged.
+**Architecture:** `/admin/templates/[id]/studio` split view. Chat via AI SDK `useChat` → `/api/admin/templates/chat`. Working HTML in Postgres. Send unchanged.
 
-**Tech Stack:** Next.js 16, AI SDK (`ai`, `@ai-sdk/react`), `@vercel/blob`, `@vercel/sandbox`, Drizzle, existing AdminShell + CSS modules (AI Elements-style chat UI if CLI install is unreliable).
+**Tech Stack:** Next.js 16, AI SDK (`ai`, `@ai-sdk/react`), Drizzle, AdminShell + CSS modules.
 
 ## Global Constraints
 
 - Admin-only via `requireAdminActor`
 - Max HTML ~120k chars; sanitize scripts on every write
-- Sandbox never receives secrets; local fallback lint if OIDC missing
-- Private Blob + admin proxy
+- Local lint/sanitize only (no Sandbox microVM)
+- No Blob version browser / no Blob schema columns required
 - Keep `/edit` and `/api/admin/templates/ai` during transition
 
----
+## Tasks
 
-### Task 1: Schema + sanitizer + blob helpers
-- [x] Extend `newsletterTemplates` with blob columns
-- [x] Add SQL migration
-- [x] `lib/newsletter/html-sanitize.ts`, `lib/newsletter/template-blob.ts`
-- [x] Unit tests
-- [x] Commit
-
-### Task 2: Blob admin APIs
-- [x] GET/POST list+write, activate, read routes
-- [x] Audits
-- [x] Commit
-
-### Task 3: Chat API + tools
-- [x] Install `ai`, `@ai-sdk/react`, `@ai-sdk/openai`, `@vercel/sandbox`
-- [x] Tool implementations + `/api/admin/templates/chat`
-- [x] Sandbox validate with local fallback
-- [x] Commit
-
-### Task 4: Studio UI
-- [x] `/admin/templates/[id]/studio` page + client studio
-- [x] Chat pane, preview/source/versions/details tabs
-- [x] Send/schedule reuse
+- [x] HTML sanitize helpers + unit tests
+- [x] Chat API + DB tools (get/set/patch HTML, metadata, validateHtml)
+- [x] Studio UI (chat + preview/source/details + send)
 - [x] Links from list/edit
-- [x] Commit
-
-### Task 5: Tests + ship
-- [x] Tests for sanitize, blob paths, activate mapping, chat auth
-- [x] Lint/build as feasible
-- [x] Push + PR
+- [x] Remove Sandbox + Blob versioning from scope (architecture correction)
+- [x] Sensitive inquiry Blob URL cleanup (merged)
+- [x] Lint/build/tests
