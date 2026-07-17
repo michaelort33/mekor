@@ -43,14 +43,6 @@
   color: rgba(240, 247, 255, 0.9);
 }
 
-.subheading {
-  margin: 0;
-  color: #3d4b5d;
-  line-height: 1.68;
-  font-size: clamp(1rem, 1.05vw, 1.08rem);
-  text-wrap: pretty;
-}
-
 .profileSectionCard {
   border-radius: 14px;
   border: 1px solid #cfd4dd;
@@ -67,18 +59,29 @@
   align-items: start;
 }
 
+.profileLayoutReverse {
+  grid-template-columns: minmax(0, 1.32fr) minmax(250px, 0.68fr);
+}
+
+.profileLayoutReverse .profilePhotoWrap {
+  order: 2;
+}
+
 .profilePhotoWrap {
   overflow: hidden;
   border-radius: 12px;
   background: #ffffff;
   border: 1px solid #ccd3dc;
   box-shadow: 0 10px 24px rgba(24, 36, 53, 0.1);
+  aspect-ratio: 4 / 5;
 }
 
 .profilePhoto {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
 }
 
 .profileBody {
@@ -119,71 +122,12 @@
   text-wrap: pretty;
 }
 
-.splitProfile :global(h2) {
-  font-size: clamp(1.9rem, 2.45vw, 2.55rem);
-  line-height: 1.04;
-  letter-spacing: -0.022em;
-  color: #1e3147;
-  text-wrap: balance;
-}
-
-.splitProfile :global(h2)::after {
-  content: "";
-  display: block;
-  width: 40px;
-  height: 3px;
-  margin: 14px 0 0;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-accent) 60%, transparent);
-}
-
-.splitProfile :global(p) {
-  color: #3d4c5e;
-  line-height: 1.76;
-  font-size: clamp(0.99rem, 1.02vw, 1.05rem);
-  text-wrap: pretty;
-}
-
-.splitProfile :global([data-media-wrap]) {
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid #ccd3dc;
-  box-shadow: 0 10px 24px rgba(24, 36, 53, 0.1);
-  max-height: 320px;
-}
-
-.splitProfile :global([data-media-wrap] img) {
-  max-height: 320px;
-  object-fit: cover;
-  width: 100%;
-}
-
-.linkCluster :global(a:not([data-brand])) {
-  border-radius: 10px;
-  border: 1px solid #c8d1dc;
-  background:
-    linear-gradient(180deg, rgba(248, 250, 253, 0.96) 0%, rgba(241, 245, 250, 0.95) 100%),
-    #f6f8fb;
-  box-shadow: none;
-  padding: 12px 14px;
-  color: #224364;
-  font-weight: 600;
-}
-
-.linkCluster :global(a:not([data-brand]):hover) {
-  transform: translateY(-1px);
-  border-color: var(--color-accent);
-  background: #ffffff;
-}
-
-.linkCluster :global(a:focus-visible),
 .editorialCluster :global(a:focus-visible),
 .resourcePanel :global(a:focus-visible) {
   outline: 2px solid var(--native-focus-ring);
   outline-offset: 2px;
 }
 
-.linkCluster :global(h3),
 .editorialCluster :global(h3) {
   color: #21364d;
   font-size: clamp(1.26rem, 1.6vw, 1.5rem);
@@ -203,14 +147,10 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
-.linkCluster {
-  margin-top: 2px;
-}
-
 .resourcePanel {
   display: grid;
   gap: clamp(16px, 2vw, 22px);
-  margin-top: clamp(2px, 0.8vw, 8px);
+  margin-top: clamp(18px, 2.4vw, 28px);
   padding: clamp(18px, 2.2vw, 26px);
   border: 1px solid #d5dce5;
   border-radius: 14px;
@@ -221,12 +161,11 @@
 
 .resourceHeader {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.72fr);
-  align-items: end;
-  gap: 18px;
+  gap: 5px;
 }
 
 .resourceEyebrow,
+.resourceGroupLabel,
 .communityResourcesLabel {
   margin: 0;
   color: #55708d;
@@ -238,7 +177,7 @@
 }
 
 .resourceHeader h3 {
-  margin: 5px 0 0;
+  margin: 0;
   scroll-margin-top: 116px;
   color: #1e3147;
   font-family: var(--font-heading);
@@ -247,34 +186,46 @@
   line-height: 1.08;
 }
 
-.resourceHeader > p {
-  margin: 0;
-  color: #536173;
-  font-size: 0.92rem;
-  line-height: 1.55;
-  text-wrap: pretty;
-}
-
 .primaryResourceGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 
-.primaryResourceGrid :global(a) {
+.resourceGridTwo {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.primaryResourceGrid :global(a),
+.booksGrid :global(a) {
   height: 100%;
   padding: 13px 14px;
   border-radius: 12px;
   box-shadow: none;
 }
 
-.primaryResourceGrid :global(a:hover) {
+.primaryResourceGrid :global(a:hover),
+.booksGrid :global(a:hover) {
   box-shadow: 0 12px 24px -22px rgba(26, 43, 63, 0.58);
 }
 
-.primaryResourceGrid :global(a > span) {
+.primaryResourceGrid :global(a > span),
+.booksGrid :global(a > span) {
   height: 100%;
   align-items: start;
+}
+
+.resourceGroup {
+  display: grid;
+  gap: 12px;
+  padding-top: 15px;
+  border-top: 1px solid #d8dee6;
+}
+
+.booksGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .communityResources {
@@ -331,40 +282,33 @@
 }
 
 @media (max-width: 960px) {
-  .profileLayout {
+  .profileLayout,
+  .profileLayoutReverse {
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
+  }
+
+  .profileLayoutReverse .profilePhotoWrap {
+    order: 0;
+  }
+
+  .profilePhotoWrap {
+    max-width: 420px;
   }
 
   .stack {
     gap: 16px;
   }
 
-  .profilePhotoWrap {
-    max-width: 100%;
-    max-height: 320px;
-    overflow: hidden;
-  }
-
-  .profilePhotoWrap .profilePhoto {
-    max-height: 320px;
-    object-fit: cover;
-    width: 100%;
-  }
-
-  .resourceHeader {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
-  }
-
-  .primaryResourceGrid {
+  .primaryResourceGrid,
+  .booksGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .primaryResourceGrid > :last-child:nth-child(odd) {
+  .primaryResourceGrid > :last-child:nth-child(odd),
+  .booksGrid > :last-child:nth-child(odd) {
     grid-column: 1 / -1;
   }
-
 }
 
 @media (max-width: 760px) {
@@ -376,20 +320,17 @@
     border-radius: 12px;
   }
 
-  .profileTitle,
-  .splitProfile :global(h2) {
+  .profileTitle {
     font-size: clamp(1.72rem, 8.2vw, 2.1rem);
   }
 
-  .profileText p,
-  .splitProfile :global(p),
-  .subheading {
+  .profileText p {
     font-size: 0.96rem;
     line-height: 1.72;
   }
 
-  .linkCluster :global(a:not([data-brand])) {
-    padding: 11px 12px;
+  .profilePhotoWrap {
+    max-width: 100%;
   }
 
   .editorialCluster {
@@ -401,11 +342,14 @@
   }
 
   .primaryResourceGrid,
+  .resourceGridTwo,
+  .booksGrid,
   .communityResourceLinks {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .primaryResourceGrid > :last-child:nth-child(odd) {
+  .primaryResourceGrid > :last-child:nth-child(odd),
+  .booksGrid > :last-child:nth-child(odd) {
     grid-column: auto;
   }
 }
