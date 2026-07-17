@@ -12,26 +12,6 @@
   {
     "sourceType": "zip",
     "sourceUrl": "",
-    "localPath": "/Users/meshulumort/Documents/mekor/rebuild-assets/raw2/Mekor Assests/Forms Inquiries csv/Home Contact Form.csv",
-    "filename": "Home Contact Form.csv",
-    "extension": ".csv",
-    "sizeBytes": 11488,
-    "sha1": "d39c0c0706199c6f94763bb5715ca89ef021d7cf",
-    "contentType": "application/octet-stream"
-  },
-  {
-    "sourceType": "zip",
-    "sourceUrl": "",
-    "localPath": "/Users/meshulumort/Documents/mekor/rebuild-assets/raw2/Mekor Assests/Forms Inquiries csv/Kosher Inquiry.csv",
-    "filename": "Kosher Inquiry.csv",
-    "extension": ".csv",
-    "sizeBytes": 3482,
-    "sha1": "0f2bc13599345570d1af0cd0b3beb7cc97c0115f",
-    "contentType": "application/octet-stream"
-  },
-  {
-    "sourceType": "zip",
-    "sourceUrl": "",
     "localPath": "/Users/meshulumort/Documents/mekor/rebuild-assets/raw2/Mekor Assests/IKC Certificates/IKC Certificates_unzipped/92f487_5779394e95544307960fcd1f0f06a6c7 (1) (1).pdf",
     "filename": "92f487_5779394e95544307960fcd1f0f06a6c7 (1) (1).pdf",
     "extension": ".pdf",

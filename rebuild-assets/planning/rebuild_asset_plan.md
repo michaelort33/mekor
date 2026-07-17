@@ -53,7 +53,8 @@
 ## Phase Details
 
 ### 1) Data Hygiene and Privacy Gate
-- Keep `Forms Inquiries csv/*.csv` private; do not put in public frontend repos.
+- Keep `Forms Inquiries csv/*.csv` private; do not put in public frontend repos or public Vercel Blob.
+- If inquiry CSVs were ever uploaded publicly, delete them with `npx tsx scripts/blob/delete-sensitive-inquiry-blobs.ts` and remove map URLs from git.
 - Review and remove spam submissions before CRM import.
 - Keep `Events/events.csv` as migration input for events CMS model.
 
