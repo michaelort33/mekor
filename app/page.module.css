@@ -766,7 +766,7 @@
 .rabbiCard {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
-  align-items: start;
+  align-items: center;
   border: 1px solid #d9dde8;
   background: #fff;
   overflow: hidden;
