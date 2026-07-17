@@ -134,14 +134,14 @@ async function deliverFormConfirmation(
 
     await getDb().insert(formDeliveryLog).values({
       submissionId,
-      provider: "resend_submitter_confirmation",
+      provider: "sendgrid_submitter_confirmation",
       status: "sent",
       errorMessage: "",
     });
   } catch (error) {
     await getDb().insert(formDeliveryLog).values({
       submissionId,
-      provider: "resend_submitter_confirmation",
+      provider: "sendgrid_submitter_confirmation",
       status: "failed",
       errorMessage: String(error).slice(0, 512),
     });

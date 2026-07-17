@@ -1,6 +1,5 @@
-import { Resend } from "resend";
-
-import { getFormNotifyFrom, getFormNotifyTo, getResendApiKey } from "@/lib/forms/config";
+import { getFormNotifyFrom, getFormNotifyTo } from "@/lib/forms/config";
+import { sendSendGridEmail } from "@/lib/notifications/sendgrid";
 
 export async function sendEventOrganizerMessage(input: {
   organizerEmail: string;
@@ -10,11 +9,10 @@ export async function sendEventOrganizerMessage(input: {
   subject: string;
   message: string;
 }) {
-  const resend = new Resend(getResendApiKey());
-
-  await resend.emails.send({
+  await sendSendGridEmail({
     from: getFormNotifyFrom(),
-    to: [input.organizerEmail || getFormNotifyTo()],
+    to: input.organizerEmail || getFormNotifyTo(),
+    replyTo: input.senderEmail,
     subject: `[Mekor Event] ${input.eventTitle}: ${input.subject}`,
     text: [
       `From: ${input.senderName} <${input.senderEmail}>`,
@@ -32,11 +30,9 @@ export async function sendEventReminderEmail(input: {
   eventTitle: string;
   eventPath: string;
 }) {
-  const resend = new Resend(getResendApiKey());
-
-  await resend.emails.send({
+  await sendSendGridEmail({
     from: getFormNotifyFrom(),
-    to: [input.toEmail],
+    to: input.toEmail,
     subject: `[Mekor Reminder] ${input.eventTitle} starts soon`,
     text: [
       `Hi ${input.displayName},`,
@@ -57,11 +53,9 @@ export async function sendDuesReminderEmail(input: {
   amountText: string;
   dueDate: string;
 }) {
-  const resend = new Resend(getResendApiKey());
-
-  await resend.emails.send({
+  await sendSendGridEmail({
     from: getFormNotifyFrom(),
-    to: [input.toEmail],
+    to: input.toEmail,
     subject: `[Mekor Dues] Reminder for ${input.invoiceLabel}`,
     text: [
       `Hi ${input.displayName},`,
@@ -85,14 +79,13 @@ export async function sendEventWaitlistPromotedEmail(input: {
   paymentRequired: boolean;
   paymentDueAt: string | null;
 }) {
-  const resend = new Resend(getResendApiKey());
   const paymentLine = input.paymentRequired
     ? `Please complete payment by ${input.paymentDueAt ?? "the listed due time"} to confirm your spot.`
     : "Your registration is now confirmed.";
 
-  await resend.emails.send({
+  await sendSendGridEmail({
     from: getFormNotifyFrom(),
-    to: [input.toEmail],
+    to: input.toEmail,
     subject: `[Mekor Event] Waitlist update for ${input.eventTitle}`,
     text: [
       `Hi ${input.displayName},`,
@@ -112,11 +105,9 @@ export async function sendEventPaymentWindowExpiredEmail(input: {
   eventTitle: string;
   eventPath: string;
 }) {
-  const resend = new Resend(getResendApiKey());
-
-  await resend.emails.send({
+  await sendSendGridEmail({
     from: getFormNotifyFrom(),
-    to: [input.toEmail],
+    to: input.toEmail,
     subject: `[Mekor Event] Payment window expired for ${input.eventTitle}`,
     text: [
       `Hi ${input.displayName},`,
