@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
+import { GoogleSignInButton } from "./google-sign-in-button";
 import styles from "./page.module.css";
 
 const AUTH_REQUEST_TIMEOUT_MS = 15000;
@@ -117,6 +118,8 @@ export default function LoginPage() {
         <button className={styles.button} type="submit" disabled={submitting}>
           {submitting ? "Logging in..." : "Log in"}
         </button>
+
+        <GoogleSignInButton nextPath={nextPath} familyInviteToken={familyInviteToken} />
 
         <p className={styles.footer}>
           Need an account? <Link href="/signup">Sign up</Link>

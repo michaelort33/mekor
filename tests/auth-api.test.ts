@@ -3,11 +3,104 @@ import test from "node:test";
 
 import { NextRequest } from "next/server";
 
+import { executeGoogleLogin, type GoogleLoginDependencies } from "../app/api/auth/google/route";
 import { executeLogin } from "../app/api/auth/login/route";
 import { executePasswordResetComplete } from "../app/api/auth/password-reset/complete/route";
 import { executePasswordResetRequest } from "../app/api/auth/password-reset/request/route";
 import { executeSignup } from "../app/api/auth/signup/route";
 import { proxy } from "../proxy";
+
+function createGoogleLoginDependencies(
+  overrides: Partial<GoogleLoginDependencies> = {},
+): GoogleLoginDependencies {
+  return {
+    getClientId: () => "google-client-id",
+    verifyCredential: async () => ({
+      subject: "google-subject",
+      email: "admin@mekorhabracha.org",
+      emailVerified: true,
+      hostedDomain: "mekorhabracha.org",
+      displayName: "Mekor Admin",
+      pictureUrl: "https://example.com/avatar.jpg",
+    }),
+    findUserByGoogleSubject: async () => undefined,
+    findUserByEmail: async () => undefined,
+    linkGoogleSubject: async () => undefined,
+    createUser: async () => undefined,
+    hashPassword: async () => "generated-password-hash",
+    markUserLoggedIn: async () => {},
+    ensurePersonForUser: async () => {},
+    createSession: async () => {},
+    acceptFamilyInviteByToken: async () => {},
+    ...overrides,
+  };
+}
+
+test("Google login links an authoritative Workspace identity to an existing account", async () => {
+  const steps: string[] = [];
+  const result = await executeGoogleLogin(
+    { credential: "g".repeat(32) },
+    createGoogleLoginDependencies({
+      findUserByEmail: async (email) => ({
+        id: 7,
+        email,
+        displayName: "Mekor Admin",
+        role: "admin",
+        googleSubject: null,
+      }),
+      linkGoogleSubject: async (userId, subject) => {
+        steps.push(`link:${userId}:${subject}`);
+        return {
+          id: userId,
+          email: "admin@mekorhabracha.org",
+          displayName: "Mekor Admin",
+          role: "admin",
+          googleSubject: subject,
+        };
+      },
+      markUserLoggedIn: async (userId) => {
+        steps.push(`mark:${userId}`);
+      },
+      ensurePersonForUser: async ({ userId }) => {
+        steps.push(`person:${userId}`);
+      },
+      createSession: async ({ userId, role }) => {
+        steps.push(`session:${userId}:${role}`);
+      },
+    }),
+  );
+
+  assert.equal(result.status, 200);
+  assert.deepEqual(result.body, {
+    ok: true,
+    user: {
+      id: 7,
+      email: "admin@mekorhabracha.org",
+      displayName: "Mekor Admin",
+      role: "admin",
+    },
+  });
+  assert.deepEqual(steps, [
+    "link:7:google-subject",
+    "mark:7",
+    "person:7",
+    "session:7:admin",
+  ]);
+});
+
+test("Google login rejects an invalid ID token", async () => {
+  const result = await executeGoogleLogin(
+    { credential: "x".repeat(32) },
+    createGoogleLoginDependencies({
+      verifyCredential: async () => {
+        throw new Error("invalid token");
+      },
+    }),
+  );
+
+  assert.equal(result.status, 401);
+  assert.deepEqual(result.body, { error: "Google sign-in could not be verified" });
+});
 
 test("signup rejects duplicate email with 409", async () => {
   const result = await executeSignup(
