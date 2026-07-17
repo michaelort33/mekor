@@ -4,7 +4,11 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { sendGridEventKey, verifySendGridEventSignature } from "@/lib/newsletter/sendgrid-events";
-import { buildUnsubscribeUrl, normalizeNewsletterEmail } from "@/lib/newsletter/subscriptions";
+import {
+  buildNewsletterConfirmationEmail,
+  buildUnsubscribeUrl,
+  normalizeNewsletterEmail,
+} from "@/lib/newsletter/subscriptions";
 
 test("newsletter addresses and unsubscribe links are normalized", () => {
   assert.equal(normalizeNewsletterEmail("  Person@Example.COM "), "person@example.com");
@@ -12,6 +16,19 @@ test("newsletter addresses and unsubscribe links are normalized", () => {
     buildUnsubscribeUrl("https://www.mekorhabracha.org", "token with spaces"),
     "https://www.mekorhabracha.org/api/newsletter/unsubscribe?token=token%20with%20spaces",
   );
+});
+
+test("newsletter confirmation email warmly reflects approved Mekor language", () => {
+  const confirmUrl = "https://www.mekorhabracha.org/api/newsletter/confirm?token=test-token";
+  const email = buildNewsletterConfirmationEmail(confirmUrl);
+
+  assert.equal(email.subject, "Welcome to Mekor Habracha — confirm your subscription");
+  assert.match(email.text, /vibrant, inclusive Modern Orthodox community/);
+  assert.match(email.text, /across the street or across the world/);
+  assert.match(email.html, /A welcoming community/);
+  assert.match(email.html, /Confirm my subscription/);
+  assert.match(email.html, new RegExp(confirmUrl.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(email.html, /expires in 48 hours/);
 });
 
 test("SendGrid event webhook signatures are verified", () => {
