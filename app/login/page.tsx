@@ -76,7 +76,7 @@ export default function LoginPage() {
     <main className={styles.page}>
       <form className={styles.card} onSubmit={handleSubmit}>
         <h1>Log in</h1>
-        <p className={styles.subtitle}>Log in to view members and manage your profile.</p>
+        <p className={styles.subtitle}>Sign in to manage your account. Member features unlock after approval.</p>
         <div className={styles.quickLinks}>
           <Link href="/">← Back to Site Home</Link>
           <Link href="/members">Members Area</Link>
@@ -122,7 +122,7 @@ export default function LoginPage() {
         <GoogleSignInButton nextPath={nextPath} familyInviteToken={familyInviteToken} />
 
         <p className={styles.footer}>
-          Need an account? <Link href="/signup">Sign up</Link>
+          New here? Google sign-in creates your account automatically. Prefer a password? <Link href="/signup">Sign up with email</Link>
         </p>
       </form>
     </main>

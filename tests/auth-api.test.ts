@@ -88,6 +88,86 @@ test("Google login links an authoritative Workspace identity to an existing acco
   ]);
 });
 
+test("Google login automatically creates a visitor account when no account exists", async () => {
+  const steps: string[] = [];
+  const result = await executeGoogleLogin(
+    { credential: "g".repeat(32) },
+    createGoogleLoginDependencies({
+      hashPassword: async (password) => {
+        assert.ok(password.length >= 32);
+        steps.push("hash");
+        return "generated-password-hash";
+      },
+      createUser: async (input) => {
+        steps.push(`create:${input.email}`);
+        assert.equal(input.googleSubject, "google-subject");
+        return {
+          id: 8,
+          email: input.email,
+          displayName: input.displayName,
+          role: "visitor",
+          googleSubject: input.googleSubject,
+        };
+      },
+      markUserLoggedIn: async (userId) => {
+        steps.push(`mark:${userId}`);
+      },
+      ensurePersonForUser: async ({ userId }) => {
+        steps.push(`person:${userId}`);
+      },
+      createSession: async ({ userId, role }) => {
+        steps.push(`session:${userId}:${role}`);
+      },
+    }),
+  );
+
+  assert.equal(result.status, 200);
+  assert.deepEqual(result.body, {
+    ok: true,
+    user: {
+      id: 8,
+      email: "admin@mekorhabracha.org",
+      displayName: "Mekor Admin",
+      role: "visitor",
+    },
+  });
+  assert.deepEqual(steps, [
+    "hash",
+    "create:admin@mekorhabracha.org",
+    "mark:8",
+    "person:8",
+    "session:8:visitor",
+  ]);
+});
+
+test("Google login succeeds when auxiliary profile sync fails", async () => {
+  const steps: string[] = [];
+  const result = await executeGoogleLogin(
+    { credential: "g".repeat(32) },
+    createGoogleLoginDependencies({
+      findUserByGoogleSubject: async () => ({
+        id: 9,
+        email: "admin@mekorhabracha.org",
+        displayName: "Mekor Admin",
+        role: "visitor",
+        googleSubject: "google-subject",
+      }),
+      markUserLoggedIn: async () => {
+        steps.push("mark");
+      },
+      ensurePersonForUser: async () => {
+        throw new Error("CRM unavailable");
+      },
+      createSession: async ({ role }) => {
+        steps.push(`session:${role}`);
+      },
+    }),
+  );
+
+  assert.equal(result.status, 200);
+  assert.deepEqual(steps, ["mark", "session:visitor"]);
+});
+
 test("Google login rejects an invalid ID token", async () => {
   const result = await executeGoogleLogin(
     { credential: "x".repeat(32) },
