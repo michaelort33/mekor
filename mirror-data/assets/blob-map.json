@@ -3609,24 +3609,6 @@
     "size": 1867
   },
   {
-    "sourceUrl": "local:///Users/meshulumort/Documents/mekor/rebuild-assets/raw2/Mekor Assests/Forms Inquiries csv/Home Contact Form.csv",
-    "path": "",
-    "blobKey": "mekor/d39c0c0706199c6f94763bb5715ca89ef021d7cf-home-contact-form.csv",
-    "blobUrl": "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/d39c0c0706199c6f94763bb5715ca89ef021d7cf-home-contact-form.csv",
-    "contentType": "application/octet-stream",
-    "sha1": "d39c0c0706199c6f94763bb5715ca89ef021d7cf",
-    "size": 11488
-  },
-  {
-    "sourceUrl": "local:///Users/meshulumort/Documents/mekor/rebuild-assets/raw2/Mekor Assests/Forms Inquiries csv/Kosher Inquiry.csv",
-    "path": "",
-    "blobKey": "mekor/0f2bc13599345570d1af0cd0b3beb7cc97c0115f-kosher-inquiry.csv",
-    "blobUrl": "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/0f2bc13599345570d1af0cd0b3beb7cc97c0115f-kosher-inquiry.csv",
-    "contentType": "application/octet-stream",
-    "sha1": "0f2bc13599345570d1af0cd0b3beb7cc97c0115f",
-    "size": 3482
-  },
-  {
     "sourceUrl": "local:///Users/meshulumort/Documents/mekor/rebuild-assets/raw2/Mekor Assests/IKC Certificates/IKC Certificates_unzipped/92f487_5779394e95544307960fcd1f0f06a6c7 (1) (1).pdf",
     "path": "",
     "blobKey": "mekor/98f2e4267540f9de2eca4a739c3de7a2a3e624d7-92f487_5779394e95544307960fcd1f0f06a6c7-1-1-.pdf",

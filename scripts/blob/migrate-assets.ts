@@ -15,6 +15,8 @@ import path from "node:path";
 import { head, put } from "@vercel/blob";
 import dotenv from "dotenv";
 
+import { isSensitiveFormInquiryAsset } from "@/lib/blob/sensitive-assets";
+
 dotenv.config({ path: ".env.local" });
 dotenv.config();
 
@@ -92,6 +94,16 @@ async function main() {
   let failed = 0;
 
   for (const source of sources) {
+    if (isSensitiveFormInquiryAsset(source)) {
+      if (map[source]) {
+        delete map[source];
+        console.warn(`removed sensitive mapping (will not re-upload): ${source}`);
+      } else {
+        console.warn(`skipping sensitive form inquiry asset: ${source}`);
+      }
+      skipped++;
+      continue;
+    }
     if (map[source]) {
       skipped++;
       continue;
