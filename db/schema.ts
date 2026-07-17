@@ -450,6 +450,7 @@ export const users = pgTable(
   {
     id: serial("id").primaryKey(),
     email: varchar("email", { length: 255 }).notNull().unique(),
+    googleSubject: varchar("google_subject", { length: 255 }).unique(),
     passwordHash: text("password_hash").notNull(),
     displayName: varchar("display_name", { length: 120 }).notNull(),
     bio: text("bio").notNull().default(""),
