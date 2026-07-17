@@ -648,6 +648,133 @@ export const newsletterSubscriptions = pgTable(
   }),
 );
 
+export const mailchimpImportRuns = pgTable(
+  "mailchimp_import_runs",
+  {
+    id: serial("id").primaryKey(),
+    fingerprint: varchar("fingerprint", { length: 64 }).notNull(),
+    sourceLabel: varchar("source_label", { length: 160 }).notNull().default("Mailchimp export"),
+    status: varchar("status", { length: 30 }).notNull().default("running"),
+    totalRows: integer("total_rows").notNull().default(0),
+    uniqueContacts: integer("unique_contacts").notNull().default(0),
+    audienceCount: integer("audience_count").notNull().default(0),
+    segmentCount: integer("segment_count").notNull().default(0),
+    fileManifestJson: json("file_manifest_json").$type<Array<Record<string, unknown>>>().notNull().default([]),
+    summaryJson: json("summary_json").$type<Record<string, unknown>>().notNull().default({}),
+    startedAt: timestamp("started_at").defaultNow().notNull(),
+    completedAt: timestamp("completed_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    fingerprintUniqueIdx: uniqueIndex("mailchimp_import_runs_fingerprint_unique_idx").on(table.fingerprint),
+    statusStartedIdx: index("mailchimp_import_runs_status_started_idx").on(table.status, table.startedAt),
+  }),
+);
+
+export const mailchimpContacts = pgTable(
+  "mailchimp_contacts",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id")
+      .notNull()
+      .references(() => people.id),
+    lastImportRunId: integer("last_import_run_id")
+      .notNull()
+      .references(() => mailchimpImportRuns.id),
+    audienceKey: varchar("audience_key", { length: 120 }).notNull(),
+    audienceLabel: varchar("audience_label", { length: 160 }).notNull(),
+    exportStatus: varchar("export_status", { length: 30 }).notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
+    euid: varchar("euid", { length: 120 }).notNull().default(""),
+    leid: varchar("leid", { length: 120 }).notNull().default(""),
+    firstName: varchar("first_name", { length: 160 }).notNull().default(""),
+    lastName: varchar("last_name", { length: 160 }).notNull().default(""),
+    addressRaw: text("address_raw").notNull().default(""),
+    addressLine1: varchar("address_line_1", { length: 255 }).notNull().default(""),
+    addressLine2: varchar("address_line_2", { length: 255 }).notNull().default(""),
+    city: varchar("city", { length: 160 }).notNull().default(""),
+    state: varchar("state", { length: 120 }).notNull().default(""),
+    postalCode: varchar("postal_code", { length: 60 }).notNull().default(""),
+    country: varchar("country", { length: 120 }).notNull().default(""),
+    phoneRaw: varchar("phone_raw", { length: 120 }).notNull().default(""),
+    birthdate: varchar("birthdate", { length: 80 }).notNull().default(""),
+    emailType: varchar("email_type", { length: 30 }).notNull().default(""),
+    memberRating: integer("member_rating"),
+    optinTime: timestamp("optin_time"),
+    optinIp: varchar("optin_ip", { length: 80 }).notNull().default(""),
+    confirmTime: timestamp("confirm_time"),
+    confirmIp: varchar("confirm_ip", { length: 80 }).notNull().default(""),
+    gmtOffset: varchar("gmt_offset", { length: 30 }).notNull().default(""),
+    dstOffset: varchar("dst_offset", { length: 30 }).notNull().default(""),
+    timezone: varchar("timezone", { length: 120 }).notNull().default(""),
+    countryCode: varchar("country_code", { length: 20 }).notNull().default(""),
+    region: varchar("region", { length: 120 }).notNull().default(""),
+    lastChangedAt: timestamp("last_changed_at"),
+    unsubscribedAt: timestamp("unsubscribed_at"),
+    unsubscribeCampaignTitle: text("unsubscribe_campaign_title").notNull().default(""),
+    unsubscribeCampaignId: varchar("unsubscribe_campaign_id", { length: 120 }).notNull().default(""),
+    unsubscribeReason: varchar("unsubscribe_reason", { length: 80 }).notNull().default(""),
+    unsubscribeReasonOther: text("unsubscribe_reason_other").notNull().default(""),
+    cleanedAt: timestamp("cleaned_at"),
+    cleanCampaignTitle: text("clean_campaign_title").notNull().default(""),
+    cleanCampaignId: varchar("clean_campaign_id", { length: 120 }).notNull().default(""),
+    interests: json("interests").$type<string[]>().notNull().default([]),
+    relationships: json("relationships").$type<string[]>().notNull().default([]),
+    tags: json("tags").$type<string[]>().notNull().default([]),
+    notes: text("notes").notNull().default(""),
+    sourceFiles: json("source_files").$type<string[]>().notNull().default([]),
+    rawJson: json("raw_json").$type<Record<string, string>>().notNull().default({}),
+    importedAt: timestamp("imported_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    personAudienceUniqueIdx: uniqueIndex("mailchimp_contacts_person_audience_unique_idx").on(table.personId, table.audienceKey),
+    audienceStatusIdx: index("mailchimp_contacts_audience_status_idx").on(table.audienceKey, table.exportStatus),
+    emailIdx: index("mailchimp_contacts_email_idx").on(table.email),
+    euidIdx: index("mailchimp_contacts_euid_idx").on(table.euid),
+  }),
+);
+
+export const mailchimpSegmentMemberships = pgTable(
+  "mailchimp_segment_memberships",
+  {
+    id: serial("id").primaryKey(),
+    personId: integer("person_id")
+      .notNull()
+      .references(() => people.id),
+    mailchimpContactId: integer("mailchimp_contact_id")
+      .notNull()
+      .references(() => mailchimpContacts.id),
+    lastImportRunId: integer("last_import_run_id")
+      .notNull()
+      .references(() => mailchimpImportRuns.id),
+    audienceKey: varchar("audience_key", { length: 120 }).notNull(),
+    segmentKey: varchar("segment_key", { length: 120 }).notNull(),
+    segmentLabel: varchar("segment_label", { length: 160 }).notNull(),
+    exportStatus: varchar("export_status", { length: 30 }).notNull(),
+    sourceFileName: varchar("source_file_name", { length: 255 }).notNull(),
+    rawJson: json("raw_json").$type<Record<string, string>>().notNull().default({}),
+    importedAt: timestamp("imported_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    personAudienceSegmentUniqueIdx: uniqueIndex("mailchimp_memberships_person_audience_segment_unique_idx").on(
+      table.personId,
+      table.audienceKey,
+      table.segmentKey,
+    ),
+    audienceSegmentStatusIdx: index("mailchimp_memberships_audience_segment_status_idx").on(
+      table.audienceKey,
+      table.segmentKey,
+      table.exportStatus,
+    ),
+    contactIdx: index("mailchimp_memberships_contact_idx").on(table.mailchimpContactId),
+  }),
+);
+
 export const membershipPipelineEvents = pgTable(
   "membership_pipeline_events",
   {

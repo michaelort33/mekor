@@ -35,7 +35,8 @@
     "db:backfill:events": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-events.ts",
     "db:backfill:in-the-news": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-in-the-news.ts",
     "db:backfill:newsletters": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-newsletters.ts",
-    "db:backfill:newsletter-subscribers": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-newsletter-subscribers.ts"
+    "db:backfill:newsletter-subscribers": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-newsletter-subscribers.ts",
+    "db:import:mailchimp-crm": "node node_modules/tsx/dist/cli.mjs scripts/db/import-mailchimp-crm.ts"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^2.1.1",
@@ -48,6 +49,7 @@
     "@vercel/blob": "^2.1.0",
     "cheerio": "^1.1.2",
     "clsx": "^2.1.1",
+    "csv-parse": "^6.2.1",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.577.0",
     "next": "16.2.10",

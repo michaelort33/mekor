@@ -84,9 +84,71 @@ type PersonContact = {
   createdAt: string;
 };
 
+type NewsletterPreference = {
+  id: number;
+  topic: string;
+  status: "pending" | "subscribed" | "unsubscribed" | "bounced" | "complained";
+  source: string;
+  confirmedAt: string | null;
+  unsubscribedAt: string | null;
+  lastProviderEventAt: string | null;
+  updatedAt: string;
+};
+
+type MailchimpProfile = {
+  id: number;
+  audienceKey: string;
+  audienceLabel: string;
+  exportStatus: string;
+  email: string;
+  euid: string;
+  leid: string;
+  firstName: string;
+  lastName: string;
+  addressRaw: string;
+  phoneRaw: string;
+  birthdate: string;
+  emailType: string;
+  memberRating: number | null;
+  optinTime: string | null;
+  optinIp: string;
+  confirmTime: string | null;
+  confirmIp: string;
+  gmtOffset: string;
+  dstOffset: string;
+  timezone: string;
+  countryCode: string;
+  region: string;
+  lastChangedAt: string | null;
+  unsubscribedAt: string | null;
+  unsubscribeCampaignTitle: string;
+  unsubscribeCampaignId: string;
+  unsubscribeReason: string;
+  unsubscribeReasonOther: string;
+  cleanedAt: string | null;
+  cleanCampaignTitle: string;
+  cleanCampaignId: string;
+  interests: string[];
+  relationships: string[];
+  tags: string[];
+  notes: string;
+  sourceFiles: string[];
+  importedAt: string;
+  memberships: Array<{
+    id: number;
+    segmentKey: string;
+    segmentLabel: string;
+    exportStatus: string;
+    sourceFileName: string;
+    importedAt: string;
+  }>;
+};
+
 type PersonPayload = {
   person: PersonDetail;
   contacts: PersonContact[];
+  newsletterPreferences: NewsletterPreference[];
+  mailchimpProfiles: MailchimpProfile[];
   timeline: TimelineEvent[];
   invitations: PersonInvitation[];
   deliveries: PersonDelivery[];
@@ -274,6 +336,7 @@ export default function AdminPersonDetailPage() {
       value: `${(data.person.dues.outstandingBalanceCents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" })}`,
       hint: `${data.person.dues.openCount} open invoice(s)`,
     },
+    { label: "Newsletter topics", value: String(data.newsletterPreferences.length), hint: `${data.mailchimpProfiles.length} Mailchimp audience profile(s)` },
   ];
 
   return (
@@ -456,6 +519,80 @@ export default function AdminPersonDetailPage() {
             </ul>
           )}
         </article>
+      </section>
+
+      <section className={styles.card}>
+        <h2>Newsletter Preferences</h2>
+        {data.newsletterPreferences.length === 0 ? (
+          <p className={styles.meta}>No native newsletter preferences are recorded.</p>
+        ) : (
+          <div className={styles.preferenceTableWrap}>
+            <table className={styles.preferenceTable}>
+              <thead><tr><th>Topic</th><th>Status</th><th>Source</th><th>Provider event</th></tr></thead>
+              <tbody>
+                {data.newsletterPreferences.map((preference) => (
+                  <tr key={preference.id}>
+                    <td>{preference.topic}</td>
+                    <td><span className={styles.statusPill}>{preference.status}</span></td>
+                    <td>{preference.source}</td>
+                    <td>{preference.lastProviderEventAt ? new Date(preference.lastProviderEventAt).toLocaleString() : "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      <section className={styles.card}>
+        <h2>Mailchimp CRM History</h2>
+        {data.mailchimpProfiles.length === 0 ? (
+          <p className={styles.meta}>This person was not present in the imported Mailchimp exports.</p>
+        ) : (
+          <div className={styles.mailchimpGrid}>
+            {data.mailchimpProfiles.map((profile) => (
+              <article className={styles.mailchimpCard} key={profile.id}>
+                <div className={styles.mailchimpHeader}>
+                  <div><strong>{profile.audienceLabel}</strong><span>{profile.audienceKey}</span></div>
+                  <span className={styles.statusPill}>{profile.exportStatus}</span>
+                </div>
+                <dl className={styles.dataList}>
+                  <div><dt>Name</dt><dd>{[profile.firstName, profile.lastName].filter(Boolean).join(" ") || "—"}</dd></div>
+                  <div><dt>Email</dt><dd>{profile.email}</dd></div>
+                  <div><dt>Phone</dt><dd>{profile.phoneRaw || "—"}</dd></div>
+                  <div><dt>Address</dt><dd>{profile.addressRaw || "—"}</dd></div>
+                  <div><dt>Interests</dt><dd>{profile.interests.join(", ") || "—"}</dd></div>
+                  <div><dt>Relationship</dt><dd>{profile.relationships.join(", ") || "—"}</dd></div>
+                  <div><dt>Tags</dt><dd>{profile.tags.join(", ") || "—"}</dd></div>
+                  <div><dt>Segments</dt><dd>{profile.memberships.map((membership) => `${membership.segmentLabel} (${membership.exportStatus})`).join(", ") || "—"}</dd></div>
+                </dl>
+                <details>
+                  <summary>Mailchimp dates, provider IDs, and source details</summary>
+                  <dl className={styles.dataList}>
+                    <div><dt>Opted in</dt><dd>{profile.optinTime ? new Date(profile.optinTime).toLocaleString() : "—"}</dd></div>
+                    <div><dt>Confirmed</dt><dd>{profile.confirmTime ? new Date(profile.confirmTime).toLocaleString() : "—"}</dd></div>
+                    <div><dt>Opt-in / confirm IP</dt><dd>{[profile.optinIp, profile.confirmIp].filter(Boolean).join(" / ") || "—"}</dd></div>
+                    <div><dt>Last changed</dt><dd>{profile.lastChangedAt ? new Date(profile.lastChangedAt).toLocaleString() : "—"}</dd></div>
+                    <div><dt>Unsubscribed</dt><dd>{profile.unsubscribedAt ? new Date(profile.unsubscribedAt).toLocaleString() : "—"}</dd></div>
+                    <div><dt>Unsubscribe reason</dt><dd>{[profile.unsubscribeReason, profile.unsubscribeReasonOther].filter(Boolean).join(": ") || "—"}</dd></div>
+                    <div><dt>Unsubscribe campaign</dt><dd>{profile.unsubscribeCampaignTitle || profile.unsubscribeCampaignId || "—"}</dd></div>
+                    <div><dt>Cleaned</dt><dd>{profile.cleanedAt ? new Date(profile.cleanedAt).toLocaleString() : "—"}</dd></div>
+                    <div><dt>Clean campaign</dt><dd>{profile.cleanCampaignTitle || profile.cleanCampaignId || "—"}</dd></div>
+                    <div><dt>Member rating</dt><dd>{profile.memberRating ?? "—"}</dd></div>
+                    <div><dt>Email type</dt><dd>{profile.emailType || "—"}</dd></div>
+                    <div><dt>Birthdate</dt><dd>{profile.birthdate || "—"}</dd></div>
+                    <div><dt>Timezone / offsets</dt><dd>{[profile.timezone, profile.gmtOffset, profile.dstOffset].filter(Boolean).join(" / ") || "—"}</dd></div>
+                    <div><dt>Country / region</dt><dd>{[profile.countryCode, profile.region].filter(Boolean).join(" / ") || "—"}</dd></div>
+                    <div><dt>Mailchimp notes</dt><dd>{profile.notes || "—"}</dd></div>
+                    <div><dt>LEID / EUID</dt><dd>{[profile.leid, profile.euid].filter(Boolean).join(" / ") || "—"}</dd></div>
+                    <div><dt>Source files</dt><dd>{profile.sourceFiles.join(", ")}</dd></div>
+                    <div><dt>Imported</dt><dd>{new Date(profile.importedAt).toLocaleString()}</dd></div>
+                  </dl>
+                </details>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className={styles.grid}>
