@@ -7,10 +7,13 @@ import {
   communicationPreferences,
   contactMethods,
   duesInvoices,
+  mailchimpContacts,
+  mailchimpSegmentMemberships,
   membershipPipelineEvents,
   messageDeliveries,
   messageCampaigns,
   messageSuppressions,
+  newsletterSubscriptions,
   people,
   userInvitations,
   users,
@@ -173,6 +176,81 @@ export async function GET(_request: Request, context: RouteContext) {
     .orderBy(desc(messageDeliveries.createdAt), desc(messageDeliveries.id))
     .limit(40);
 
+  const newsletterPreferences = await getDb()
+    .select({
+      id: newsletterSubscriptions.id,
+      topic: newsletterSubscriptions.topic,
+      status: newsletterSubscriptions.status,
+      source: newsletterSubscriptions.source,
+      confirmedAt: newsletterSubscriptions.confirmedAt,
+      unsubscribedAt: newsletterSubscriptions.unsubscribedAt,
+      lastProviderEventAt: newsletterSubscriptions.lastProviderEventAt,
+      updatedAt: newsletterSubscriptions.updatedAt,
+    })
+    .from(newsletterSubscriptions)
+    .where(eq(newsletterSubscriptions.personId, personId))
+    .orderBy(newsletterSubscriptions.topic);
+
+  const mailchimpProfiles = await getDb()
+    .select({
+      id: mailchimpContacts.id,
+      audienceKey: mailchimpContacts.audienceKey,
+      audienceLabel: mailchimpContacts.audienceLabel,
+      exportStatus: mailchimpContacts.exportStatus,
+      email: mailchimpContacts.email,
+      euid: mailchimpContacts.euid,
+      leid: mailchimpContacts.leid,
+      firstName: mailchimpContacts.firstName,
+      lastName: mailchimpContacts.lastName,
+      addressRaw: mailchimpContacts.addressRaw,
+      phoneRaw: mailchimpContacts.phoneRaw,
+      birthdate: mailchimpContacts.birthdate,
+      emailType: mailchimpContacts.emailType,
+      memberRating: mailchimpContacts.memberRating,
+      optinTime: mailchimpContacts.optinTime,
+      optinIp: mailchimpContacts.optinIp,
+      confirmTime: mailchimpContacts.confirmTime,
+      confirmIp: mailchimpContacts.confirmIp,
+      gmtOffset: mailchimpContacts.gmtOffset,
+      dstOffset: mailchimpContacts.dstOffset,
+      timezone: mailchimpContacts.timezone,
+      countryCode: mailchimpContacts.countryCode,
+      region: mailchimpContacts.region,
+      lastChangedAt: mailchimpContacts.lastChangedAt,
+      unsubscribedAt: mailchimpContacts.unsubscribedAt,
+      unsubscribeCampaignTitle: mailchimpContacts.unsubscribeCampaignTitle,
+      unsubscribeCampaignId: mailchimpContacts.unsubscribeCampaignId,
+      unsubscribeReason: mailchimpContacts.unsubscribeReason,
+      unsubscribeReasonOther: mailchimpContacts.unsubscribeReasonOther,
+      cleanedAt: mailchimpContacts.cleanedAt,
+      cleanCampaignTitle: mailchimpContacts.cleanCampaignTitle,
+      cleanCampaignId: mailchimpContacts.cleanCampaignId,
+      interests: mailchimpContacts.interests,
+      relationships: mailchimpContacts.relationships,
+      tags: mailchimpContacts.tags,
+      notes: mailchimpContacts.notes,
+      sourceFiles: mailchimpContacts.sourceFiles,
+      importedAt: mailchimpContacts.importedAt,
+    })
+    .from(mailchimpContacts)
+    .where(eq(mailchimpContacts.personId, personId))
+    .orderBy(mailchimpContacts.audienceKey);
+  const mailchimpMembershipRows = mailchimpProfiles.length === 0
+    ? []
+    : await getDb()
+        .select({
+          id: mailchimpSegmentMemberships.id,
+          mailchimpContactId: mailchimpSegmentMemberships.mailchimpContactId,
+          segmentKey: mailchimpSegmentMemberships.segmentKey,
+          segmentLabel: mailchimpSegmentMemberships.segmentLabel,
+          exportStatus: mailchimpSegmentMemberships.exportStatus,
+          sourceFileName: mailchimpSegmentMemberships.sourceFileName,
+          importedAt: mailchimpSegmentMemberships.importedAt,
+        })
+        .from(mailchimpSegmentMemberships)
+        .where(inArray(mailchimpSegmentMemberships.mailchimpContactId, mailchimpProfiles.map((profile) => profile.id)))
+        .orderBy(mailchimpSegmentMemberships.segmentLabel);
+
   let duesSummary = { outstandingBalanceCents: 0, openCount: 0 };
   if (personRow.userId != null) {
     const [row] = await getDb()
@@ -203,6 +281,11 @@ export async function GET(_request: Request, context: RouteContext) {
       dues: duesSummary,
     },
     contacts,
+    newsletterPreferences,
+    mailchimpProfiles: mailchimpProfiles.map((profile) => ({
+      ...profile,
+      memberships: mailchimpMembershipRows.filter((membership) => membership.mailchimpContactId === profile.id),
+    })),
     timeline,
     invitations: invitations.map((invitation) => ({
       ...invitation,

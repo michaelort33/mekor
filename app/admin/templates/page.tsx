@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
@@ -37,7 +37,10 @@ export default async function AdminTemplatesPage({ searchParams }: TemplatesPage
       .from(newsletterTemplates)
       .orderBy(desc(newsletterTemplates.updatedAt));
     const [[subscribers], [scheduled], [issues]] = await Promise.all([
-      getDb().select({ count: sql<number>`count(*)::int` }).from(newsletterSubscriptions).where(eq(newsletterSubscriptions.status, "subscribed")),
+      getDb()
+        .select({ count: sql<number>`count(distinct ${newsletterSubscriptions.personId})::int` })
+        .from(newsletterSubscriptions)
+        .where(and(eq(newsletterSubscriptions.topic, "weekly"), eq(newsletterSubscriptions.status, "subscribed"))),
       getDb().select({ count: sql<number>`count(*)::int` }).from(messageCampaigns).where(eq(messageCampaigns.status, "scheduled")),
       getDb().select({ count: sql<number>`count(*)::int` }).from(newsletterIssues),
     ]);
@@ -76,7 +79,7 @@ export default async function AdminTemplatesPage({ searchParams }: TemplatesPage
   });
 
   const stats = [
-    { label: "Subscribers", value: String(subscriberCount), hint: "Confirmed weekly recipients" },
+    { label: "Weekly subscribers", value: String(subscriberCount), hint: "Confirmed weekly recipients" },
     { label: "Drafts", value: String(templates.filter((template) => template.status === "draft" || template.status === "ready").length), hint: "Draft or ready to send" },
     { label: "Scheduled", value: String(scheduledCount), hint: "Queued for a future send" },
     { label: "Published", value: String(issueCount), hint: "Issues in the public archive" },

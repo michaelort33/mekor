@@ -10,7 +10,7 @@ import {
 } from "@/db/schema";
 import { sendSendGridEmail } from "@/lib/notifications/sendgrid";
 
-export const NEWSLETTER_TOPICS = ["weekly", "events", "eruv", "classes", "community"] as const;
+export const NEWSLETTER_TOPICS = ["weekly", "announcements", "events", "kids", "eruv", "classes", "community"] as const;
 export type NewsletterTopic = (typeof NEWSLETTER_TOPICS)[number];
 
 const CONFIRMATION_TTL_MS = 48 * 60 * 60 * 1000;
@@ -21,6 +21,18 @@ function tokenHash(token: string) {
 
 function newToken() {
   return randomBytes(32).toString("base64url");
+}
+
+export async function syncNewsletterEmailPreference(personId: number) {
+  const [subscribed] = await getDb()
+    .select({ id: newsletterSubscriptions.id })
+    .from(newsletterSubscriptions)
+    .where(and(eq(newsletterSubscriptions.personId, personId), eq(newsletterSubscriptions.status, "subscribed")))
+    .limit(1);
+  await getDb()
+    .update(communicationPreferences)
+    .set({ emailOptIn: Boolean(subscribed), updatedAt: new Date() })
+    .where(eq(communicationPreferences.personId, personId));
 }
 
 export function normalizeNewsletterEmail(email: string) {
@@ -166,10 +178,7 @@ export async function confirmNewsletterSubscription(token: string) {
       updatedAt: now,
     })
     .where(eq(newsletterSubscriptions.id, subscription.id));
-  await getDb()
-    .update(communicationPreferences)
-    .set({ emailOptIn: true, updatedAt: now })
-    .where(eq(communicationPreferences.personId, subscription.personId));
+  await syncNewsletterEmailPreference(subscription.personId);
 
   return { ok: true as const, subscriptionId: subscription.id };
 }
@@ -188,10 +197,7 @@ export async function unsubscribeNewsletter(token: string) {
     .update(newsletterSubscriptions)
     .set({ status: "unsubscribed", unsubscribedAt: now, updatedAt: now })
     .where(eq(newsletterSubscriptions.id, subscription.id));
-  await getDb()
-    .update(communicationPreferences)
-    .set({ emailOptIn: false, updatedAt: now })
-    .where(eq(communicationPreferences.personId, subscription.personId));
+  await syncNewsletterEmailPreference(subscription.personId);
 
   return { ok: true, subscriptionId: subscription.id };
 }
