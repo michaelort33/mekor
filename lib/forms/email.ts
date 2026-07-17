@@ -1,6 +1,5 @@
-import { Resend } from "resend";
-
-import { getFormNotifyFrom, getFormNotifyTo, getResendApiKey } from "@/lib/forms/config";
+import { getFormNotifyFrom, getFormNotifyTo } from "@/lib/forms/config";
+import { sendSendGridEmail } from "@/lib/notifications/sendgrid";
 
 type FormEmailPayload = {
   formType: string;
@@ -98,8 +97,6 @@ function buildMessagePreview(message: string) {
 }
 
 export async function sendFormNotification(payload: FormEmailPayload) {
-  const resend = new Resend(getResendApiKey());
-
   const text = [
     `Form Type: ${payload.formType}`,
     `Submission ID: ${payload.submissionId}`,
@@ -111,9 +108,9 @@ export async function sendFormNotification(payload: FormEmailPayload) {
     payload.message,
   ].join("\n");
 
-  await resend.emails.send({
+  await sendSendGridEmail({
     from: getFormNotifyFrom(),
-    to: [getFormNotifyTo()],
+    to: getFormNotifyTo(),
     replyTo: payload.email,
     subject: `[Mekor] ${payload.formType} form submission`,
     text,
@@ -121,7 +118,6 @@ export async function sendFormNotification(payload: FormEmailPayload) {
 }
 
 export async function sendFormConfirmation(payload: FormEmailPayload) {
-  const resend = new Resend(getResendApiKey());
   const firstName = firstNameFromFullName(payload.name);
   const safeFirstName = escapeHtml(firstName);
   const safeName = escapeHtml(payload.name);
@@ -133,9 +129,9 @@ export async function sendFormConfirmation(payload: FormEmailPayload) {
   const safeBody = escapeHtml(copy.body);
   const safeNextSteps = escapeHtml(copy.nextSteps);
 
-  await resend.emails.send({
+  await sendSendGridEmail({
     from: getFormNotifyFrom(),
-    to: [payload.email],
+    to: payload.email,
     replyTo: getFormNotifyTo(),
     subject: `[Mekor] ${formatFormLabel(payload.formType)} received`,
     text: [

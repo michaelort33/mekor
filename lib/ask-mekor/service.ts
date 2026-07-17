@@ -1,5 +1,4 @@
 import { and, asc, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
-import { Resend } from "resend";
 
 import { getDb } from "@/db/client";
 import {
@@ -19,7 +18,8 @@ import {
   type AskMekorQuestionSummary,
   type AskMekorQuestionDetail,
 } from "@/lib/ask-mekor/types";
-import { getFormNotifyFrom, getFormNotifyTo, getResendApiKey } from "@/lib/forms/config";
+import { getFormNotifyFrom, getFormNotifyTo } from "@/lib/forms/config";
+import { sendSendGridEmail } from "@/lib/notifications/sendgrid";
 
 const DEFAULT_CATEGORIES = [
   {
@@ -1244,18 +1244,17 @@ async function sendGuestPrivateReplyEmail(input: {
       toAddress: input.toEmail,
       subject,
       body: text,
-      provider: "resend_ask_mekor_reply",
+      provider: "sendgrid_ask_mekor_reply",
       status: "queued",
       createdAt: now,
       updatedAt: now,
     })
     .returning({ id: notificationsOutbox.id });
 
-  const resend = new Resend(getResendApiKey());
   try {
-    await resend.emails.send({
+    const sendResult = await sendSendGridEmail({
       from: getFormNotifyFrom(),
-      to: [input.toEmail],
+      to: input.toEmail,
       replyTo: getFormNotifyTo(),
       subject,
       text,
@@ -1265,6 +1264,7 @@ async function sendGuestPrivateReplyEmail(input: {
       .update(notificationsOutbox)
       .set({
         status: "sent",
+        providerMessageId: sendResult.providerMessageId,
         sentAt: new Date(),
         updatedAt: new Date(),
       })

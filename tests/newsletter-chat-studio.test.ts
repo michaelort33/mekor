@@ -8,6 +8,7 @@ import {
   sanitizeNewsletterHtml,
 } from "../lib/newsletter/html-sanitize";
 import { validateNewsletterHtmlInSandbox } from "../lib/newsletter/sandbox-validate";
+import { createNewsletterChatModel } from "../lib/newsletter/chat-model";
 import {
   buildVersionPathname,
   isTemplateVersionPath,
@@ -55,6 +56,28 @@ test("blob path helpers scope versions per template", () => {
   assert.equal(isTemplateVersionPath(42, "mekor/newsletters/templates/42/versions/../secret.html"), false);
   assert.equal(pathname.endsWith(".html"), true);
   assert.match(pathname, /ai-draft/);
+});
+
+test("createNewsletterChatModel requires gateway or OpenAI auth", () => {
+  const previous = {
+    AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
+    VERCEL_OIDC_TOKEN: process.env.VERCEL_OIDC_TOKEN,
+    VERCEL_ENV: process.env.VERCEL_ENV,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  };
+  delete process.env.AI_GATEWAY_API_KEY;
+  delete process.env.VERCEL_OIDC_TOKEN;
+  delete process.env.VERCEL_ENV;
+  delete process.env.OPENAI_API_KEY;
+
+  try {
+    assert.throws(() => createNewsletterChatModel(), /AI Gateway|OPENAI_API_KEY/);
+  } finally {
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
 });
 
 test("sandbox validate falls back locally without OIDC", async () => {

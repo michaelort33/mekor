@@ -1,29 +1,41 @@
 import { createOpenAI } from "@ai-sdk/openai";
+import { gateway } from "ai";
+
+function resolveGatewayModelId() {
+  const configured = process.env.NEWSLETTER_CHAT_MODEL?.trim();
+  if (!configured) return "openai/gpt-4.1-mini";
+  return configured.includes("/") ? configured : `openai/${configured}`;
+}
 
 /**
- * Prefer Vercel AI Gateway when configured; otherwise use OpenAI directly.
+ * Prefer Vercel AI Gateway (OIDC on Vercel, AI_GATEWAY_API_KEY / VERCEL_OIDC_TOKEN locally).
+ * Fall back to direct OpenAI when OPENAI_API_KEY is set and gateway auth is unavailable.
  */
 export function createNewsletterChatModel() {
-  const gatewayKey = process.env.AI_GATEWAY_API_KEY?.trim();
-  const openaiKey = process.env.OPENAI_API_KEY?.trim();
+  const canUseGateway = Boolean(
+    process.env.VERCEL_ENV ||
+      process.env.AI_GATEWAY_API_KEY?.trim() ||
+      process.env.VERCEL_OIDC_TOKEN?.trim(),
+  );
 
-  if (gatewayKey) {
-    const gateway = createOpenAI({
-      apiKey: gatewayKey,
-      baseURL: "https://ai-gateway.vercel.sh/v1",
-    });
-    const modelId = process.env.NEWSLETTER_CHAT_MODEL?.trim() || "openai/gpt-4.1-mini";
-    return gateway(modelId);
+  if (canUseGateway) {
+    return gateway(resolveGatewayModelId());
   }
 
+  const openaiKey = process.env.OPENAI_API_KEY?.trim();
   if (openaiKey) {
     const openai = createOpenAI({ apiKey: openaiKey });
-    const modelId =
+    const configured =
       process.env.NEWSLETTER_CHAT_MODEL?.trim() ||
       process.env.OPENAI_EMAIL_TEMPLATE_MODEL?.trim() ||
       "gpt-4.1-mini";
+    const modelId = configured.includes("/")
+      ? configured.split("/").slice(1).join("/")
+      : configured;
     return openai(modelId);
   }
 
-  throw new Error("AI_GATEWAY_API_KEY or OPENAI_API_KEY is required for newsletter chat");
+  throw new Error(
+    "Newsletter chat needs AI Gateway auth (VERCEL_OIDC_TOKEN / AI_GATEWAY_API_KEY on Vercel) or OPENAI_API_KEY",
+  );
 }
