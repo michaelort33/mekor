@@ -45,5 +45,5 @@
 
 ### Task 5: Tests + ship
 - [x] Tests for sanitize, blob paths, activate mapping, chat auth
-- [ ] Lint/build as feasible
-- [ ] Push + PR
+- [x] Lint/build as feasible
+- [x] Push + PR
