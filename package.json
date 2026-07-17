@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node node_modules/next/dist/bin/next dev",
     "build": "node node_modules/next/dist/bin/next build",
-    "build:vercel": "npx --yes vercel@48.4.1 build --yes",
+    "build:vercel": "npx --yes vercel@56.3.1 build --yes",
     "start": "node node_modules/next/dist/bin/next start",
     "lint": "node node_modules/eslint/bin/eslint.js",
     "test": "node node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts",
