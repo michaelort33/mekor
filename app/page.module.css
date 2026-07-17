@@ -511,8 +511,7 @@
 }
 
 .featureVisual,
-.daveningVisual,
-.rabbiImageWrap {
+.daveningVisual {
   position: relative;
   min-height: 320px;
 }
@@ -520,6 +519,20 @@
 .featureVisual,
 .daveningVisual {
   min-height: 100%;
+}
+
+.rabbiImageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #eef2f7;
+  border-right: 1px solid #d9dde8;
+}
+
+.rabbiImage {
+  object-fit: cover;
+  object-position: 50% 18%;
 }
 
 .newsletterSection {
@@ -752,9 +765,11 @@
 
 .rabbiCard {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(0, 1fr);
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-items: start;
   border: 1px solid #d9dde8;
   background: #fff;
+  overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -766,8 +781,8 @@
 .rabbiBody {
   display: grid;
   align-content: center;
-  gap: 14px;
-  padding: 28px;
+  gap: 12px;
+  padding: 24px 26px 26px;
 }
 
 .rabbiRole {
@@ -797,15 +812,21 @@
 
 .rabbiBody h3 a {
   color: inherit;
+  text-decoration: none;
+}
+
+.rabbiBody h3 a:hover {
   text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
 
 .rabbiLinks {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 16px;
+  align-items: center;
+  gap: 10px 22px;
+  margin-top: 6px;
 }
 
 .contactGrid {
@@ -1104,32 +1125,20 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .rabbiCard {
-    justify-items: center;
-    padding-top: 22px;
-  }
-
   .rabbiImageWrap {
-    position: relative;
-    width: min(64%, 236px);
-    aspect-ratio: 1 / 1;
-    margin: 0 auto;
-    border-radius: 18px;
-    overflow: hidden;
-  }
-
-  .rabbiCard img {
-    max-height: none;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 16%;
+    border-right: none;
+    width: min(72%, 240px);
+    aspect-ratio: 4 / 5;
+    min-height: 0;
+    height: auto;
+    margin: 22px auto 0;
+    border-radius: 12px;
   }
 
   .rabbiBody {
     text-align: center;
     justify-items: center;
-    padding: 18px 24px 24px;
+    padding: 20px 22px 24px;
   }
 
   .rabbiLinks {
