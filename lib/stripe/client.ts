@@ -2,10 +2,10 @@ import Stripe from "stripe";
 
 let stripe: Stripe | null = null;
 
-export function getStripeSecretKey() {
-  const value = process.env.STRIPE_SECRET_KEY;
+export function getStripeRestrictedKey() {
+  const value = process.env.STRIPE_RESTRICTED_KEY;
   if (!value) {
-    throw new Error("STRIPE_SECRET_KEY is required");
+    throw new Error("STRIPE_RESTRICTED_KEY is required");
   }
   return value;
 }
@@ -20,7 +20,7 @@ export function getStripeWebhookSecret() {
 
 export function getStripeClient() {
   if (!stripe) {
-    stripe = new Stripe(getStripeSecretKey());
+    stripe = new Stripe(getStripeRestrictedKey());
   }
 
   return stripe;
