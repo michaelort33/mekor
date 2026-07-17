@@ -8,7 +8,7 @@ Deterministic Next.js rebuild of [mekorhabracha.org](https://www.mekorhabracha.o
 - Mirror data pipeline with Playwright + tsx scripts
 - Vercel Blob for public asset storage
 - Postgres (Neon-compatible) + Drizzle for form submissions
-- Resend for form notification emails
+- SendGrid for transactional and notification emails
 
 ## Local Setup
 
@@ -25,7 +25,8 @@ cp .env.example .env.local
 - `USER_SESSION_SECRET`
 - `NEXT_PUBLIC_SITE_URL`
 - `ADMIN_PASSWORD` (or `ADMIN_SESSION_SECRET`)
-- `RESEND_API_KEY`
+- `SENDGRID_API_KEY`
+- `SENDGRID_FROM_EMAIL`
 - `FORM_NOTIFY_EMAIL_FROM`
 - `FORM_NOTIFY_EMAIL_TO`
 - `STRIPE_SECRET_KEY`
