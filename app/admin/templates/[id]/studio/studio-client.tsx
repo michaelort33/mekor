@@ -7,8 +7,13 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
-import { buildSendFeedback } from "@/lib/admin/send-feedback";
+import { buildCampaignResultNotice } from "@/lib/admin/send-feedback";
 import type { newsletterTemplates } from "@/db/schema";
+import {
+  bumpSaveGeneration,
+  shouldResaveAfterPersist,
+  shouldRunScheduledAutosave,
+} from "@/lib/newsletter/studio-autosave";
 import { extractLatestBodyHtmlFromMessages } from "@/lib/newsletter/studio-live-html";
 import styles from "./page.module.css";
 
@@ -48,6 +53,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
+  const [confirmSendOpen, setConfirmSendOpen] = useState(false);
   const [liveTick, setLiveTick] = useState(0);
 
   const [recipientQuery, setRecipientQuery] = useState("");
@@ -59,6 +65,8 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   const htmlRef = useRef(html);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveGenerationRef = useRef(0);
+  const persistDepthRef = useRef(0);
 
   useEffect(() => {
     htmlRef.current = html;
@@ -76,12 +84,28 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   const { messages, sendMessage, status, error: chatError, stop } = useChat({ transport });
   const busy = status === "submitted" || status === "streaming";
 
-  useEffect(() => {
-    const nextHtml = extractLatestBodyHtmlFromMessages(messages);
+  function invalidatePendingAutosave() {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    saveGenerationRef.current = bumpSaveGeneration(saveGenerationRef.current);
+  }
+
+  function applyLiveHtml(nextHtml: string, noticeText: string) {
     if (!nextHtml || nextHtml === htmlRef.current) return;
+    invalidatePendingAutosave();
+    htmlRef.current = nextHtml;
     setHtml(nextHtml);
     setLiveTick((value) => value + 1);
-    setNotice("Preview updated live from the chat agent.");
+    setNotice(noticeText);
+  }
+
+  useEffect(() => {
+    const nextHtml = extractLatestBodyHtmlFromMessages(messages);
+    if (!nextHtml) return;
+    applyLiveHtml(nextHtml, "Preview updated live from the chat agent.");
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sync from streaming tool parts
   }, [messages]);
 
   useEffect(() => {
@@ -90,12 +114,12 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
       const response = await fetch(`/api/admin/templates?id=${template.id}`);
       const payload = (await response.json().catch(() => ({}))) as { template?: TemplateRow };
       if (!response.ok || !payload.template) return;
-      if (payload.template.bodyHtml && payload.template.bodyHtml !== htmlRef.current) {
-        setHtml(payload.template.bodyHtml);
-        setLiveTick((value) => value + 1);
+      if (payload.template.bodyHtml) {
+        applyLiveHtml(payload.template.bodyHtml, "Preview refreshed from the saved template.");
       }
       if (payload.template.subject) setSubject(payload.template.subject);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refresh after chat turns
   }, [status, messages.length, template.id]);
 
   useEffect(() => {
@@ -141,7 +165,9 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     }
   }
 
-  async function persistHtml(nextHtml = html) {
+  async function persistHtml(nextHtml = htmlRef.current): Promise<boolean> {
+    const attemptedHtml = nextHtml;
+    persistDepthRef.current += 1;
     setSaving(true);
     setError("");
     try {
@@ -159,7 +185,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
           slug: template.slug,
           category: template.category,
           previewText: template.previewText,
-          bodyHtml: nextHtml,
+          bodyHtml: attemptedHtml,
           publishOnSend: template.publishOnSend,
           status: template.status,
         }),
@@ -169,20 +195,40 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
         setError(payload.error || "Unable to save HTML.");
         return false;
       }
+      if (shouldResaveAfterPersist({ attemptedHtml, currentHtml: htmlRef.current })) {
+        return persistHtml(htmlRef.current);
+      }
       return true;
     } finally {
-      setSaving(false);
+      persistDepthRef.current -= 1;
+      if (persistDepthRef.current <= 0) {
+        persistDepthRef.current = 0;
+        setSaving(false);
+      }
     }
   }
 
   function scheduleAutosave(nextHtml: string) {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    const scheduledGeneration = bumpSaveGeneration(saveGenerationRef.current);
+    saveGenerationRef.current = scheduledGeneration;
     saveTimerRef.current = setTimeout(() => {
+      if (
+        !shouldRunScheduledAutosave({
+          scheduledGeneration,
+          currentGeneration: saveGenerationRef.current,
+          scheduledHtml: nextHtml,
+          currentHtml: htmlRef.current,
+        })
+      ) {
+        return;
+      }
       void persistHtml(nextHtml);
     }, 900);
   }
 
   function onHtmlChange(value: string) {
+    htmlRef.current = value;
     setHtml(value);
     scheduleAutosave(value);
   }
@@ -190,7 +236,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   async function openChat() {
     setError("");
     setNotice("");
-    const saved = await persistHtml(html);
+    const saved = await persistHtml(htmlRef.current);
     if (!saved) return;
     setChatOpen(true);
     setTimeout(() => chatInputRef.current?.focus(), 80);
@@ -202,7 +248,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     if (!text || busy) return;
     setError("");
     setDraft("");
-    await persistHtml(html);
+    await persistHtml(htmlRef.current);
     await sendMessage({ text });
   }
 
@@ -219,7 +265,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     setSelectedRecipients((prev) => prev.filter((item) => item.personId !== personId));
   }
 
-  async function runSend() {
+  async function runCampaign(mode: "preview" | "send") {
     if (selectedRecipients.length === 0) {
       setError("Select at least one recipient from the searchable list.");
       return;
@@ -228,7 +274,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     setError("");
     setNotice("");
     try {
-      const saved = await persistHtml(html);
+      const saved = await persistHtml(htmlRef.current);
       if (!saved) return;
       const response = await fetch("/api/admin/templates/send", {
         method: "POST",
@@ -237,29 +283,43 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
           templateId: template.id,
           recipientGroup: "selected",
           personIds: selectedRecipients.map((item) => item.personId),
-          mode: "send",
+          mode,
           subjectOverride: subject || undefined,
-          bodyHtmlOverride: html,
+          bodyHtmlOverride: htmlRef.current,
         }),
       });
       const payload = (await response.json().catch(() => ({}))) as {
         error?: string;
+        status?: string;
+        mode?: string;
         successCount?: number;
         failedCount?: number;
         skippedCount?: number;
+        recipientCount?: number;
+        campaignId?: number;
+        rejectedPersonIds?: number[];
       };
       if (!response.ok) {
-        setError(payload.error || "Send failed.");
+        const rejected =
+          payload.rejectedPersonIds && payload.rejectedPersonIds.length > 0
+            ? ` Rejected IDs: ${payload.rejectedPersonIds.join(", ")}.`
+            : "";
+        setError((payload.error || "Send failed.") + rejected);
         return;
       }
-      const feedback = buildSendFeedback({
+      const feedback = buildCampaignResultNotice({
         label: "Campaign",
-        successCount: payload.successCount ?? 0,
-        failedCount: payload.failedCount ?? 0,
-        skippedCount: payload.skippedCount ?? 0,
+        mode: payload.mode ?? mode,
+        status: payload.status,
+        successCount: payload.successCount,
+        failedCount: payload.failedCount,
+        skippedCount: payload.skippedCount,
+        recipientCount: payload.recipientCount,
+        campaignId: payload.campaignId,
       });
       if (feedback.status === "failure") setError(feedback.message);
       else setNotice(feedback.message);
+      if (mode === "send") setConfirmSendOpen(false);
     } finally {
       setSending(false);
     }
@@ -294,7 +354,12 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
           </div>
           <div className={styles.toolbarActions}>
             {liveTick > 0 ? <span className={styles.livePulse}>Live preview synced</span> : null}
-            <button type="button" className={styles.secondaryButton} disabled={saving} onClick={() => void persistHtml()}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              disabled={saving}
+              onClick={() => void persistHtml()}
+            >
               {saving ? "Saving…" : "Save HTML"}
             </button>
             <button type="button" className={styles.primaryButton} onClick={() => void openChat()}>
@@ -326,7 +391,13 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
               <h3 className={styles.panelTitle}>Preview</h3>
               <p className={styles.panelHint}>Fully rendered in-browser</p>
             </div>
-            <iframe title="Newsletter live preview" className={styles.previewFrame} srcDoc={html} />
+            <iframe
+              title="Newsletter live preview"
+              className={styles.previewFrame}
+              srcDoc={html}
+              sandbox="allow-same-origin"
+              referrerPolicy="no-referrer"
+            />
           </section>
         </div>
 
@@ -400,30 +471,100 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
                 {selectedRecipients.map((recipient) => (
                   <span key={recipient.personId} className={styles.chip}>
                     {recipient.displayName}
-                    <button type="button" aria-label={`Remove ${recipient.displayName}`} onClick={() => removeRecipient(recipient.personId)}>
+                    <button
+                      type="button"
+                      aria-label={`Remove ${recipient.displayName}`}
+                      onClick={() => removeRecipient(recipient.personId)}
+                    >
                       ×
                     </button>
                   </span>
                 ))}
               </div>
             ) : (
-              <p className={styles.statusText}>Choose one or more confirmed weekly subscribers, then send via SendGrid.</p>
+              <p className={styles.statusText}>
+                Choose one or more confirmed weekly subscribers, preview the audience, then send via SendGrid.
+              </p>
             )}
           </div>
 
           <div className={styles.sendActions}>
             <button
               type="button"
+              className={styles.secondaryButton}
+              disabled={sending || selectedRecipients.length === 0}
+              onClick={() => void runCampaign("preview")}
+            >
+              {sending ? "Working…" : "Preview recipients"}
+            </button>
+            <button
+              type="button"
               className={styles.dangerButton}
               disabled={sending || selectedRecipients.length === 0}
-              onClick={() => void runSend()}
+              onClick={() => {
+                setError("");
+                setConfirmSendOpen(true);
+              }}
             >
-              {sending ? "Sending…" : `Send to ${selectedRecipients.length || "…"}`}
+              {`Send to ${selectedRecipients.length || "…"}`}
             </button>
-            <p className={styles.statusText}>Uses the current HTML snapshot through the existing SendGrid campaign pipeline.</p>
+            <p className={styles.statusText}>
+              Uses the current HTML snapshot through the existing SendGrid campaign pipeline.
+            </p>
           </div>
         </section>
       </div>
+
+      {confirmSendOpen ? (
+        <div className={styles.confirmDrawer} role="dialog" aria-modal="true" aria-labelledby="studio-send-confirm-title">
+          <button
+            type="button"
+            className={styles.chatScrim}
+            aria-label="Cancel send"
+            onClick={() => setConfirmSendOpen(false)}
+          />
+          <div className={styles.confirmPanel}>
+            <h3 id="studio-send-confirm-title" className={styles.panelTitle}>
+              Send newsletter?
+            </h3>
+            <p className={styles.panelHint}>
+              Subject: <strong>{subject || "(missing subject)"}</strong>
+            </p>
+            <p className={styles.statusText}>
+              This emails {selectedRecipients.length} confirmed weekly subscriber
+              {selectedRecipients.length === 1 ? "" : "s"} via SendGrid:
+            </p>
+            <ul className={styles.confirmList}>
+              {selectedRecipients.slice(0, 12).map((recipient) => (
+                <li key={recipient.personId}>
+                  {recipient.displayName} &lt;{recipient.email}&gt;
+                </li>
+              ))}
+              {selectedRecipients.length > 12 ? (
+                <li>…and {selectedRecipients.length - 12} more</li>
+              ) : null}
+            </ul>
+            <div className={styles.toolbarActions}>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                disabled={sending}
+                onClick={() => setConfirmSendOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.dangerButton}
+                disabled={sending}
+                onClick={() => void runCampaign("send")}
+              >
+                {sending ? "Sending…" : "Confirm send"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {chatOpen ? (
         <div className={styles.chatDrawer} role="dialog" aria-modal="true" aria-label="Newsletter chat">
@@ -441,7 +582,8 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
             <div className={styles.chatBody}>
               {messages.length === 0 ? (
                 <p className={styles.emptyChat}>
-                  Try “Make the intro warmer” or “Add candle lighting at 7:12pm.” The agent writes HTML directly into the editor.
+                  Try “Make the intro warmer” or “Add candle lighting at 7:12pm.” The agent writes HTML directly into the
+                  editor.
                 </p>
               ) : (
                 messages.map((message) => {
@@ -470,7 +612,9 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
                 disabled={busy}
               />
               <div className={styles.composerRow}>
-                <span className={styles.statusText}>{chatError ? chatError.message : busy ? "Agent working…" : "Ready"}</span>
+                <span className={styles.statusText}>
+                  {chatError ? chatError.message : busy ? "Agent working…" : "Ready"}
+                </span>
                 <div className={styles.toolbarActions}>
                   {busy ? (
                     <button type="button" className={styles.secondaryButton} onClick={() => stop()}>

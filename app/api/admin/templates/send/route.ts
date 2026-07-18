@@ -6,6 +6,8 @@ import { getDb } from "@/db/client";
 import { newsletterTemplates, people, users } from "@/db/schema";
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { sendMessageCampaign } from "@/lib/messages/service";
+import { assertSafeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
+import { resolveSelectedWeeklySubscribers } from "@/lib/newsletter/selected-recipients";
 import { resolveSiteOriginFromRequest } from "@/lib/site-origin";
 
 const payloadSchema = z.object({
@@ -49,8 +51,30 @@ export async function POST(request: Request) {
   }
 
   let personIds: number[] | undefined;
+  let rejectedSelectedIds: number[] = [];
   if (parsed.data.recipientGroup === "selected") {
-    personIds = [...new Set(parsed.data.personIds ?? [])];
+    const resolved = await resolveSelectedWeeklySubscribers(parsed.data.personIds ?? []);
+    personIds = resolved.allowedIds;
+    rejectedSelectedIds = resolved.rejectedIds;
+    if (personIds.length === 0) {
+      return NextResponse.json(
+        {
+          error: "None of the selected people are confirmed weekly subscribers.",
+          rejectedPersonIds: rejectedSelectedIds,
+        },
+        { status: 400 },
+      );
+    }
+    if (rejectedSelectedIds.length > 0) {
+      return NextResponse.json(
+        {
+          error: "Some selected recipients are not confirmed weekly subscribers.",
+          rejectedPersonIds: rejectedSelectedIds,
+          allowedPersonIds: personIds,
+        },
+        { status: 400 },
+      );
+    }
   } else if (parsed.data.recipientGroup === "admins_only") {
     const adminPeople = await getDb()
       .select({ personId: people.id })
@@ -60,7 +84,19 @@ export async function POST(request: Request) {
     personIds = adminPeople.map((row) => row.personId);
   }
 
-  const body = (parsed.data.bodyHtmlOverride?.trim() || template.bodyHtml).trim();
+  let body: string;
+  try {
+    if (parsed.data.bodyHtmlOverride?.trim()) {
+      body = assertSafeNewsletterHtml(parsed.data.bodyHtmlOverride);
+    } else {
+      body = template.bodyHtml.trim();
+    }
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Newsletter HTML failed safety checks." },
+      { status: 400 },
+    );
+  }
   if (!body) return NextResponse.json({ error: "Newsletter HTML body is empty." }, { status: 400 });
 
   try {
@@ -83,15 +119,22 @@ export async function POST(request: Request) {
 
     await writeAdminAuditLog({
       actorUserId: actor.id,
-      action: parsed.data.mode === "preview" ? "newsletter.campaign.previewed" : parsed.data.mode === "schedule" ? "newsletter.campaign.scheduled" : "newsletter.campaign.sent",
+      action:
+        parsed.data.mode === "preview"
+          ? "newsletter.campaign.previewed"
+          : parsed.data.mode === "schedule"
+            ? "newsletter.campaign.scheduled"
+            : "newsletter.campaign.sent",
       targetType: "newsletter_template",
       targetId: String(template.id),
       payload: {
         campaignId: "campaignId" in result ? result.campaignId : null,
         recipientGroup: parsed.data.recipientGroup,
         selectedCount: personIds?.length ?? null,
+        rejectedSelectedCount: rejectedSelectedIds.length,
         recipientCount: result.recipientCount,
         scheduledAt: parsed.data.scheduledAt ?? null,
+        usedBodyHtmlOverride: Boolean(parsed.data.bodyHtmlOverride?.trim()),
       },
     });
 

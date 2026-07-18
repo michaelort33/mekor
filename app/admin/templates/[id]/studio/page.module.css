@@ -485,6 +485,38 @@
   }
 }
 
+.confirmDrawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.confirmPanel {
+  position: relative;
+  z-index: 1;
+  width: min(520px, 100%);
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--studio-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 28px 70px -28px rgba(21, 36, 51, 0.55);
+  animation: fadeIn 140ms ease-out;
+}
+
+.confirmList {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 4px;
+  color: var(--studio-ink);
+  font-size: 0.92rem;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

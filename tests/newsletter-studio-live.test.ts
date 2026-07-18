@@ -58,3 +58,37 @@ test("extractLatestBodyHtmlFromMessages ignores incomplete tool calls", () => {
 
   assert.equal(extractLatestBodyHtmlFromMessages(messages), null);
 });
+
+test("extractLatestBodyHtmlFromMessages ignores non-html tools and failed outputs", () => {
+  const messages = [
+    {
+      id: "1",
+      role: "assistant",
+      parts: [
+        {
+          type: "tool-validateHtml",
+          toolCallId: "v",
+          toolName: "validateHtml",
+          state: "output-available",
+          output: { ok: true, sanitizedHtml: "<p>ignored</p>" },
+        },
+        {
+          type: "tool-setTemplateHtml",
+          toolCallId: "a",
+          toolName: "setTemplateHtml",
+          state: "output-available",
+          output: { ok: false, bodyHtml: "" },
+        },
+        {
+          type: "tool-setTemplateHtml",
+          toolCallId: "b",
+          toolName: "setTemplateHtml",
+          state: "output-available",
+          output: { ok: true, bodyHtml: "<p>kept</p>" },
+        },
+      ],
+    },
+  ] as unknown as UIMessage[];
+
+  assert.equal(extractLatestBodyHtmlFromMessages(messages), "<p>kept</p>");
+});
