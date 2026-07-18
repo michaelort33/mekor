@@ -3,20 +3,25 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, getToolName, isToolUIPart, type UIMessage } from "ai";
 import Link from "next/link";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
 import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import type { newsletterTemplates } from "@/db/schema";
+import { extractLatestBodyHtmlFromMessages } from "@/lib/newsletter/studio-live-html";
 import styles from "./page.module.css";
 
 type TemplateRow = typeof newsletterTemplates.$inferSelect;
-type WorkspaceTab = "preview" | "source" | "details";
-type RecipientGroup = "newsletter_subscribers" | "admins_only";
 
 type StudioClientProps = {
   template: TemplateRow;
+};
+
+type SubscriberOption = {
+  personId: number;
+  displayName: string;
+  email: string;
 };
 
 function messageText(message: UIMessage) {
@@ -35,28 +40,29 @@ function toolSummaries(message: UIMessage) {
 }
 
 export function NewsletterStudioClient({ template }: StudioClientProps) {
-  const [tab, setTab] = useState<WorkspaceTab>("preview");
-  const [draft, setDraft] = useState("");
   const [html, setHtml] = useState(template.bodyHtml);
-  const [meta, setMeta] = useState({
-    title: template.title,
-    subject: template.subject,
-    parshaName: template.parshaName,
-    shabbatDate: template.shabbatDate,
-    hebrewDate: template.hebrewDate,
-    candleLighting: template.candleLighting,
-    previewText: template.previewText,
-    status: template.status,
-    publishOnSend: template.publishOnSend,
-  });
+  const [subject, setSubject] = useState(template.subject || template.title);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [draft, setDraft] = useState("");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
-  const [savingSource, setSavingSource] = useState(false);
-  const [savingMeta, setSavingMeta] = useState(false);
-  const [sendGroup, setSendGroup] = useState<RecipientGroup>("newsletter_subscribers");
-  const [subjectOverride, setSubjectOverride] = useState("");
-  const [scheduledAt, setScheduledAt] = useState("");
+  const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
+  const [liveTick, setLiveTick] = useState(0);
+
+  const [recipientQuery, setRecipientQuery] = useState("");
+  const [recipientMenuOpen, setRecipientMenuOpen] = useState(false);
+  const [recipientOptions, setRecipientOptions] = useState<SubscriberOption[]>([]);
+  const [selectedRecipients, setSelectedRecipients] = useState<SubscriberOption[]>([]);
+  const [loadingRecipients, setLoadingRecipients] = useState(false);
+
+  const htmlRef = useRef(html);
+  const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    htmlRef.current = html;
+  }, [html]);
 
   const transport = useMemo(
     () =>
@@ -68,114 +74,172 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   );
 
   const { messages, sendMessage, status, error: chatError, stop } = useChat({ transport });
-
-  async function refreshTemplate() {
-    const response = await fetch(`/api/admin/templates?id=${template.id}`);
-    const payload = (await response.json().catch(() => ({}))) as {
-      template?: TemplateRow;
-      error?: string;
-    };
-    if (!response.ok || !payload.template) return;
-    setHtml(payload.template.bodyHtml);
-    setMeta({
-      title: payload.template.title,
-      subject: payload.template.subject,
-      parshaName: payload.template.parshaName,
-      shabbatDate: payload.template.shabbatDate,
-      hebrewDate: payload.template.hebrewDate,
-      candleLighting: payload.template.candleLighting,
-      previewText: payload.template.previewText,
-      status: payload.template.status,
-      publishOnSend: payload.template.publishOnSend,
-    });
-  }
+  const busy = status === "submitted" || status === "streaming";
 
   useEffect(() => {
-    if (status === "ready") {
-      void refreshTemplate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- refresh after chat turns
-  }, [status, messages.length]);
+    const nextHtml = extractLatestBodyHtmlFromMessages(messages);
+    if (!nextHtml || nextHtml === htmlRef.current) return;
+    setHtml(nextHtml);
+    setLiveTick((value) => value + 1);
+    setNotice("Preview updated live from the chat agent.");
+  }, [messages]);
 
-  async function onSendChat(event: FormEvent) {
-    event.preventDefault();
-    const text = draft.trim();
-    if (!text || status === "submitted" || status === "streaming") return;
-    setError("");
-    setDraft("");
-    await sendMessage({ text });
+  useEffect(() => {
+    if (status !== "ready") return;
+    void (async () => {
+      const response = await fetch(`/api/admin/templates?id=${template.id}`);
+      const payload = (await response.json().catch(() => ({}))) as { template?: TemplateRow };
+      if (!response.ok || !payload.template) return;
+      if (payload.template.bodyHtml && payload.template.bodyHtml !== htmlRef.current) {
+        setHtml(payload.template.bodyHtml);
+        setLiveTick((value) => value + 1);
+      }
+      if (payload.template.subject) setSubject(payload.template.subject);
+    })();
+  }, [status, messages.length, template.id]);
+
+  useEffect(() => {
+    if (!recipientMenuOpen) return;
+    const handle = setTimeout(() => {
+      void loadRecipients(recipientQuery);
+    }, 180);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional search debounce
+  }, [recipientQuery, recipientMenuOpen]);
+
+  async function loadRecipients(query: string) {
+    setLoadingRecipients(true);
+    try {
+      const params = new URLSearchParams({
+        status: "subscribed",
+        topic: "weekly",
+      });
+      if (query.trim()) params.set("q", query.trim());
+      const response = await fetch(`/api/admin/newsletters/subscribers?${params.toString()}`);
+      const payload = (await response.json().catch(() => ({}))) as {
+        subscribers?: Array<{ personId: number; displayName: string; email: string }>;
+        error?: string;
+      };
+      if (!response.ok) {
+        setError(payload.error || "Unable to load recipients.");
+        setRecipientOptions([]);
+        return;
+      }
+      const selectedIds = new Set(selectedRecipients.map((item) => item.personId));
+      setRecipientOptions(
+        (payload.subscribers ?? [])
+          .filter((row) => row.email && !selectedIds.has(row.personId))
+          .slice(0, 40)
+          .map((row) => ({
+            personId: row.personId,
+            displayName: row.displayName || row.email,
+            email: row.email,
+          })),
+      );
+    } finally {
+      setLoadingRecipients(false);
+    }
   }
 
-  async function saveSource() {
-    setSavingSource(true);
+  async function persistHtml(nextHtml = html) {
+    setSaving(true);
     setError("");
-    setNotice("");
     try {
       const response = await fetch("/api/admin/templates", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: template.id,
-          ...meta,
-          bodyHtml: html,
+          title: template.title,
+          subject,
+          parshaName: template.parshaName,
+          shabbatDate: template.shabbatDate,
+          hebrewDate: template.hebrewDate,
+          candleLighting: template.candleLighting,
           slug: template.slug,
           category: template.category,
+          previewText: template.previewText,
+          bodyHtml: nextHtml,
+          publishOnSend: template.publishOnSend,
+          status: template.status,
         }),
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) {
         setError(payload.error || "Unable to save HTML.");
-        return;
+        return false;
       }
-      setNotice("Saved HTML to the database send snapshot.");
-      await refreshTemplate();
+      return true;
     } finally {
-      setSavingSource(false);
+      setSaving(false);
     }
   }
 
-  async function saveMetadata() {
-    setSavingMeta(true);
+  function scheduleAutosave(nextHtml: string) {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      void persistHtml(nextHtml);
+    }, 900);
+  }
+
+  function onHtmlChange(value: string) {
+    setHtml(value);
+    scheduleAutosave(value);
+  }
+
+  async function openChat() {
     setError("");
     setNotice("");
-    try {
-      const response = await fetch("/api/admin/templates", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: template.id,
-          ...meta,
-          bodyHtml: html,
-          slug: template.slug,
-          category: template.category,
-        }),
-      });
-      const payload = (await response.json().catch(() => ({}))) as { error?: string };
-      if (!response.ok) {
-        setError(payload.error || "Unable to save metadata.");
-        return;
-      }
-      setNotice("Template details saved.");
-      await refreshTemplate();
-    } finally {
-      setSavingMeta(false);
-    }
+    const saved = await persistHtml(html);
+    if (!saved) return;
+    setChatOpen(true);
+    setTimeout(() => chatInputRef.current?.focus(), 80);
   }
 
-  async function runSend(mode: "preview" | "send" | "schedule") {
+  async function onSendChat(event: FormEvent) {
+    event.preventDefault();
+    const text = draft.trim();
+    if (!text || busy) return;
+    setError("");
+    setDraft("");
+    await persistHtml(html);
+    await sendMessage({ text });
+  }
+
+  function addRecipient(option: SubscriberOption) {
+    setSelectedRecipients((prev) => {
+      if (prev.some((item) => item.personId === option.personId)) return prev;
+      return [...prev, option];
+    });
+    setRecipientQuery("");
+    setRecipientMenuOpen(false);
+  }
+
+  function removeRecipient(personId: number) {
+    setSelectedRecipients((prev) => prev.filter((item) => item.personId !== personId));
+  }
+
+  async function runSend() {
+    if (selectedRecipients.length === 0) {
+      setError("Select at least one recipient from the searchable list.");
+      return;
+    }
     setSending(true);
     setError("");
     setNotice("");
     try {
+      const saved = await persistHtml(html);
+      if (!saved) return;
       const response = await fetch("/api/admin/templates/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           templateId: template.id,
-          recipientGroup: sendGroup,
-          mode,
-          subjectOverride: subjectOverride || undefined,
-          scheduledAt: mode === "schedule" && scheduledAt ? new Date(scheduledAt).toISOString() : undefined,
+          recipientGroup: "selected",
+          personIds: selectedRecipients.map((item) => item.personId),
+          mode: "send",
+          subjectOverride: subject || undefined,
+          bodyHtmlOverride: html,
         }),
       });
       const payload = (await response.json().catch(() => ({}))) as {
@@ -183,18 +247,9 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
         successCount?: number;
         failedCount?: number;
         skippedCount?: number;
-        recipientCount?: number;
       };
       if (!response.ok) {
         setError(payload.error || "Send failed.");
-        return;
-      }
-      if (mode === "preview") {
-        setNotice(`Preview ready for ${payload.recipientCount ?? 0} recipient(s).`);
-        return;
-      }
-      if (mode === "schedule") {
-        setNotice(`Campaign scheduled for ${scheduledAt || "the selected time"}.`);
         return;
       }
       const feedback = buildSendFeedback({
@@ -203,264 +258,234 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
         failedCount: payload.failedCount ?? 0,
         skippedCount: payload.skippedCount ?? 0,
       });
-      if (feedback.status === "failure") {
-        setError(feedback.message);
-      } else {
-        setNotice(feedback.message);
-      }
+      if (feedback.status === "failure") setError(feedback.message);
+      else setNotice(feedback.message);
     } finally {
       setSending(false);
     }
   }
 
-  const busy = status === "submitted" || status === "streaming";
-
   return (
     <AdminShell
       currentPath="/admin/templates"
-      title="Newsletter Chat Studio"
-      description="Chat with an AI agent to edit newsletter HTML stored in the database, then send with the existing campaign pipeline."
+      title="Newsletter Studio"
+      description="Edit HTML on the left, watch a live browser preview on the right, chat the agent into changes, then send."
       breadcrumbs={[
         { href: "/admin", label: "Dashboard" },
         { href: "/admin/templates", label: "Templates" },
-        { label: meta.title || "Studio" },
+        { label: template.title || "Studio" },
       ]}
       actions={
         <>
           <Link href={`/admin/templates/${template.id}/edit`} className={adminStyles.actionPill}>
             Classic editor
           </Link>
-          <Link href={`/admin/templates/${template.id}/preview`} className={adminStyles.actionPill}>
-            Preview page
+          <Link href="/admin/templates" className={adminStyles.actionPill}>
+            All newsletters
           </Link>
         </>
       }
     >
-      <div className={styles.layout}>
-        <section className={styles.panel} aria-label="Chat">
-          <div className={styles.panelHeader}>
-            <h2 className={styles.panelTitle}>Chat</h2>
-            <span className={styles.statusText}>{busy ? "Working…" : "Ready"}</span>
+      <div className={styles.studio}>
+        <div className={styles.toolbar}>
+          <div className={styles.toolbarMeta}>
+            <p className={styles.toolbarEyebrow}>Split studio</p>
+            <h2 className={styles.toolbarTitle}>{template.title}</h2>
           </div>
-          <div className={styles.chatBody}>
-            {messages.length === 0 ? (
-              <p className={styles.emptyChat}>
-                Ask for a rewrite, a parsha update, or a layout tweak. The agent reads and writes the
-                database HTML through tools.
-              </p>
-            ) : (
-              messages.map((message) => {
-                const text = messageText(message);
-                const tools = toolSummaries(message);
-                return (
-                  <div
-                    key={message.id}
-                    className={`${styles.message} ${
-                      message.role === "user" ? styles.messageUser : styles.messageAssistant
-                    }`}
-                  >
-                    {text || (message.role === "assistant" ? "…" : "")}
-                    {tools.length > 0 ? (
-                      <div className={styles.toolNote}>Tools: {tools.join(" · ")}</div>
-                    ) : null}
-                  </div>
-                );
-              })
-            )}
+          <div className={styles.toolbarActions}>
+            {liveTick > 0 ? <span className={styles.livePulse}>Live preview synced</span> : null}
+            <button type="button" className={styles.secondaryButton} disabled={saving} onClick={() => void persistHtml()}>
+              {saving ? "Saving…" : "Save HTML"}
+            </button>
+            <button type="button" className={styles.primaryButton} onClick={() => void openChat()}>
+              Show it in Chat
+            </button>
           </div>
-          <form className={styles.chatComposer} onSubmit={onSendChat}>
+        </div>
+
+        {notice ? <p className={styles.notice}>{notice}</p> : null}
+        {error ? <p className={styles.error}>{error}</p> : null}
+
+        <div className={styles.split}>
+          <section className={styles.panel} aria-label="HTML editor">
+            <div className={styles.panelHeader}>
+              <h3 className={styles.panelTitle}>HTML</h3>
+              <p className={styles.panelHint}>Autosaves as you type</p>
+            </div>
             <textarea
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              placeholder="e.g. Soften the intro and add candle lighting for 7:12pm"
-              disabled={busy}
+              className={styles.htmlEditor}
+              value={html}
+              onChange={(event) => onHtmlChange(event.target.value)}
+              spellCheck={false}
+              aria-label="Newsletter HTML source"
             />
-            <div className={styles.composerRow}>
-              <span className={styles.statusText}>
-                {chatError ? chatError.message : "Session-only chat · DB HTML source of truth"}
-              </span>
-              <div className={styles.sendActions}>
-                {busy ? (
-                  <button type="button" className={styles.secondaryButton} onClick={() => stop()}>
-                    Stop
+          </section>
+
+          <section className={styles.panel} aria-label="Live preview">
+            <div className={styles.panelHeader}>
+              <h3 className={styles.panelTitle}>Preview</h3>
+              <p className={styles.panelHint}>Fully rendered in-browser</p>
+            </div>
+            <iframe title="Newsletter live preview" className={styles.previewFrame} srcDoc={html} />
+          </section>
+        </div>
+
+        <section className={styles.sendBar} aria-label="Send newsletter">
+          <div className={styles.sendFields}>
+            <label className={styles.fieldLabel}>
+              Subject
+              <input
+                className={styles.subjectInput}
+                value={subject}
+                onChange={(event) => setSubject(event.target.value)}
+              />
+            </label>
+
+            <div className={styles.fieldLabel}>
+              Recipients
+              <div className={styles.recipientShell}>
+                <div className={styles.recipientSearchRow}>
+                  <input
+                    value={recipientQuery}
+                    onChange={(event) => {
+                      setRecipientQuery(event.target.value);
+                      setRecipientMenuOpen(true);
+                    }}
+                    onFocus={() => {
+                      setRecipientMenuOpen(true);
+                      void loadRecipients(recipientQuery);
+                    }}
+                    placeholder="Search subscribers by name or email"
+                    aria-label="Search recipients"
+                  />
+                  <button
+                    type="button"
+                    className={styles.ghostButton}
+                    onClick={() => {
+                      setRecipientMenuOpen((open) => !open);
+                      if (!recipientMenuOpen) void loadRecipients(recipientQuery);
+                    }}
+                  >
+                    {loadingRecipients ? "…" : "Browse"}
                   </button>
+                </div>
+                {recipientMenuOpen ? (
+                  <div className={styles.recipientMenu} role="listbox" aria-label="Recipient matches">
+                    {recipientOptions.length === 0 ? (
+                      <button type="button" className={styles.recipientOption} disabled>
+                        <span>{loadingRecipients ? "Searching…" : "No matching subscribed recipients"}</span>
+                      </button>
+                    ) : (
+                      recipientOptions.map((option) => (
+                        <button
+                          key={option.personId}
+                          type="button"
+                          className={styles.recipientOption}
+                          onClick={() => addRecipient(option)}
+                        >
+                          <span>
+                            <strong>{option.displayName}</strong>
+                            <span>{option.email}</span>
+                          </span>
+                        </button>
+                      ))
+                    )}
+                  </div>
                 ) : null}
-                <button type="submit" className={styles.primaryButton} disabled={busy || !draft.trim()}>
-                  Send
-                </button>
               </div>
             </div>
-          </form>
-        </section>
 
-        <section className={styles.panel} aria-label="Workspace">
-          <div className={styles.panelHeader}>
-            <h2 className={styles.panelTitle}>Workspace</h2>
-            <div className={styles.tabs}>
-              {(
-                [
-                  ["preview", "Preview"],
-                  ["source", "Source"],
-                  ["details", "Details"],
-                ] as const
-              ).map(([key, label]) => (
-                <button
-                  key={key}
-                  type="button"
-                  className={tab === key ? styles.tabActive : styles.tab}
-                  onClick={() => setTab(key)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            {selectedRecipients.length > 0 ? (
+              <div className={styles.chipRow}>
+                {selectedRecipients.map((recipient) => (
+                  <span key={recipient.personId} className={styles.chip}>
+                    {recipient.displayName}
+                    <button type="button" aria-label={`Remove ${recipient.displayName}`} onClick={() => removeRecipient(recipient.personId)}>
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.statusText}>Choose one or more confirmed weekly subscribers, then send via SendGrid.</p>
+            )}
           </div>
 
-          <div className={styles.workspace}>
-            {notice ? <p className={styles.notice}>{notice}</p> : null}
-            {error ? <p className={styles.error}>{error}</p> : null}
-
-            {tab === "preview" ? (
-              <iframe title="Newsletter preview" className={styles.previewFrame} srcDoc={html} />
-            ) : null}
-
-            {tab === "source" ? (
-              <>
-                <textarea
-                  className={styles.sourceEditor}
-                  value={html}
-                  onChange={(event) => setHtml(event.target.value)}
-                  spellCheck={false}
-                />
-                <div className={styles.sendActions}>
-                  <button
-                    type="button"
-                    className={styles.primaryButton}
-                    disabled={savingSource}
-                    onClick={() => void saveSource()}
-                  >
-                    Save HTML
-                  </button>
-                </div>
-              </>
-            ) : null}
-
-            {tab === "details" ? (
-              <>
-                <div className={styles.metaGrid}>
-                  {(
-                    [
-                      ["title", "Title"],
-                      ["subject", "Subject"],
-                      ["parshaName", "Parsha"],
-                      ["shabbatDate", "Shabbat date"],
-                      ["hebrewDate", "Hebrew date"],
-                      ["candleLighting", "Candle lighting"],
-                    ] as const
-                  ).map(([key, label]) => (
-                    <label key={key} className={styles.field}>
-                      <span>{label}</span>
-                      <input
-                        value={meta[key]}
-                        onChange={(event) => setMeta((prev) => ({ ...prev, [key]: event.target.value }))}
-                      />
-                    </label>
-                  ))}
-                  <label className={styles.field}>
-                    <span>Status</span>
-                    <select
-                      value={meta.status}
-                      onChange={(event) =>
-                        setMeta((prev) => ({
-                          ...prev,
-                          status: event.target.value as TemplateRow["status"],
-                        }))
-                      }
-                    >
-                      <option value="draft">draft</option>
-                      <option value="ready">ready</option>
-                      <option value="sent">sent</option>
-                      <option value="archived">archived</option>
-                    </select>
-                  </label>
-                  <label className={styles.field}>
-                    <span>Preview text</span>
-                    <input
-                      value={meta.previewText}
-                      onChange={(event) => setMeta((prev) => ({ ...prev, previewText: event.target.value }))}
-                    />
-                  </label>
-                </div>
-                <div className={styles.sendActions}>
-                  <button
-                    type="button"
-                    className={styles.primaryButton}
-                    disabled={savingMeta}
-                    onClick={() => void saveMetadata()}
-                  >
-                    Save details
-                  </button>
-                </div>
-
-                <div className={styles.sendBox}>
-                  <strong>Finalize & send</strong>
-                  <p className={styles.statusText}>
-                    Uses the database HTML snapshot via the existing campaign pipeline.
-                  </p>
-                  <label className={styles.field}>
-                    <span>Recipient group</span>
-                    <select
-                      value={sendGroup}
-                      onChange={(event) => setSendGroup(event.target.value as RecipientGroup)}
-                    >
-                      <option value="newsletter_subscribers">Confirmed newsletter subscribers</option>
-                      <option value="admins_only">Admins only</option>
-                    </select>
-                  </label>
-                  <label className={styles.field}>
-                    <span>Subject override (optional)</span>
-                    <input value={subjectOverride} onChange={(event) => setSubjectOverride(event.target.value)} />
-                  </label>
-                  <label className={styles.field}>
-                    <span>Schedule at (local)</span>
-                    <input
-                      type="datetime-local"
-                      value={scheduledAt}
-                      onChange={(event) => setScheduledAt(event.target.value)}
-                    />
-                  </label>
-                  <div className={styles.sendActions}>
-                    <button
-                      type="button"
-                      className={styles.secondaryButton}
-                      disabled={sending}
-                      onClick={() => void runSend("preview")}
-                    >
-                      Preview recipients
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.secondaryButton}
-                      disabled={sending || !scheduledAt}
-                      onClick={() => void runSend("schedule")}
-                    >
-                      Schedule
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.dangerButton}
-                      disabled={sending}
-                      onClick={() => void runSend("send")}
-                    >
-                      Send now
-                    </button>
-                  </div>
-                </div>
-              </>
-            ) : null}
+          <div className={styles.sendActions}>
+            <button
+              type="button"
+              className={styles.dangerButton}
+              disabled={sending || selectedRecipients.length === 0}
+              onClick={() => void runSend()}
+            >
+              {sending ? "Sending…" : `Send to ${selectedRecipients.length || "…"}`}
+            </button>
+            <p className={styles.statusText}>Uses the current HTML snapshot through the existing SendGrid campaign pipeline.</p>
           </div>
         </section>
       </div>
+
+      {chatOpen ? (
+        <div className={styles.chatDrawer} role="dialog" aria-modal="true" aria-label="Newsletter chat">
+          <button type="button" className={styles.chatScrim} aria-label="Close chat" onClick={() => setChatOpen(false)} />
+          <aside className={styles.chatPanel}>
+            <div className={styles.chatHeader}>
+              <div>
+                <h3 className={styles.panelTitle}>Show it in Chat</h3>
+                <p className={styles.panelHint}>Ask for edits — the HTML and preview update live.</p>
+              </div>
+              <button type="button" className={styles.ghostButton} onClick={() => setChatOpen(false)}>
+                Close
+              </button>
+            </div>
+            <div className={styles.chatBody}>
+              {messages.length === 0 ? (
+                <p className={styles.emptyChat}>
+                  Try “Make the intro warmer” or “Add candle lighting at 7:12pm.” The agent writes HTML directly into the editor.
+                </p>
+              ) : (
+                messages.map((message) => {
+                  const text = messageText(message);
+                  const tools = toolSummaries(message);
+                  return (
+                    <div
+                      key={message.id}
+                      className={`${styles.message} ${
+                        message.role === "user" ? styles.messageUser : styles.messageAssistant
+                      }`}
+                    >
+                      {text || (message.role === "assistant" ? "…" : "")}
+                      {tools.length > 0 ? <div className={styles.toolNote}>Tools: {tools.join(" · ")}</div> : null}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            <form className={styles.chatComposer} onSubmit={onSendChat}>
+              <textarea
+                ref={chatInputRef}
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                placeholder="Describe the change you want in the newsletter…"
+                disabled={busy}
+              />
+              <div className={styles.composerRow}>
+                <span className={styles.statusText}>{chatError ? chatError.message : busy ? "Agent working…" : "Ready"}</span>
+                <div className={styles.toolbarActions}>
+                  {busy ? (
+                    <button type="button" className={styles.secondaryButton} onClick={() => stop()}>
+                      Stop
+                    </button>
+                  ) : null}
+                  <button type="submit" className={styles.primaryButton} disabled={busy || !draft.trim()}>
+                    Apply in chat
+                  </button>
+                </div>
+              </div>
+            </form>
+          </aside>
+        </div>
+      ) : null}
     </AdminShell>
   );
 }

@@ -96,6 +96,7 @@ export function createNewsletterChatTools(ctx: NewsletterChatToolContext) {
         });
         return {
           ok: true,
+          bodyHtml: row.bodyHtml,
           bodyHtmlLength: row.bodyHtml.length,
           title: row.title,
           subject: row.subject,
@@ -137,6 +138,7 @@ export function createNewsletterChatTools(ctx: NewsletterChatToolContext) {
 
         return {
           ok: true,
+          bodyHtml: row.bodyHtml,
           bodyHtmlLength: row.bodyHtml.length,
           replacements: template.bodyHtml.split(find).length - 1,
         };
