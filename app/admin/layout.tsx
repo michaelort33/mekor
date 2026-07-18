@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { Toaster } from "@/components/ui/sonner";
 import "@/styles/backend-tokens.css";
 
 export const metadata = {
@@ -8,5 +9,10 @@ export const metadata = {
 };
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <Toaster position="top-right" closeButton richColors />
+    </>
+  );
 }

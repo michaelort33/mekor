@@ -77,6 +77,47 @@
   --public-form-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88), 0 10px 20px rgba(31, 52, 79, 0.06);
   --public-form-focus-shadow: 0 0 0 4px rgba(82, 129, 182, 0.12), 0 14px 30px rgba(37, 71, 111, 0.12);
   --public-form-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5.25 7.5 10 12.25 14.75 7.5' stroke='%235b7896' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  /* shadcn semantic tokens (bridge to Mekor palette; keep light editorial admin) */
+  --card: #ffffff;
+  --card-foreground: #1d2c3f;
+  --popover: #ffffff;
+  --popover-foreground: #1d2c3f;
+  --primary: #234d78;
+  --primary-foreground: #f8fbff;
+  --secondary: #f6efe4;
+  --secondary-foreground: #1d2c3f;
+  --muted-foreground: #5f6d7e;
+  --destructive: #8b2e2e;
+  --destructive-foreground: #fff8f7;
+  --input: rgba(39, 69, 109, 0.22);
+  --border: rgba(43, 63, 89, 0.12);
+  --radius: 0.625rem;
+  /* shadcn soft surface (do not overwrite Mekor --color-muted text token) */
+  --shadcn-muted-surface: #f1e9dc;
+}
+
+/* Tailwind v4 theme mapping for shadcn utilities without rewriting Mekor fonts */
+@theme inline {
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  /* utility bg-muted for shadcn surfaces; Mekor text still uses var(--color-muted) in :root */
+  --color-muted: var(--shadcn-muted-surface);
+  --radius-sm: calc(var(--radius) * 0.75);
+  --radius-md: calc(var(--radius) * 0.875);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
 }
 
 html,
