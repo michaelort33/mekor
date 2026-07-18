@@ -43,3 +43,20 @@
 - If visual regressions are found, continue iterating until the section is readable and balanced at all required widths.
 ## Instruction Chain
 - Read and apply `/Users/meshulumort/Documents/AGENTS.md` before applying this workspace file.
+
+## Cursor Cloud specific instructions
+
+Dependencies are refreshed automatically on VM startup via the configured update script (`npm ci`). Node 22 (per `.nvmrc`) is already available. The following notes cover non-obvious runtime behavior for this repo.
+
+### Services
+- Single long-running dev process: the Next.js 16 (Turbopack) app. Start it with `npm run dev` (serves on http://localhost:3000). API routes, `proxy.ts` edge auth, and cron endpoints all live inside this one process — there are no separate workers/queues.
+- Standard commands live in `package.json`: `npm run lint`, `npm run test`, `npm run build`, `npm run dev`. DB schema tooling: `npm run db:generate` / `npm run db:push` (drizzle-kit). The full push gate is `npm run prepush:deploy-check` (lint + test + `native:verify` when `DATABASE_URL` is set + Next build + Vercel build parity).
+
+### Environment / secrets
+- Injected as env vars in cloud runs: `DATABASE_URL` (Neon Postgres), `BLOB_READ_WRITE_TOKEN`, `STRIPE_*`, `CRON_SECRET`, `FORM_NOTIFY_EMAIL_*`, etc. These are picked up automatically by Next.js from `process.env`.
+- Non-secret dev defaults (feature flags, `USER_SESSION_SECRET`, `ADMIN_PASSWORD`, `NEXT_PUBLIC_SITE_URL`, native-route flags) live in a gitignored `.env.local`. If that file is missing, recreate it from `.env.example` (auth/signup fails without `USER_SESSION_SECRET`).
+
+### Non-obvious gotchas
+- `npm run test` hangs forever when `DATABASE_URL` is set: DB-backed test files leave postgres connections open, so the Node test process never exits after tests complete (it is NOT stuck on a test). Run tests with a force-exit instead, e.g. `node node_modules/tsx/dist/cli.mjs --test --test-force-exit tests/**/*.test.ts` (enable `shopt -s globstar` in bash). Secretless runs (no `DATABASE_URL`) skip DB tests and exit normally.
+- `system_settings` feature flags must be seeded in the DB or `settings.test.ts` fails and DB-driven feature flags read as off. Seed idempotently with `node node_modules/tsx/dist/cli.mjs scripts/db/seed-settings.ts` (already seeded in the shared Neon DB; only re-run against a fresh database).
+- `/signup` redirects to `/membership/apply`; submitting that form is the primary new-account flow (creates rows in `users`, `people`, and `membership_applications`, and starts a session).
