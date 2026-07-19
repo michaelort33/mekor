@@ -34,7 +34,11 @@ export function NavCta({ isSignedIn, isCheckingAuth, showDonate = true }: NavCta
             ? "secondary"
             : "ghost";
         const className =
-          link.variant === "signin" || link.variant === "signout" ? "bg-white/78 hover:bg-white" : "";
+          link.variant === "donate"
+            ? "!text-[#f8fbff] hover:!text-white visited:!text-[#f8fbff]"
+            : link.variant === "signin" || link.variant === "signout"
+              ? "bg-white/78 hover:bg-white"
+              : "";
 
         if (!external) {
           return (

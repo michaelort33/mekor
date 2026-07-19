@@ -174,8 +174,16 @@ body:has(.mirror-root) {
   }
 }
 
-a {
+/* Keep plain links inheriting parent color, but do not override button-styled
+   anchors (Donate CTA, etc.) whose Tailwind text color lives in @layer utilities. */
+a:not([data-slot="button"]) {
   color: inherit;
+}
+
+a[data-slot="button"][data-variant="default"],
+a[data-slot="button"][data-variant="default"]:visited,
+a[data-slot="button"][data-variant="default"]:hover {
+  color: #f8fbff;
 }
 
 .mirror-root {

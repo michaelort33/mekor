@@ -38,3 +38,18 @@ test("homepage invites visitors to donate and sponsor a Kiddush", async () => {
   assert.match(homepageSource, /href="\/kiddush"/);
   assert.match(homepageSource, /Sponsor a Kiddush/);
 });
+
+test("donate button text stays light on the dark blue CTA background", async () => {
+  const [globalsCss, buttonSource, navCtaSource, navigationSource] = await Promise.all([
+    readTextFile("app/globals.css"),
+    readTextFile("components/ui/button.tsx"),
+    readTextFile("components/navigation/nav-cta.tsx"),
+    readTextFile("components/navigation/site-navigation.tsx"),
+  ]);
+
+  assert.match(globalsCss, /a:not\(\[data-slot="button"\]\)/);
+  assert.match(globalsCss, /a\[data-slot="button"\]\[data-variant="default"\]/);
+  assert.match(buttonSource, /!text-\[#f8fbff\]/);
+  assert.match(navCtaSource, /!text-\[#f8fbff\]/);
+  assert.match(navigationSource, /!text-\[#f8fbff\]/);
+});
