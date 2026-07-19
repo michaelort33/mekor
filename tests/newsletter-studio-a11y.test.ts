@@ -23,3 +23,11 @@ test("studio preview iframe is sandboxed", async () => {
   const source = await read("app/admin/templates/[id]/studio/studio-client.tsx");
   assert.match(source, /sandbox="allow-same-origin"/);
 });
+
+test("studio chat uses AI Elements-style message and tool parts", async () => {
+  const source = await read("app/admin/templates/[id]/studio/studio-chat-drawer.tsx");
+  assert.match(source, /@\/components\/ai-elements\/message/);
+  assert.match(source, /@\/components\/ai-elements\/tool/);
+  assert.match(source, /message\.parts/);
+  assert.doesNotMatch(source, /message\.content\b/);
+});

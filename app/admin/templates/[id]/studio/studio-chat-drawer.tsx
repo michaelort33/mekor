@@ -4,6 +4,8 @@ import type { UIMessage } from "ai";
 import { getToolName, isToolUIPart } from "ai";
 import { type FormEvent, type RefObject } from "react";
 
+import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
+import { Tool, ToolContent, ToolHeader } from "@/components/ai-elements/tool";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -14,7 +16,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
-import styles from "./page.module.css";
 
 type StudioChatDrawerProps = {
   open: boolean;
@@ -37,11 +38,21 @@ function messageText(message: UIMessage) {
     .trim();
 }
 
-function toolSummaries(message: UIMessage) {
-  return message.parts.filter(isToolUIPart).map((part) => {
-    const state = "state" in part ? String(part.state) : "unknown";
-    return `${getToolName(part)} (${state})`;
-  });
+function toolParts(message: UIMessage) {
+  return message.parts.filter(isToolUIPart);
+}
+
+function toolSummary(part: ReturnType<typeof toolParts>[number]) {
+  if (!("state" in part) || part.state !== "output-available") return null;
+  const output = "output" in part ? part.output : null;
+  if (!output || typeof output !== "object") return null;
+  const bodyHtml = (output as { bodyHtml?: unknown }).bodyHtml;
+  if (typeof bodyHtml === "string" && bodyHtml.trim()) {
+    return `Updated HTML (${bodyHtml.length.toLocaleString()} chars)`;
+  }
+  const summary = (output as { summary?: unknown }).summary;
+  if (typeof summary === "string" && summary.trim()) return summary;
+  return JSON.stringify(output).slice(0, 180);
 }
 
 export function StudioChatDrawer({
@@ -67,7 +78,7 @@ export function StudioChatDrawer({
         <div className="flex min-h-0 flex-1 flex-col">
           <ScrollArea className="h-full min-h-0 flex-1 px-5 py-4">
             {messages.length === 0 ? (
-              <p className={styles.emptyChat}>
+              <p className="m-0 text-sm leading-6 text-[var(--color-muted)]">
                 Try “Make the intro warmer” or “Add candle lighting at 7:12pm.” The agent writes HTML
                 directly into the editor.
               </p>
@@ -75,20 +86,24 @@ export function StudioChatDrawer({
               <div className="grid gap-3">
                 {messages.map((message) => {
                   const text = messageText(message);
-                  const tools = toolSummaries(message);
+                  const tools = toolParts(message);
                   return (
-                    <div
-                      key={message.id}
-                      className={`${styles.message} ${
-                        message.role === "user" ? styles.messageUser : styles.messageAssistant
-                      }`}
-                      data-role={message.role}
-                    >
-                      {text || (message.role === "assistant" ? "…" : "")}
-                      {tools.length > 0 ? (
-                        <div className={styles.toolNote}>Tools: {tools.join(" · ")}</div>
-                      ) : null}
-                    </div>
+                    <Message key={message.id} from={message.role}>
+                      <MessageContent>
+                        <MessageResponse>
+                          {text || (message.role === "assistant" && tools.length === 0 ? "…" : text)}
+                        </MessageResponse>
+                        {tools.map((part) => {
+                          const state = "state" in part ? part.state : "input-streaming";
+                          return (
+                            <Tool key={"toolCallId" in part ? String(part.toolCallId) : getToolName(part)}>
+                              <ToolHeader title={getToolName(part)} state={state} />
+                              <ToolContent>{toolSummary(part)}</ToolContent>
+                            </Tool>
+                          );
+                        })}
+                      </MessageContent>
+                    </Message>
                   );
                 })}
               </div>

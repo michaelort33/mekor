@@ -3,7 +3,6 @@
   "style": "new-york",
   "rsc": true,
   "tsx": true,
-  "base": "radix",
   "tailwind": {
     "config": "",
     "css": "app/globals.css",
@@ -19,6 +18,6 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@ai-elements": "https://elements.ai-sdk.dev/r/{name}.json"
+    "@ai-elements": "https://registry.ai-sdk.dev/{name}.json"
   }
 }
