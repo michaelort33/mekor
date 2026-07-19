@@ -2,141 +2,178 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
+import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 import styles from "./page.module.css";
 
-const STARTER_HTML = `<div style="max-width:600px;margin:0 auto;font-family:Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;color:#1a2a3a;line-height:1.6;">
+type TemplateDraft = {
+  title: string;
+  subject: string;
+  parshaName: string;
+  shabbatDate: string;
+  hebrewDate: string;
+  candleLighting: string;
+  bodyHtml: string;
+  status: "draft";
+};
 
-<div style="text-align:center;padding:24px 20px 18px;background:linear-gradient(135deg,#2b5a81 0%,#1e3f5e 100%);border-radius:12px 12px 0 0;">
-  <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:700;letter-spacing:0.03em;">Parshat [Name]</h1>
-  <p style="margin:6px 0 0;color:rgba(220,235,255,0.9);font-size:16px;">[Date] &middot; [Hebrew Date]</p>
-</div>
+type TemplateOption = {
+  id: number;
+  title: string;
+  subject: string;
+  parshaName: string;
+  status: "draft" | "ready" | "sent" | "archived";
+  updatedAt: string;
+};
 
-<div style="padding:24px 20px;background:#f8fafc;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
+type ExistingTemplate = Omit<TemplateDraft, "status"> & {
+  status: "draft" | "ready" | "sent" | "archived";
+};
 
-  <h2 style="margin:0 0 16px;color:#2b5a81;font-size:20px;border-bottom:2px solid #dde4ef;padding-bottom:10px;">🕯️ Shabbat Schedule</h2>
+type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+};
 
-  <p style="margin:0 0 4px;"><strong style="color:#2b5a81;">Friday</strong></p>
-  <p style="margin:0 0 2px;"><strong>0:00pm</strong> Candle Lighting</p>
-  <p style="margin:0 0 12px;"><strong>0:00pm</strong> Mincha / Kabbalat Shabbat / Maariv</p>
+const EMPTY_DRAFT: TemplateDraft = {
+  title: "",
+  subject: "",
+  parshaName: "",
+  shabbatDate: "",
+  hebrewDate: "",
+  candleLighting: "",
+  bodyHtml: "",
+  status: "draft",
+};
 
-  <p style="margin:0 0 4px;"><strong style="color:#2b5a81;">Shabbat</strong></p>
-  <p style="margin:0 0 2px;"><strong>9:15am</strong> Morning Services</p>
-  <p style="margin:0 0 2px;"><strong>10:00am</strong> Torah Reading</p>
-  <p style="margin:0 0 2px;"><strong>~11:30am</strong> Kiddush</p>
-  <p style="margin:0 0 2px;"><strong>0:00pm</strong> Mincha / Third Meal / Maariv</p>
-  <p style="margin:0 0 16px;"><strong>0:00pm</strong> Shabbat Ends</p>
+const PROMPT_IDEAS = [
+  "Create this week’s Shabbat newsletter with a warm, refined design.",
+  "Keep the layout, but make the schedule easier to scan on a phone.",
+  "Make the announcements section shorter and more inviting.",
+];
 
-  <div style="text-align:center;padding:14px;background:#eef6ee;border-radius:8px;border:1px solid #c3e0c3;margin-bottom:20px;">
-    <p style="margin:0;color:#2d6a2d;font-style:italic;font-size:15px;">The Center City Eruv is UP!</p>
-  </div>
-
-  <h2 style="margin:0 0 12px;color:#2b5a81;font-size:20px;border-bottom:2px solid #dde4ef;padding-bottom:10px;">🍷 Kiddush This Week</h2>
-  <p style="margin:0 0 16px;text-align:center;">[Kiddush sponsor information here]</p>
-
-  <h2 style="margin:0 0 12px;color:#2b5a81;font-size:20px;border-bottom:2px solid #dde4ef;padding-bottom:10px;">📢 Announcements</h2>
-  <p style="margin:0 0 16px;">[Community announcements here]</p>
-
-</div>
-
-<div style="padding:20px;background:linear-gradient(135deg,#2b5a81 0%,#1e3f5e 100%);border-radius:0 0 12px 12px;text-align:center;">
-  <p style="margin:0 0 8px;color:#ffffff;font-size:15px;font-weight:700;">Support Mekor while buying wine and Judaica!</p>
-  <p style="margin:0 0 12px;color:rgba(220,235,255,0.85);font-size:13px;">Mekor earns 5% back on every purchase.</p>
-  <div>
-    <a href="https://tinyurl.com/mekorwine" style="display:inline-block;padding:8px 20px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;margin:0 6px;">🍷 Shop Wine</a>
-    <a href="https://tinyurl.com/mekorjudaica" style="display:inline-block;padding:8px 20px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;margin:0 6px;">✡️ Shop Judaica</a>
-  </div>
-  <p style="margin:14px 0 0;color:rgba(220,235,255,0.7);font-size:12px;">Mekor Habracha &middot; 1500 Walnut St Suite 206, Philadelphia, PA 19102 &middot; (215) 525-4246</p>
-</div>
-
-</div>`;
+function messageId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
 
 export default function NewTemplatePage() {
   const router = useRouter();
-  const [saving, setSaving] = useState(false);
-  const [generating, setGenerating] = useState(false);
+  const [step, setStep] = useState<"start" | "compose">("start");
+  const [templates, setTemplates] = useState<TemplateOption[]>([]);
+  const [loadingTemplates, setLoadingTemplates] = useState(true);
+  const [templateQuery, setTemplateQuery] = useState("");
+  const [selectedBaseId, setSelectedBaseId] = useState<number | null>(null);
+  const [baseLabel, setBaseLabel] = useState("Blank canvas");
+  const [form, setForm] = useState<TemplateDraft>(EMPTY_DRAFT);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [prompt, setPrompt] = useState("");
+  const [loadingBase, setLoadingBase] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const [aiPrompt, setAiPrompt] = useState("");
-  const [design, setDesign] = useState({
-    preset: "modern" as "classic" | "modern" | "celebration",
-    subtitle: "",
-    intro: "",
-    primarySectionTitle: "Shabbat Schedule",
-    primarySectionBody: "",
-    secondarySectionTitle: "Announcements",
-    secondarySectionBody: "",
-    footer: "Mekor Habracha · 1500 Walnut St Suite 206, Philadelphia, PA",
-  });
-  const [form, setForm] = useState({
-    title: "",
-    subject: "",
-    parshaName: "",
-    shabbatDate: "",
-    hebrewDate: "",
-    candleLighting: "",
-    bodyHtml: STARTER_HTML,
-    status: "draft" as const,
-  });
 
-  function update(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
+  useEffect(() => {
+    void (async () => {
+      const response = await fetch("/api/admin/templates?summary=true");
+      const payload = (await response.json().catch(() => ({}))) as {
+        templates?: TemplateOption[];
+        error?: string;
+      };
+      if (!response.ok) {
+        setError(payload.error || "Unable to load existing newsletters.");
+        setLoadingTemplates(false);
+        return;
+      }
+      setTemplates(payload.templates ?? []);
+      setLoadingTemplates(false);
+    })();
+  }, []);
+
+  const filteredTemplates = useMemo(() => {
+    const query = templateQuery.trim().toLowerCase();
+    if (!query) return templates.slice(0, 12);
+    return templates
+      .filter((template) =>
+        [template.title, template.subject, template.parshaName]
+          .some((value) => value.toLowerCase().includes(query)),
+      )
+      .slice(0, 12);
+  }, [templateQuery, templates]);
+
+  const previewHtml = useMemo(() => sanitizeNewsletterHtml(form.bodyHtml), [form.bodyHtml]);
+
+  function update<K extends keyof TemplateDraft>(field: K, value: TemplateDraft[K]) {
+    setForm((previous) => ({ ...previous, [field]: value }));
   }
 
-  function updateDesign(field: string, value: string) {
-    setDesign((prev) => ({ ...prev, [field]: value }));
-  }
+  async function beginComposing() {
+    const selected = selectedBaseId === null
+      ? null
+      : templates.find((template) => template.id === selectedBaseId);
 
-  async function generateDesign() {
-    setGenerating(true);
+    if (selectedBaseId !== null && !selected) {
+      setError("Choose an available starting newsletter.");
+      return;
+    }
+
     setError("");
-    setNotice("");
-    const response = await fetch("/api/admin/templates/design", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        preset: design.preset,
-        title: form.title || "Weekly Newsletter",
-        subtitle: design.subtitle,
-        intro: design.intro,
-        primarySectionTitle: design.primarySectionTitle,
-        primarySectionBody: design.primarySectionBody,
-        secondarySectionTitle: design.secondarySectionTitle,
-        secondarySectionBody: design.secondarySectionBody,
-        footer: design.footer,
-      }),
-    });
-    const payload = (await response.json().catch(() => ({}))) as { bodyHtml?: string; error?: string };
-
-    if (!response.ok || !payload.bodyHtml) {
-      setError(payload.error || "Unable to generate design");
-      setGenerating(false);
-      return;
+    if (!selected) {
+      setForm(EMPTY_DRAFT);
+      setBaseLabel("Blank canvas");
+    } else {
+      setLoadingBase(true);
+      const response = await fetch(`/api/admin/templates?id=${selected.id}`);
+      const payload = (await response.json().catch(() => ({}))) as {
+        template?: ExistingTemplate;
+        error?: string;
+      };
+      if (!response.ok || !payload.template) {
+        setError(payload.error || "Unable to load that starting newsletter.");
+        setLoadingBase(false);
+        return;
+      }
+      setForm({
+        title: `${payload.template.title} — copy`,
+        subject: payload.template.subject,
+        parshaName: payload.template.parshaName,
+        shabbatDate: payload.template.shabbatDate,
+        hebrewDate: payload.template.hebrewDate,
+        candleLighting: payload.template.candleLighting,
+        bodyHtml: payload.template.bodyHtml,
+        status: "draft",
+      });
+      setBaseLabel(payload.template.title);
+      setLoadingBase(false);
     }
-
-    update("bodyHtml", payload.bodyHtml);
-    setNotice("Design generated.");
-    setGenerating(false);
+    setMessages([]);
+    setStep("compose");
   }
 
-  async function generateWithAi() {
-    if (!aiPrompt.trim()) {
-      setError("Add a prompt for OpenAI.");
-      return;
-    }
+  async function sendPrompt(event: FormEvent) {
+    event.preventDefault();
+    const instruction = prompt.trim();
+    if (!instruction || aiGenerating) return;
+
+    const userMessage: ChatMessage = { id: messageId(), role: "user", text: instruction };
+    setMessages((previous) => [...previous, userMessage]);
+    setPrompt("");
+    setError("");
     setAiGenerating(true);
-    setError("");
-    setNotice("");
+
     const response = await fetch("/api/admin/templates/ai", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        mode: "generate",
-        prompt: aiPrompt.trim(),
+        mode: form.bodyHtml.trim() ? "update" : "generate",
+        prompt: instruction,
+        history: messages.slice(-10).map((message) => ({
+          role: message.role,
+          content: message.text,
+        })),
         title: form.title,
         subject: form.subject,
         parshaName: form.parshaName,
@@ -148,24 +185,17 @@ export default function NewTemplatePage() {
     });
     const payload = (await response.json().catch(() => ({}))) as {
       error?: string;
-      template?: {
-        title: string;
-        subject: string;
-        parshaName: string;
-        shabbatDate: string;
-        hebrewDate: string;
-        candleLighting: string;
-        bodyHtml: string;
-        summary: string;
-      };
+      template?: Omit<TemplateDraft, "status"> & { summary: string };
     };
+
     if (!response.ok || !payload.template) {
-      setError(payload.error || "Unable to generate with OpenAI");
+      setError(payload.error || "Unable to update the newsletter with AI.");
       setAiGenerating(false);
       return;
     }
-    setForm((prev) => ({
-      ...prev,
+
+    setForm((previous) => ({
+      ...previous,
       title: payload.template!.title,
       subject: payload.template!.subject,
       parshaName: payload.template!.parshaName,
@@ -174,198 +204,280 @@ export default function NewTemplatePage() {
       candleLighting: payload.template!.candleLighting,
       bodyHtml: payload.template!.bodyHtml,
     }));
-    setNotice(payload.template.summary || "OpenAI generated a full template draft.");
+    setMessages((previous) => [
+      ...previous,
+      {
+        id: messageId(),
+        role: "assistant",
+        text: payload.template!.summary || "I updated the newsletter and refreshed the preview.",
+      },
+    ]);
     setAiGenerating(false);
   }
 
   async function save() {
+    if (!form.bodyHtml.trim()) {
+      setError("Create or add newsletter HTML before saving.");
+      return;
+    }
+    if (!form.title.trim()) {
+      setError("Give the newsletter a name before saving.");
+      return;
+    }
+
     setError("");
-    setNotice("");
     setSaving(true);
     const response = await fetch("/api/admin/templates", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    if (response.ok) {
-      router.push("/admin/templates");
-      router.refresh();
+    const payload = (await response.json().catch(() => ({}))) as {
+      template?: { id: number };
+      error?: string;
+    };
+    if (!response.ok || !payload.template) {
+      setError(payload.error || "Unable to save the newsletter.");
+      setSaving(false);
       return;
     }
-    setError("Unable to save template.");
-    setSaving(false);
+
+    router.push(`/admin/templates/${payload.template.id}/studio`);
+    router.refresh();
   }
 
   return (
     <AdminShell
       currentPath="/admin/templates"
-      title="New Newsletter Template"
-      description="Create a template, generate layout HTML, or use AI to draft the first version."
+      title="New Newsletter"
+      description="Choose a starting point, shape the newsletter with AI, then save when it is ready."
       breadcrumbs={[
         { href: "/admin", label: "Dashboard" },
-        { href: "/admin/templates", label: "Templates" },
-        { label: "New template" },
+        { href: "/admin/templates", label: "Newsletters" },
+        { label: "New newsletter" },
       ]}
-      actions={<Link href="/admin/templates" className={adminStyles.actionPill}>Back to templates</Link>}
+      actions={<Link href="/admin/templates" className={adminStyles.actionPill}>Back to newsletters</Link>}
     >
-      <div className={styles.layout}>
-        <div className={styles.formColumn}>
-          <fieldset className={styles.fieldset}>
-            <legend>Template Details</legend>
-            <label className={styles.field}>
-              <span>Title</span>
-              <input type="text" value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="e.g. Parshat Beshalach - Jan 30-31" />
-            </label>
-            <label className={styles.field}>
-              <span>Email Subject</span>
-              <input type="text" value={form.subject} onChange={(e) => update("subject", e.target.value)} placeholder="e.g. Shabbat Newsletter - Parshat Beshalach" />
-            </label>
-            <div className={styles.fieldRow}>
-              <label className={styles.field}>
-                <span>Parsha Name</span>
-                <input type="text" value={form.parshaName} onChange={(e) => update("parshaName", e.target.value)} placeholder="Beshalach" />
-              </label>
-              <label className={styles.field}>
-                <span>Candle Lighting</span>
-                <input type="text" value={form.candleLighting} onChange={(e) => update("candleLighting", e.target.value)} placeholder="4:59pm" />
-              </label>
-            </div>
-            <div className={styles.fieldRow}>
-              <label className={styles.field}>
-                <span>Shabbat Date</span>
-                <input type="text" value={form.shabbatDate} onChange={(e) => update("shabbatDate", e.target.value)} placeholder="January 30 - 31, 2026" />
-              </label>
-              <label className={styles.field}>
-                <span>Hebrew Date</span>
-                <input type="text" value={form.hebrewDate} onChange={(e) => update("hebrewDate", e.target.value)} placeholder="12 Shevat 5786" />
-              </label>
-            </div>
-            <label className={styles.field}>
-              <span>Status</span>
-              <select value={form.status} onChange={(e) => update("status", e.target.value)}>
-                <option value="draft">Draft</option>
-                <option value="ready">Ready</option>
-              </select>
-            </label>
-          </fieldset>
+      <ol className={styles.steps} aria-label="Newsletter creation steps">
+        <li className={step === "start" ? styles.activeStep : styles.completeStep}>
+          <span>1</span>
+          <div><strong>Starting point</strong><small>Blank or existing</small></div>
+        </li>
+        <li className={step === "compose" ? styles.activeStep : ""}>
+          <span>2</span>
+          <div><strong>Create with AI</strong><small>Iterate and preview</small></div>
+        </li>
+        <li>
+          <span>3</span>
+          <div><strong>Save</strong><small>Open in Studio</small></div>
+        </li>
+      </ol>
 
-          <fieldset className={styles.fieldset}>
-            <legend>Email Body HTML</legend>
-            <div className={styles.designTools}>
-              <h3>Design Generator</h3>
-              <div className={styles.fieldRow}>
-                <label className={styles.field}>
-                  <span>Preset</span>
-                  <select value={design.preset} onChange={(event) => updateDesign("preset", event.target.value)}>
-                    <option value="modern">Modern</option>
-                    <option value="classic">Classic</option>
-                    <option value="celebration">Celebration</option>
-                  </select>
-                </label>
-                <label className={styles.field}>
-                  <span>Subtitle</span>
-                  <input
-                    type="text"
-                    value={design.subtitle}
-                    onChange={(event) => updateDesign("subtitle", event.target.value)}
-                    placeholder="Shabbat update · Center City"
-                  />
-                </label>
+      {step === "start" ? (
+        <section className={styles.startPanel} aria-labelledby="starting-point-title">
+          <div className={styles.sectionHeading}>
+            <p className={styles.eyebrow}>Step 1</p>
+            <h2 id="starting-point-title">What should this newsletter start from?</h2>
+            <p>Start fresh, or copy an existing newsletter so AI can preserve its layout and make targeted changes.</p>
+          </div>
+
+          <button
+            type="button"
+            className={`${styles.blankCard} ${selectedBaseId === null ? styles.selectedCard : ""}`}
+            onClick={() => setSelectedBaseId(null)}
+            aria-pressed={selectedBaseId === null}
+          >
+            <span className={styles.blankIcon}>＋</span>
+            <span><strong>Blank canvas</strong><small>Ask AI to create the HTML from scratch</small></span>
+            <span className={styles.selectionMark}>{selectedBaseId === null ? "Selected" : "Select"}</span>
+          </button>
+
+          <div className={styles.templatePicker}>
+            <div className={styles.pickerHeader}>
+              <div>
+                <h3>Or use an existing newsletter</h3>
+                <p>The source stays untouched. Saving creates a separate newsletter.</p>
               </div>
-              <label className={styles.field}>
-                <span>Intro</span>
-                <textarea value={design.intro} onChange={(event) => updateDesign("intro", event.target.value)} rows={3} />
-              </label>
-              <div className={styles.fieldRow}>
-                <label className={styles.field}>
-                  <span>Primary section title</span>
-                  <input
-                    type="text"
-                    value={design.primarySectionTitle}
-                    onChange={(event) => updateDesign("primarySectionTitle", event.target.value)}
-                  />
-                </label>
-                <label className={styles.field}>
-                  <span>Secondary section title</span>
-                  <input
-                    type="text"
-                    value={design.secondarySectionTitle}
-                    onChange={(event) => updateDesign("secondarySectionTitle", event.target.value)}
-                  />
-                </label>
-              </div>
-              <label className={styles.field}>
-                <span>Primary section body</span>
-                <textarea
-                  value={design.primarySectionBody}
-                  onChange={(event) => updateDesign("primarySectionBody", event.target.value)}
-                  rows={4}
-                />
-              </label>
-              <label className={styles.field}>
-                <span>Secondary section body</span>
-                <textarea
-                  value={design.secondarySectionBody}
-                  onChange={(event) => updateDesign("secondarySectionBody", event.target.value)}
-                  rows={4}
-                />
-              </label>
-              <label className={styles.field}>
-                <span>Footer</span>
+              <label className={styles.searchField}>
+                <span>Search newsletters</span>
                 <input
-                  type="text"
-                  value={design.footer}
-                  onChange={(event) => updateDesign("footer", event.target.value)}
+                  type="search"
+                  value={templateQuery}
+                  onChange={(event) => setTemplateQuery(event.target.value)}
+                  placeholder="Title, subject, or parsha"
                 />
               </label>
-              <button type="button" className={styles.secondaryButton} onClick={generateDesign} disabled={generating}>
-                {generating ? "Generating..." : "Generate HTML design"}
-              </button>
-            </div>
-            <div className={styles.designTools}>
-              <h3>OpenAI Template Writer</h3>
-              <label className={styles.field}>
-                <span>Prompt</span>
-                <textarea
-                  value={aiPrompt}
-                  onChange={(event) => setAiPrompt(event.target.value)}
-                  rows={4}
-                  placeholder="Example: Write this week’s Shabbat email with a warm tone, schedule section, kiddush sponsor, and two announcements."
-                />
-              </label>
-              <button
-                type="button"
-                className={styles.secondaryButton}
-                onClick={generateWithAi}
-                disabled={aiGenerating}
-              >
-                {aiGenerating ? "Generating with OpenAI..." : "Generate with OpenAI"}
-              </button>
             </div>
 
-            <textarea
-              className={styles.htmlEditor}
-              value={form.bodyHtml}
-              onChange={(e) => update("bodyHtml", e.target.value)}
-              spellCheck={false}
-            />
-          </fieldset>
+            {loadingTemplates ? <p className={styles.loadingState}>Loading newsletters…</p> : null}
+            {!loadingTemplates && filteredTemplates.length === 0 ? (
+              <p className={styles.loadingState}>No matching newsletters.</p>
+            ) : null}
+            <div className={styles.templateGrid}>
+              {filteredTemplates.map((template) => {
+                const selected = selectedBaseId === template.id;
+                return (
+                  <button
+                    type="button"
+                    key={template.id}
+                    className={`${styles.templateCard} ${selected ? styles.selectedCard : ""}`}
+                    onClick={() => setSelectedBaseId(template.id)}
+                    aria-pressed={selected}
+                  >
+                    <span className={styles.templateMeta}>
+                      {template.parshaName || "Newsletter"} · {new Date(template.updatedAt).toLocaleDateString()}
+                    </span>
+                    <strong>{template.title}</strong>
+                    <small>{template.subject || "No subject"}</small>
+                    <span className={styles.selectionMark}>{selected ? "Selected" : "Use this"}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {error ? <p className={styles.error}>{error}</p> : null}
-          {notice ? <p className={styles.notice}>{notice}</p> : null}
+          <div className={styles.startActions}>
+            <p>You can make as many AI edits as you need before anything is saved.</p>
+            <button type="button" className={styles.primaryButton} onClick={() => void beginComposing()} disabled={loadingBase}>
+              {loadingBase ? "Loading starting point…" : "Continue to AI builder"}
+            </button>
+          </div>
+        </section>
+      ) : (
+        <div className={styles.builder}>
+          <div className={styles.builderToolbar}>
+            <div>
+              <p className={styles.eyebrow}>Starting from</p>
+              <h2>{baseLabel}</h2>
+            </div>
+            <div className={styles.builderActions}>
+              <button type="button" className={styles.ghostButton} onClick={() => setStep("start")}>
+                Change starting point
+              </button>
+              <button type="button" className={styles.primaryButton} onClick={() => void save()} disabled={saving}>
+                {saving ? "Saving…" : "Save newsletter"}
+              </button>
+            </div>
+          </div>
 
-          <button type="button" className={styles.saveButton} onClick={save} disabled={saving}>
-            {saving ? "Saving..." : "Save Template"}
-          </button>
-        </div>
+          <section className={styles.detailsBar} aria-label="Newsletter details">
+            <label>
+              Newsletter name
+              <input
+                value={form.title}
+                onChange={(event) => update("title", event.target.value)}
+                placeholder="AI can fill this in"
+              />
+            </label>
+            <label>
+              Email subject
+              <input
+                value={form.subject}
+                onChange={(event) => update("subject", event.target.value)}
+                placeholder="AI can fill this in"
+              />
+            </label>
+          </section>
 
-        <div className={styles.previewColumn}>
-          <h3 className={styles.previewTitle}>Live Preview</h3>
-          <div className={styles.previewFrame}>
-            <div dangerouslySetInnerHTML={{ __html: form.bodyHtml }} />
+          {error ? <p className={styles.error}>{error}</p> : null}
+
+          <div className={styles.workspace}>
+            <section className={styles.chatPanel} aria-label="AI newsletter conversation">
+              <div className={styles.panelHeader}>
+                <div>
+                  <p className={styles.eyebrow}>Step 2</p>
+                  <h3>Create with AI</h3>
+                </div>
+                <span className={styles.liveBadge}>Preview linked</span>
+              </div>
+
+              <div className={styles.messages} aria-live="polite">
+                {messages.length === 0 ? (
+                  <div className={styles.emptyChat}>
+                    <span>✦</span>
+                    <h4>{form.bodyHtml ? "Tell AI what to change" : "Describe the newsletter you want"}</h4>
+                    <p>
+                      {form.bodyHtml
+                        ? "Small requests are welcome: adjust a color, rewrite one section, or move a block."
+                        : "AI will create the complete email HTML and newsletter details from your first prompt."}
+                    </p>
+                    <div className={styles.promptIdeas}>
+                      {PROMPT_IDEAS.map((idea) => (
+                        <button type="button" key={idea} onClick={() => setPrompt(idea)}>{idea}</button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  messages.map((message) => (
+                    <article
+                      key={message.id}
+                      className={`${styles.message} ${message.role === "user" ? styles.userMessage : styles.assistantMessage}`}
+                    >
+                      <span>{message.role === "user" ? "You" : "Mekor AI"}</span>
+                      <p>{message.text}</p>
+                    </article>
+                  ))
+                )}
+                {aiGenerating ? (
+                  <article className={`${styles.message} ${styles.assistantMessage}`}>
+                    <span>Mekor AI</span>
+                    <p className={styles.thinking}>Updating the HTML and preview…</p>
+                  </article>
+                ) : null}
+              </div>
+
+              <form className={styles.composer} onSubmit={sendPrompt}>
+                <label htmlFor="newsletter-ai-prompt">What should AI create or change?</label>
+                <textarea
+                  id="newsletter-ai-prompt"
+                  value={prompt}
+                  onChange={(event) => setPrompt(event.target.value)}
+                  rows={4}
+                  placeholder="Create from scratch, or ask for one small change…"
+                  disabled={aiGenerating}
+                />
+                <div>
+                  <small>Each message works from the latest HTML. Nothing is emailed from this page.</small>
+                  <button type="submit" className={styles.sendButton} disabled={!prompt.trim() || aiGenerating}>
+                    {aiGenerating ? "Working…" : "Send to AI"}
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <section className={styles.previewPanel} aria-label="Newsletter preview">
+              <div className={styles.panelHeader}>
+                <div>
+                  <p className={styles.eyebrow}>Live result</p>
+                  <h3>Newsletter preview</h3>
+                </div>
+                <span className={styles.previewStatus}>{form.bodyHtml ? "Rendered HTML" : "Waiting for your first prompt"}</span>
+              </div>
+              <div className={styles.previewStage}>
+                {previewHtml ? (
+                  <iframe title="Newsletter live preview" sandbox="" srcDoc={previewHtml} />
+                ) : (
+                  <div className={styles.emptyPreview}>
+                    <span>✦</span>
+                    <p>Your newsletter will appear here as AI builds it.</p>
+                  </div>
+                )}
+              </div>
+              <details className={styles.htmlDetails}>
+                <summary>Edit HTML directly</summary>
+                <p>Advanced: manual changes update the preview immediately.</p>
+                <textarea
+                  value={form.bodyHtml}
+                  onChange={(event) => update("bodyHtml", event.target.value)}
+                  spellCheck={false}
+                  aria-label="Newsletter HTML source"
+                />
+              </details>
+            </section>
           </div>
         </div>
-      </div>
+      )}
     </AdminShell>
   );
 }

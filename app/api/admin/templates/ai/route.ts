@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
+import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 
 const requestSchema = z.object({
   mode: z.enum(["generate", "update"]).default("generate"),
@@ -14,6 +15,15 @@ const requestSchema = z.object({
   hebrewDate: z.string().trim().max(120).default(""),
   candleLighting: z.string().trim().max(60).default(""),
   bodyHtml: z.string().trim().max(120_000).default(""),
+  history: z
+    .array(
+      z.object({
+        role: z.enum(["user", "assistant"]),
+        content: z.string().trim().min(1).max(4000),
+      }),
+    )
+    .max(10)
+    .default([]),
   templateId: z.number().int().min(1).optional(),
 });
 
@@ -35,9 +45,13 @@ function ensureConfigured() {
 }
 
 function buildUserPrompt(input: z.infer<typeof requestSchema>) {
+  const conversation = input.history.length
+    ? input.history.map((message) => `${message.role}: ${message.content}`).join("\n")
+    : "(none yet)";
   const context = [
     `Mode: ${input.mode}`,
     `Requested change: ${input.prompt}`,
+    `Conversation so far:\n${conversation}`,
     `Current title: ${input.title || "(empty)"}`,
     `Current subject: ${input.subject || "(empty)"}`,
     `Current parsha name: ${input.parshaName || "(empty)"}`,
@@ -70,7 +84,7 @@ export async function POST(request: Request) {
         {
           role: "system",
           content:
-            "You are an expert synagogue email designer. Output strict JSON with keys: title,subject,parshaName,shabbatDate,hebrewDate,candleLighting,bodyHtml,summary. bodyHtml must be complete email-safe HTML using inline styles and no scripts.",
+            "You are an expert synagogue email designer working in a multi-turn editing conversation. Output strict JSON with keys: title,subject,parshaName,shabbatDate,hebrewDate,candleLighting,bodyHtml,summary. bodyHtml must be complete email-safe HTML using inline styles and no scripts. In generate mode, create the newsletter from scratch. In update mode, preserve the current HTML and metadata unless the request asks to change them; make the smallest targeted edit that satisfies the request. The summary should briefly tell the admin what changed.",
         },
         {
           role: "user",
@@ -100,7 +114,12 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ template: result.data });
+    return NextResponse.json({
+      template: {
+        ...result.data,
+        bodyHtml: sanitizeNewsletterHtml(result.data.bodyHtml),
+      },
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to generate template";
     if (message.includes("OPENAI_API_KEY")) {
