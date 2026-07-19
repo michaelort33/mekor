@@ -84,7 +84,7 @@ export async function POST(request: Request) {
         {
           role: "system",
           content:
-            "You are an expert synagogue email designer working in a multi-turn editing conversation. Output strict JSON with keys: title,subject,parshaName,shabbatDate,hebrewDate,candleLighting,bodyHtml,summary. bodyHtml must be complete email-safe HTML using inline styles and no scripts. In generate mode, create the newsletter from scratch. In update mode, preserve the current HTML and metadata unless the request asks to change them; make the smallest targeted edit that satisfies the request. The summary should briefly tell the admin what changed.",
+            "You are an expert synagogue email designer working in a multi-turn editing conversation. Output strict JSON with keys: title,subject,parshaName,shabbatDate,hebrewDate,candleLighting,bodyHtml,summary. bodyHtml must be complete email-safe HTML using inline styles and no scripts. In generate mode, create the newsletter from scratch. In update mode, preserve the current HTML and metadata unless the request asks to change them; make the smallest targeted edit that satisfies the request. For weekly Shabbat emails, keep content lean (this week's schedule, sponsors, fresh announcements) and link evergreen items to https://www.mekorhabracha.org/mekor-bulletin-board instead of repeating long standing blurbs. The summary should briefly tell the admin what changed.",
         },
         {
           role: "user",

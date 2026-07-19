@@ -17,8 +17,6 @@ export const dynamic = "force-dynamic";
 
 const HERO_IMAGE = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/c2c6235de9c6d719cd098e19d77b7f21c18899f1-11062b_8135b27108d04d2a97adc750a341fb79-mv2.jpeg";
 const DAVEING_IMAGE = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/b562092e8484e9d5c6e62671c670e606b2d338cc-92f487_34e64b1fb2e94c56886578290ef2bcd0-mv2.jpeg";
-const ERUV_CAMPAIGN_IMAGE =
-  "https://storage.googleapis.com/download/storage/v1/b/tcf-backend-prod.appspot.com/o/centercityeruv-1782322025933.jpg?generation=1782322026074279&alt=media";
 const MAP_EMBED_SRC =
   "https://www.google.com/maps?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102&output=embed";
 
@@ -236,82 +234,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className={styles.eruvSection}>
+      <section className={styles.bulletinSection} aria-labelledby="home-bulletin-title">
         <div className={styles.container}>
-          <div className={styles.eruvGrid}>
-            <div className={styles.eruvContent}>
-              <p className={styles.eruvEyebrow}>Community Campaign</p>
-              <h2 className={styles.eruvTitle}>Strengthen the Center City Eruv</h2>
-              <p className={styles.eruvIntro}>
-                Help us ensure this vital community resource remains reliable, durable, and halachically sound for generations to come.
-              </p>
-              <p className={styles.eruvOneLine}>
-                Join Mekor Habracha in strengthening the Center City Eruv by{" "}
-                <a
-                  href="https://thechesedfund.com/centercityeruv/ep2026/teams/mekorhabracha"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  donating through our campaign team
-                </a>
-                , or{" "}
-                <a
-                  href="https://thechesedfund.com/centercityeruv/ep2026"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  read about the full campaign
-                </a>
-                .
-              </p>
-              <p className={styles.eruvGoal}>Goal: $75,000 | Mekor Habracha Team</p>
-            </div>
-            <div className={styles.eruvVisual}>
-              <div className={styles.eruvImageWrapper}>
-                <Image
-                  src={ERUV_CAMPAIGN_IMAGE}
-                  alt="Center City Eruv campaign"
-                  width={1600}
-                  height={1000}
-                  sizes="(max-width: 960px) 100vw, 28rem"
-                  className={styles.eruvImage}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.classPromoSection}>
-        <div className={styles.container}>
-          <div className={styles.classPromoGrid}>
-            <div className={styles.classPromoContent}>
-              <p className={styles.classEyebrow}>New This Summer</p>
-              <h2 className={styles.classTitle}>New Class on Zionism and Democracy</h2>
-              <p className={styles.classOneLine}>
-                Join Rabbi Gotlib Tuesdays at 7pm starting July 14 for a new class on Zionism and Democracy. You can{" "}
-                <a
-                  href="https://forms.gle/aDkUYeBj3qvudcMD9"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  RSVP for the class
-                </a>
-                {" "}
-                or{" "}
-                <Link href="/newsletters/new-class-on-zionism-and-democracy-2026-07-05">
-                  read the full announcement
-                </Link>
-                .
+          <div className={styles.bulletinPanel}>
+            <div className={styles.bulletinCopy}>
+              <p className={styles.bulletinEyebrow}>Community board</p>
+              <h2 id="home-bulletin-title">Bulletin Board</h2>
+              <p>
+                Tot Shabbat, membership, Hebrew Help, wine &amp; Judaica links, Eruv support, classes, and other standing
+                community notices live on one page — so this homepage and the weekly newsletter stay focused.
               </p>
             </div>
-            <div className={styles.classVisual}>
-              <div className={styles.classQuote}>
-                <p>
-                  A deep exploration of how Torah values intersect with modern democratic ideals — led by Rabbi Gotlib.
-                </p>
-              </div>
-            </div>
+            <Link href="/mekor-bulletin-board" className={styles.bulletinCta}>
+              View the Bulletin Board
+            </Link>
           </div>
         </div>
       </section>

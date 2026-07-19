@@ -44,6 +44,10 @@ export const SITE_MENU: NavItem[] = [
     href: "/events",
   },
   {
+    label: "Bulletin Board",
+    href: "/mekor-bulletin-board",
+  },
+  {
     label: "Beit Midrash",
     href: "/center-city-beit-midrash",
   },
@@ -84,7 +88,6 @@ export const SITE_MENU: NavItem[] = [
       { label: "Your profile", href: "/account/profile" },
       { label: "Kiddush", href: "/kiddush" },
       { label: "Volunteer", href: "/team-4" },
-      { label: "Mekor Bulletin Board", href: "/mekor-bulletin-board" },
       { label: "Past Newsletters", href: "/newsletters" },
       { label: "Ask Mekor", href: "/ask-mekor" },
       { label: "Israel", href: "/israel" },
