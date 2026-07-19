@@ -1,16 +1,27 @@
-import { eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import { getDb } from "@/db/client";
-import { newsletterTemplates } from "@/db/schema";
-import { NewsletterStudioClient } from "./studio-client";
+import { adminAuditLog, newsletterTemplates } from "@/db/schema";
+import {
+  NewsletterStudioClient,
+  type NewsletterStudioMessage,
+} from "./studio-client";
 
 type PageProps = {
   params: Promise<{ id: string }>;
 };
 
 export const dynamic = "force-dynamic";
+
+type StoredChatTurn = {
+  prompt: string;
+  response: string;
+  tools: string[];
+  htmlChanged: boolean;
+  subjectChanged: boolean;
+};
 
 export default async function NewsletterStudioPage({ params }: PageProps) {
   const { id } = await params;
@@ -37,7 +48,8 @@ export default async function NewsletterStudioPage({ params }: PageProps) {
     );
   }
 
-  const [template] = await getDb()
+  const db = getDb();
+  const [template] = await db
     .select()
     .from(newsletterTemplates)
     .where(eq(newsletterTemplates.id, templateId))
@@ -47,5 +59,47 @@ export default async function NewsletterStudioPage({ params }: PageProps) {
     notFound();
   }
 
-  return <NewsletterStudioClient template={template} />;
+  const historyRows = await db
+    .select({
+      id: adminAuditLog.id,
+      payloadJson: adminAuditLog.payloadJson,
+      createdAt: adminAuditLog.createdAt,
+    })
+    .from(adminAuditLog)
+    .where(
+      and(
+        eq(adminAuditLog.action, "newsletter.template.chat.turn"),
+        eq(adminAuditLog.targetType, "newsletter_template"),
+        eq(adminAuditLog.targetId, String(templateId)),
+      ),
+    )
+    .orderBy(desc(adminAuditLog.createdAt))
+    .limit(25);
+
+  const initialMessages: NewsletterStudioMessage[] = historyRows.reverse().flatMap((row) => {
+    const turn = row.payloadJson as StoredChatTurn;
+    const createdAt = row.createdAt.toISOString();
+    const changes = [
+      ...(turn.htmlChanged ? ["HTML updated"] : []),
+      ...(turn.subjectChanged ? ["Subject updated"] : []),
+      ...(turn.tools ?? []),
+    ];
+
+    return [
+      {
+        id: `history-${row.id}-user`,
+        role: "user" as const,
+        metadata: { persisted: true, createdAt },
+        parts: [{ type: "text" as const, text: turn.prompt }],
+      },
+      {
+        id: `history-${row.id}-assistant`,
+        role: "assistant" as const,
+        metadata: { persisted: true, createdAt, changes },
+        parts: [{ type: "text" as const, text: turn.response }],
+      },
+    ];
+  });
+
+  return <NewsletterStudioClient template={template} initialMessages={initialMessages} />;
 }

@@ -7,6 +7,21 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
+import {
+  Message,
+  MessageContent,
+  MessageFooter,
+  MessageHeader,
+} from "@/components/ui/message";
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from "@/components/ui/message-scroller";
 import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import type { newsletterTemplates } from "@/db/schema";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
@@ -21,7 +36,16 @@ type TemplateRow = typeof newsletterTemplates.$inferSelect;
 
 type StudioClientProps = {
   template: TemplateRow;
+  initialMessages: NewsletterStudioMessage[];
 };
+
+export type NewsletterStudioMessageMetadata = {
+  persisted?: boolean;
+  createdAt?: string;
+  changes?: string[];
+};
+
+export type NewsletterStudioMessage = UIMessage<NewsletterStudioMessageMetadata>;
 
 type SubscriberOption = {
   personId: number;
@@ -29,7 +53,7 @@ type SubscriberOption = {
   email: string;
 };
 
-function messageText(message: UIMessage) {
+function messageText(message: NewsletterStudioMessage) {
   return message.parts
     .filter((part): part is { type: "text"; text: string } => part.type === "text")
     .map((part) => part.text)
@@ -37,14 +61,35 @@ function messageText(message: UIMessage) {
     .trim();
 }
 
-function toolSummaries(message: UIMessage) {
-  return message.parts.filter(isToolUIPart).map((part) => {
+const TOOL_LABELS: Record<string, string> = {
+  getTemplateHtml: "Read current newsletter",
+  setTemplateHtml: "Rebuilt newsletter HTML",
+  patchTemplateHtml: "Updated newsletter HTML",
+  validateHtml: "Validated email HTML",
+  updateTemplateMetadata: "Updated newsletter details",
+};
+
+function toolSummaries(message: NewsletterStudioMessage) {
+  return [...new Set(message.parts.filter(isToolUIPart).map((part) => {
     const state = "state" in part ? String(part.state) : "unknown";
-    return `${getToolName(part)} (${state})`;
-  });
+    const name = getToolName(part);
+    const label = TOOL_LABELS[name] ?? name;
+    return state === "output-available" ? label : `${label}…`;
+  }))];
 }
 
-export function NewsletterStudioClient({ template }: StudioClientProps) {
+function historyTime(value: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "America/New_York",
+  }).format(new Date(value));
+}
+
+export function NewsletterStudioClient({ template, initialMessages }: StudioClientProps) {
   const [html, setHtml] = useState(template.bodyHtml);
   const [subject, setSubject] = useState(template.subject || template.title);
   const [draft, setDraft] = useState("");
@@ -71,16 +116,21 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
 
   const transport = useMemo(
     () =>
-      new DefaultChatTransport({
+      new DefaultChatTransport<NewsletterStudioMessage>({
         api: `/api/admin/templates/chat?templateId=${template.id}`,
         body: { templateId: template.id },
       }),
     [template.id],
   );
 
-  const { messages, sendMessage, status, error: chatError, stop } = useChat({ transport });
+  const { messages, sendMessage, status, error: chatError, stop } = useChat<NewsletterStudioMessage>({
+    id: `newsletter-studio-${template.id}`,
+    messages: initialMessages,
+    transport,
+  });
   const busy = status === "submitted" || status === "streaming";
   const previewHtml = useMemo(() => sanitizeNewsletterHtml(html), [html]);
+  const changeCount = messages.filter((message) => message.role === "user").length;
 
   useEffect(() => {
     const nextHtml = extractLatestBodyHtmlFromMessages(messages);
@@ -352,34 +402,69 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
             <div className={styles.chatHeader}>
               <div>
                 <h3 className={styles.panelTitle}>Edit with AI</h3>
-                <p className={styles.panelHint}>Describe a change and watch it appear beside you.</p>
+                <p className={styles.panelHint}>
+                  {changeCount > 0
+                    ? `${changeCount} ${changeCount === 1 ? "change" : "changes"} in this newsletter history`
+                    : "Describe a change and watch it appear beside you."}
+                </p>
               </div>
               <span className={styles.agentStatus}>{busy ? "Working" : "Ready"}</span>
             </div>
-            <div className={styles.chatBody} aria-live="polite">
-              {messages.length === 0 ? (
-                <div className={styles.emptyChat}>
-                  <strong>What should change?</strong>
-                  <span>Try “Make the intro warmer” or “Add candle lighting at 7:12pm.”</span>
-                </div>
-              ) : (
-                messages.map((message) => {
-                  const text = messageText(message);
-                  const tools = toolSummaries(message);
-                  return (
-                    <div
-                      key={message.id}
-                      className={`${styles.message} ${
-                        message.role === "user" ? styles.messageUser : styles.messageAssistant
-                      }`}
-                    >
-                      {text || (message.role === "assistant" ? "…" : "")}
-                      {tools.length > 0 ? <div className={styles.toolNote}>Tools: {tools.join(" · ")}</div> : null}
-                    </div>
-                  );
-                })
-              )}
-            </div>
+            <MessageScrollerProvider autoScroll>
+              <MessageScroller className={styles.chatBody} aria-live="polite">
+                <MessageScrollerViewport className={styles.chatViewport}>
+                  <MessageScrollerContent className={styles.chatContent}>
+                    {messages.length === 0 ? (
+                      <div className={styles.emptyChat}>
+                        <strong>What should change?</strong>
+                        <span>Try “Make the intro warmer” or “Add candle lighting at 7:12pm.”</span>
+                        <span>Your prompts and the AI summaries will be saved with this newsletter.</span>
+                      </div>
+                    ) : (
+                      messages.map((message) => {
+                        const isUser = message.role === "user";
+                        const text = messageText(message);
+                        const tools = toolSummaries(message);
+                        const metadata = message.metadata;
+                        const notes = [...(metadata?.changes ?? []), ...tools]
+                          .map((note) => TOOL_LABELS[note] ?? note)
+                          .filter((note, index, list) => list.indexOf(note) === index);
+
+                        return (
+                          <MessageScrollerItem key={message.id} scrollAnchor={isUser}>
+                            <Message align={isUser ? "end" : "start"}>
+                              <MessageContent>
+                                <MessageHeader className={styles.messageHeader}>
+                                  {isUser ? "You" : "Mekor AI"}
+                                </MessageHeader>
+                                <Bubble
+                                  align={isUser ? "end" : "start"}
+                                  variant={isUser ? "default" : "secondary"}
+                                  className={styles.messageBubble}
+                                >
+                                  <BubbleContent className={styles.messageText}>
+                                    {text || (message.role === "assistant" ? "…" : "")}
+                                  </BubbleContent>
+                                </Bubble>
+                                {notes.length > 0 || metadata?.createdAt ? (
+                                  <MessageFooter className={styles.messageFooter}>
+                                    {notes.length > 0 ? <span>{notes.join(" · ")}</span> : null}
+                                    {metadata?.createdAt ? (
+                                      <time dateTime={metadata.createdAt}>{historyTime(metadata.createdAt)}</time>
+                                    ) : null}
+                                  </MessageFooter>
+                                ) : null}
+                              </MessageContent>
+                            </Message>
+                          </MessageScrollerItem>
+                        );
+                      })
+                    )}
+                  </MessageScrollerContent>
+                </MessageScrollerViewport>
+                <MessageScrollerButton className={styles.scrollButton} />
+              </MessageScroller>
+            </MessageScrollerProvider>
             <form className={styles.chatComposer} onSubmit={onSendChat}>
               <textarea
                 value={draft}

@@ -39,6 +39,14 @@ function resolveTemplateId(request: Request, body: Record<string, unknown>) {
   return null;
 }
 
+function messageText(message: UIMessage) {
+  return message.parts
+    .filter((part): part is { type: "text"; text: string } => part.type === "text")
+    .map((part) => part.text)
+    .join("\n")
+    .trim();
+}
+
 export async function POST(request: Request) {
   const adminResult = await requireAdminActor();
   if ("error" in adminResult) return adminResult.error;
@@ -57,7 +65,12 @@ export async function POST(request: Request) {
   }
 
   const [template] = await getDb()
-    .select({ id: newsletterTemplates.id, title: newsletterTemplates.title })
+    .select({
+      id: newsletterTemplates.id,
+      title: newsletterTemplates.title,
+      subject: newsletterTemplates.subject,
+      bodyHtml: newsletterTemplates.bodyHtml,
+    })
     .from(newsletterTemplates)
     .where(eq(newsletterTemplates.id, templateId))
     .limit(1);
@@ -70,6 +83,9 @@ export async function POST(request: Request) {
   if (!messages || messages.length === 0) {
     return NextResponse.json({ error: "messages are required." }, { status: 400 });
   }
+
+  const latestUserMessage = [...messages].reverse().find((message) => message.role === "user");
+  const prompt = latestUserMessage ? messageText(latestUserMessage) : "";
 
   let model;
   try {
@@ -102,6 +118,31 @@ export async function POST(request: Request) {
     tools,
     stopWhen: stepCountIs(8),
     temperature: 0.4,
+    onEnd: async ({ text, toolCalls }) => {
+      const [updatedTemplate] = await getDb()
+        .select({
+          subject: newsletterTemplates.subject,
+          bodyHtml: newsletterTemplates.bodyHtml,
+        })
+        .from(newsletterTemplates)
+        .where(eq(newsletterTemplates.id, templateId))
+        .limit(1);
+
+      await writeAdminAuditLog({
+        actorUserId: actor.id,
+        action: "newsletter.template.chat.turn",
+        targetType: "newsletter_template",
+        targetId: String(templateId),
+        payload: {
+          title: template.title,
+          prompt,
+          response: text.trim() || "Newsletter updated.",
+          tools: [...new Set(toolCalls.map((call) => call.toolName))],
+          htmlChanged: updatedTemplate?.bodyHtml !== template.bodyHtml,
+          subjectChanged: updatedTemplate?.subject !== template.subject,
+        },
+      });
+    },
   });
 
   return result.toUIMessageStreamResponse();

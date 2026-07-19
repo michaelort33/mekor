@@ -82,6 +82,9 @@ test("studio preview and persistence keep editable HTML isolated", async () => {
   assert.match(studio, /<details className=\{styles\.htmlDetails\}>/);
   assert.match(studio, /<div className=\{styles\.workflow\}>/);
   assert.match(studio, /<aside className=\{styles\.chatPanel\} aria-label="Newsletter AI editor">/);
+  assert.match(studio, /<MessageScrollerProvider autoScroll>/);
+  assert.match(studio, /<MessageScrollerItem key=\{message\.id\} scrollAnchor=\{isUser\}>/);
+  assert.match(studio, /variant=\{isUser \? "default" : "secondary"\}/);
   assert.doesNotMatch(studio, /chatDrawer/);
   assert.match(studio, /method: "PATCH"/);
   assert.match(studio, /saveQueueRef\.current\.then/);
@@ -89,6 +92,22 @@ test("studio preview and persistence keep editable HTML isolated", async () => {
   assert.match(studio, /saveTimerRef\.current = setTimeout\(\(\) => \{\s+void persistHtml\(nextHtml\);/);
   assert.match(templateRoute, /export async function PATCH/);
   assert.match(templateRoute, /bodyHtml: sanitizeNewsletterHtml\(body\.bodyHtml\)/);
+});
+
+test("newsletter AI turns are saved and restored as template history", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const [studioPage, chatRoute] = await Promise.all([
+    readFile("app/admin/templates/[id]/studio/page.tsx", "utf8"),
+    readFile("app/api/admin/templates/chat/route.ts", "utf8"),
+  ]);
+
+  assert.match(chatRoute, /action: "newsletter\.template\.chat\.turn"/);
+  assert.match(chatRoute, /prompt,/);
+  assert.match(chatRoute, /response: text\.trim\(\) \|\| "Newsletter updated\."/);
+  assert.match(chatRoute, /htmlChanged:/);
+  assert.match(chatRoute, /subjectChanged:/);
+  assert.match(studioPage, /eq\(adminAuditLog\.action, "newsletter\.template\.chat\.turn"\)/);
+  assert.match(studioPage, /initialMessages=\{initialMessages\}/);
 });
 
 test("selected newsletter recipients are revalidated before campaign creation", async () => {
