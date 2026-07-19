@@ -1,8 +1,9 @@
-import OpenAI from "openai";
+import { generateObject } from "ai";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
+import { createNewsletterChatModel } from "@/lib/newsletter/chat-model";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 
 const requestSchema = z.object({
@@ -38,12 +39,6 @@ const aiResultSchema = z.object({
   summary: z.string().trim().max(280),
 });
 
-function ensureConfigured() {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY is required");
-  }
-}
-
 function buildUserPrompt(input: z.infer<typeof requestSchema>) {
   const conversation = input.history.length
     ? input.history.map((message) => `${message.role}: ${message.content}`).join("\n")
@@ -74,11 +69,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    ensureConfigured();
-    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const model = process.env.OPENAI_EMAIL_TEMPLATE_MODEL || "gpt-4.1-mini";
-    const completion = await client.chat.completions.create({
+    const model = createNewsletterChatModel();
+    const modelLabel =
+      process.env.NEWSLETTER_CHAT_MODEL?.trim() ||
+      process.env.OPENAI_EMAIL_TEMPLATE_MODEL?.trim() ||
+      "openai/gpt-4.1-mini";
+
+    const { object } = await generateObject({
       model,
+<<<<<<< HEAD
       response_format: { type: "json_object" },
       messages: [
         {
@@ -91,15 +90,14 @@ export async function POST(request: Request) {
           content: buildUserPrompt(parsed.data),
         },
       ],
+=======
+      schema: aiResultSchema,
+      system:
+        "You are an expert synagogue email designer working in a multi-turn editing conversation. Output values for title, subject, parshaName, shabbatDate, hebrewDate, candleLighting, bodyHtml, and summary. bodyHtml must be complete email-safe HTML using inline styles and no scripts. In generate mode, create the newsletter from scratch. In update mode, preserve the current HTML and metadata unless the request asks to change them; make the smallest targeted edit that satisfies the request. For weekly Shabbat emails, keep content lean (this week's schedule, sponsors, fresh announcements) and link evergreen items to https://www.mekorhabracha.org/mekor-bulletin-board instead of repeating long standing blurbs. The summary should briefly tell the admin what changed.",
+      prompt: buildUserPrompt(parsed.data),
+>>>>>>> cbf5a6a (Fix newsletter AI Unauthorized and use AI Gateway)
       temperature: 0.4,
     });
-
-    const content = completion.choices[0]?.message?.content || "";
-    const parsedJson = JSON.parse(content) as unknown;
-    const result = aiResultSchema.safeParse(parsedJson);
-    if (!result.success) {
-      return NextResponse.json({ error: "OpenAI returned invalid template format" }, { status: 502 });
-    }
 
     await writeAdminAuditLog({
       actorUserId: actor.id,
@@ -109,21 +107,30 @@ export async function POST(request: Request) {
       payload: {
         mode: parsed.data.mode,
         prompt: parsed.data.prompt,
-        model,
-        summary: result.data.summary,
+        model: modelLabel,
+        summary: object.summary,
       },
     });
 
     return NextResponse.json({
       template: {
-        ...result.data,
-        bodyHtml: sanitizeNewsletterHtml(result.data.bodyHtml),
+        ...object,
+        bodyHtml: sanitizeNewsletterHtml(object.bodyHtml),
       },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to generate template";
-    if (message.includes("OPENAI_API_KEY")) {
-      return NextResponse.json({ error: "OpenAI is not configured" }, { status: 500 });
+    if (/AI Gateway|OPENAI_API_KEY|Newsletter chat needs/i.test(message)) {
+      return NextResponse.json(
+        { error: "AI is not configured for newsletter generation on this environment." },
+        { status: 500 },
+      );
+    }
+    if (/401|unauthorized|incorrect api key|invalid.*key/i.test(message)) {
+      return NextResponse.json(
+        { error: "AI provider rejected the request. Check AI Gateway / OpenAI credentials." },
+        { status: 502 },
+      );
     }
     return NextResponse.json({ error: "Unable to generate template" }, { status: 500 });
   }

@@ -18,14 +18,19 @@ test("new newsletter flow chooses a base, iterates with AI, previews safely, and
   assert.match(page, /history: messages\.slice\(-10\)/);
   assert.match(page, /sandbox="" srcDoc=\{previewHtml\}/);
   assert.match(page, /method: "POST"/);
+  assert.match(page, /credentials: "same-origin"/);
+  assert.match(page, /response\.status === 401/);
+  assert.match(page, /Your admin session expired/);
   assert.match(page, /router\.push\(`\/admin\/templates\/\$\{payload\.template\.id\}\/studio`\)/);
   assert.doesNotMatch(page, /Generate HTML design/);
   assert.doesNotMatch(page, /Primary section title/);
   assert.doesNotMatch(page, /\/api\/admin\/templates\/send/);
 
   assert.match(aiRoute, /history: z/);
+  assert.match(aiRoute, /createNewsletterChatModel/);
+  assert.match(aiRoute, /generateObject/);
   assert.match(aiRoute, /smallest targeted edit/);
-  assert.match(aiRoute, /sanitizeNewsletterHtml\(result\.data\.bodyHtml\)/);
+  assert.match(aiRoute, /sanitizeNewsletterHtml\(object\.bodyHtml\)/);
   assert.match(templateRoute, /searchParams\.get\("summary"\) === "true"/);
   const summaryBlock = templateRoute.slice(
     templateRoute.indexOf('if (searchParams.get("summary") === "true")'),
