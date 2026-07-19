@@ -252,13 +252,15 @@
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
-.supportPrimary {
+.supportPrimary,
+.supportPrimary:visited {
   border: 1px solid #fff;
   background: #fff;
   color: #214e79;
 }
 
-.supportSecondary {
+.supportSecondary,
+.supportSecondary:visited {
   border: 1px solid rgba(255, 255, 255, 0.55);
   background: transparent;
   color: #fff;
