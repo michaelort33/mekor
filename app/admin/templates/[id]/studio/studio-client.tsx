@@ -10,6 +10,10 @@ import adminStyles from "@/components/admin/admin-shell.module.css";
 import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import type { newsletterTemplates } from "@/db/schema";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
+import {
+  NEWSLETTER_RECIPIENT_LISTS,
+  type NewsletterRecipientListKey,
+} from "@/lib/newsletter/recipient-lists";
 import { extractLatestBodyHtmlFromMessages } from "@/lib/newsletter/studio-live-html";
 import styles from "./page.module.css";
 
@@ -55,6 +59,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   const [recipientMenuOpen, setRecipientMenuOpen] = useState(false);
   const [recipientOptions, setRecipientOptions] = useState<SubscriberOption[]>([]);
   const [selectedRecipients, setSelectedRecipients] = useState<SubscriberOption[]>([]);
+  const [recipientListKey, setRecipientListKey] = useState<NewsletterRecipientListKey | null>(null);
   const [loadingRecipients, setLoadingRecipients] = useState(false);
 
   const htmlRef = useRef(html);
@@ -213,6 +218,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   }
 
   function addRecipient(option: SubscriberOption) {
+    setRecipientListKey(null);
     setSelectedRecipients((prev) => {
       if (prev.some((item) => item.personId === option.personId)) return prev;
       return [...prev, option];
@@ -225,8 +231,15 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     setSelectedRecipients((prev) => prev.filter((item) => item.personId !== personId));
   }
 
+  function selectRecipientList(key: NewsletterRecipientListKey) {
+    setRecipientListKey(key);
+    setSelectedRecipients([]);
+    setRecipientQuery("");
+    setRecipientMenuOpen(false);
+  }
+
   async function runSend() {
-    if (selectedRecipients.length === 0) {
+    if (!recipientListKey && selectedRecipients.length === 0) {
       setError("Select at least one recipient from the searchable list.");
       return;
     }
@@ -241,8 +254,10 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           templateId: template.id,
-          recipientGroup: "selected",
-          personIds: selectedRecipients.map((item) => item.personId),
+          recipientGroup: recipientListKey ? "recipient_list" : "selected",
+          ...(recipientListKey
+            ? { recipientListKey }
+            : { personIds: selectedRecipients.map((item) => item.personId) }),
           mode: "send",
           subjectOverride: subject || undefined,
           bodyHtmlOverride: html,
@@ -270,6 +285,11 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
       setSending(false);
     }
   }
+
+  const activeRecipientList = recipientListKey
+    ? NEWSLETTER_RECIPIENT_LISTS.find((list) => list.key === recipientListKey)!
+    : null;
+  const recipientCount = activeRecipientList?.emails.length ?? selectedRecipients.length;
 
   return (
     <AdminShell
@@ -349,6 +369,20 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
 
             <div className={styles.fieldLabel}>
               Recipients
+              <div className={styles.recipientLists} aria-label="Newsletter recipient lists">
+                {NEWSLETTER_RECIPIENT_LISTS.map((list) => (
+                  <button
+                    key={list.key}
+                    type="button"
+                    className={recipientListKey === list.key ? styles.recipientListActive : styles.recipientList}
+                    aria-pressed={recipientListKey === list.key}
+                    onClick={() => selectRecipientList(list.key)}
+                  >
+                    <strong>{list.name}</strong>
+                    <span>{list.description}</span>
+                  </button>
+                ))}
+              </div>
               <div className={styles.recipientShell}>
                 <div className={styles.recipientSearchRow}>
                   <input
@@ -401,7 +435,16 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
               </div>
             </div>
 
-            {selectedRecipients.length > 0 ? (
+            {activeRecipientList ? (
+              <div className={styles.chipRow}>
+                <span className={styles.chip}>
+                  {activeRecipientList.name} · {activeRecipientList.emails.length} recipient
+                  <button type="button" aria-label={`Remove ${activeRecipientList.name}`} onClick={() => setRecipientListKey(null)}>
+                    ×
+                  </button>
+                </span>
+              </div>
+            ) : selectedRecipients.length > 0 ? (
               <div className={styles.chipRow}>
                 {selectedRecipients.map((recipient) => (
                   <span key={recipient.personId} className={styles.chip}>
@@ -421,12 +464,16 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
             <button
               type="button"
               className={styles.dangerButton}
-              disabled={sending || selectedRecipients.length === 0}
+              disabled={sending || recipientCount === 0}
               onClick={() => void runSend()}
             >
-              {sending ? "Sending…" : `Send to ${selectedRecipients.length || "…"}`}
+              {sending ? "Sending…" : `Send to ${recipientCount || "…"}`}
             </button>
-            <p className={styles.statusText}>Uses the current HTML snapshot through the existing SendGrid campaign pipeline.</p>
+            <p className={styles.statusText}>
+              {activeRecipientList
+                ? `Test list is restricted to ${activeRecipientList.emails.join(", ")}.`
+                : "Uses the current HTML snapshot through the existing SendGrid campaign pipeline."}
+            </p>
           </div>
         </section>
       </div>
