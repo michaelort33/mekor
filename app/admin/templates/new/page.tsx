@@ -83,13 +83,23 @@ export default function NewTemplatePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  function redirectToLogin() {
+    router.push("/login?next=/admin/templates/new");
+  }
+
   useEffect(() => {
     void (async () => {
-      const response = await fetch("/api/admin/templates?summary=true");
+      const response = await fetch("/api/admin/templates?summary=true", {
+        credentials: "same-origin",
+      });
       const payload = (await response.json().catch(() => ({}))) as {
         templates?: TemplateOption[];
         error?: string;
       };
+      if (response.status === 401) {
+        redirectToLogin();
+        return;
+      }
       if (!response.ok) {
         setError(payload.error || "Unable to load existing newsletters.");
         setLoadingTemplates(false);
@@ -98,6 +108,7 @@ export default function NewTemplatePage() {
       setTemplates(payload.templates ?? []);
       setLoadingTemplates(false);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredTemplates = useMemo(() => {
@@ -130,11 +141,18 @@ export default function NewTemplatePage() {
 
       setError("");
       setLoadingBase(true);
-      const response = await fetch(`/api/admin/templates?id=${selected.id}`);
+      const response = await fetch(`/api/admin/templates?id=${selected.id}`, {
+        credentials: "same-origin",
+      });
       const payload = (await response.json().catch(() => ({}))) as {
         template?: ExistingTemplate;
         error?: string;
       };
+      if (response.status === 401) {
+        redirectToLogin();
+        setLoadingBase(false);
+        return;
+      }
       if (!response.ok || !payload.template) {
         setError(payload.error || "Unable to load that starting newsletter.");
         setLoadingBase(false);
@@ -192,6 +210,7 @@ export default function NewTemplatePage() {
 
     const response = await fetch("/api/admin/templates/ai", {
       method: "POST",
+      credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         mode: form.bodyHtml.trim() ? "update" : "generate",
@@ -213,6 +232,13 @@ export default function NewTemplatePage() {
       error?: string;
       template?: Omit<TemplateDraft, "status"> & { summary: string };
     };
+
+    if (response.status === 401) {
+      setError("Your admin session expired. Sign in again to continue.");
+      setAiGenerating(false);
+      redirectToLogin();
+      return;
+    }
 
     if (!response.ok || !payload.template) {
       setError(payload.error || "Unable to update the newsletter with AI.");
@@ -255,6 +281,7 @@ export default function NewTemplatePage() {
     setSaving(true);
     const response = await fetch("/api/admin/templates", {
       method: "POST",
+      credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
@@ -262,6 +289,12 @@ export default function NewTemplatePage() {
       template?: { id: number };
       error?: string;
     };
+    if (response.status === 401) {
+      setError("Your admin session expired. Sign in again to continue.");
+      setSaving(false);
+      redirectToLogin();
+      return;
+    }
     if (!response.ok || !payload.template) {
       setError(payload.error || "Unable to save the newsletter.");
       setSaving(false);
