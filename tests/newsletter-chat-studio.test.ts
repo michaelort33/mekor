@@ -14,6 +14,10 @@ test("admin newsletter studio and chat API are admin-protected", () => {
   assert.equal(getEdgeProtectionType("/api/admin/templates/chat"), "admin");
 });
 
+test("newsletter studio smoke harness path is public (page self-gates)", () => {
+  assert.equal(getEdgeProtectionType("/dev/newsletter-studio-smoke"), "none");
+});
+
 test("sanitizeNewsletterHtml strips scripts and handlers", () => {
   const dirty = `<div onclick="alert(1)"><script>alert(2)</script><a href="javascript:void(0)">x</a></div>`;
   const clean = sanitizeNewsletterHtml(dirty);

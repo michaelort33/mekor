@@ -8,6 +8,8 @@ const PUBLIC_EXACT_PATHS = new Set([
   "/membership",
   "/membership/apply",
   "/invite/accept",
+  // Smoke harness page self-gates with STUDIO_SMOKE=1 (404 otherwise).
+  "/dev/newsletter-studio-smoke",
 ]);
 
 const PUBLIC_PREFIX_PATHS = ["/community"];

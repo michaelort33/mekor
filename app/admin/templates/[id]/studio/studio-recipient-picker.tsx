@@ -91,6 +91,7 @@ export function StudioRecipientPicker({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-label="Search subscribers by name or email"
             className="h-11 w-full justify-between rounded-xl font-medium"
           >
             <span className="truncate text-[var(--color-muted)]">
