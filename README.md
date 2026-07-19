@@ -48,6 +48,8 @@ npm run db:push
 npm run dev
 ```
 
+For local admin UI work, set `LOCAL_ADMIN_AUTOLOGIN_EMAIL` to an existing admin or super-admin account. In development, requests to `localhost`, `127.0.0.1`, or `::1` will create the normal user session and return to the requested admin page. The option is disabled in production and on non-loopback hosts, and still requires `USER_SESSION_SECRET`.
+
 ## Mirror Data Pipeline
 
 Run the full extraction/validation pipeline:

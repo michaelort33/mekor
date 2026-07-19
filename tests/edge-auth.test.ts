@@ -22,6 +22,25 @@ test("GET /admin/users without user cookie redirects to login", async () => {
   assert.equal(response.headers.get("location"), "http://localhost:3000/login?next=%2Fadmin%2Fusers");
 });
 
+test("GET /admin/users uses the explicit localhost autologin option", async () => {
+  const previousEmail = process.env.LOCAL_ADMIN_AUTOLOGIN_EMAIL;
+  process.env.LOCAL_ADMIN_AUTOLOGIN_EMAIL = "admin@example.com";
+
+  try {
+    const request = new NextRequest("http://localhost:3000/admin/users");
+    const response = await proxy(request);
+
+    assert.equal(response.status, 307);
+    assert.equal(
+      response.headers.get("location"),
+      "http://localhost:3000/api/auth/local-admin-autologin?next=%2Fadmin%2Fusers",
+    );
+  } finally {
+    if (previousEmail === undefined) delete process.env.LOCAL_ADMIN_AUTOLOGIN_EMAIL;
+    else process.env.LOCAL_ADMIN_AUTOLOGIN_EMAIL = previousEmail;
+  }
+});
+
 test("POST /api/account/profile without user cookie returns 401", async () => {
   const request = new NextRequest("http://localhost:3000/api/account/profile", {
     method: "POST",

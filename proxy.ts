@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { getEdgeProtectionType, isAdminLoginPath, isApiPath } from "@/lib/auth/edge-route-policy";
+import { isLocalAdminAutologinEnabled } from "@/lib/auth/local-admin-autologin";
 import { USER_SESSION_COOKIE, getValidUserSessionRole } from "@/lib/auth/edge-session";
 import statusOverrides from "@/mirror-data/routes/status-overrides.json";
 
@@ -13,6 +14,34 @@ function buildUserLoginRedirect(request: NextRequest) {
   const loginUrl = new URL("/login", request.url);
   loginUrl.searchParams.set("next", nextValue);
   return loginUrl;
+}
+
+function buildLocalAdminAutologinRedirect(request: NextRequest) {
+  const url = new URL("/api/auth/local-admin-autologin", request.url);
+  url.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
+  return url;
+}
+
+function canUseLocalAdminAutologin(request: NextRequest) {
+  return (
+    !isApiPath(request.nextUrl.pathname) &&
+    isLocalAdminAutologinEnabled({
+      hostname: request.nextUrl.hostname,
+      nodeEnv: process.env.NODE_ENV,
+      adminEmail: process.env.LOCAL_ADMIN_AUTOLOGIN_EMAIL,
+    })
+  );
+}
+
+function unauthorizedAdminResponse(request: NextRequest, clearCookie = false) {
+  if (canUseLocalAdminAutologin(request)) {
+    return NextResponse.redirect(buildLocalAdminAutologinRedirect(request));
+  }
+  return unauthorizedResponse(request, {
+    type: "admin",
+    isApi: isApiPath(request.nextUrl.pathname),
+    clearCookie,
+  });
 }
 
 function unauthorizedResponse(
@@ -83,25 +112,15 @@ export async function proxy(request: NextRequest) {
 
     const token = request.cookies.get(USER_SESSION_COOKIE)?.value;
     if (!token) {
-      return unauthorizedResponse(request, {
-        type: "admin",
-        isApi: isApiPath(pathname),
-      });
+      return unauthorizedAdminResponse(request);
     }
 
     const role = await getValidUserSessionRole(token);
     if (!role) {
-      return unauthorizedResponse(request, {
-        type: "admin",
-        isApi: isApiPath(pathname),
-        clearCookie: true,
-      });
+      return unauthorizedAdminResponse(request, true);
     }
     if (role !== "admin" && role !== "super_admin") {
-      return unauthorizedResponse(request, {
-        type: "admin",
-        isApi: isApiPath(pathname),
-      });
+      return unauthorizedAdminResponse(request);
     }
 
     return NextResponse.next();
