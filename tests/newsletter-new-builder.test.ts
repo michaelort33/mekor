@@ -9,6 +9,8 @@ test("new newsletter flow chooses a base, iterates with AI, previews safely, and
     readFile("app/api/admin/templates/route.ts", "utf8"),
   ]);
 
+  assert.match(page, /WEEKLY_CLEANED_TEMPLATE_TITLE/);
+  assert.match(page, /buildWeeklyCleanedTemplateDraft/);
   assert.match(page, /Blank canvas/);
   assert.match(page, /use an existing newsletter/);
   assert.match(page, /\/api\/admin\/templates\?summary=true/);

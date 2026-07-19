@@ -37,6 +37,7 @@
     "db:backfill:in-the-news": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-in-the-news.ts",
     "db:backfill:newsletters": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-newsletters.ts",
     "db:backfill:newsletter-subscribers": "node node_modules/tsx/dist/cli.mjs scripts/db/backfill-newsletter-subscribers.ts",
+    "db:seed:weekly-cleaned-template": "node node_modules/tsx/dist/cli.mjs scripts/db/seed-weekly-cleaned-template.ts",
     "db:import:mailchimp-crm": "node node_modules/tsx/dist/cli.mjs scripts/db/import-mailchimp-crm.ts"
   },
   "dependencies": {

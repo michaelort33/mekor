@@ -7,7 +7,13 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
+import {
+  buildWeeklyCleanedTemplateDraft,
+  WEEKLY_CLEANED_TEMPLATE_TITLE,
+} from "@/lib/newsletter/weekly-cleaned";
 import styles from "./page.module.css";
+
+type StarterKind = "blank" | "weekly-cleaned" | "existing";
 
 type TemplateDraft = {
   title: string;
@@ -51,9 +57,9 @@ const EMPTY_DRAFT: TemplateDraft = {
 };
 
 const PROMPT_IDEAS = [
-  "Create this week’s Shabbat newsletter with a warm, refined design.",
-  "Keep the layout, but make the schedule easier to scan on a phone.",
-  "Make the announcements section shorter and more inviting.",
+  "Fill in this week’s parsha, dates, candle lighting, and Shabbat schedule.",
+  "Keep evergreen items as Bulletin Board links — only expand this week’s announcements.",
+  "Tighten the sponsors section and weekday services for phone reading.",
 ];
 
 function messageId() {
@@ -66,8 +72,9 @@ export default function NewTemplatePage() {
   const [templates, setTemplates] = useState<TemplateOption[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
   const [templateQuery, setTemplateQuery] = useState("");
+  const [starterKind, setStarterKind] = useState<StarterKind>("weekly-cleaned");
   const [selectedBaseId, setSelectedBaseId] = useState<number | null>(null);
-  const [baseLabel, setBaseLabel] = useState("Blank canvas");
+  const [baseLabel, setBaseLabel] = useState(WEEKLY_CLEANED_TEMPLATE_TITLE);
   const [form, setForm] = useState<TemplateDraft>(EMPTY_DRAFT);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
@@ -111,20 +118,17 @@ export default function NewTemplatePage() {
   }
 
   async function beginComposing() {
-    const selected = selectedBaseId === null
-      ? null
-      : templates.find((template) => template.id === selectedBaseId);
+    if (starterKind === "existing") {
+      const selected = selectedBaseId === null
+        ? null
+        : templates.find((template) => template.id === selectedBaseId);
 
-    if (selectedBaseId !== null && !selected) {
-      setError("Choose an available starting newsletter.");
-      return;
-    }
+      if (!selected) {
+        setError("Choose an available starting newsletter.");
+        return;
+      }
 
-    setError("");
-    if (!selected) {
-      setForm(EMPTY_DRAFT);
-      setBaseLabel("Blank canvas");
-    } else {
+      setError("");
       setLoadingBase(true);
       const response = await fetch(`/api/admin/templates?id=${selected.id}`);
       const payload = (await response.json().catch(() => ({}))) as {
@@ -148,6 +152,28 @@ export default function NewTemplatePage() {
       });
       setBaseLabel(payload.template.title);
       setLoadingBase(false);
+      setMessages([]);
+      setStep("compose");
+      return;
+    }
+
+    setError("");
+    if (starterKind === "weekly-cleaned") {
+      const draft = buildWeeklyCleanedTemplateDraft();
+      setForm({
+        title: draft.title,
+        subject: draft.subject,
+        parshaName: draft.parshaName,
+        shabbatDate: draft.shabbatDate,
+        hebrewDate: draft.hebrewDate,
+        candleLighting: draft.candleLighting,
+        bodyHtml: draft.bodyHtml,
+        status: "draft",
+      });
+      setBaseLabel(WEEKLY_CLEANED_TEMPLATE_TITLE);
+    } else {
+      setForm(EMPTY_DRAFT);
+      setBaseLabel("Blank canvas");
     }
     setMessages([]);
     setStep("compose");
@@ -283,13 +309,36 @@ export default function NewTemplatePage() {
 
           <button
             type="button"
-            className={`${styles.blankCard} ${selectedBaseId === null ? styles.selectedCard : ""}`}
-            onClick={() => setSelectedBaseId(null)}
-            aria-pressed={selectedBaseId === null}
+            className={`${styles.blankCard} ${starterKind === "weekly-cleaned" ? styles.selectedCard : ""}`}
+            onClick={() => {
+              setStarterKind("weekly-cleaned");
+              setSelectedBaseId(null);
+            }}
+            aria-pressed={starterKind === "weekly-cleaned"}
+          >
+            <span className={styles.blankIcon}>✦</span>
+            <span>
+              <strong>{WEEKLY_CLEANED_TEMPLATE_TITLE}</strong>
+              <small>
+                Lean weekly starter based on recent Shabbat issues — schedule, sponsors, this week only; evergreen
+                links point to the Bulletin Board
+              </small>
+            </span>
+            <span className={styles.selectionMark}>{starterKind === "weekly-cleaned" ? "Selected" : "Select"}</span>
+          </button>
+
+          <button
+            type="button"
+            className={`${styles.blankCard} ${starterKind === "blank" ? styles.selectedCard : ""}`}
+            onClick={() => {
+              setStarterKind("blank");
+              setSelectedBaseId(null);
+            }}
+            aria-pressed={starterKind === "blank"}
           >
             <span className={styles.blankIcon}>＋</span>
             <span><strong>Blank canvas</strong><small>Ask AI to create the HTML from scratch</small></span>
-            <span className={styles.selectionMark}>{selectedBaseId === null ? "Selected" : "Select"}</span>
+            <span className={styles.selectionMark}>{starterKind === "blank" ? "Selected" : "Select"}</span>
           </button>
 
           <div className={styles.templatePicker}>
@@ -315,13 +364,16 @@ export default function NewTemplatePage() {
             ) : null}
             <div className={styles.templateGrid}>
               {filteredTemplates.map((template) => {
-                const selected = selectedBaseId === template.id;
+                const selected = starterKind === "existing" && selectedBaseId === template.id;
                 return (
                   <button
                     type="button"
                     key={template.id}
                     className={`${styles.templateCard} ${selected ? styles.selectedCard : ""}`}
-                    onClick={() => setSelectedBaseId(template.id)}
+                    onClick={() => {
+                      setStarterKind("existing");
+                      setSelectedBaseId(template.id);
+                    }}
                     aria-pressed={selected}
                   >
                     <span className={styles.templateMeta}>

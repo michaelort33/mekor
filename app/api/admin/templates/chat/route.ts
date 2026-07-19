@@ -27,6 +27,8 @@ Rules:
 - The database body_html field is the sendable source of truth.
 - After every HTML edit, the studio preview updates live from your tool result — always call setTemplateHtml or patchTemplateHtml for visible changes.
 - Never invent personal member data. Keep tone warm, clear, and professional.
+- For weekly Shabbat newsletters, keep the email lean: this week's schedule, sponsors, and fresh announcements only.
+- Do not paste long evergreen blurbs (membership, Hebrew Help, wine/Judaica, volunteer pitches, Israel support, Tot Shabbat explainers). Link those to https://www.mekorhabracha.org/mekor-bulletin-board instead.
 - Summarize what you changed in plain language after tools finish.`;
 
 function resolveTemplateId(request: Request, body: Record<string, unknown>) {

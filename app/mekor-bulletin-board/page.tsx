@@ -24,6 +24,130 @@ const BULLETIN_IMAGES = {
 const ERUV_DONATION_LINK =
   "https://ccshul.us2.list-manage.com/track/click?u=f9fe87a16c42c24704c099073&id=78b2ea75cf&e=dac02e1995";
 
+const ERUV_CAMPAIGN_TEAM =
+  "https://thechesedfund.com/centercityeruv/ep2026/teams/mekorhabracha";
+
+const ERUV_CAMPAIGN_INFO = "https://thechesedfund.com/centercityeruv/ep2026";
+
+const ZIONISM_CLASS_RSVP = "https://forms.gle/aDkUYeBj3qvudcMD9";
+
+/** Standing items that used to repeat every week in the Shabbat newsletter. */
+const STANDING_INFO: BulletinCard[] = [
+  {
+    title: "Tot Shabbat",
+    paragraphs: [
+      "Mekor's Tot Shabbat meets about once a month — typically the last Shabbat of the English month around 11 AM — with parsha, songs, and stories for young children and families.",
+    ],
+    links: [
+      { label: "Tot Shabbat details", href: "/events-1/mekors-tot-shabbat" },
+      { label: "All events", href: "/events" },
+    ],
+  },
+  {
+    title: "Davening & Weekday Minyan",
+    paragraphs: [
+      "Find Shabbat and weekday service times, the minyan WhatsApp group, and RSVP notes for evening minyanim on the Davening page. Morning and evening weekday services are often followed by a brief halacha insight.",
+    ],
+    links: [
+      { label: "Davening schedule", href: "/davening" },
+      { label: "Email the shul about minyan", href: "mailto:mekorhabracha@gmail.com?subject=Minyan%20RSVP" },
+    ],
+  },
+  {
+    title: "Mekor Membership",
+    paragraphs: [
+      "Join Mekor or renew your membership to support daily minyanim, Torah learning, and a welcoming Center City community.",
+    ],
+    links: [
+      { label: "Membership overview", href: "/membership" },
+      { label: "Apply for membership", href: "/membership/apply" },
+    ],
+  },
+  {
+    title: "Hebrew Help at Mekor",
+    paragraphs: [
+      "Parents can sign up children (up to age 18) to learn Hebrew, Torah reading, and/or tefillah skills with Mekor community tutors. We'll match each child with a tutor for a mutually convenient time.",
+    ],
+    links: [
+      {
+        label: "Email about Hebrew Help",
+        href: "mailto:mekorhabracha@gmail.com?subject=Hebrew%20Help%20Sign-up",
+      },
+    ],
+  },
+  {
+    title: "Kosher Wine & Judaica",
+    paragraphs: [
+      "When you order through Mekor's affiliate links for Kosherwine.com and Judaica.com, Mekor earns 5% back at no extra cost to you.",
+    ],
+    links: [
+      { label: "Kosher wine (Mekor link)", href: "https://tinyurl.com/mekorwine" },
+      { label: "Judaica (Mekor link)", href: "https://tinyurl.com/mekorjudaica" },
+    ],
+  },
+  {
+    title: "Support of Israel",
+    paragraphs: [
+      "Find community initiatives, civil-defense support opportunities, and related announcements on Mekor's Israel page. Torah writing from Rabbi Hirsch and Rabbi Gotlib is linked from their profiles and Substacks.",
+    ],
+    links: [
+      { label: "Support of Israel", href: "/israel" },
+      { label: "Rabbi Hirsch Substack", href: "https://rabbieliezerhirsch.substack.com/" },
+      { label: "Rabbi Gotlib Substack", href: "https://rabbistevengotlib.substack.com/" },
+    ],
+  },
+  {
+    title: "Volunteer at Mekor",
+    paragraphs: [
+      "Help with Kiddush setup, hospitality, cholent (Erik Schneiman can teach the Mekor recipe), mashgiach work for IKC establishments, or eruv checking. Training is provided.",
+    ],
+    links: [
+      { label: "Volunteer hub", href: "/team-4" },
+      { label: "Email about volunteering", href: "mailto:mekorhabracha@gmail.com?subject=Volunteer" },
+      { label: "Erik Schneiman (cholent)", href: "mailto:erik.schneiman@gmail.com" },
+    ],
+  },
+  {
+    title: "Yizkor Books 2026–2027",
+    paragraphs: [
+      "Mekor publishes a Yizkor Book for Yom Kippur, Shemini Atzeret, Pesach, and Shavuot. Submission deadline: September 1, 2026 at 12:00pm. Contributions by check payable to the shul are welcome.",
+    ],
+    links: [
+      {
+        label: "Email Yizkor submissions",
+        href: "mailto:mekorhabracha@gmail.com?subject=Yizkor%20Book%202026-2027",
+      },
+    ],
+  },
+];
+
+const FEATURED_NOW: BulletinCard[] = [
+  {
+    title: "Strengthen the Center City Eruv",
+    paragraphs: [
+      "Help ensure this vital community resource remains reliable and halachically sound. Goal: $75,000. Donate through the Mekor Habracha campaign team, or read about the full campaign.",
+    ],
+    links: [
+      { label: "Donate via Mekor team", href: ERUV_CAMPAIGN_TEAM },
+      { label: "Full campaign details", href: ERUV_CAMPAIGN_INFO },
+      { label: "Monthly Eruv support", href: ERUV_DONATION_LINK },
+    ],
+  },
+  {
+    title: "Religious Zionism Class with Rabbi Gotlib",
+    paragraphs: [
+      "Join Rabbi Gotlib Tuesdays at 7:00pm beginning July 14 for a study of Rav Rabinovitch's Pathways to God: Torah, Society, and State. Sponsorships welcome; sponsors of $180+ receive a complimentary copy of the book.",
+    ],
+    links: [
+      { label: "RSVP for the class", href: ZIONISM_CLASS_RSVP },
+      {
+        label: "Read the announcement",
+        href: "/newsletters/new-class-on-zionism-and-democracy-2026-07-05",
+      },
+    ],
+  },
+];
+
 const COMMUNITY_UPDATES: BulletinCard[] = [
   {
     title: "Become an Eruv Checker",
@@ -156,6 +280,34 @@ const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
   },
 ];
 
+function NoticeGrid({ items }: { items: BulletinCard[] }) {
+  return (
+    <div className={styles.noticeGrid}>
+      {items.map((item) => (
+        <article key={item.title} className={styles.noticeCard}>
+          <h3>{item.title}</h3>
+          {item.paragraphs.map((paragraph, index) => (
+            <p key={`${item.title}-${index}`}>{paragraph}</p>
+          ))}
+          <div className={styles.noticeLinks}>
+            {item.links.map((link) => (
+              <a
+                key={`${item.title}-${link.href}`}
+                href={link.href}
+                target={link.href.startsWith("http") ? "_blank" : undefined}
+                rel={link.href.startsWith("http") ? "noreferrer noopener" : undefined}
+                className={styles.noticeLink}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 export const dynamic = "force-static";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -173,9 +325,9 @@ export default async function BulletinBoardPage() {
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
-        eyebrow="Mekor Bulletin Board"
+        eyebrow="Community Hub"
         title="Mekor Bulletin Board"
-        subtitle=""
+        subtitle="Standing community info in one place — so the homepage and weekly newsletter stay focused."
         image={{
           src: BULLETIN_IMAGES.hero,
           alt: "Mekor bulletin board and community updates",
@@ -184,8 +336,8 @@ export default async function BulletinBoardPage() {
         }}
         description=""
         actions={[
-          { label: "View Updates", href: "#community-updates" },
-          { label: "Community Announcements", href: "#community-announcements" },
+          { label: "Standing info", href: "#standing-info" },
+          { label: "Featured now", href: "#featured-now" },
           { label: "Support Mekor", href: "#support-mekor" },
         ]}
       />
@@ -201,11 +353,29 @@ export default async function BulletinBoardPage() {
           loading="lazy"
         />
         <div className={styles.bannerBody}>
-          <p className={styles.bannerTitle}>Mekor Bulletin Board</p>
+          <p className={styles.bannerTitle}>One board for repeating community info</p>
           <p className={styles.bannerText}>
-            Volunteer needs, communal announcements, and member opportunities from the live Mekor bulletin board.
+            Tot Shabbat, membership, Hebrew Help, wine &amp; Judaica links, volunteering, and other standing notices
+            live here. The weekly Shabbat newsletter highlights this week&apos;s schedule, sponsors, and fresh
+            announcements — then points back to this board.
           </p>
         </div>
+      </SectionCard>
+
+      <SectionCard
+        title="Standing Community Info"
+        description="Evergreen programs and links that used to repeat in every weekly newsletter."
+      >
+        <div id="standing-info" className={styles.anchor} />
+        <NoticeGrid items={STANDING_INFO} />
+      </SectionCard>
+
+      <SectionCard
+        title="Featured Now"
+        description="Time-sensitive campaigns and classes — linked from the homepage instead of repeating full write-ups."
+      >
+        <div id="featured-now" className={styles.anchor} />
+        <NoticeGrid items={FEATURED_NOW} />
       </SectionCard>
 
       <SectionCard
@@ -213,29 +383,7 @@ export default async function BulletinBoardPage() {
         description="Current opportunities and notices from Mekor."
       >
         <div id="community-updates" className={styles.anchor} />
-        <div className={styles.noticeGrid}>
-          {COMMUNITY_UPDATES.map((item) => (
-            <article key={item.title} className={styles.noticeCard}>
-              <h3>{item.title}</h3>
-              {item.paragraphs.map((paragraph, index) => (
-                <p key={`${item.title}-${index}`}>{paragraph}</p>
-              ))}
-              <div className={styles.noticeLinks}>
-                {item.links.map((link) => (
-                  <a
-                    key={`${item.title}-${link.href}`}
-                    href={link.href}
-                    target={link.href.startsWith("http") ? "_blank" : undefined}
-                    rel={link.href.startsWith("http") ? "noreferrer noopener" : undefined}
-                    className={styles.noticeLink}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
+        <NoticeGrid items={COMMUNITY_UPDATES} />
       </SectionCard>
 
       <SectionCard
@@ -243,29 +391,7 @@ export default async function BulletinBoardPage() {
         description="Useful local notices shared with the Mekor community."
       >
         <div id="community-announcements" className={styles.anchor} />
-        <div className={styles.noticeGrid}>
-          {COMMUNITY_ANNOUNCEMENTS.map((item) => (
-            <article key={item.title} className={styles.noticeCard}>
-              <h3>{item.title}</h3>
-              {item.paragraphs.map((paragraph, index) => (
-                <p key={`${item.title}-${index}`}>{paragraph}</p>
-              ))}
-              <div className={styles.noticeLinks}>
-                {item.links.map((link) => (
-                  <a
-                    key={`${item.title}-${link.href}`}
-                    href={link.href}
-                    target={link.href.startsWith("http") ? "_blank" : undefined}
-                    rel={link.href.startsWith("http") ? "noreferrer noopener" : undefined}
-                    className={styles.noticeLink}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
+        <NoticeGrid items={COMMUNITY_ANNOUNCEMENTS} />
       </SectionCard>
 
       <SectionCard title="Support Mekor" className={styles.supportCard}>
