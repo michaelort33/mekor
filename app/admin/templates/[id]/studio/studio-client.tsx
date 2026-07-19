@@ -9,6 +9,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
 import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import type { newsletterTemplates } from "@/db/schema";
+import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 import { extractLatestBodyHtmlFromMessages } from "@/lib/newsletter/studio-live-html";
 import styles from "./page.module.css";
 
@@ -59,6 +60,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   const htmlRef = useRef(html);
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   useEffect(() => {
     htmlRef.current = html;
@@ -75,6 +77,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
 
   const { messages, sendMessage, status, error: chatError, stop } = useChat({ transport });
   const busy = status === "submitted" || status === "streaming";
+  const previewHtml = useMemo(() => sanitizeNewsletterHtml(html), [html]);
 
   useEffect(() => {
     const nextHtml = extractLatestBodyHtmlFromMessages(messages);
@@ -141,27 +144,17 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     }
   }
 
-  async function persistHtml(nextHtml = html) {
+  async function saveHtmlSnapshot(nextHtml: string, nextSubject?: string) {
     setSaving(true);
     setError("");
     try {
       const response = await fetch("/api/admin/templates", {
-        method: "PUT",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: template.id,
-          title: template.title,
-          subject,
-          parshaName: template.parshaName,
-          shabbatDate: template.shabbatDate,
-          hebrewDate: template.hebrewDate,
-          candleLighting: template.candleLighting,
-          slug: template.slug,
-          category: template.category,
-          previewText: template.previewText,
           bodyHtml: nextHtml,
-          publishOnSend: template.publishOnSend,
-          status: template.status,
+          ...(nextSubject === undefined ? {} : { subject: nextSubject }),
         }),
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
@@ -170,9 +163,21 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
         return false;
       }
       return true;
+    } catch {
+      setError("Unable to save HTML.");
+      return false;
     } finally {
       setSaving(false);
     }
+  }
+
+  function persistHtml(nextHtml = html, nextSubject?: string) {
+    const queued = saveQueueRef.current.then(() => saveHtmlSnapshot(nextHtml, nextSubject));
+    saveQueueRef.current = queued.then(
+      () => undefined,
+      () => undefined,
+    );
+    return queued;
   }
 
   function scheduleAutosave(nextHtml: string) {
@@ -190,7 +195,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   async function openChat() {
     setError("");
     setNotice("");
-    const saved = await persistHtml(html);
+    const saved = await persistHtml(html, subject);
     if (!saved) return;
     setChatOpen(true);
     setTimeout(() => chatInputRef.current?.focus(), 80);
@@ -201,8 +206,9 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     const text = draft.trim();
     if (!text || busy) return;
     setError("");
+    const saved = await persistHtml(html, subject);
+    if (!saved) return;
     setDraft("");
-    await persistHtml(html);
     await sendMessage({ text });
   }
 
@@ -228,7 +234,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     setError("");
     setNotice("");
     try {
-      const saved = await persistHtml(html);
+      const saved = await persistHtml(html, subject);
       if (!saved) return;
       const response = await fetch("/api/admin/templates/send", {
         method: "POST",
@@ -294,7 +300,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
           </div>
           <div className={styles.toolbarActions}>
             {liveTick > 0 ? <span className={styles.livePulse}>Live preview synced</span> : null}
-            <button type="button" className={styles.secondaryButton} disabled={saving} onClick={() => void persistHtml()}>
+            <button type="button" className={styles.secondaryButton} disabled={saving} onClick={() => void persistHtml(html, subject)}>
               {saving ? "Saving…" : "Save HTML"}
             </button>
             <button type="button" className={styles.primaryButton} onClick={() => void openChat()}>
@@ -326,7 +332,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
               <h3 className={styles.panelTitle}>Preview</h3>
               <p className={styles.panelHint}>Fully rendered in-browser</p>
             </div>
-            <iframe title="Newsletter live preview" className={styles.previewFrame} srcDoc={html} />
+            <iframe title="Newsletter live preview" className={styles.previewFrame} sandbox="" srcDoc={previewHtml} />
           </section>
         </div>
 

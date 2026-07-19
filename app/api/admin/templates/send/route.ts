@@ -1,11 +1,12 @@
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getDb } from "@/db/client";
-import { newsletterTemplates, people, users } from "@/db/schema";
+import { newsletterSubscriptions, newsletterTemplates, people, users } from "@/db/schema";
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { sendMessageCampaign } from "@/lib/messages/service";
+import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 import { resolveSiteOriginFromRequest } from "@/lib/site-origin";
 
 const payloadSchema = z.object({
@@ -51,6 +52,23 @@ export async function POST(request: Request) {
   let personIds: number[] | undefined;
   if (parsed.data.recipientGroup === "selected") {
     personIds = [...new Set(parsed.data.personIds ?? [])];
+    const confirmedRows = await getDb()
+      .select({ personId: newsletterSubscriptions.personId })
+      .from(newsletterSubscriptions)
+      .where(
+        and(
+          inArray(newsletterSubscriptions.personId, personIds),
+          eq(newsletterSubscriptions.topic, "weekly"),
+          eq(newsletterSubscriptions.status, "subscribed"),
+        ),
+      );
+    const confirmedIds = new Set(confirmedRows.map((row) => row.personId));
+    if (personIds.some((personId) => !confirmedIds.has(personId))) {
+      return NextResponse.json(
+        { error: "Every selected recipient must be a confirmed weekly subscriber." },
+        { status: 400 },
+      );
+    }
   } else if (parsed.data.recipientGroup === "admins_only") {
     const adminPeople = await getDb()
       .select({ personId: people.id })
@@ -60,7 +78,7 @@ export async function POST(request: Request) {
     personIds = adminPeople.map((row) => row.personId);
   }
 
-  const body = (parsed.data.bodyHtmlOverride?.trim() || template.bodyHtml).trim();
+  const body = sanitizeNewsletterHtml(parsed.data.bodyHtmlOverride?.trim() || template.bodyHtml);
   if (!body) return NextResponse.json({ error: "Newsletter HTML body is empty." }, { status: 400 });
 
   try {
@@ -72,7 +90,7 @@ export async function POST(request: Request) {
       name: template.title || subject,
       subject,
       body,
-      segmentKey: parsed.data.recipientGroup === "newsletter_subscribers" ? "newsletter_subscribers" : undefined,
+      segmentKey: parsed.data.recipientGroup === "admins_only" ? undefined : "newsletter_subscribers",
       personIds,
       previewOnly: parsed.data.mode === "preview",
       scheduledAt: parsed.data.mode === "schedule" ? new Date(parsed.data.scheduledAt!) : null,

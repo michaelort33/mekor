@@ -68,3 +68,31 @@ test("studio architecture does not depend on Sandbox or Blob version APIs", asyn
   await assert.rejects(() => access("app/api/admin/templates/[id]/blob/route.ts"));
   await assert.rejects(() => access("drizzle/0029_newsletter_template_blob.sql"));
 });
+
+test("studio preview and persistence keep editable HTML isolated", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const [studio, templateRoute] = await Promise.all([
+    readFile("app/admin/templates/[id]/studio/studio-client.tsx", "utf8"),
+    readFile("app/api/admin/templates/route.ts", "utf8"),
+  ]);
+
+  assert.match(studio, /sanitizeNewsletterHtml\(html\)/);
+  assert.match(studio, /sandbox="" srcDoc=\{previewHtml\}/);
+  assert.match(studio, /method: "PATCH"/);
+  assert.match(studio, /saveQueueRef\.current\.then/);
+  assert.match(studio, /const saved = await persistHtml\(html, subject\);\s+if \(!saved\) return;/);
+  assert.match(studio, /saveTimerRef\.current = setTimeout\(\(\) => \{\s+void persistHtml\(nextHtml\);/);
+  assert.match(templateRoute, /export async function PATCH/);
+  assert.match(templateRoute, /bodyHtml: sanitizeNewsletterHtml\(body\.bodyHtml\)/);
+});
+
+test("selected newsletter recipients are revalidated before campaign creation", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const sendRoute = await readFile("app/api/admin/templates/send/route.ts", "utf8");
+
+  assert.match(sendRoute, /eq\(newsletterSubscriptions\.topic, "weekly"\)/);
+  assert.match(sendRoute, /eq\(newsletterSubscriptions\.status, "subscribed"\)/);
+  assert.match(sendRoute, /Every selected recipient must be a confirmed weekly subscriber/);
+  assert.match(sendRoute, /sanitizeNewsletterHtml/);
+  assert.match(sendRoute, /recipientGroup === "admins_only" \? undefined : "newsletter_subscribers"/);
+});
