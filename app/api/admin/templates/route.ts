@@ -35,6 +35,22 @@ export async function GET(request: Request) {
     return NextResponse.json({ template: row });
   }
 
+  if (searchParams.get("summary") === "true") {
+    const rows = await db
+      .select({
+        id: newsletterTemplates.id,
+        title: newsletterTemplates.title,
+        subject: newsletterTemplates.subject,
+        parshaName: newsletterTemplates.parshaName,
+        status: newsletterTemplates.status,
+        updatedAt: newsletterTemplates.updatedAt,
+      })
+      .from(newsletterTemplates)
+      .orderBy(desc(newsletterTemplates.updatedAt));
+
+    return NextResponse.json({ templates: rows });
+  }
+
   const rows = await db
     .select()
     .from(newsletterTemplates)
