@@ -8,6 +8,7 @@ import {
   lintNewsletterHtml,
   sanitizeNewsletterHtml,
 } from "../lib/newsletter/html-sanitize";
+import { getNewsletterRecipientList } from "../lib/newsletter/recipient-lists";
 
 test("admin newsletter studio and chat API are admin-protected", () => {
   assert.equal(getEdgeProtectionType("/admin/templates/12/studio"), "admin");
@@ -95,4 +96,19 @@ test("selected newsletter recipients are revalidated before campaign creation", 
   assert.match(sendRoute, /Every selected recipient must be a confirmed weekly subscriber/);
   assert.match(sendRoute, /sanitizeNewsletterHtml/);
   assert.match(sendRoute, /recipientGroup === "admins_only" \? undefined : "newsletter_subscribers"/);
+});
+
+test("Michael test list is server-resolved to one confirmed subscriber", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const [studio, sendRoute] = await Promise.all([
+    readFile("app/admin/templates/[id]/studio/studio-client.tsx", "utf8"),
+    readFile("app/api/admin/templates/send/route.ts", "utf8"),
+  ]);
+  const list = getNewsletterRecipientList("michael_test");
+
+  assert.equal(list.name, "Michael test list");
+  assert.deepEqual(list.emails, ["michaelort@hyatus.com"]);
+  assert.match(studio, /recipientGroup: recipientListKey \? "recipient_list" : "selected"/);
+  assert.match(sendRoute, /getNewsletterRecipientList/);
+  assert.match(sendRoute, /Test recipient is not a confirmed weekly subscriber/);
 });

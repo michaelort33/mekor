@@ -7,11 +7,16 @@ import { newsletterSubscriptions, newsletterTemplates, people, users } from "@/d
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { sendMessageCampaign } from "@/lib/messages/service";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
+import {
+  getNewsletterRecipientList,
+  NEWSLETTER_RECIPIENT_LIST_KEYS,
+} from "@/lib/newsletter/recipient-lists";
 import { resolveSiteOriginFromRequest } from "@/lib/site-origin";
 
 const payloadSchema = z.object({
   templateId: z.number().int().min(1),
-  recipientGroup: z.enum(["newsletter_subscribers", "admins_only", "selected"]).default("newsletter_subscribers"),
+  recipientGroup: z.enum(["newsletter_subscribers", "admins_only", "selected", "recipient_list"]).default("newsletter_subscribers"),
+  recipientListKey: z.enum(NEWSLETTER_RECIPIENT_LIST_KEYS).optional(),
   personIds: z.array(z.number().int().min(1)).max(5000).optional(),
   mode: z.enum(["preview", "send", "schedule"]).default("send"),
   subjectOverride: z.string().trim().max(255).optional(),
@@ -48,6 +53,9 @@ export async function POST(request: Request) {
   if (parsed.data.recipientGroup === "selected" && !(parsed.data.personIds?.length)) {
     return NextResponse.json({ error: "Select at least one recipient." }, { status: 400 });
   }
+  if (parsed.data.recipientGroup === "recipient_list" && !parsed.data.recipientListKey) {
+    return NextResponse.json({ error: "Select a newsletter recipient list." }, { status: 400 });
+  }
 
   let personIds: number[] | undefined;
   if (parsed.data.recipientGroup === "selected") {
@@ -69,6 +77,29 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
+  } else if (parsed.data.recipientGroup === "recipient_list") {
+    const recipientList = getNewsletterRecipientList(parsed.data.recipientListKey!);
+    const recipientRows = await getDb()
+      .select({ personId: people.id, email: people.email })
+      .from(people)
+      .innerJoin(
+        newsletterSubscriptions,
+        and(
+          eq(newsletterSubscriptions.personId, people.id),
+          eq(newsletterSubscriptions.topic, "weekly"),
+          eq(newsletterSubscriptions.status, "subscribed"),
+        ),
+      )
+      .where(inArray(people.email, recipientList.emails));
+    const personIdByEmail = new Map(recipientRows.map((row) => [row.email, row.personId]));
+    const missingEmails = recipientList.emails.filter((email) => !personIdByEmail.has(email));
+    if (missingEmails.length > 0) {
+      return NextResponse.json(
+        { error: `Test recipient is not a confirmed weekly subscriber: ${missingEmails.join(", ")}` },
+        { status: 400 },
+      );
+    }
+    personIds = recipientList.emails.map((email) => personIdByEmail.get(email)!);
   } else if (parsed.data.recipientGroup === "admins_only") {
     const adminPeople = await getDb()
       .select({ personId: people.id })
@@ -107,13 +138,19 @@ export async function POST(request: Request) {
       payload: {
         campaignId: "campaignId" in result ? result.campaignId : null,
         recipientGroup: parsed.data.recipientGroup,
+        recipientListKey: parsed.data.recipientListKey ?? null,
         selectedCount: personIds?.length ?? null,
         recipientCount: result.recipientCount,
         scheduledAt: parsed.data.scheduledAt ?? null,
       },
     });
 
-    return NextResponse.json({ ...result, recipientGroup: parsed.data.recipientGroup, subject });
+    return NextResponse.json({
+      ...result,
+      recipientGroup: parsed.data.recipientGroup,
+      recipientListKey: parsed.data.recipientListKey ?? null,
+      subject,
+    });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to process newsletter" }, { status: 400 });
   }
