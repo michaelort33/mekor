@@ -8,6 +8,12 @@
   --studio-accent-deep: #163a58;
   --studio-good: #1f6b45;
   --studio-bad: #8b2e2e;
+  --primary: var(--studio-accent);
+  --primary-foreground: #ffffff;
+  --secondary: #eef4f9;
+  --secondary-foreground: var(--studio-ink);
+  --border: var(--studio-line);
+  --ring: var(--studio-accent);
   display: grid;
   gap: 14px;
   min-height: calc(100vh - 180px);
@@ -487,11 +493,17 @@
 
 .chatBody {
   flex: 1;
+  width: 100%;
+  height: auto;
   min-height: 0;
-  overflow: auto;
+}
+
+.chatViewport {
   padding: 14px;
-  display: grid;
-  gap: 10px;
+}
+
+.chatContent {
+  gap: 12px;
   align-content: start;
 }
 
@@ -514,35 +526,42 @@
   font-size: 0.9rem;
 }
 
-.message {
+.messageBubble {
   max-width: 94%;
-  border-radius: 14px;
-  padding: 10px 12px;
+}
+
+.messageText {
   font-size: 0.9rem;
   line-height: 1.45;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-.messageUser {
-  justify-self: end;
-  background: var(--studio-accent);
-  color: #fff;
+.messageHeader {
+  color: var(--studio-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-.messageAssistant {
-  justify-self: start;
-  background: #eef4f9;
-  color: var(--studio-ink);
-  border: 1px solid #d7e4ef;
+.messageFooter {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 10px;
+  color: var(--studio-muted);
+  font-size: 0.68rem;
 }
 
-.toolNote {
-  margin-top: 8px;
-  font-size: 0.74rem;
-  color: #4d647a;
-  border-top: 1px solid rgba(31, 79, 120, 0.12);
-  padding-top: 6px;
+.messageFooter time {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.scrollButton {
+  border-color: var(--studio-line);
+  background: #ffffff;
+  color: var(--studio-accent);
+  box-shadow: 0 10px 24px -16px rgba(21, 36, 51, 0.6);
 }
 
 .chatComposer {
