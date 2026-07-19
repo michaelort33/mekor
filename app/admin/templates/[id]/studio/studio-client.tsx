@@ -47,7 +47,6 @@ function toolSummaries(message: UIMessage) {
 export function NewsletterStudioClient({ template }: StudioClientProps) {
   const [html, setHtml] = useState(template.bodyHtml);
   const [subject, setSubject] = useState(template.subject || template.title);
-  const [chatOpen, setChatOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
@@ -63,7 +62,6 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
   const [loadingRecipients, setLoadingRecipients] = useState(false);
 
   const htmlRef = useRef(html);
-  const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
 
@@ -197,15 +195,6 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     scheduleAutosave(value);
   }
 
-  async function openChat() {
-    setError("");
-    setNotice("");
-    const saved = await persistHtml(html, subject);
-    if (!saved) return;
-    setChatOpen(true);
-    setTimeout(() => chatInputRef.current?.focus(), 80);
-  }
-
   async function onSendChat(event: FormEvent) {
     event.preventDefault();
     const text = draft.trim();
@@ -295,7 +284,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
     <AdminShell
       currentPath="/admin/templates"
       title="Newsletter Studio"
-      description="Edit HTML on the left, watch a live browser preview on the right, chat the agent into changes, then send."
+      description="Preview the newsletter beside the AI editor, iterate until it is right, then choose recipients and send."
       breadcrumbs={[
         { href: "/admin", label: "Dashboard" },
         { href: "/admin/templates", label: "Templates" },
@@ -315,7 +304,7 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
       <div className={styles.studio}>
         <div className={styles.toolbar}>
           <div className={styles.toolbarMeta}>
-            <p className={styles.toolbarEyebrow}>Split studio</p>
+            <p className={styles.toolbarEyebrow}>Preview + AI workbench</p>
             <h2 className={styles.toolbarTitle}>{template.title}</h2>
           </div>
           <div className={styles.toolbarActions}>
@@ -323,37 +312,97 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
             <button type="button" className={styles.secondaryButton} disabled={saving} onClick={() => void persistHtml(html, subject)}>
               {saving ? "Saving…" : "Save HTML"}
             </button>
-            <button type="button" className={styles.primaryButton} onClick={() => void openChat()}>
-              Show it in Chat
-            </button>
           </div>
         </div>
 
         {notice ? <p className={styles.notice}>{notice}</p> : null}
         {error ? <p className={styles.error}>{error}</p> : null}
 
-        <div className={styles.split}>
-          <section className={styles.panel} aria-label="HTML editor">
-            <div className={styles.panelHeader}>
-              <h3 className={styles.panelTitle}>HTML</h3>
-              <p className={styles.panelHint}>Autosaves as you type</p>
-            </div>
-            <textarea
-              className={styles.htmlEditor}
-              value={html}
-              onChange={(event) => onHtmlChange(event.target.value)}
-              spellCheck={false}
-              aria-label="Newsletter HTML source"
-            />
-          </section>
+        <details className={styles.htmlDetails}>
+          <summary>
+            <span className={styles.htmlDetailsTitle}>
+              <strong>HTML source</strong>
+              <span>Advanced editor · autosaves as you type</span>
+            </span>
+            <span className={styles.expandLabel}>Edit code</span>
+            <span className={styles.collapseLabel}>Collapse code</span>
+          </summary>
+          <textarea
+            className={styles.htmlEditor}
+            value={html}
+            onChange={(event) => onHtmlChange(event.target.value)}
+            spellCheck={false}
+            aria-label="Newsletter HTML source"
+          />
+        </details>
 
+        <div className={styles.workflow}>
           <section className={styles.panel} aria-label="Live preview">
             <div className={styles.panelHeader}>
-              <h3 className={styles.panelTitle}>Preview</h3>
-              <p className={styles.panelHint}>Fully rendered in-browser</p>
+              <div>
+                <h3 className={styles.panelTitle}>Rendered newsletter</h3>
+                <p className={styles.panelHint}>Updates as AI edits the design</p>
+              </div>
+              {liveTick > 0 ? <span className={styles.livePulse}>Synced</span> : null}
             </div>
             <iframe title="Newsletter live preview" className={styles.previewFrame} sandbox="" srcDoc={previewHtml} />
           </section>
+
+          <aside className={styles.chatPanel} aria-label="Newsletter AI editor">
+            <div className={styles.chatHeader}>
+              <div>
+                <h3 className={styles.panelTitle}>Edit with AI</h3>
+                <p className={styles.panelHint}>Describe a change and watch it appear beside you.</p>
+              </div>
+              <span className={styles.agentStatus}>{busy ? "Working" : "Ready"}</span>
+            </div>
+            <div className={styles.chatBody} aria-live="polite">
+              {messages.length === 0 ? (
+                <div className={styles.emptyChat}>
+                  <strong>What should change?</strong>
+                  <span>Try “Make the intro warmer” or “Add candle lighting at 7:12pm.”</span>
+                </div>
+              ) : (
+                messages.map((message) => {
+                  const text = messageText(message);
+                  const tools = toolSummaries(message);
+                  return (
+                    <div
+                      key={message.id}
+                      className={`${styles.message} ${
+                        message.role === "user" ? styles.messageUser : styles.messageAssistant
+                      }`}
+                    >
+                      {text || (message.role === "assistant" ? "…" : "")}
+                      {tools.length > 0 ? <div className={styles.toolNote}>Tools: {tools.join(" · ")}</div> : null}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+            <form className={styles.chatComposer} onSubmit={onSendChat}>
+              <textarea
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                placeholder="Describe the change you want…"
+                aria-label="Describe a newsletter change"
+                disabled={busy}
+              />
+              <div className={styles.composerRow}>
+                <span className={styles.statusText}>{chatError ? chatError.message : "AI edits update the preview live."}</span>
+                <div className={styles.toolbarActions}>
+                  {busy ? (
+                    <button type="button" className={styles.secondaryButton} onClick={() => stop()}>
+                      Stop
+                    </button>
+                  ) : null}
+                  <button type="submit" className={styles.primaryButton} disabled={busy || !draft.trim()}>
+                    Apply change
+                  </button>
+                </div>
+              </div>
+            </form>
+          </aside>
         </div>
 
         <section className={styles.sendBar} aria-label="Send newsletter">
@@ -478,67 +527,6 @@ export function NewsletterStudioClient({ template }: StudioClientProps) {
         </section>
       </div>
 
-      {chatOpen ? (
-        <div className={styles.chatDrawer} role="dialog" aria-modal="true" aria-label="Newsletter chat">
-          <button type="button" className={styles.chatScrim} aria-label="Close chat" onClick={() => setChatOpen(false)} />
-          <aside className={styles.chatPanel}>
-            <div className={styles.chatHeader}>
-              <div>
-                <h3 className={styles.panelTitle}>Show it in Chat</h3>
-                <p className={styles.panelHint}>Ask for edits — the HTML and preview update live.</p>
-              </div>
-              <button type="button" className={styles.ghostButton} onClick={() => setChatOpen(false)}>
-                Close
-              </button>
-            </div>
-            <div className={styles.chatBody}>
-              {messages.length === 0 ? (
-                <p className={styles.emptyChat}>
-                  Try “Make the intro warmer” or “Add candle lighting at 7:12pm.” The agent writes HTML directly into the editor.
-                </p>
-              ) : (
-                messages.map((message) => {
-                  const text = messageText(message);
-                  const tools = toolSummaries(message);
-                  return (
-                    <div
-                      key={message.id}
-                      className={`${styles.message} ${
-                        message.role === "user" ? styles.messageUser : styles.messageAssistant
-                      }`}
-                    >
-                      {text || (message.role === "assistant" ? "…" : "")}
-                      {tools.length > 0 ? <div className={styles.toolNote}>Tools: {tools.join(" · ")}</div> : null}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-            <form className={styles.chatComposer} onSubmit={onSendChat}>
-              <textarea
-                ref={chatInputRef}
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                placeholder="Describe the change you want in the newsletter…"
-                disabled={busy}
-              />
-              <div className={styles.composerRow}>
-                <span className={styles.statusText}>{chatError ? chatError.message : busy ? "Agent working…" : "Ready"}</span>
-                <div className={styles.toolbarActions}>
-                  {busy ? (
-                    <button type="button" className={styles.secondaryButton} onClick={() => stop()}>
-                      Stop
-                    </button>
-                  ) : null}
-                  <button type="submit" className={styles.primaryButton} disabled={busy || !draft.trim()}>
-                    Apply in chat
-                  </button>
-                </div>
-              </div>
-            </form>
-          </aside>
-        </div>
-      ) : null}
     </AdminShell>
   );
 }

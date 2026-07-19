@@ -79,6 +79,10 @@ test("studio preview and persistence keep editable HTML isolated", async () => {
 
   assert.match(studio, /sanitizeNewsletterHtml\(html\)/);
   assert.match(studio, /sandbox="" srcDoc=\{previewHtml\}/);
+  assert.match(studio, /<details className=\{styles\.htmlDetails\}>/);
+  assert.match(studio, /<div className=\{styles\.workflow\}>/);
+  assert.match(studio, /<aside className=\{styles\.chatPanel\} aria-label="Newsletter AI editor">/);
+  assert.doesNotMatch(studio, /chatDrawer/);
   assert.match(studio, /method: "PATCH"/);
   assert.match(studio, /saveQueueRef\.current\.then/);
   assert.match(studio, /const saved = await persistHtml\(html, subject\);\s+if \(!saved\) return;/);
