@@ -4,6 +4,7 @@ import { desc, eq } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { newsletterTemplates } from "@/db/schema";
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
+import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 
 async function requireAdmin() {
   const result = await requireAdminActor();
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
       slug: body.slug || "",
       category: body.category || "weekly",
       previewText: body.previewText || "",
-      bodyHtml: body.bodyHtml || "",
+      bodyHtml: sanitizeNewsletterHtml(body.bodyHtml || ""),
       publishOnSend: body.publishOnSend !== false,
       status: body.status || "draft",
     })
@@ -103,7 +104,7 @@ export async function PUT(request: Request) {
       slug: body.slug,
       category: body.category,
       previewText: body.previewText,
-      bodyHtml: body.bodyHtml,
+      bodyHtml: sanitizeNewsletterHtml(body.bodyHtml),
       publishOnSend: body.publishOnSend,
       status: body.status,
       updatedAt: new Date(),
@@ -124,6 +125,48 @@ export async function PUT(request: Request) {
       },
     });
   }
+
+  return NextResponse.json({ template: row });
+}
+
+export async function PATCH(request: Request) {
+  const adminResult = await requireAdmin();
+  if ("error" in adminResult) return adminResult.error;
+  const actor = adminResult.actor;
+
+  const body = await request.json();
+  if (
+    !Number.isInteger(body.id) ||
+    typeof body.bodyHtml !== "string" ||
+    (body.subject !== undefined && typeof body.subject !== "string")
+  ) {
+    return NextResponse.json({ error: "Invalid template snapshot" }, { status: 400 });
+  }
+
+  const subjectUpdate = body.subject === undefined ? {} : { subject: body.subject };
+
+  const [row] = await getDb()
+    .update(newsletterTemplates)
+    .set({
+      ...subjectUpdate,
+      bodyHtml: sanitizeNewsletterHtml(body.bodyHtml),
+      updatedAt: new Date(),
+    })
+    .where(eq(newsletterTemplates.id, body.id))
+    .returning();
+
+  if (!row) return NextResponse.json({ error: "Template not found" }, { status: 404 });
+
+  await writeAdminAuditLog({
+    actorUserId: actor.id,
+    action: "newsletter.template.updated",
+    targetType: "newsletter_template",
+    targetId: String(row.id),
+    payload: {
+      subject: row.subject,
+      updatedFields: body.subject === undefined ? ["bodyHtml"] : ["subject", "bodyHtml"],
+    },
+  });
 
   return NextResponse.json({ template: row });
 }

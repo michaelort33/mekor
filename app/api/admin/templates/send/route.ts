@@ -1,19 +1,22 @@
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getDb } from "@/db/client";
-import { newsletterTemplates, people, users } from "@/db/schema";
+import { newsletterSubscriptions, newsletterTemplates, people, users } from "@/db/schema";
 import { requireAdminActor, writeAdminAuditLog } from "@/lib/admin/actor";
 import { sendMessageCampaign } from "@/lib/messages/service";
+import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 import { resolveSiteOriginFromRequest } from "@/lib/site-origin";
 
 const payloadSchema = z.object({
   templateId: z.number().int().min(1),
-  recipientGroup: z.enum(["newsletter_subscribers", "admins_only"]).default("newsletter_subscribers"),
+  recipientGroup: z.enum(["newsletter_subscribers", "admins_only", "selected"]).default("newsletter_subscribers"),
+  personIds: z.array(z.number().int().min(1)).max(5000).optional(),
   mode: z.enum(["preview", "send", "schedule"]).default("send"),
   subjectOverride: z.string().trim().max(255).optional(),
   scheduledAt: z.string().datetime().optional(),
+  bodyHtmlOverride: z.string().max(120_000).optional(),
 });
 
 export async function POST(request: Request) {
@@ -42,8 +45,31 @@ export async function POST(request: Request) {
   const subject = parsed.data.subjectOverride?.trim() || template.subject || template.title;
   if (!subject) return NextResponse.json({ error: "Template subject is required" }, { status: 400 });
 
+  if (parsed.data.recipientGroup === "selected" && !(parsed.data.personIds?.length)) {
+    return NextResponse.json({ error: "Select at least one recipient." }, { status: 400 });
+  }
+
   let personIds: number[] | undefined;
-  if (parsed.data.recipientGroup === "admins_only") {
+  if (parsed.data.recipientGroup === "selected") {
+    personIds = [...new Set(parsed.data.personIds ?? [])];
+    const confirmedRows = await getDb()
+      .select({ personId: newsletterSubscriptions.personId })
+      .from(newsletterSubscriptions)
+      .where(
+        and(
+          inArray(newsletterSubscriptions.personId, personIds),
+          eq(newsletterSubscriptions.topic, "weekly"),
+          eq(newsletterSubscriptions.status, "subscribed"),
+        ),
+      );
+    const confirmedIds = new Set(confirmedRows.map((row) => row.personId));
+    if (personIds.some((personId) => !confirmedIds.has(personId))) {
+      return NextResponse.json(
+        { error: "Every selected recipient must be a confirmed weekly subscriber." },
+        { status: 400 },
+      );
+    }
+  } else if (parsed.data.recipientGroup === "admins_only") {
     const adminPeople = await getDb()
       .select({ personId: people.id })
       .from(people)
@@ -51,6 +77,9 @@ export async function POST(request: Request) {
       .where(inArray(users.role, ["admin", "super_admin"]));
     personIds = adminPeople.map((row) => row.personId);
   }
+
+  const body = sanitizeNewsletterHtml(parsed.data.bodyHtmlOverride?.trim() || template.bodyHtml);
+  if (!body) return NextResponse.json({ error: "Newsletter HTML body is empty." }, { status: 400 });
 
   try {
     const result = await sendMessageCampaign({
@@ -60,8 +89,8 @@ export async function POST(request: Request) {
       channel: "email",
       name: template.title || subject,
       subject,
-      body: template.bodyHtml,
-      segmentKey: parsed.data.recipientGroup === "newsletter_subscribers" ? "newsletter_subscribers" : undefined,
+      body,
+      segmentKey: parsed.data.recipientGroup === "admins_only" ? undefined : "newsletter_subscribers",
       personIds,
       previewOnly: parsed.data.mode === "preview",
       scheduledAt: parsed.data.mode === "schedule" ? new Date(parsed.data.scheduledAt!) : null,
@@ -78,6 +107,7 @@ export async function POST(request: Request) {
       payload: {
         campaignId: "campaignId" in result ? result.campaignId : null,
         recipientGroup: parsed.data.recipientGroup,
+        selectedCount: personIds?.length ?? null,
         recipientCount: result.recipientCount,
         scheduledAt: parsed.data.scheduledAt ?? null,
       },

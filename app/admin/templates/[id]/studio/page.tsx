@@ -24,8 +24,8 @@ export default async function NewsletterStudioPage({ params }: PageProps) {
     return (
       <AdminShell
         currentPath="/admin/templates"
-        title="Newsletter Chat Studio"
-        description="Chat-driven newsletter editing against the database HTML snapshot."
+        title="Newsletter Studio"
+        description="Split HTML editor and live preview with chat-assisted edits."
         breadcrumbs={[
           { href: "/admin", label: "Dashboard" },
           { href: "/admin/templates", label: "Templates" },
