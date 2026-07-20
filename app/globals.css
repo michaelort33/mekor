@@ -174,12 +174,16 @@ body:has(.mirror-root) {
   }
 }
 
-/* Keep plain links inheriting parent color, but do not override button-styled
-   anchors (Donate CTA, etc.) whose Tailwind text color lives in @layer utilities. */
-a:not([data-slot="button"]) {
-  color: inherit;
+/* Plain links inherit parent color. Keep this in @layer base so unlayered CSS
+   modules and Tailwind utilities can set explicit CTA text colors without
+   needing !important (unlayered a{color:inherit} was causing dark-on-dark). */
+@layer base {
+  a:not([data-slot="button"]) {
+    color: inherit;
+  }
 }
 
+/* Belt-and-suspenders for shadcn Button-as-link default variant. */
 a[data-slot="button"][data-variant="default"],
 a[data-slot="button"][data-variant="default"]:visited,
 a[data-slot="button"][data-variant="default"]:hover {
