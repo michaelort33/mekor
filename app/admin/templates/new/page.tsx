@@ -9,6 +9,10 @@ import adminStyles from "@/components/admin/admin-shell.module.css";
 import { NewsletterFlowSteps } from "@/components/admin/newsletter-flow-steps";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 import {
+  NEWSLETTER_AUDIENCE_OPTIONS,
+  type NewsletterAudienceKey,
+} from "@/lib/newsletter/recipient-lists";
+import {
   buildWeeklyCleanedTemplateDraft,
   WEEKLY_CLEANED_TEMPLATE_TITLE,
 } from "@/lib/newsletter/weekly-cleaned";
@@ -34,6 +38,15 @@ type TemplateOption = {
   parshaName: string;
   status: "draft" | "ready" | "sent" | "archived";
   updatedAt: string;
+};
+
+type BaseOption = {
+  key: string;
+  kind: StarterKind;
+  templateId: number | null;
+  title: string;
+  description: string;
+  meta: string;
 };
 
 type ExistingTemplate = Omit<TemplateDraft, "status"> & {
@@ -73,6 +86,10 @@ export default function NewTemplatePage() {
   const [templates, setTemplates] = useState<TemplateOption[]>([]);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
   const [templateQuery, setTemplateQuery] = useState("");
+  const [templateMenuOpen, setTemplateMenuOpen] = useState(false);
+  const [audienceQuery, setAudienceQuery] = useState("");
+  const [audienceMenuOpen, setAudienceMenuOpen] = useState(false);
+  const [selectedAudience, setSelectedAudience] = useState<NewsletterAudienceKey>("michael_test");
   const [starterKind, setStarterKind] = useState<StarterKind>("weekly-cleaned");
   const [selectedBaseId, setSelectedBaseId] = useState<number | null>(null);
   const [baseLabel, setBaseLabel] = useState(WEEKLY_CLEANED_TEMPLATE_TITLE);
@@ -111,21 +128,75 @@ export default function NewTemplatePage() {
     })();
   }, []);
 
-  const filteredTemplates = useMemo(() => {
+  const baseOptions = useMemo<BaseOption[]>(() => [
+    {
+      key: "weekly-cleaned",
+      kind: "weekly-cleaned",
+      templateId: null,
+      title: WEEKLY_CLEANED_TEMPLATE_TITLE,
+      description: "Lean weekly structure with this week's schedule, sponsors, and Bulletin Board links",
+      meta: "Recommended starter",
+    },
+    {
+      key: "blank",
+      kind: "blank",
+      templateId: null,
+      title: "Blank canvas",
+      description: "Ask AI to create the newsletter and email HTML from scratch",
+      meta: "Start fresh",
+    },
+    ...templates.map((template) => ({
+      key: `template-${template.id}`,
+      kind: "existing" as const,
+      templateId: template.id,
+      title: template.title,
+      description: template.subject || "No subject",
+      meta: `${template.parshaName || "Newsletter"} · ${new Date(template.updatedAt).toLocaleDateString()}`,
+    })),
+  ], [templates]);
+
+  const filteredBaseOptions = useMemo(() => {
     const query = templateQuery.trim().toLowerCase();
-    if (!query) return templates.slice(0, 12);
-    return templates
-      .filter((template) =>
-        [template.title, template.subject, template.parshaName]
+    if (!query) return baseOptions.slice(0, 14);
+    return baseOptions
+      .filter((option) =>
+        [option.title, option.description, option.meta]
           .some((value) => value.toLowerCase().includes(query)),
       )
-      .slice(0, 12);
-  }, [templateQuery, templates]);
+      .slice(0, 14);
+  }, [baseOptions, templateQuery]);
+
+  const selectedBaseOption = baseOptions.find((option) =>
+    option.kind === starterKind && (starterKind !== "existing" || option.templateId === selectedBaseId),
+  ) ?? baseOptions[0];
+
+  const filteredAudienceOptions = useMemo(() => {
+    const query = audienceQuery.trim().toLowerCase();
+    if (!query) return NEWSLETTER_AUDIENCE_OPTIONS;
+    return NEWSLETTER_AUDIENCE_OPTIONS.filter((option) =>
+      [option.name, option.description].some((value) => value.toLowerCase().includes(query)),
+    );
+  }, [audienceQuery]);
+
+  const selectedAudienceOption = NEWSLETTER_AUDIENCE_OPTIONS.find((option) => option.key === selectedAudience)!;
 
   const previewHtml = useMemo(() => sanitizeNewsletterHtml(form.bodyHtml), [form.bodyHtml]);
 
   function update<K extends keyof TemplateDraft>(field: K, value: TemplateDraft[K]) {
     setForm((previous) => ({ ...previous, [field]: value }));
+  }
+
+  function chooseBase(option: BaseOption) {
+    setStarterKind(option.kind);
+    setSelectedBaseId(option.templateId);
+    setTemplateQuery("");
+    setTemplateMenuOpen(false);
+  }
+
+  function chooseAudience(key: NewsletterAudienceKey) {
+    setSelectedAudience(key);
+    setAudienceQuery("");
+    setAudienceMenuOpen(false);
   }
 
   async function beginComposing() {
@@ -301,7 +372,7 @@ export default function NewTemplatePage() {
       return;
     }
 
-    router.push(`/admin/templates/${payload.template.id}/studio?from=new`);
+    router.push(`/admin/templates/${payload.template.id}/studio?from=new&audience=${selectedAudience}`);
     router.refresh();
   }
 
@@ -325,100 +396,164 @@ export default function NewTemplatePage() {
         <section className={styles.startPanel} aria-labelledby="starting-point-title">
           <div className={styles.sectionHeading}>
             <p className={styles.eyebrow}>Step 1</p>
-            <h2 id="starting-point-title">What should this newsletter start from?</h2>
+            <h2 id="starting-point-title">Choose the base and audience</h2>
             <p>
-              Start fresh, use the weekly cleaned starter, or copy an existing newsletter so AI can preserve its layout.
-              Nothing is emailed from this page — after you save, Studio walks you through recipients and send.
+              Search for a starting template, then choose who this newsletter is intended for. Nothing is emailed from
+              this page — Studio still gives you a final audience check before send.
             </p>
           </div>
 
-          <button
-            type="button"
-            className={`${styles.blankCard} ${starterKind === "weekly-cleaned" ? styles.selectedCard : ""}`}
-            onClick={() => {
-              setStarterKind("weekly-cleaned");
-              setSelectedBaseId(null);
-            }}
-            aria-pressed={starterKind === "weekly-cleaned"}
-          >
-            <span className={styles.blankIcon}>✦</span>
-            <span>
-              <strong>{WEEKLY_CLEANED_TEMPLATE_TITLE}</strong>
-              <small>
-                Lean weekly starter based on recent Shabbat issues — schedule, sponsors, this week only; evergreen
-                links point to the Bulletin Board
-              </small>
-            </span>
-            <span className={styles.selectionMark}>{starterKind === "weekly-cleaned" ? "Selected" : "Select"}</span>
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.blankCard} ${starterKind === "blank" ? styles.selectedCard : ""}`}
-            onClick={() => {
-              setStarterKind("blank");
-              setSelectedBaseId(null);
-            }}
-            aria-pressed={starterKind === "blank"}
-          >
-            <span className={styles.blankIcon}>＋</span>
-            <span>
-              <strong>Blank canvas</strong>
-              <small>Ask AI to create the HTML from scratch here, then continue to Studio to polish and send</small>
-            </span>
-            <span className={styles.selectionMark}>{starterKind === "blank" ? "Selected" : "Select"}</span>
-          </button>
-
-          <div className={styles.templatePicker}>
-            <div className={styles.pickerHeader}>
-              <div>
-                <h3>Or use an existing newsletter</h3>
-                <p>The source stays untouched. Saving creates a separate newsletter.</p>
+          <div className={styles.selectorGrid}>
+            <div
+              className={styles.searchablePicker}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) setTemplateMenuOpen(false);
+              }}
+            >
+              <div className={styles.selectorLabel}>
+                <span>Base template</span>
+                <small>Searchable dropdown</small>
               </div>
-              <label className={styles.searchField}>
-                <span>Search newsletters</span>
-                <input
-                  type="search"
-                  value={templateQuery}
-                  onChange={(event) => setTemplateQuery(event.target.value)}
-                  placeholder="Title, subject, or parsha"
-                />
-              </label>
+              <button
+                type="button"
+                className={styles.selectorTrigger}
+                role="combobox"
+                aria-label="Base template"
+                aria-expanded={templateMenuOpen}
+                aria-controls="base-template-options"
+                aria-haspopup="listbox"
+                onClick={() => setTemplateMenuOpen((open) => !open)}
+              >
+                <span className={styles.selectorIcon} aria-hidden="true">✦</span>
+                <span className={styles.selectorValue}>
+                  <strong>{selectedBaseOption.title}</strong>
+                  <span>{selectedBaseOption.description}</span>
+                </span>
+                <span className={styles.selectorAction}>Search & change <span aria-hidden="true">⌄</span></span>
+              </button>
+              {templateMenuOpen ? (
+                <div className={styles.selectorPopover}>
+                  <label className={styles.selectorSearch} htmlFor="base-template-search">
+                    <span>Search base templates</span>
+                    <input
+                      id="base-template-search"
+                      type="search"
+                      value={templateQuery}
+                      onChange={(event) => setTemplateQuery(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Escape") setTemplateMenuOpen(false);
+                      }}
+                      placeholder="Search title, subject, or parsha…"
+                      autoComplete="off"
+                    />
+                  </label>
+                  <div id="base-template-options" className={styles.selectorOptions} role="listbox" aria-label="Base templates">
+                    {loadingTemplates ? <p className={styles.selectorEmpty}>Loading newsletters…</p> : null}
+                    {!loadingTemplates && filteredBaseOptions.length === 0 ? (
+                      <p className={styles.selectorEmpty}>No matching base templates.</p>
+                    ) : null}
+                    {filteredBaseOptions.map((option) => {
+                      const selected = option.key === selectedBaseOption.key;
+                      return (
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={selected}
+                          key={option.key}
+                          className={selected ? styles.selectorOptionActive : styles.selectorOption}
+                          onClick={() => chooseBase(option)}
+                        >
+                          <span>
+                            <strong>{option.title}</strong>
+                            <small>{option.description}</small>
+                          </span>
+                          <span>{selected ? "Selected" : option.meta}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null}
             </div>
 
-            {loadingTemplates ? <p className={styles.loadingState}>Loading newsletters…</p> : null}
-            {!loadingTemplates && filteredTemplates.length === 0 ? (
-              <p className={styles.loadingState}>No matching newsletters.</p>
-            ) : null}
-            <div className={styles.templateGrid}>
-              {filteredTemplates.map((template) => {
-                const selected = starterKind === "existing" && selectedBaseId === template.id;
-                return (
-                  <button
-                    type="button"
-                    key={template.id}
-                    className={`${styles.templateCard} ${selected ? styles.selectedCard : ""}`}
-                    onClick={() => {
-                      setStarterKind("existing");
-                      setSelectedBaseId(template.id);
-                    }}
-                    aria-pressed={selected}
-                  >
-                    <span className={styles.templateMeta}>
-                      {template.parshaName || "Newsletter"} · {new Date(template.updatedAt).toLocaleDateString()}
-                    </span>
-                    <strong>{template.title}</strong>
-                    <small>{template.subject || "No subject"}</small>
-                    <span className={styles.selectionMark}>{selected ? "Selected" : "Use this"}</span>
-                  </button>
-                );
-              })}
+            <div
+              className={styles.searchablePicker}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) setAudienceMenuOpen(false);
+              }}
+            >
+              <div className={styles.selectorLabel}>
+                <span>Newsletter audience</span>
+                <small>Searchable dropdown</small>
+              </div>
+              <button
+                type="button"
+                className={styles.selectorTrigger}
+                role="combobox"
+                aria-label="Newsletter audience"
+                aria-expanded={audienceMenuOpen}
+                aria-controls="newsletter-audience-options"
+                aria-haspopup="listbox"
+                onClick={() => setAudienceMenuOpen((open) => !open)}
+              >
+                <span className={styles.selectorIcon} aria-hidden="true">◎</span>
+                <span className={styles.selectorValue}>
+                  <strong>{selectedAudienceOption.name}</strong>
+                  <span>{selectedAudienceOption.description}</span>
+                </span>
+                <span className={styles.selectorAction}>Search & change <span aria-hidden="true">⌄</span></span>
+              </button>
+              {audienceMenuOpen ? (
+                <div className={styles.selectorPopover}>
+                  <label className={styles.selectorSearch} htmlFor="newsletter-audience-search">
+                    <span>Search newsletter audiences</span>
+                    <input
+                      id="newsletter-audience-search"
+                      type="search"
+                      value={audienceQuery}
+                      onChange={(event) => setAudienceQuery(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Escape") setAudienceMenuOpen(false);
+                      }}
+                      placeholder="Search audience name or purpose…"
+                      autoComplete="off"
+                    />
+                  </label>
+                  <div id="newsletter-audience-options" className={styles.selectorOptions} role="listbox" aria-label="Newsletter audiences">
+                    {filteredAudienceOptions.length === 0 ? (
+                      <p className={styles.selectorEmpty}>No matching audiences.</p>
+                    ) : null}
+                    {filteredAudienceOptions.map((option) => {
+                      const selected = option.key === selectedAudience;
+                      return (
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={selected}
+                          key={option.key}
+                          className={selected ? styles.selectorOptionActive : styles.selectorOption}
+                          onClick={() => chooseAudience(option.key)}
+                        >
+                          <span>
+                            <strong>{option.name}</strong>
+                            <small>{option.description}</small>
+                          </span>
+                          <span>{selected ? "Selected" : "Choose"}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
 
           {error ? <p className={styles.error}>{error}</p> : null}
           <div className={styles.startActions}>
-            <p>You can make as many AI edits as you need before anything is saved. Sending happens later in Studio.</p>
+            <p>
+              Audience: <strong>{selectedAudienceOption.name}</strong>. You can make AI edits now and confirm or change
+              the audience again before sending.
+            </p>
             <button type="button" className={styles.primaryButton} onClick={() => void beginComposing()} disabled={loadingBase}>
               {loadingBase ? "Loading starting point…" : "Continue to AI builder"}
             </button>
@@ -430,6 +565,7 @@ export default function NewTemplatePage() {
             <div>
               <p className={styles.eyebrow}>Starting from</p>
               <h2>{baseLabel}</h2>
+              <p className={styles.builderAudience}>Planned audience: {selectedAudienceOption.name}</p>
             </div>
             <div className={styles.builderActions}>
               <button type="button" className={styles.ghostButton} onClick={() => setStep("start")}>
