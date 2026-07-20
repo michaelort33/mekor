@@ -269,6 +269,7 @@ export function HeroSection({
 
   return (
     <section
+      data-contrast-media={image ? "true" : undefined}
       className={cn(
         "relative isolate overflow-hidden rounded-[40px] border border-[var(--color-border)] px-6 py-8 shadow-[0_42px_100px_-60px_rgba(15,23,42,0.5)] sm:px-8 sm:py-10 lg:px-12 lg:py-14",
         tone === "dark"
@@ -359,9 +360,10 @@ export function HeroSection({
                 asChild
                 variant={index === 0 ? "default" : tone === "dark" ? "outline" : "secondary"}
                 className={cn(
-                  tone === "dark" && index !== 0 && "border-white/20 bg-white/10 hover:bg-white/18",
+                  tone === "dark" &&
+                    index !== 0 &&
+                    "border-white/20 !bg-white/10 !text-[#f8fbff] hover:!bg-white/18 hover:!text-white visited:!text-[#f8fbff]",
                 )}
-                style={tone === "dark" && index !== 0 ? { color: "#f8fbff" } : undefined}
               >
                 <RenderLink href={action.href}>{action.label}</RenderLink>
               </Button>

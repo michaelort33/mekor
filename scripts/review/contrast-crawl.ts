@@ -167,24 +167,34 @@ function toIssue(
 
 async function averageScreenshotLuminance(page: Page, box: DomSample["box"]): Promise<number | null> {
   try {
+    // Sample a padded region and prefer perimeter pixels so bright glyph ink
+    // does not inflate the estimated background luminance.
+    const pad = 10;
     const clip = {
-      x: Math.max(0, Math.floor(box.x)),
-      y: Math.max(0, Math.floor(box.y)),
-      width: Math.max(1, Math.min(Math.ceil(box.width), 400)),
-      height: Math.max(1, Math.min(Math.ceil(box.height), 200)),
+      x: Math.max(0, Math.floor(box.x - pad)),
+      y: Math.max(0, Math.floor(box.y - pad)),
+      width: Math.max(1, Math.min(Math.ceil(box.width + pad * 2), 480)),
+      height: Math.max(1, Math.min(Math.ceil(box.height + pad * 2), 240)),
     };
     const buffer = await page.screenshot({ clip, type: "png" });
     const png = PNG.sync.read(buffer);
     let total = 0;
     let count = 0;
-    for (let i = 0; i < png.data.length; i += 4) {
-      const a = png.data[i + 3]! / 255;
-      if (a < 0.2) continue;
-      const r = png.data[i]!;
-      const g = png.data[i + 1]!;
-      const b = png.data[i + 2]!;
-      total += relativeLuminance({ r, g, b });
-      count += 1;
+    const insetX = Math.max(2, Math.floor(png.width * 0.22));
+    const insetY = Math.max(2, Math.floor(png.height * 0.22));
+    for (let y = 0; y < png.height; y += 1) {
+      for (let x = 0; x < png.width; x += 1) {
+        const onPerimeter = x < insetX || x >= png.width - insetX || y < insetY || y >= png.height - insetY;
+        if (!onPerimeter) continue;
+        const i = (png.width * y + x) * 4;
+        const a = png.data[i + 3]! / 255;
+        if (a < 0.2) continue;
+        const r = png.data[i]!;
+        const g = png.data[i + 1]!;
+        const b = png.data[i + 2]!;
+        total += relativeLuminance({ r, g, b });
+        count += 1;
+      }
     }
     if (count === 0) return null;
     return total / count;

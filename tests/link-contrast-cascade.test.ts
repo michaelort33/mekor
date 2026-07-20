@@ -63,6 +63,18 @@ test("known dark CTA link styles still declare light text colors", async () => {
       path: "components/navigation/area-switcher.module.css",
       selectors: [/\.linkCurrent[\s\S]*?color:\s*#f7fbff\s*!important/],
     },
+    {
+      path: "components/marketing/page-shell.tsx",
+      selectors: [/Plan a Visit[\s\S]{0,200}!text-\[#f8fbff\]|!text-\[#f8fbff\][\s\S]{0,200}Plan a Visit/],
+    },
+    {
+      path: "components/marketing/primitives.tsx",
+      selectors: [/tone === "dark"[\s\S]{0,220}!text-\[#f8fbff\]/],
+    },
+    {
+      path: "app/page.module.css",
+      selectors: [/\.heroOverlay\s*\{[\s\S]*?rgba\(8,\s*18,\s*32,\s*0\.72\)/],
+    },
   ];
 
   for (const file of files) {

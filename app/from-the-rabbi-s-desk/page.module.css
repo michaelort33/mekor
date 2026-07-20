@@ -30,11 +30,20 @@
   color: #dfe8f2 !important;
 }
 
-.heroFlat :global(a) {
+.heroFlat :global(a[data-slot="button"]) {
   border-radius: 999px !important;
-  border-color: rgba(185, 203, 222, 0.6) !important;
-  background: rgba(246, 250, 255, 0.96) !important;
-  color: #254668 !important;
+}
+
+.heroFlat :global(a[data-slot="button"][data-variant="default"]) {
+  border-color: transparent !important;
+  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%) !important;
+  color: #f8fbff !important;
+}
+
+.heroFlat :global(a[data-slot="button"][data-variant="outline"]) {
+  border-color: rgba(185, 203, 222, 0.65) !important;
+  background: rgba(16, 32, 52, 0.35) !important;
+  color: #f8fbff !important;
 }
 
 .podcastSection,

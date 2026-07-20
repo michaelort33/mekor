@@ -54,12 +54,14 @@ module.exports = function sampleContrastDom() {
     const hexes = backgroundImage.match(/#([0-9a-f]{3,8})\b/gi) || [];
     for (const hex of hexes) {
       const parsed = canvasResolveColor(hex);
-      if (parsed) colors.push(parsed);
+      // Ignore fully transparent-ish stops; soft decorative washes must not
+      // become opaque dark backgrounds in the blend stack.
+      if (parsed && parsed.a >= 0.45) colors.push(parsed);
     }
     const rgbs = backgroundImage.match(/rgba?\([^)]+\)/gi) || [];
     for (const rgb of rgbs) {
       const parsed = canvasResolveColor(rgb);
-      if (parsed) colors.push(parsed);
+      if (parsed && parsed.a >= 0.45) colors.push(parsed);
     }
     return colors;
   }
@@ -87,6 +89,15 @@ module.exports = function sampleContrastDom() {
     const rect = el.getBoundingClientRect();
     if (rect.width < 2 || rect.height < 2) return false;
     if (rect.bottom < -20 || rect.top > window.innerHeight + 2000) return false;
+    // Skip text covered by dialogs/drawers/sheets (still in DOM, but not what users see).
+    const cx = Math.min(window.innerWidth - 1, Math.max(0, rect.left + rect.width / 2));
+    const cy = Math.min(window.innerHeight - 1, Math.max(0, rect.top + rect.height / 2));
+    const topEl = document.elementFromPoint(cx, cy);
+    if (topEl && topEl !== el && !el.contains(topEl) && !topEl.contains(el)) {
+      const dialog = topEl.closest("[role='dialog'], [data-slot='sheet-content'], #native-mobile-drawer");
+      const selfDialog = el.closest("[role='dialog'], [data-slot='sheet-content'], #native-mobile-drawer");
+      if (dialog && dialog !== selfDialog) return false;
+    }
     return true;
   }
 
@@ -143,26 +154,65 @@ module.exports = function sampleContrastDom() {
     let bg = { r: pageBg.r, g: pageBg.g, b: pageBg.b, a: 1 };
     let bgApproximate = false;
     let foundOpaque = false;
+    let overMedia = false;
     let current = node;
     const layers = [];
+
+    // Only treat text as "over media" when the text center sits on an image or
+    // photo background — sibling thumbnails that merely overlap in bounding
+    // boxes create false dark-on-dark reports on archive lists.
+    const rect = node.getBoundingClientRect();
+    const cx = Math.min(window.innerWidth - 1, Math.max(0, rect.left + rect.width / 2));
+    const cy = Math.min(window.innerHeight - 1, Math.max(0, rect.top + rect.height / 2));
+    for (const img of Array.from(document.images)) {
+      if (!isVisible(img)) continue;
+      const ir = img.getBoundingClientRect();
+      if (ir.width < 80 || ir.height < 80) continue;
+      const centerOnImage = cx >= ir.left && cx <= ir.right && cy >= ir.top && cy <= ir.bottom;
+      if (centerOnImage) {
+        overMedia = true;
+        break;
+      }
+    }
+    if (node.closest("[data-contrast-media]")) {
+      overMedia = true;
+    }
+
+    // Elements that paint their own opaque/gradient background (e.g. CTAs on a
+    // photo hero) should be judged against that paint, not the photo behind them.
+    const selfBg = canvasResolveColor(style.backgroundColor);
+    const selfImage = style.backgroundImage || "none";
+    const selfGradientStops =
+      selfImage !== "none" && /gradient/i.test(selfImage) ? extractGradientColors(selfImage) : [];
+    if ((selfBg && selfBg.a >= 0.9) || selfGradientStops.length > 0) {
+      overMedia = false;
+    }
 
     while (current) {
       const cs = getComputedStyle(current);
       const bgc = canvasResolveColor(cs.backgroundColor);
       const image = cs.backgroundImage || "none";
-      if (image && image !== "none" && /gradient/i.test(image)) {
-        const stops = extractGradientColors(image);
-        const avg = averageColors(stops);
-        if (avg) {
-          layers.push(avg);
-          bgApproximate = true;
-          foundOpaque = true;
-          break;
+      if (image && image !== "none") {
+        if (/url\(/i.test(image)) {
+          overMedia = true;
+        }
+        if (/gradient/i.test(image)) {
+          const stops = extractGradientColors(image);
+          const avg = averageColors(stops);
+          if (avg) {
+            layers.push(avg);
+            bgApproximate = true;
+            // Translucent scrims over photos are not final backgrounds.
+            if (!overMedia && avg.a >= 0.98) {
+              foundOpaque = true;
+              break;
+            }
+          }
         }
       }
       if (bgc && bgc.a > 0.01) {
         layers.push(bgc);
-        if (bgc.a >= 0.98) {
+        if (bgc.a >= 0.98 && !overMedia) {
           foundOpaque = true;
           break;
         }
@@ -174,7 +224,7 @@ module.exports = function sampleContrastDom() {
     for (const layer of layers.reverse()) {
       bg = blend(layer, bg);
     }
-    if (!foundOpaque && layers.length === 0) {
+    if (!foundOpaque || overMedia) {
       bgApproximate = true;
     }
 
@@ -199,7 +249,6 @@ module.exports = function sampleContrastDom() {
     if (seen.has(key)) continue;
     seen.add(key);
 
-    const rect = node.getBoundingClientRect();
     samples.push({
       tag: node.tagName.toLowerCase(),
       textSnippet: snippet,

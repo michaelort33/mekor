@@ -32,7 +32,9 @@
 .heroOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(26, 48, 78, 0.16) 0%, rgba(20, 38, 64, 0.34) 100%);
+  /* Opaque-enough navy scrim so white hero type clears WCAG AA on pale stone. */
+  background:
+    linear-gradient(180deg, rgba(8, 18, 32, 0.72) 0%, rgba(6, 14, 26, 0.82) 48%, rgba(4, 10, 20, 0.88) 100%);
 }
 
 .heroInner {
@@ -44,6 +46,7 @@
   padding: 72px 16px 56px;
   text-align: center;
   color: #fff;
+  text-shadow: 0 2px 18px rgba(6, 14, 26, 0.55);
 }
 
 .newsletterPanel h2 {

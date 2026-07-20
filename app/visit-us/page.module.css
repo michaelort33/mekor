@@ -29,12 +29,22 @@
   color: #3a4c5e !important;
 }
 
-.heroFlat :global(a) {
+.heroFlat :global(a[data-slot="button"]) {
   border-radius: 5px !important;
-  border-color: #99acbf !important;
-  background: rgba(249, 252, 255, 0.94) !important;
-  color: #1d3e5e !important;
   box-shadow: none !important;
+}
+
+.heroFlat :global(a[data-slot="button"][data-variant="default"]) {
+  border-color: transparent !important;
+  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%) !important;
+  color: #f8fbff !important;
+}
+
+.heroFlat :global(a[data-slot="button"][data-variant="secondary"]),
+.heroFlat :global(a[data-slot="button"][data-variant="outline"]) {
+  border-color: #99acbf !important;
+  background: #f4f8fc !important;
+  color: #1d3e5e !important;
 }
 
 .flatSection {

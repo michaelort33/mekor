@@ -136,7 +136,7 @@ export function MobileDrawer({
             <span className="h-2 w-2 flex-none rounded-full bg-[#2e9e5b]" aria-hidden="true" />
             <span className="grid gap-px">
               <span className="text-[15px] font-semibold text-[#1e5c3d]">Join the Mekor WhatsApp</span>
-              <span className="text-[12px] text-[#4d7a5e]">Announcements, minyan updates &amp; community chat</span>
+              <span className="text-[12px] text-[#2f5f42]">Announcements, minyan updates &amp; community chat</span>
             </span>
           </a>
 

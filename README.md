@@ -107,6 +107,28 @@ Global rollback kill switch:
 5. Emergency global rollback:
    - Set `FORCE_MIRROR_ALL=true` and redeploy/restart.
 
+## Contrast Crawl (WCAG AA)
+
+Scan public pages for hard-to-read text (dark-on-dark, light-on-light, weak photo overlays):
+
+```bash
+# Prefer webpack dev when exercising interactive chrome (drawer / give menu / feedback)
+node node_modules/next/dist/bin/next dev --webpack -p 3000 -H 127.0.0.1
+
+# In another terminal:
+npm run review:contrast
+```
+
+Reports land in `output/review/contrast-crawl-latest.{json,md}` with optional element screenshots under `output/review/contrast-screenshots/`.
+
+Useful knobs:
+
+- `CONTRAST_CRAWL_ROUTES=/,/donations,/newsletters` — limit routes
+- `CONTRAST_CRAWL_FAIL_ON_AA=1` — exit non-zero when AA failures remain
+- `CONTRAST_CRAWL_BASE_URL` — default `http://127.0.0.1:3000`
+
+Unit coverage for the ratio helpers: `tests/contrast-crawl-smoke.test.ts`. Known CTA cascade contracts: `tests/link-contrast-cascade.test.ts`.
+
 ## Visual Parity Gate
 
 Native route enablement is guarded by screenshot parity checks across mobile/tablet/desktop breakpoints.

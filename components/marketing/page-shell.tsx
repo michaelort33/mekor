@@ -137,8 +137,7 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePa
                 asChild
                 size="sm"
                 variant="outline"
-                className="border-white/25 bg-white/10 hover:bg-white/18"
-                style={{ color: "#f8fbff" }}
+                className="border-white/25 bg-white/10 !text-[#f8fbff] hover:bg-white/18 hover:!text-white visited:!text-[#f8fbff]"
               >
                 <Link href="/visit-us">Plan a Visit</Link>
               </Button>
@@ -164,7 +163,7 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePa
               <HomeNewsletterForm
                 sourcePath={newsletterSourcePath}
                 className="flex flex-col gap-2 sm:flex-row sm:items-center"
-                inputClassName="flex-1 bg-white/95 text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)]"
+                inputClassName="flex-1 bg-white text-[#1d2c3f] placeholder:text-[#5b6877]"
                 submitClassName="sm:w-auto"
                 successClassName="text-sm text-[rgba(255,255,255,0.84)]"
                 errorClassName="text-sm text-[#ffd2d2]"
