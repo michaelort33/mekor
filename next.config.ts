@@ -1,6 +1,13 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Keep Turbopack rooted at this package when the repo is opened from a
+  // nested git worktree (parent lockfiles otherwise steal the workspace root
+  // and break client hydration).
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
   images: {
     remotePatterns: [
       {

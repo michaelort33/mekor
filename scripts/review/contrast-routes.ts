@@ -66,7 +66,9 @@ export const PUBLIC_CONTRAST_ROUTES = [
 
 export const CONTRAST_BREAKPOINTS: ContrastBreakpoint[] = [
   { name: "mobile", width: 390, height: 844 },
-  { name: "desktop", width: 1440, height: 900 },
+  // NavCta (Give menu) only mounts at min-[1441px]; use 1500 so desktop
+  // interactions exercise the full chrome.
+  { name: "desktop", width: 1500, height: 900 },
 ];
 
 export const INTERACTIVE_STATES: InteractiveState[] = [
