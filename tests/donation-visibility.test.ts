@@ -52,6 +52,7 @@ test("donate button text stays light on the dark blue CTA background", async () 
   );
   assert.match(globalsCss, /a\[data-slot="button"\]\[data-variant="default"\]/);
   assert.match(buttonSource, /!text-\[#f8fbff\]/);
-  assert.match(navCtaSource, /!text-\[#f8fbff\]/);
+  assert.match(navCtaSource, /<Button asChild size="sm" className="rounded-none">/);
+  assert.match(navCtaSource, /aria-label="Donate to Mekor"/);
   assert.match(navigationSource, /!text-\[#f8fbff\]/);
 });
