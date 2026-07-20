@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { CalendarHeart, HandCoins, ShieldCheck } from "lucide-react";
+
 import { KiddushSponsorshipForm } from "@/components/forms/kiddush-sponsorship-form";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
-import { KiddushPaymentSection } from "@/components/payments/kiddush-payment-section";
+import { KiddushPaymentSection, type KiddushOption } from "@/components/payments/kiddush-payment-section";
+import { KIDDUSH_LINK } from "@/lib/navigation/site-menu";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
 
-const PATH = "/kiddush" as const;
+const PATH = KIDDUSH_LINK.href;
 const PAYPAL_SPONSOR_URL = "https://www.paypal.com/ncp/payment/C5ZNZELMHX2A4";
 
 const KIDDUSH_IMAGES = {
@@ -17,30 +20,49 @@ const KIDDUSH_IMAGES = {
   community: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/edd73d057d7ebf02932f1b4e196a543067a018ea-community.jpg",
 } as const;
 
-const SPONSOR_OPTIONS = [
+const HERO_HIGHLIGHTS = [
+  { icon: HandCoins, title: "Four ways to sponsor", detail: "From a $36 birthday to a full bagel brunch" },
+  { icon: ShieldCheck, title: "Secure checkout", detail: "Pay by card via Stripe, Venmo, or PayPal" },
+  { icon: CalendarHeart, title: "Mark any occasion", detail: "Simchas, yahrtzeits, and milestones" },
+] as const;
+
+const SPONSOR_OPTIONS: readonly KiddushOption[] = [
   {
     title: "Kiddush Sponsorship",
-    rate: "$295 member · $360 non-member",
-    amountCents: 29500,
-    body: "Celebrate simchas with your Mekor community by sponsoring a Shabbat Kiddush! Whether you're marking a special anniversary, a new baby, graduation, or honoring the memory of someone impactful in your life, a Kiddush sponsorship is a meaningful way to bring people together. Your sponsorship helps provide a warm and welcoming environment for our community to connect, reflect, and share in the joy of Shabbat.",
+    tagline: "Most popular",
+    featured: true,
+    icon: "kiddush",
+    rates: [
+      { id: "member", label: "Member", amountCents: 29500 },
+      { id: "non-member", label: "Non-member", amountCents: 36000 },
+    ],
+    body: "Celebrate a simcha with your Mekor community by sponsoring a Shabbat Kiddush — an anniversary, a new baby, a graduation, or the memory of someone dear. A warm, welcoming way to bring people together.",
   },
   {
     title: "Birthday Kiddush",
-    rate: "$36",
-    amountCents: 3600,
-    body: "Let's celebrate our shul birthdays every month with Birthday Kiddush! Sponsor Kiddush in honor of your loved one's birthday month. Special birthday treats will be served (and singing may occur). When: Every 3rd Shabbat of the month.",
+    icon: "birthday",
+    rates: [{ id: "flat", label: "Flat sponsorship", amountCents: 3600 }],
+    body: "Celebrate our shul birthdays each month! Sponsor Kiddush in honor of your loved one's birthday month. Special birthday treats are served (and singing may occur).",
+    when: "Every 3rd Shabbat of the month",
+    note: "Add the exact birth date in the dedication field so we can celebrate on the right week.",
   },
   {
-    title: "Third Meal Sponsorship",
-    rate: "$100 member · $125 non-member",
-    amountCents: 10000,
-    body: "Join us in making the Shabbat experience complete by sponsoring our beloved Third Meal. Served between Mincha and Maariv, Seudah Shlishit is a time for community, singing, and words of Torah as we savor the last moments of Shabbat together. A typical menu includes fresh bagels or rolls, tuna and egg salads, cream cheese, spreads, and light refreshments.",
+    title: "Third Meal (Seudah Shlishit)",
+    icon: "thirdMeal",
+    rates: [
+      { id: "member", label: "Member", amountCents: 10000 },
+      { id: "non-member", label: "Non-member", amountCents: 12500 },
+    ],
+    body: "Complete the Shabbat experience by sponsoring Seudah Shlishit, served between Mincha and Maariv — a time for community, singing, and Torah. Typical spread: fresh bagels or rolls, tuna and egg salads, cream cheese, and light refreshments.",
   },
   {
     title: "Bagel Brunch Kiddush",
-    rate: "$720 member · $775 non-member",
-    amountCents: 72000,
-    body: "Our Bagel Brunch Kiddush features the standard Shabbat Kiddush spread, plus a delicious assortment of fresh bagels, a lox and whitefish tray, tuna and egg salads, cheeses, cream cheese, and a tomato-and-onion tray. A perfect way to enjoy good food, good company, and the joy of Shabbat together.",
+    icon: "bagelBrunch",
+    rates: [
+      { id: "member", label: "Member", amountCents: 72000 },
+      { id: "non-member", label: "Non-member", amountCents: 77500 },
+    ],
+    body: "The standard Shabbat Kiddush spread plus a generous assortment of fresh bagels, a lox and whitefish tray, tuna and egg salads, cheeses, cream cheese, and a tomato-and-onion tray. Good food, good company, and the joy of Shabbat together.",
   },
 ] as const;
 
@@ -62,8 +84,8 @@ export default async function KiddushPage() {
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         eyebrow="Support Mekor"
-        title="How You Can Sponsor a Kiddush"
-        subtitle="Sponsor The Kiddush"
+        title="Sponsor a Kiddush"
+        subtitle="Celebrate a simcha with the Mekor community"
         className={styles.heroFlat}
         image={{
           src: KIDDUSH_IMAGES.hero,
@@ -76,10 +98,27 @@ export default async function KiddushPage() {
           "Whether you're marking a special occasion, honoring a loved one, or commemorating a yahrtzeit, your sponsorship helps us create a warm and welcoming Shabbat experience for all.",
         ]}
         actions={[
-          { label: "Sponsor via PayPal", href: PAYPAL_SPONSOR_URL },
-          { label: "Sponsor The Kiddush", href: "#kiddush-payment" },
+          { label: "Choose a sponsorship", href: "#kiddush-payment" },
+          { label: "Pay with PayPal", href: PAYPAL_SPONSOR_URL },
         ]}
       />
+
+      <ul className={styles.highlightRow}>
+        {HERO_HIGHLIGHTS.map((highlight) => {
+          const Icon = highlight.icon;
+          return (
+            <li className={styles.highlightCard} key={highlight.title}>
+              <span className={styles.highlightIcon} aria-hidden="true">
+                <Icon strokeWidth={1.8} />
+              </span>
+              <span className={styles.highlightCopy}>
+                <span className={styles.highlightTitle}>{highlight.title}</span>
+                <span className={styles.highlightDetail}>{highlight.detail}</span>
+              </span>
+            </li>
+          );
+        })}
+      </ul>
 
       <KiddushPaymentSection options={SPONSOR_OPTIONS} returnPath={PATH} />
 
@@ -114,8 +153,9 @@ export default async function KiddushPage() {
       <SectionCard title="Quick Links" className={styles.flatSection}>
         <CTACluster
           items={[
-            { label: "Sponsor The Kiddush", href: PAYPAL_SPONSOR_URL },
-            { label: "General Donation Page", href: "/donations" },
+            { label: "Choose a sponsorship", href: "#kiddush-payment" },
+            { label: "Pay with PayPal", href: PAYPAL_SPONSOR_URL },
+            { label: "General donations", href: "/donations" },
             { label: "Email: admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org" },
             { label: "Call: (215) 525-4246", href: "tel:+12155254246" },
           ]}

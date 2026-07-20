@@ -10,7 +10,7 @@ import { NavCta } from "@/components/navigation/nav-cta";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { AccountAccessState } from "@/lib/auth/account-access";
-import { SUPPORT_MEKOR_LINK, type NavItem } from "@/lib/navigation/site-menu";
+import { KIDDUSH_LINK, SUPPORT_MEKOR_LINK, type NavItem } from "@/lib/navigation/site-menu";
 import { cn } from "@/lib/utils";
 import { isNavGroup } from "@/lib/navigation/site-menu";
 import { openUniversalSearch } from "@/components/navigation/universal-search";
@@ -88,24 +88,38 @@ export function MobileDrawer({
           <SheetDescription>One clear path through community life, events, and the kosher guide.</SheetDescription>
         </SheetHeader>
 
-        <Link
-          href={SUPPORT_MEKOR_LINK.href}
-          prefetch={false}
-          className="mt-6 flex items-center gap-3 rounded-[22px] border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-4 [color:#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] transition visited:[color:#f8fbff] hover:bg-[linear-gradient(180deg,#285f90_0%,#1c4368_100%)] hover:[color:#fff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2"
-          style={{ color: "#f8fbff" }}
-          onClick={onClose}
-          aria-label="Donate or sponsor Mekor"
-        >
-          <Heart className="h-4 w-4 flex-none" strokeWidth={2.25} aria-hidden="true" />
-          <span className="grid gap-0.5">
-            <span className="text-base font-semibold">Donate or sponsor</span>
-            <span className="text-xs text-white/75">Support Mekor</span>
-          </span>
-        </Link>
+        <div className="mt-6 grid gap-3">
+          <Link
+            href={SUPPORT_MEKOR_LINK.href}
+            prefetch={false}
+            className="flex items-center gap-3 rounded-[22px] border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-4 [color:#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] transition visited:[color:#f8fbff] hover:bg-[linear-gradient(180deg,#285f90_0%,#1c4368_100%)] hover:[color:#fff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2"
+            style={{ color: "#f8fbff" }}
+            onClick={onClose}
+            aria-label="Donate or sponsor Mekor"
+          >
+            <Heart className="h-4 w-4 flex-none" strokeWidth={2.25} aria-hidden="true" />
+            <span className="grid gap-0.5">
+              <span className="text-base font-semibold">Donate or sponsor</span>
+              <span className="text-xs text-white/75">Support Mekor</span>
+            </span>
+          </Link>
+          <Link
+            href={KIDDUSH_LINK.href}
+            prefetch={false}
+            className="flex items-center justify-between gap-3 rounded-[22px] border border-[var(--color-border-strong)] bg-white/86 px-4 py-3.5 text-[var(--color-foreground)] shadow-[0_16px_40px_-32px_rgba(15,23,42,0.35)] transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2"
+            onClick={onClose}
+            aria-label={KIDDUSH_LINK.label}
+          >
+            <span className="grid gap-0.5">
+              <span className="text-base font-semibold">{KIDDUSH_LINK.label}</span>
+              <span className="text-xs text-[var(--color-muted)]">Celebrate a simcha with the community</span>
+            </span>
+          </Link>
+        </div>
 
         <nav className="mt-6 flex-1 overflow-y-auto" aria-label="Mobile site menu">
           <ul className="space-y-3">
-            {items.map((item) => {
+            {items.filter((item) => item.href !== KIDDUSH_LINK.href).map((item) => {
               const isActive = isNavigationPathActive(currentPath, item.href);
               const itemClassName =
                 item.tone === "cta"

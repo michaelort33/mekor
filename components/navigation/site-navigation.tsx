@@ -13,7 +13,7 @@ import { UniversalSearch } from "@/components/navigation/universal-search";
 import { Button } from "@/components/ui/button";
 import type { AccountAccessState } from "@/lib/auth/account-access";
 import { normalizeNavigationPath } from "@/lib/navigation/path";
-import { SITE_MENU, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
+import { KIDDUSH_LINK, SITE_MENU, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
 
 type SiteNavigationProps = {
   currentPath: string;
@@ -126,6 +126,16 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
             <div className="hidden min-[1441px]:flex">
               <NavCta isSignedIn={authenticated} isCheckingAuth={isCheckingAuth} />
             </div>
+            <Button
+              asChild
+              size="sm"
+              variant="secondary"
+              className="min-[1441px]:hidden max-[480px]:hidden"
+            >
+              <Link href={KIDDUSH_LINK.href} aria-label={KIDDUSH_LINK.label}>
+                Kiddush
+              </Link>
+            </Button>
             <Button
               asChild
               size="sm"

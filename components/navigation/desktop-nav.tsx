@@ -119,6 +119,7 @@ export function DesktopNav({
                   href={item.href}
                   prefetch={false}
                   className={itemClassName}
+                  style={item.tone === "cta" ? { color: "#f8fbff" } : undefined}
                   onClick={() => setOpenGroupId(null)}
                   aria-current={active ? "page" : undefined}
                 >

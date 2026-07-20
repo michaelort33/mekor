@@ -10,6 +10,7 @@ import { getStripeClient } from "@/lib/stripe/client";
 const checkoutSchema = z.object({
   amountCents: z.number().int().min(100),
   designation: z.string().trim().max(180).default("General donation"),
+  itemName: z.string().trim().max(180).optional(),
   donorName: z.string().trim().min(1).max(180),
   donorEmail: z.string().trim().email().max(255),
   donorPhone: z.string().trim().max(60).default(""),
@@ -42,6 +43,9 @@ export async function POST(request: Request) {
         )[0] ?? null;
 
   const designation = campaign?.designationLabel || parsed.data.designation;
+  // Optional human-friendly line-item name (e.g. the specific Kiddush package).
+  // Purely cosmetic for the Stripe checkout page; designation still drives reporting/tax.
+  const lineItemName = campaign?.title || parsed.data.itemName || designation;
   const stripe = getStripeClient();
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -76,7 +80,7 @@ export async function POST(request: Request) {
           currency: "usd",
           unit_amount: parsed.data.amountCents,
           product_data: {
-            name: campaign?.title || designation,
+            name: lineItemName,
             description: designation,
           },
         },

@@ -25,6 +25,11 @@ export const SUPPORT_MEKOR_LINK = {
   href: "/donations",
 } as const;
 
+export const KIDDUSH_LINK = {
+  label: "Sponsor a Kiddush",
+  href: "/kiddush",
+} as const;
+
 export const SITE_MENU: NavItem[] = [
   {
     label: "Davening",
@@ -42,6 +47,11 @@ export const SITE_MENU: NavItem[] = [
   {
     label: "Events",
     href: "/events",
+  },
+  {
+    label: KIDDUSH_LINK.label,
+    href: KIDDUSH_LINK.href,
+    tone: "cta",
   },
   {
     label: "Bulletin Board",
@@ -86,7 +96,6 @@ export const SITE_MENU: NavItem[] = [
       { label: "Members directory", href: "/members" },
       { label: "Community directory", href: "/community" },
       { label: "Your profile", href: "/account/profile" },
-      { label: "Kiddush", href: "/kiddush" },
       { label: "Volunteer", href: "/team-4" },
       { label: "Past Newsletters", href: "/newsletters" },
       { label: "Ask Mekor", href: "/ask-mekor" },
