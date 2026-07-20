@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import Script from "next/script";
 
+import { SiteFeedbackWidget } from "@/components/feedback/site-feedback-widget";
 import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 import "./globals.css";
@@ -78,6 +79,7 @@ export default function RootLayout({
           strategy="afterInteractive"
         >{`!function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,p.parentNode.insertBefore(m,p)}(document,"script","https://chimpstatic.com/mcjs-connected/js/users/f9fe87a16c42c24704c099073/cf1653c4971bcc7dfa51f8285.js");`}</Script>
         {children}
+        <SiteFeedbackWidget />
       </body>
     </html>
   );
