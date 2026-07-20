@@ -1,8 +1,11 @@
 # Site Accessibility Contrast Crawl Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans (or subagent-driven-development) to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans (or subagent-driven-development) to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Crawl the live local site for hard-to-read text (especially dark-on-dark / light-on-light), capture screenshot evidence, fix contrast failures to WCAG AA, and leave a reusable Playwright audit plus regression tests so this class of bug stops recurring.
+
+**Execution status (2026-07-20):** Complete on `cursor/site-accessibility-crawl-615c` / PR #80. Full public crawl with `CONTRAST_CRAWL_FAIL_ON_AA=1` reports 0 AA failures. Local `npm run build:vercel` still requires a valid `VERCEL_TOKEN`; GitHub Actions `validate` job passed.
+
 
 **Architecture:** Add a Playwright-based contrast crawler under `scripts/review/` that visits curated public routes (plus key interactive chrome states), computes WCAG contrast from rendered styles, and writes JSON/Markdown/screenshot artifacts. Triage findings, prefer cascade-root / shared-component fixes over one-off `!important` patches, expand `tests/link-contrast-cascade.test.ts`, re-crawl to verify, then open a PR.
 
@@ -47,8 +50,8 @@ Dark-on-dark CTAs have already been patched multiple times (#59 Donate, #63 Area
 - Create: `.worktrees/site-a11y-contrast-crawl/` (git worktree)
 - Create: `docs/superpowers/plans/2026-07-20-site-contrast-crawl.md` (plan copy)
 
-- [ ] **Step 0.1:** Confirm still not in a linked worktree (`GIT_DIR == GIT_COMMON`) and `.worktrees` is ignored (`git check-ignore -q .worktrees`).
-- [ ] **Step 0.2:** Create worktree from current HEAD on a new branch:
+- [x] **Step 0.1:** Confirm still not in a linked worktree (`GIT_DIR == GIT_COMMON`) and `.worktrees` is ignored (`git check-ignore -q .worktrees`).
+- [x] **Step 0.2:** Create worktree from current HEAD on a new branch:
 
 ```bash
 git worktree add .worktrees/site-a11y-contrast-crawl -b cursor/site-a11y-contrast-crawl
@@ -56,9 +59,9 @@ cd .worktrees/site-a11y-contrast-crawl
 ```
 
 If sandbox/permission blocks worktree creation: report and continue in `/workspace` on the existing branch.
-- [ ] **Step 0.3:** Wait for async install if needed; `npm install` if `node_modules` missing in worktree.
-- [ ] **Step 0.4:** Run baseline `npm test`. If failures: stop and ask whether to proceed.
-- [ ] **Step 0.5:** Copy approved plan into `docs/superpowers/plans/2026-07-20-site-contrast-crawl.md` and commit: `Add site contrast crawl implementation plan`.
+- [x] **Step 0.3:** Wait for async install if needed; `npm install` if `node_modules` missing in worktree.
+- [x] **Step 0.4:** Run baseline `npm test`. If failures: stop and ask whether to proceed.
+- [x] **Step 0.5:** Copy approved plan into `docs/superpowers/plans/2026-07-20-site-contrast-crawl.md` and commit: `Add site contrast crawl implementation plan`.
 
 **Acceptance:** Worktree ready; baseline tests green (or user waiver recorded); plan checked into docs.
 
@@ -78,14 +81,14 @@ If sandbox/permission blocks worktree creation: report and continue in `/workspa
 - `meetsWcagAa(ratio, large): boolean`.
 - `classifyFailure(ratio, large): "fail-aa" | "pass"`.
 
-- [ ] **Step 1.1:** Write failing unit tests for known pairs:
+- [x] **Step 1.1:** Write failing unit tests for known pairs:
   - `#214e79` on `#214e79` → fail (~1:1)
   - `#f8fbff` on `#214e79` → pass AA
   - `#1d2c3f` on `#f8f3eb` → pass AA
   - white on white → fail
   - large muted text edge cases near 3:1
-- [ ] **Step 1.2:** Implement `contrast-lib.ts` until tests pass.
-- [ ] **Step 1.3:** Commit: `Add WCAG contrast helpers with unit tests`.
+- [x] **Step 1.2:** Implement `contrast-lib.ts` until tests pass.
+- [x] **Step 1.3:** Commit: `Add WCAG contrast helpers with unit tests`.
 
 **Acceptance:** `node node_modules/tsx/dist/cli.mjs --test tests/contrast-crawl-smoke.test.ts` passes.
 
@@ -123,10 +126,10 @@ If sandbox/permission blocks worktree creation: report and continue in `/workspa
 - `CONTRAST_CRAWL_OUT_DIR` default `output/review`
 - `CONTRAST_CRAWL_CONCURRENCY` default `2` (serial page contexts preferred for interaction states)
 
-- [ ] **Step 2.1:** Implement `contrast-routes.ts` exporting `PUBLIC_CONTRAST_ROUTES` and `INTERACTIVE_STATES`.
-- [ ] **Step 2.2:** Implement `contrast-crawl.ts` CLI; exit code `0` always for inventory mode, or `1` when `CONTRAST_CRAWL_FAIL_ON_AA=1` (use fail-on for final verification).
-- [ ] **Step 2.3:** Add npm script `review:contrast`.
-- [ ] **Step 2.4:** Commit: `Add Playwright WCAG contrast crawl script`.
+- [x] **Step 2.1:** Implement `contrast-routes.ts` exporting `PUBLIC_CONTRAST_ROUTES` and `INTERACTIVE_STATES`.
+- [x] **Step 2.2:** Implement `contrast-crawl.ts` CLI; exit code `0` always for inventory mode, or `1` when `CONTRAST_CRAWL_FAIL_ON_AA=1` (use fail-on for final verification).
+- [x] **Step 2.3:** Add npm script `review:contrast`.
+- [x] **Step 2.4:** Commit: `Add Playwright WCAG contrast crawl script`.
 
 **Acceptance:** Script runs against a running dev server and produces JSON/MD even if findings exist.
 
@@ -136,11 +139,11 @@ If sandbox/permission blocks worktree creation: report and continue in `/workspa
 
 **Files:** none in repo (artifacts only), except optional checked-in summary under `docs/` only if useful — prefer `/opt/cursor/artifacts/` for human review.
 
-- [ ] **Step 3.1:** Start `npm run dev` in background; wait until `http://127.0.0.1:3000` responds.
-- [ ] **Step 3.2:** Run `npm run review:contrast`.
-- [ ] **Step 3.3:** Copy key failure screenshots into `/opt/cursor/artifacts/contrast-crawl/` with descriptive names.
-- [ ] **Step 3.4:** Produce a triage table in the scratchpad: P0 (illegible CTAs/nav), P1 (body/muted on dark panels), P2 (borderline ~4.0–4.5), ignore list (iframes/false positives).
-- [ ] **Step 3.5:** Manually confirm the originally noticed dark-text-on-dark-bg issue appears in the inventory (or file a crawler gap if it does not — e.g. gradient sampling).
+- [x] **Step 3.1:** Start `npm run dev` in background; wait until `http://127.0.0.1:3000` responds.
+- [x] **Step 3.2:** Run `npm run review:contrast`.
+- [x] **Step 3.3:** Copy key failure screenshots into `/opt/cursor/artifacts/contrast-crawl/` with descriptive names.
+- [x] **Step 3.4:** Produce a triage table in the scratchpad: P0 (illegible CTAs/nav), P1 (body/muted on dark panels), P2 (borderline ~4.0–4.5), ignore list (iframes/false positives).
+- [x] **Step 3.5:** Manually confirm the originally noticed dark-text-on-dark-bg issue appears in the inventory (or file a crawler gap if it does not — e.g. gradient sampling).
 
 **Acceptance:** Inventory exists with screenshots; P0 list is actionable.
 
@@ -161,10 +164,10 @@ If sandbox/permission blocks worktree creation: report and continue in `/workspa
 2. Dark panel child links that still inherit wrong colors.
 3. Page-specific leftovers.
 
-- [ ] **Step 4.1:** For each P0, write/extend a failing contract assertion in `tests/link-contrast-cascade.test.ts` (or a focused new test) **before** editing CSS when the fix is selector-stable.
-- [ ] **Step 4.2:** Apply minimal style/markup fixes; avoid mirror paths.
-- [ ] **Step 4.3:** Run targeted tests + re-screenshot the fixed controls at 1440 and 390.
-- [ ] **Step 4.4:** Commit in logical chunks (e.g. `Fix nav/drawer CTA contrast`, `Fix marketing dark-card link contrast`).
+- [x] **Step 4.1:** For each P0, write/extend a failing contract assertion in `tests/link-contrast-cascade.test.ts` (or a focused new test) **before** editing CSS when the fix is selector-stable.
+- [x] **Step 4.2:** Apply minimal style/markup fixes; avoid mirror paths.
+- [x] **Step 4.3:** Run targeted tests + re-screenshot the fixed controls at 1440 and 390.
+- [x] **Step 4.4:** Commit in logical chunks (e.g. `Fix nav/drawer CTA contrast`, `Fix marketing dark-card link contrast`).
 
 **Acceptance:** All P0 and P1 inventory items resolved or explicitly waived with reason; before/after screenshots saved to artifacts.
 
@@ -176,12 +179,12 @@ If sandbox/permission blocks worktree creation: report and continue in `/workspa
 - Modify: `tests/link-contrast-cascade.test.ts` (complete coverage for fixed surfaces)
 - Modify: `scripts/review/contrast-crawl.ts` if needed (`FAIL_ON_AA` path)
 
-- [ ] **Step 5.1:** Re-run `npm run review:contrast` with `CONTRAST_CRAWL_FAIL_ON_AA=1` on the public route set (optionally a reduced “smoke” route list for CI-friendly duration — document both).
-- [ ] **Step 5.2:** Run full `npm test`.
-- [ ] **Step 5.3:** Run `npm run prepush:deploy-check`.
-- [ ] **Step 5.4:** Update README with a short “Contrast crawl” subsection: how to run `npm run review:contrast`, where reports land.
-- [ ] **Step 5.5:** Commit: `Document contrast crawl and harden AA regression coverage`.
-- [ ] **Step 5.6:** Push (after prepush gate) and open/update draft PR summarizing crawl method, top findings, fixes, and embedding before/after screenshots.
+- [x] **Step 5.1:** Re-run `npm run review:contrast` with `CONTRAST_CRAWL_FAIL_ON_AA=1` on the public route set (optionally a reduced “smoke” route list for CI-friendly duration — document both).
+- [x] **Step 5.2:** Run full `npm test`.
+- [x] **Step 5.3:** Run `npm run prepush:deploy-check`.
+- [x] **Step 5.4:** Update README with a short “Contrast crawl” subsection: how to run `npm run review:contrast`, where reports land.
+- [x] **Step 5.5:** Commit: `Document contrast crawl and harden AA regression coverage`.
+- [x] **Step 5.6:** Push (after prepush gate) and open/update draft PR summarizing crawl method, top findings, fixes, and embedding before/after screenshots.
 
 **Acceptance:**
 - Crawler is reusable via npm script.
