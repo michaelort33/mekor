@@ -234,7 +234,7 @@ export const FEATURED_NOW: BulletinCard[] = [
       aspect: "flyer",
     },
     paragraphs: [
-      "Join Rabbi Gotlib Tuesdays at 7:00pm beginning July 14 for a study of Rav Rabinovitch's Pathways to God: Torah, Society, and State. Sponsorships welcome; sponsors of $180+ receive a complimentary copy of the book.",
+      "Join Rabbi Gotlib Tuesdays at 7:00 PM beginning July 14 for a study of Rav Rabinovitch's Pathways to God: Torah, Society, and State. Sponsorships welcome; sponsors of $180+ receive a complimentary copy of the book.",
     ],
     links: [
       { label: "RSVP for the class", href: ZIONISM_CLASS_RSVP },
@@ -357,16 +357,6 @@ export const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
     ],
   },
   {
-    title: "Health & Wellness Offer for Mekor Community",
-    eyebrow: "Member offer",
-    icon: "health",
-    paragraphs: [
-      "Mekor member David Parvey has launched a health and wellness company utilizing unique CBD formulas to assist in balancing out your day. He is offering a 20% discount to Mekor members using discount code \"MEKORMEMBER\" and all proceeds will be split with the shul.",
-      "All products are vegan, third-party tested and can be found at www.wefreeco.com.",
-    ],
-    links: [{ label: "Visit wefreeco.com", href: "http://www.wefreeco.com/" }],
-  },
-  {
     title: "Free Career Guidance at JEVS",
     eyebrow: "Careers",
     icon: "career",
@@ -384,17 +374,7 @@ export const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
     ],
   },
   {
-    title: "Kiyum Initiative",
-    eyebrow: "Israel",
-    icon: "israel",
-    paragraphs: [
-      "The Kiyum Initiative has tailored a program along with leading institutions in Jerusalem to enable the entry of Haredi individuals into the labor pool through a combination of living stipends, enhanced education, and job placement.",
-      "We are raising funds and building awareness for the upcoming academic year to consist of 55 students, and so we are seeking donations to Sponsor-A-Scholar.",
-    ],
-    links: [{ label: "Kiyum Initiative website", href: "http://www.kiyuminitiative.org/" }],
-  },
-  {
-    title: "Jewish Matchmaking -- Shiduch.org",
+    title: "Jewish Matchmaking — Shiduch.org",
     eyebrow: "Singles",
     icon: "matchmaking",
     paragraphs: [
