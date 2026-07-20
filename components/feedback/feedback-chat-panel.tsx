@@ -155,16 +155,18 @@ export function FeedbackChatPanel({ sourcePath }: FeedbackChatPanelProps) {
 
       <form className="flex flex-col gap-2" onSubmit={onSend}>
         <Textarea
+          name="feedback"
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           placeholder="Share a suggestion, bug, or bit of praise…"
           aria-label="Share a suggestion or feedback"
+          autoComplete="off"
           disabled={busy}
           rows={3}
           className="min-h-[5.5rem] resize-none rounded-[22px] border-[rgba(39,72,109,0.14)] bg-white/90"
         />
         <div className="flex items-center justify-between gap-3">
-          <p className="text-xs leading-5 text-[var(--color-muted)]">
+          <p className="text-xs leading-5 text-[var(--color-muted)]" role={chatError ? "alert" : undefined}>
             {chatError
               ? chatError.message
               : "This chat collects feedback only — for questions try Ask Mekor or Contact Us."}

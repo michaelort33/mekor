@@ -172,6 +172,8 @@ export const NewsletterCampaignHistory = forwardRef<
       }
       setNotice("Scheduled campaign cancelled.");
       await loadCampaigns();
+    } catch {
+      setError("Unable to cancel campaign.");
     } finally {
       setCancellingId(null);
     }
@@ -187,7 +189,7 @@ export const NewsletterCampaignHistory = forwardRef<
         <div>
           <h3 className={styles.title}>{title}</h3>
           <p className={styles.hint}>
-            Expand a send to see exactly who received it and whether delivery succeeded.
+            Expand a send to inspect recipient-level delivery results. Up to 100 recent rows are shown.
           </p>
         </div>
         <button type="button" className={styles.refreshButton} onClick={() => void loadCampaigns()} disabled={loading}>
@@ -195,8 +197,16 @@ export const NewsletterCampaignHistory = forwardRef<
         </button>
       </div>
 
-      {error ? <p className={styles.error}>{error}</p> : null}
-      {notice ? <p className={styles.notice}>{notice}</p> : null}
+      {error ? (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      ) : null}
+      {notice ? (
+        <p className={styles.notice} role="status">
+          {notice}
+        </p>
+      ) : null}
       {loading && campaigns.length === 0 ? <p className={styles.muted}>Loading send history…</p> : null}
       {!loading && !error && campaigns.length === 0 ? (
         <p className={styles.muted}>No sends yet for this newsletter. Choose recipients above and send a test.</p>
@@ -218,6 +228,7 @@ export const NewsletterCampaignHistory = forwardRef<
                   type="button"
                   className={styles.campaignSummary}
                   aria-expanded={open}
+                  aria-controls={`newsletter-campaign-${campaign.id}-details`}
                   onClick={() => toggleExpanded(campaign.id)}
                 >
                   <span className={styles.summaryMain}>
@@ -244,7 +255,7 @@ export const NewsletterCampaignHistory = forwardRef<
                 </button>
 
                 {open ? (
-                  <div className={styles.campaignBody}>
+                  <div className={styles.campaignBody} id={`newsletter-campaign-${campaign.id}-details`}>
                     {events ? (
                       <p className={styles.events}>
                         Provider events:{" "}
@@ -266,34 +277,41 @@ export const NewsletterCampaignHistory = forwardRef<
                     {deliveries.length === 0 ? (
                       <p className={styles.muted}>No delivery rows available for this send yet.</p>
                     ) : (
-                      <div className={styles.tableWrap}>
-                        <table className={styles.table}>
-                          <thead>
-                            <tr>
-                              <th scope="col">Recipient</th>
-                              <th scope="col">Email</th>
-                              <th scope="col">Status</th>
-                              <th scope="col">Error</th>
-                              <th scope="col">Sent at</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {deliveries.map((delivery) => (
-                              <tr key={delivery.id}>
-                                <td>{delivery.recipientName || "—"}</td>
-                                <td>{delivery.recipientEmail || "—"}</td>
-                                <td>
-                                  <span className={`${styles.statusPill} ${statusClass(delivery.status)}`}>
-                                    {delivery.status}
-                                  </span>
-                                </td>
-                                <td className={styles.errorCell}>{delivery.errorMessage || "—"}</td>
-                                <td>{formatWhen(delivery.sentAt)}</td>
+                      <>
+                        {campaign.recipientCount > deliveries.length ? (
+                          <p className={styles.muted}>
+                            Showing {deliveries.length} of {campaign.recipientCount} recipient rows.
+                          </p>
+                        ) : null}
+                        <div className={styles.tableWrap}>
+                          <table className={styles.table}>
+                            <thead>
+                              <tr>
+                                <th scope="col">Recipient</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Error</th>
+                                <th scope="col">Sent at</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                            </thead>
+                            <tbody>
+                              {deliveries.map((delivery) => (
+                                <tr key={delivery.id}>
+                                  <td>{delivery.recipientName || "—"}</td>
+                                  <td>{delivery.recipientEmail || "—"}</td>
+                                  <td>
+                                    <span className={`${styles.statusPill} ${statusClass(delivery.status)}`}>
+                                      {delivery.status}
+                                    </span>
+                                  </td>
+                                  <td className={styles.errorCell}>{delivery.errorMessage || "—"}</td>
+                                  <td>{formatWhen(delivery.sentAt)}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </>
                     )}
                   </div>
                 ) : null}

@@ -561,6 +561,7 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
             </MessageScrollerProvider>
             <form className={styles.chatComposer} onSubmit={onSendChat}>
               <textarea
+                name="newsletterChange"
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
                 placeholder="Describe the change you want…"
@@ -596,8 +597,8 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
               <p className={styles.toolbarEyebrow}>Step 4 · Choose recipients and send</p>
               <h3 className={styles.sendSectionTitle}>Send this newsletter</h3>
               <p className={styles.panelHint}>
-                Start with the Michael test list to confirm delivery, then expand the results table to see exactly who
-                was emailed.
+                Start with the Michael test list to confirm delivery, then expand the results table to inspect the
+                recipient-level result.
               </p>
             </div>
           </div>

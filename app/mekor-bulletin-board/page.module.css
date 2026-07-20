@@ -648,3 +648,21 @@
     min-height: 44px;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .chip,
+  .cardLink,
+  .supportPrimary,
+  .supportSecondary,
+  .contactChip {
+    transition: none;
+  }
+
+  .chip:hover,
+  .cardLink:hover,
+  .supportPrimary:hover,
+  .supportSecondary:hover,
+  .contactChip:hover {
+    transform: none;
+  }
+}

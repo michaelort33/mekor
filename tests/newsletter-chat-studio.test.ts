@@ -116,6 +116,8 @@ test("studio send flow shows guidance, campaign history table, and uses campaign
   assert.match(history, /<table className=\{styles\.table\}>/);
   assert.match(history, /\/api\/admin\/templates\/campaigns\?templateId=/);
   assert.match(history, /Show recipients/);
+  assert.match(history, /Up to 100 recent rows are shown/);
+  assert.match(history, /Showing \{deliveries\.length\} of \{campaign\.recipientCount\} recipient rows/);
   assert.match(history, /allowCancelScheduled/);
   assert.match(history, /Cancel scheduled send/);
   assert.match(steps, /Review & polish/);

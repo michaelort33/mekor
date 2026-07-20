@@ -192,7 +192,7 @@ export const STANDING_INFO: BulletinCard[] = [
     eyebrow: "Remembrance",
     icon: "yizkor",
     paragraphs: [
-      "Mekor publishes a Yizkor Book for Yom Kippur, Shemini Atzeret, Pesach, and Shavuot. Submission deadline: September 1, 2026 at 12:00pm. Contributions by check payable to the shul are welcome.",
+      "Mekor publishes a Yizkor Book for Yom Kippur, Shemini Atzeret, Pesach, and Shavuot. Submission deadline: September 1, 2026 at 12:00 PM. Contributions by check payable to the shul are welcome.",
     ],
     links: [
       {
@@ -314,8 +314,8 @@ export const COMMUNITY_UPDATES: BulletinCard[] = [
     eyebrow: "Daily",
     icon: "community",
     paragraphs: [
-      "Daily at 1 pm; to participate, dial (773) 377- 9170.",
-      "Please join the Orthodox Union community for the recitation of Tehillim (chapters 20, 27 and 130) and divrei chizuk (words of inspiration) from our rabbanim each afternoon at 1:00PM EDT.",
+      "Daily at 1:00 PM; to participate, dial (773) 377-9170.",
+      "Please join the Orthodox Union community for the recitation of Tehillim (chapters 20, 27 and 130) and divrei chizuk (words of inspiration) from our rabbanim each afternoon at 1:00 PM EDT.",
     ],
     links: [{ label: "Dial (773) 377-9170", href: "tel:+17733779170" }],
   },
@@ -324,8 +324,8 @@ export const COMMUNITY_UPDATES: BulletinCard[] = [
     eyebrow: "Learning",
     icon: "class",
     paragraphs: [
-      "Live on Thursdays at 1:00 pm EST; online on-demand.",
-      "Mekor member Dr. Saundra Sterling Epstein (Sunnie) gives a weekly Parsha shiyur on Melrose B'nai Israel Emanu El's (MBIEE) Facebook page. To access, visit https://www.facebook.com/groups/mbiee.org. If required, you will be invited in by the administrator.",
+      "Live on Thursdays at 1:00 PM EST; available online on demand.",
+      "Mekor member Dr. Saundra Sterling Epstein (Sunnie) gives a weekly Parsha shiur on Melrose B'nai Israel Emanu El's (MBIEE) Facebook page. To access, visit https://www.facebook.com/groups/mbiee.org. If required, you will be invited in by the administrator.",
     ],
     links: [{ label: "Watch on Facebook", href: "https://www.facebook.com/groups/mbiee.org" }],
   },
@@ -333,7 +333,7 @@ export const COMMUNITY_UPDATES: BulletinCard[] = [
 
 export const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
   {
-    title: "Jewish Community Events & Announcements",
+    title: "East of Broad Home for Sale",
     eyebrow: "Housing",
     icon: "community",
     paragraphs: [
@@ -351,7 +351,7 @@ export const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
       "For more info, contact (215) 589-5405 or akiladelphia@gmail.com.",
     ],
     links: [
-      { label: "Akiladelphia website", href: "http://akiladelphia.com/" },
+      { label: "Akiladelphia website", href: "https://akiladelphia.com/" },
       { label: "Call (215) 589-5405", href: "tel:+12155895405" },
       { label: "Email", href: "mailto:akiladelphia@gmail.com" },
     ],
@@ -362,7 +362,7 @@ export const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
     icon: "health",
     paragraphs: [
       "Mekor member David Parvey has launched a health and wellness company utilizing unique CBD formulas to assist in balancing out your day. He is offering a 20% discount to Mekor members using discount code \"MEKORMEMBER\" and all proceeds will be split with the shul.",
-      "All products are vegan, 3rd-party tested and can be found at www.wefreeco.com.",
+      "All products are vegan, third-party tested and can be found at www.wefreeco.com.",
     ],
     links: [{ label: "Visit wefreeco.com", href: "http://www.wefreeco.com/" }],
   },
@@ -372,7 +372,7 @@ export const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
     icon: "career",
     paragraphs: [
       "JEVS provides assistance (resumes, practice mock interviews, etc.) to those who are seeking a job or looking to change jobs. For congregants referred by Rabbi Hirsch, there will be no charge for the first visit. Other visits are on a sliding fee scale or free depending on income.",
-      "If you wish to schedule your 1st visit free of charge, please email the shul, and Rabbi Hirsch will make the referral. Then call Wendy Rosenfeldt at 215-832-0878 to schedule your appointment. For info about free webinars about job searching, visit https://www.jevshumanservices.org/careerstrategies/.",
+      "To schedule your first visit free of charge, please email the shul, and Rabbi Hirsch will make the referral. Then call Wendy Rosenfeldt at 215-832-0878 to schedule your appointment. For information about free job-search webinars, visit https://www.jevshumanservices.org/careerstrategies/.",
     ],
     links: [
       {

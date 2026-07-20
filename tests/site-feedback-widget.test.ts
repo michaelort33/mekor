@@ -17,11 +17,12 @@ test("feedback widget hides on admin and auth routes", () => {
   assert.equal(shouldHideFeedbackWidget("/invite/accept"), true);
 });
 
-test("site feedback widget uses sheet chat chrome and cute copy", async () => {
-  const [widget, panel, layout] = await Promise.all([
+test("site feedback widget uses sheet chat chrome and validates public chat input", async () => {
+  const [widget, panel, layout, chatRoute] = await Promise.all([
     readFile("components/feedback/site-feedback-widget.tsx", "utf8"),
     readFile("components/feedback/feedback-chat-panel.tsx", "utf8"),
     readFile("app/layout.tsx", "utf8"),
+    readFile("app/api/feedback/chat/route.ts", "utf8"),
   ]);
 
   assert.match(widget, /Share an idea/);
@@ -35,6 +36,9 @@ test("site feedback widget uses sheet chat chrome and cute copy", async () => {
   assert.match(panel, /FeedbackFallbackForm/);
   assert.match(panel, /mekor\.feedback\.sessionPublicId/);
   assert.match(layout, /<SiteFeedbackWidget \/>/);
+  assert.match(chatRoute, /rawMessages\.every\(isFeedbackMessage\)/);
+  assert.match(chatRoute, /latest message must be from the visitor/i);
+  assert.match(chatRoute, /requestedSessionPublicId/);
 });
 
 test("admin shell links to feedback console", async () => {

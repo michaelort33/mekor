@@ -32,6 +32,16 @@ function messageText(message: UIMessage) {
     .trim();
 }
 
+function isFeedbackMessage(value: unknown): value is UIMessage {
+  if (!value || typeof value !== "object") return false;
+  const message = value as { role?: unknown; parts?: unknown };
+  if (message.role !== "user" && message.role !== "assistant") return false;
+  if (!Array.isArray(message.parts)) return false;
+  return message.parts.every(
+    (part) => Boolean(part) && typeof part === "object" && typeof (part as { type?: unknown }).type === "string",
+  );
+}
+
 function toTranscript(messages: UIMessage[]): FeedbackTranscriptMessage[] {
   return messages
     .map((message) => {
@@ -56,12 +66,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const messages = Array.isArray(body.messages) ? (body.messages as UIMessage[]) : null;
-  if (!messages || messages.length === 0) {
+  const rawMessages = Array.isArray(body.messages) ? body.messages : null;
+  if (!rawMessages || rawMessages.length === 0) {
     return NextResponse.json({ error: "messages are required." }, { status: 400 });
   }
-  if (messages.length > 40) {
+  if (rawMessages.length > 40) {
     return NextResponse.json({ error: "Too many messages in this conversation." }, { status: 400 });
+  }
+  if (!rawMessages.every(isFeedbackMessage)) {
+    return NextResponse.json({ error: "Invalid feedback chat messages." }, { status: 400 });
+  }
+
+  const messages = rawMessages;
+  if (messages.at(-1)?.role !== "user") {
+    return NextResponse.json({ error: "The latest message must be from the visitor." }, { status: 400 });
   }
 
   for (const message of messages) {
@@ -72,8 +90,13 @@ export async function POST(request: Request) {
 
   const sourcePath =
     typeof body.sourcePath === "string" ? body.sourcePath.trim().slice(0, 512) : "";
-  const sessionPublicId =
-    typeof body.sessionPublicId === "string" ? body.sessionPublicId.trim().slice(0, 40) : "";
+  const requestedSessionPublicId =
+    typeof body.sessionPublicId === "string" ? body.sessionPublicId.trim() : "";
+  const sessionPublicId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    requestedSessionPublicId,
+  )
+    ? requestedSessionPublicId
+    : "";
 
   const userSession = await getUserSession().catch(() => null);
   let session;

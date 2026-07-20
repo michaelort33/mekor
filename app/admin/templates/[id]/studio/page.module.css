@@ -709,6 +709,13 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .sendSpinner,
+  .livePulse::before {
+    animation: none;
+  }
+}
+
 @media (max-width: 980px) {
   .workflow,
   .sendBar {

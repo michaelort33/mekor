@@ -79,6 +79,7 @@ export function FeedbackFallbackForm({
       <label className="flex flex-col gap-1.5 text-sm font-medium">
         Type
         <select
+          name="kind"
           className="h-11 rounded-full border border-[var(--color-border)] bg-white px-4 text-sm"
           value={kind}
           onChange={(event) => setKind(event.target.value as SiteSuggestionKind)}
@@ -93,16 +94,19 @@ export function FeedbackFallbackForm({
       <label className="flex flex-col gap-1.5 text-sm font-medium">
         Title
         <Input
+          name="title"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           maxLength={200}
           required
+          autoComplete="off"
           placeholder="A short headline for your idea"
         />
       </label>
       <label className="flex flex-col gap-1.5 text-sm font-medium">
         Details
         <Textarea
+          name="body"
           value={body}
           onChange={(event) => setBody(event.target.value)}
           required
@@ -114,18 +118,27 @@ export function FeedbackFallbackForm({
       </label>
       <label className="flex flex-col gap-1.5 text-sm font-medium">
         Name <span className="font-normal text-[var(--color-muted)]">(optional)</span>
-        <Input value={contactName} onChange={(event) => setContactName(event.target.value)} maxLength={120} />
+        <Input
+          name="contactName"
+          value={contactName}
+          onChange={(event) => setContactName(event.target.value)}
+          maxLength={120}
+          autoComplete="name"
+        />
       </label>
       <label className="flex flex-col gap-1.5 text-sm font-medium">
         Email <span className="font-normal text-[var(--color-muted)]">(optional)</span>
         <Input
+          name="contactEmail"
           type="email"
           value={contactEmail}
           onChange={(event) => setContactEmail(event.target.value)}
           maxLength={255}
+          autoComplete="email"
+          spellCheck={false}
         />
       </label>
-      {error ? <p className="text-sm text-[#a33b3b]">{error}</p> : null}
+      {error ? <p className="text-sm text-[#a33b3b]" role="alert">{error}</p> : null}
       <Button type="submit" disabled={busy || !title.trim() || body.trim().length < 8}>
         {busy ? "Sending…" : "Send suggestion"}
       </Button>

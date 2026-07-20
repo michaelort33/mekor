@@ -307,7 +307,7 @@ export default async function BulletinBoardPage() {
       <section className={styles.boardSection} aria-labelledby="standing-info-title">
         <div id="standing-info" className={styles.anchor} />
         <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Standing Community Info</p>
+          <p className={styles.sectionEyebrow}>Keep handy</p>
           <h2 id="standing-info-title">Standing Community Info</h2>
           <p>Evergreen programs and links that used to repeat in every weekly newsletter.</p>
         </div>

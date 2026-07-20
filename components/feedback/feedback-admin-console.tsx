@@ -142,15 +142,22 @@ export function FeedbackAdminConsole() {
         <label style={{ display: "grid", gap: "0.35rem", minWidth: "14rem", flex: 1 }}>
           <span>Search</span>
           <input
+            name="feedbackSearch"
             value={q}
             onChange={(event) => setQ(event.target.value)}
             placeholder="Title, body, contact…"
+            autoComplete="off"
             style={{ height: "2.6rem", padding: "0 0.85rem" }}
           />
         </label>
         <label style={{ display: "grid", gap: "0.35rem" }}>
           <span>Status</span>
-          <select value={status} onChange={(event) => setStatus(event.target.value)} style={{ height: "2.6rem" }}>
+          <select
+            name="feedbackStatus"
+            value={status}
+            onChange={(event) => setStatus(event.target.value)}
+            style={{ height: "2.6rem" }}
+          >
             <option value="">All</option>
             {SITE_SUGGESTION_STATUSES.map((value) => (
               <option key={value} value={value}>
@@ -161,7 +168,12 @@ export function FeedbackAdminConsole() {
         </label>
         <label style={{ display: "grid", gap: "0.35rem" }}>
           <span>Kind</span>
-          <select value={kind} onChange={(event) => setKind(event.target.value)} style={{ height: "2.6rem" }}>
+          <select
+            name="feedbackKind"
+            value={kind}
+            onChange={(event) => setKind(event.target.value)}
+            style={{ height: "2.6rem" }}
+          >
             <option value="">All</option>
             {SITE_SUGGESTION_KINDS.map((value) => (
               <option key={value} value={value}>
@@ -181,18 +193,26 @@ export function FeedbackAdminConsole() {
         <span>{stats.reviewed} reviewed</span>
       </div>
 
-      {error ? <p style={{ color: "#a33b3b" }}>{error}</p> : null}
-      {notice ? <p style={{ color: "#246b45" }}>{notice}</p> : null}
+      {error ? (
+        <p style={{ color: "#a33b3b" }} role="alert">
+          {error}
+        </p>
+      ) : null}
+      {notice ? (
+        <p style={{ color: "#246b45" }} role="status">
+          {notice}
+        </p>
+      ) : null}
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "minmax(0, 1.1fr) minmax(0, 1fr)",
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 28rem), 1fr))",
           gap: "1rem",
           alignItems: "start",
         }}
       >
-        <div style={{ border: "1px solid rgba(15,23,42,0.08)", borderRadius: "1rem", overflow: "hidden" }}>
+        <div style={{ border: "1px solid rgba(15,23,42,0.08)", borderRadius: "1rem", overflowX: "auto" }}>
           {loading ? (
             <p style={{ padding: "1rem" }}>Loading…</p>
           ) : items.length === 0 ? (
@@ -213,16 +233,34 @@ export function FeedbackAdminConsole() {
                   return (
                     <tr
                       key={item.id}
-                      onClick={() => setSelectedId(item.id)}
                       style={{
-                        cursor: "pointer",
                         background: active ? "rgba(47,111,168,0.12)" : "transparent",
                         borderTop: "1px solid rgba(15,23,42,0.06)",
                       }}
                     >
                       <td style={{ padding: "0.75rem", whiteSpace: "nowrap" }}>{formatWhen(item.createdAt)}</td>
                       <td style={{ padding: "0.75rem" }}>{getSuggestionKindLabel(item.kind)}</td>
-                      <td style={{ padding: "0.75rem" }}>{item.title}</td>
+                      <td style={{ padding: "0.75rem" }}>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedId(item.id)}
+                          aria-pressed={active}
+                          style={{
+                            border: 0,
+                            padding: 0,
+                            background: "transparent",
+                            color: "inherit",
+                            font: "inherit",
+                            fontWeight: active ? 700 : 500,
+                            textAlign: "left",
+                            textDecoration: "underline",
+                            textUnderlineOffset: "0.18em",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {item.title}
+                        </button>
+                      </td>
                       <td style={{ padding: "0.75rem" }}>{getSuggestionStatusLabel(item.status)}</td>
                     </tr>
                   );
@@ -251,6 +289,7 @@ export function FeedbackAdminConsole() {
               <label style={{ display: "grid", gap: "0.35rem" }}>
                 <span>Admin notes</span>
                 <textarea
+                  name="adminNotes"
                   value={adminNotes}
                   onChange={(event) => setAdminNotes(event.target.value)}
                   rows={4}
