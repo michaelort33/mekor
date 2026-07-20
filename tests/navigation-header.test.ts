@@ -20,6 +20,16 @@ test("public navigation has distinct top and scrolled visual states", async () =
   assert.match(brandSource, /compact \? "h-7" : "h-8 sm:h-9"/);
 });
 
+test("desktop dropdown triggers highlight only while open", async () => {
+  const desktopNavSource = await readSource("components/navigation/desktop-nav.tsx");
+
+  assert.match(
+    desktopNavSource,
+    /isOpen && "bg-white\/85 font-semibold shadow-\[0_10px_24px_-18px_rgba\(15,23,42,0\.4\)\]"/,
+  );
+  assert.doesNotMatch(desktopNavSource, /groupActive/);
+});
+
 test("public headings keep balanced, word-safe wrapping", async () => {
   const [globalStyles, homepageSource, homepageStyles] = await Promise.all([
     readSource("app/globals.css"),

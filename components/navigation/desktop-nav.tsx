@@ -106,8 +106,6 @@ export function DesktopNav({ items, currentPath, openGroupId, setOpenGroupId }: 
 
         const groupId = getGroupId(item.label);
         const isOpen = openGroupId === groupId;
-        const groupActive =
-          isActive || item.children.some((child) => isNavigationPathActive(currentPath, child.href));
         const columns: NavColumn[] =
           item.columns ?? [{ title: item.label, links: item.children }];
 
@@ -131,7 +129,7 @@ export function DesktopNav({ items, currentPath, openGroupId, setOpenGroupId }: 
               aria-controls={`native-desktop-panel-${groupId}`}
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[15px] text-[var(--color-foreground)] transition hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]",
-                (isOpen || groupActive) && "bg-white/85 font-semibold shadow-[0_10px_24px_-18px_rgba(15,23,42,0.4)]",
+                isOpen && "bg-white/85 font-semibold shadow-[0_10px_24px_-18px_rgba(15,23,42,0.4)]",
               )}
               onClick={() => {
                 clearCloseTimer();
