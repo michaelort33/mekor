@@ -28,6 +28,8 @@ const TYPE_LABELS: Record<string, string> = {
 
 type UniversalSearchProps = {
   compact?: boolean;
+  /** Mount the dialog + shortcut listeners without rendering the trigger button. */
+  hideTrigger?: boolean;
 };
 
 function getShortcutLabel() {
@@ -44,7 +46,7 @@ export function openUniversalSearch() {
   window.dispatchEvent(new CustomEvent("mekor:open-universal-search"));
 }
 
-export function UniversalSearch({ compact = false }: UniversalSearchProps) {
+export function UniversalSearch({ compact = false, hideTrigger = false }: UniversalSearchProps) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [open, setOpen] = useState(false);
@@ -146,27 +148,29 @@ export function UniversalSearch({ compact = false }: UniversalSearchProps) {
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
-      <DialogPrimitive.Trigger asChild>
-        <Button
-          type="button"
-          variant={compact ? "secondary" : "outline"}
-          size={compact ? "icon" : "sm"}
-          className={compact ? "" : "min-w-[9.5rem] justify-between bg-white/80"}
-          aria-label="Search site"
-        >
-          {compact ? (
-            <Search className="h-4 w-4" />
-          ) : (
-            <>
-              <span className="inline-flex items-center gap-2">
-                <Search className="h-4 w-4" />
-                Search
-              </span>
-              <span className="text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">{shortcutLabel}</span>
-            </>
-          )}
-        </Button>
-      </DialogPrimitive.Trigger>
+      {hideTrigger ? null : (
+        <DialogPrimitive.Trigger asChild>
+          <Button
+            type="button"
+            variant={compact ? "secondary" : "outline"}
+            size={compact ? "icon" : "sm"}
+            className={compact ? "" : "min-w-[9.5rem] justify-between bg-white/80"}
+            aria-label="Search site"
+          >
+            {compact ? (
+              <Search className="h-4 w-4" />
+            ) : (
+              <>
+                <span className="inline-flex items-center gap-2">
+                  <Search className="h-4 w-4" />
+                  Search
+                </span>
+                <span className="text-xs uppercase tracking-[0.18em] text-[var(--color-muted)]">{shortcutLabel}</span>
+              </>
+            )}
+          </Button>
+        </DialogPrimitive.Trigger>
+      )}
 
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[rgba(16,24,32,0.52)] backdrop-blur-sm" />
