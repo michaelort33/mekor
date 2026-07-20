@@ -13,12 +13,15 @@ test("Rabbi Hirsch books and reflections retain the original wording and visible
   const source = await readSource("app/our-rabbis/page.tsx");
 
   assert.match(source, /engaging Torah classes/);
-  assert.match(source, /Rabbi Hirsch's Reflections/);
-  assert.match(source, /On Parkinson's Disease and Emunah/);
-  assert.match(source, /brand: "substack"/);
+  assert.match(source, /You can read some of Rabbi Hirsch&?apos;s inspirational reflections/);
+  assert.match(source, /92f487_19066816f85142bb94e30b3d0ff2bb26\.pdf/);
+  assert.doesNotMatch(source, /substack\.com\/p\/on-parkinsons-disease-and-emunah/);
   assert.match(source, /Pesach Without the Pain: A Practical Guide to the Laws and Practices of Passover/);
   assert.match(source, /Bringing Order to the Seder: A Modern Guide to the Traditional Passover Haggadah/);
   assert.match(source, /The Book of Life: A Transformative Guide to the High Holidays/);
+  assert.match(source, /<section className=\{styles\.publicationShelf\}[^>]*>/);
+  assert.match(source, /<h3 id="rabbi-hirsch-books">Books by Rabbi Hirsch<\/h3>/);
+  assert.match(source, /HIRSCH_BOOK_LINKS\.map[\s\S]*<BrandedLink key=\{book\.href\} \{\.\.\.book\} dense \/>/);
   assert.equal(source.match(/brand: "amazon"/g)?.length, 4);
 });
 
