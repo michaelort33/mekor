@@ -13,7 +13,7 @@ test("mobile drawer lets Radix connect DialogContent to its DialogTitle", async 
     readTextFile("components/navigation/site-navigation.tsx"),
   ]);
 
-  assert.match(drawerSource, /<SheetTitle>Browse Mekor<\/SheetTitle>/);
+  assert.match(drawerSource, /<SheetTitle className="sr-only">Browse Mekor<\/SheetTitle>/);
   assert.doesNotMatch(drawerSource, /aria-labelledby=\{titleId\}/);
   assert.doesNotMatch(drawerSource, /<SheetTitle id=\{titleId\}>/);
   assert.doesNotMatch(navigationSource, /titleId="native-mobile-drawer-title"/);

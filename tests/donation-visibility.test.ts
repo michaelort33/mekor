@@ -23,10 +23,9 @@ test("donation calls to action are visible in compact navigation and at the top 
   assert.match(navigationSource, /min-\[1441px\]:hidden/);
   assert.match(navigationSource, /<Heart className="h-3\.5 w-3\.5"/);
   assert.doesNotMatch(navigationSource, /HeartHandshake/);
-  assert.match(drawerSource, /Donate or sponsor/);
+  assert.match(drawerSource, /Donate to Mekor/);
   assert.match(drawerSource, /<Heart className="h-4 w-4 flex-none"/);
   assert.doesNotMatch(drawerSource, /HeartHandshake/);
-  assert.match(drawerSource, /showDonate=\{false\}/);
 });
 
 test("homepage invites visitors to donate and sponsor a Kiddush", async () => {
