@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
+import { NewsletterFlowSteps } from "@/components/admin/newsletter-flow-steps";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 import {
   buildWeeklyCleanedTemplateDraft,
@@ -301,15 +302,17 @@ export default function NewTemplatePage() {
       return;
     }
 
-    router.push(`/admin/templates/${payload.template.id}/studio`);
+    router.push(`/admin/templates/${payload.template.id}/studio?from=new`);
     router.refresh();
   }
+
+  const flowStep = step === "start" ? "start" : saving ? "review" : "build";
 
   return (
     <AdminShell
       currentPath="/admin/templates"
       title="New Newsletter"
-      description="Choose a starting point, shape the newsletter with AI, then save when it is ready."
+      description="Choose a starting point, shape the newsletter with AI, then continue to Studio to review and send."
       breadcrumbs={[
         { href: "/admin", label: "Dashboard" },
         { href: "/admin/templates", label: "Newsletters" },
@@ -317,27 +320,17 @@ export default function NewTemplatePage() {
       ]}
       actions={<Link href="/admin/templates" className={adminStyles.actionPill}>Back to newsletters</Link>}
     >
-      <ol className={styles.steps} aria-label="Newsletter creation steps">
-        <li className={step === "start" ? styles.activeStep : styles.completeStep}>
-          <span>1</span>
-          <div><strong>Starting point</strong><small>Blank or existing</small></div>
-        </li>
-        <li className={step === "compose" ? styles.activeStep : ""}>
-          <span>2</span>
-          <div><strong>Create with AI</strong><small>Iterate and preview</small></div>
-        </li>
-        <li>
-          <span>3</span>
-          <div><strong>Save</strong><small>Open in Studio</small></div>
-        </li>
-      </ol>
+      <NewsletterFlowSteps current={flowStep} ariaLabel="Newsletter creation steps" />
 
       {step === "start" ? (
         <section className={styles.startPanel} aria-labelledby="starting-point-title">
           <div className={styles.sectionHeading}>
             <p className={styles.eyebrow}>Step 1</p>
             <h2 id="starting-point-title">What should this newsletter start from?</h2>
-            <p>Start fresh, or copy an existing newsletter so AI can preserve its layout and make targeted changes.</p>
+            <p>
+              Start fresh, use the weekly cleaned starter, or copy an existing newsletter so AI can preserve its layout.
+              Nothing is emailed from this page — after you save, Studio walks you through recipients and send.
+            </p>
           </div>
 
           <button
@@ -370,7 +363,10 @@ export default function NewTemplatePage() {
             aria-pressed={starterKind === "blank"}
           >
             <span className={styles.blankIcon}>＋</span>
-            <span><strong>Blank canvas</strong><small>Ask AI to create the HTML from scratch</small></span>
+            <span>
+              <strong>Blank canvas</strong>
+              <small>Ask AI to create the HTML from scratch here, then continue to Studio to polish and send</small>
+            </span>
             <span className={styles.selectionMark}>{starterKind === "blank" ? "Selected" : "Select"}</span>
           </button>
 
@@ -423,7 +419,7 @@ export default function NewTemplatePage() {
 
           {error ? <p className={styles.error}>{error}</p> : null}
           <div className={styles.startActions}>
-            <p>You can make as many AI edits as you need before anything is saved.</p>
+            <p>You can make as many AI edits as you need before anything is saved. Sending happens later in Studio.</p>
             <button type="button" className={styles.primaryButton} onClick={() => void beginComposing()} disabled={loadingBase}>
               {loadingBase ? "Loading starting point…" : "Continue to AI builder"}
             </button>
@@ -440,9 +436,12 @@ export default function NewTemplatePage() {
               <button type="button" className={styles.ghostButton} onClick={() => setStep("start")}>
                 Change starting point
               </button>
-              <button type="button" className={styles.primaryButton} onClick={() => void save()} disabled={saving}>
-                {saving ? "Saving…" : "Save newsletter"}
-              </button>
+              <div className={styles.saveAction}>
+                <button type="button" className={styles.primaryButton} onClick={() => void save()} disabled={saving}>
+                  {saving ? "Saving…" : "Save & continue to send"}
+                </button>
+                <small>Next: review the live preview in Studio, pick recipients (try Michael test list), and send.</small>
+              </div>
             </div>
           </div>
 
@@ -523,7 +522,7 @@ export default function NewTemplatePage() {
                   disabled={aiGenerating}
                 />
                 <div>
-                  <small>Each message works from the latest HTML. Nothing is emailed from this page.</small>
+                  <small>Each message works from the latest HTML. When you are ready, save and continue to Studio to send.</small>
                   <button type="submit" className={styles.sendButton} disabled={!prompt.trim() || aiGenerating}>
                     {aiGenerating ? "Working…" : "Send to AI"}
                   </button>

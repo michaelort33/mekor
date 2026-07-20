@@ -10,6 +10,14 @@ Deterministic Next.js rebuild of [mekorhabracha.org](https://www.mekorhabracha.o
 - Postgres (Neon-compatible) + Drizzle for form submissions
 - SendGrid for transactional and notification emails
 
+## Site feedback widget
+
+Public pages include a floating **Share an idea** launcher (bottom-right). It opens a chat-style sheet where an agentic AI collects suggestions and feedback only — it does not answer questions or use a knowledge base. Structured submissions are stored in `site_suggestions` (with optional session transcripts) and reviewed at `/admin/feedback`.
+
+- Requires AI Gateway auth or `OPENAI_API_KEY` for the chat path (`FEEDBACK_CHAT_MODEL` optional).
+- When AI is unavailable, visitors can still submit via the short fallback form to the same table.
+- Apply the schema with `npm run db:generate` / `npm run db:push` (migration `0029_site_suggestions_feedback`).
+
 ## Local Setup
 
 1. Copy environment values:

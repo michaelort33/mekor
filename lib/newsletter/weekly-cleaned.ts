@@ -5,12 +5,19 @@
  * blurbs (membership, Hebrew Help, wine/Judaica, volunteer pitches, Israel
  * support, donations) are collapsed to short links pointing at the bulletin
  * board and related site pages.
+ *
+ * Visual craft (logo + Shabbat banner + styled board CTA) is restored while
+ * keeping the weekly copy lean.
  */
 
 export const WEEKLY_CLEANED_TEMPLATE_TITLE = "Weekly Newsletter - Cleaned";
 
 export const WEEKLY_CLEANED_BULLETIN_URL = "https://www.mekorhabracha.org/mekor-bulletin-board";
 export const WEEKLY_CLEANED_SITE_URL = "https://www.mekorhabracha.org";
+
+/** Public absolute URLs so email clients can load local archive assets. */
+export const WEEKLY_CLEANED_LOGO_URL = `${WEEKLY_CLEANED_SITE_URL}/newsletters/archive/assets/238810f8b9cd-75d082cb-45f0-420c-95dd-3f153937e7ef.png`;
+export const WEEKLY_CLEANED_SHABBAT_BANNER_URL = `${WEEKLY_CLEANED_SITE_URL}/newsletters/archive/assets/01b4787397a5-210e849f-0dff-f50d-8135-5cfaa09eb671.png`;
 
 export type WeeklyCleanedInput = {
   parshaName?: string;
@@ -75,7 +82,10 @@ function resolve(input: WeeklyCleanedInput) {
 function section(title: string, bodyHtml: string) {
   return `<tr>
   <td style="padding:0 0 18px;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d7e3f0;border-radius:12px;background:#ffffff;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d7e3f0;border-radius:14px;background:#ffffff;overflow:hidden;">
+      <tr>
+        <td style="height:4px;line-height:4px;font-size:0;background:linear-gradient(90deg,#214e79,#b58646);">&nbsp;</td>
+      </tr>
       <tr>
         <td style="padding:18px 20px;">
           <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:20px;line-height:1.25;color:#1f4467;">${esc(title)}</h2>
@@ -94,16 +104,22 @@ function section(title: string, bodyHtml: string) {
 export function generateWeeklyCleanedHtml(input: WeeklyCleanedInput = {}) {
   const values = resolve(input);
 
-  return `<div style="margin:0;padding:0;background:#f4f7fb;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f7fb;">
+  return `<div style="margin:0;padding:0;background:#f4efe6;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4efe6;">
     <tr>
       <td align="center" style="padding:20px 12px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:#ffffff;border:1px solid #d5e2ef;border-radius:16px;overflow:hidden;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:#ffffff;border:1px solid #e0d3bf;border-radius:18px;overflow:hidden;">
           <tr>
-            <td style="padding:26px 24px 20px;background:#eef4fb;text-align:center;">
-              <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#5a7190;font-weight:700;">Mekor Habracha Weekly Newsletter</p>
-              <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:1.2;color:#1f4467;">${esc(values.parshaName)}</h1>
+            <td style="padding:22px 22px 10px;background:linear-gradient(180deg,#f8f3eb 0%,#ffffff 100%);text-align:center;">
+              <img src="${WEEKLY_CLEANED_LOGO_URL}" alt="Mekor Habracha - Center City Synagogue" width="280" style="display:block;margin:0 auto 14px;width:280px;max-width:80%;height:auto;border:0;" />
+              <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8a6428;font-weight:700;">Mekor Habracha Weekly Newsletter</p>
+              <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.18;color:#1f4467;">${esc(values.parshaName)}</h1>
               <p style="margin:10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;color:#3f5d79;">${esc(values.shabbatDate)} · ${esc(values.hebrewDate)}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0;">
+              <img src="${WEEKLY_CLEANED_SHABBAT_BANNER_URL}" alt="Shabbat at Mekor" width="640" style="display:block;width:100%;max-width:640px;height:auto;border:0;" />
             </td>
           </tr>
           <tr>
@@ -121,16 +137,21 @@ export function generateWeeklyCleanedHtml(input: WeeklyCleanedInput = {}) {
                 ${section("Weekday Services", values.weekdayServicesHtml)}
                 ${section(
                   "Community Bulletin Board",
-                  `<p style="margin:0 0 12px;line-height:1.55;">Standing community info now lives in one place so the weekly email stays focused on this Shabbat:</p>
-<ul style="margin:0 0 14px;padding-left:18px;line-height:1.6;">
+                  `<p style="margin:0 0 12px;line-height:1.55;">Standing community info now lives on Mekor&apos;s <strong>Living Flyer Board</strong> so this weekly email stays focused on this Shabbat:</p>
+<ul style="margin:0 0 16px;padding-left:18px;line-height:1.6;">
   <li>Tot Shabbat &amp; family programming</li>
   <li>Membership, Hebrew Help, and volunteering</li>
   <li>Kosher wine &amp; Judaica affiliate links</li>
   <li>Eruv support, Israel initiatives, and ongoing notices</li>
 </ul>
-<p style="margin:0;">
-  <a href="${WEEKLY_CLEANED_BULLETIN_URL}" style="display:inline-block;background:#214e79;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;padding:12px 18px;border-radius:999px;">Open the Bulletin Board</a>
-</p>`,
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border:1px solid #e0d3bf;border-radius:14px;background:linear-gradient(135deg,#f8f3eb,#eef4fb);">
+  <tr>
+    <td style="padding:18px 18px;text-align:center;">
+      <p style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:18px;line-height:1.3;color:#1f4467;">Browse the community board</p>
+      <a href="${WEEKLY_CLEANED_BULLETIN_URL}" style="display:inline-block;background:#214e79;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;padding:13px 20px;border-radius:999px;">Open the Bulletin Board</a>
+    </td>
+  </tr>
+</table>`,
                 )}
               </table>
             </td>

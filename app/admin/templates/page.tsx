@@ -89,10 +89,14 @@ export default async function AdminTemplatesPage({ searchParams }: TemplatesPage
     <AdminShell
       currentPath="/admin/templates"
       title="Newsletters"
-      description="Create, schedule, send, publish, and monitor newsletters from one workspace."
+      description="Create with AI, then send and track deliveries in Studio — one workspace for drafts, campaigns, and the public archive."
       stats={stats}
       actions={<><Link href="/admin/newsletters/subscribers" className={adminStyles.actionPill}>Manage subscribers</Link><Link href="/admin/templates/new" className={adminStyles.actionPill}>New newsletter</Link></>}
     >
+      <p className={styles.intro}>
+        New newsletter walks you through a starting point and AI draft. Studio is where you polish, choose recipients
+        (including the Michael test list), send, and review delivery results.
+      </p>
       <form className={adminStyles.toolbar} method="GET">
         <div className={adminStyles.toolbarHeader}>
           <p className={adminStyles.toolbarTitle}>Template filters</p>
@@ -130,7 +134,11 @@ export default async function AdminTemplatesPage({ searchParams }: TemplatesPage
                 <h3 className={styles.cardTitle}>{campaign.templateTitle || campaign.subject}</h3>
                 <p className={styles.cardSubject}>{campaign.subject}</p>
                 <p className={styles.cardMeta}>{campaign.scheduledAt ? `Scheduled ${campaign.scheduledAt.toLocaleString()}` : `Created ${campaign.createdAt.toLocaleString()}`}</p>
-                {campaign.templateId ? <Link href={`/admin/templates/${campaign.templateId}/edit`} className={styles.actionLink}>Open campaign details</Link> : null}
+                {campaign.templateId ? (
+                  <Link href={`/admin/templates/${campaign.templateId}/studio#newsletter-send`} className={styles.actionLink}>
+                    View send details
+                  </Link>
+                ) : null}
               </article>
             ))}
           </div>
@@ -183,10 +191,10 @@ export default async function AdminTemplatesPage({ searchParams }: TemplatesPage
               </p>
               <div className={styles.cardActions}>
                 <Link href={`/admin/templates/${template.id}/studio`} className={styles.actionLink}>
-                  Chat Studio
+                  Open Studio
                 </Link>
                 <Link href={`/admin/templates/${template.id}/edit`} className={styles.actionLink}>
-                  Edit & Send
+                  Classic editor
                 </Link>
                 <Link href={`/admin/templates/${template.id}/preview`} className={styles.actionLink}>
                   Preview

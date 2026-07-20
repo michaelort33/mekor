@@ -6,6 +6,8 @@ import {
   buildWeeklyCleanedTemplateDraft,
   generateWeeklyCleanedHtml,
   WEEKLY_CLEANED_BULLETIN_URL,
+  WEEKLY_CLEANED_LOGO_URL,
+  WEEKLY_CLEANED_SHABBAT_BANNER_URL,
   WEEKLY_CLEANED_TEMPLATE_TITLE,
 } from "../lib/newsletter/weekly-cleaned";
 
@@ -24,6 +26,14 @@ test("weekly cleaned starter keeps lean weekly sections and links the bulletin b
   assert.match(html, /Weekday Services/);
   assert.match(html, /Community Bulletin Board/);
   assert.match(html, new RegExp(WEEKLY_CLEANED_BULLETIN_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  assert.match(html, /Open the Bulletin Board/);
+  assert.match(html, /Living Flyer Board/);
+  assert.match(html, new RegExp(`src="${WEEKLY_CLEANED_LOGO_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`));
+  assert.match(
+    html,
+    new RegExp(`src="${WEEKLY_CLEANED_SHABBAT_BANNER_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`),
+  );
+  assert.match(html, /<img /);
 
   assert.doesNotMatch(html, /Hebrew Help at Mekor/);
   assert.doesNotMatch(html, /For Kosher Wine use this link/);
@@ -36,6 +46,7 @@ test("weekly cleaned draft uses the shared template title", () => {
   assert.equal(draft.category, "weekly");
   assert.equal(draft.status, "draft");
   assert.match(draft.bodyHtml, /Open the Bulletin Board/);
+  assert.match(draft.bodyHtml, /<img /);
 });
 
 test("new newsletter builder offers the weekly cleaned starter by default", async () => {
@@ -55,10 +66,15 @@ test("homepage links to the bulletin board instead of repeating campaign blocks"
 });
 
 test("bulletin board hosts standing weekly evergreen content", async () => {
-  const page = await readFile("app/mekor-bulletin-board/page.tsx", "utf8");
+  const [page, content] = await Promise.all([
+    readFile("app/mekor-bulletin-board/page.tsx", "utf8"),
+    readFile("app/mekor-bulletin-board/content.ts", "utf8"),
+  ]);
   assert.match(page, /Standing Community Info/);
-  assert.match(page, /Tot Shabbat/);
-  assert.match(page, /Hebrew Help at Mekor/);
-  assert.match(page, /Kosher Wine & Judaica/);
   assert.match(page, /Featured Now/);
+  assert.match(page, /Living Flyer Board|Living flyer board/);
+  assert.match(content, /Tot Shabbat/);
+  assert.match(content, /Hebrew Help at Mekor/);
+  assert.match(content, /Kosher Wine & Judaica/);
+  assert.match(content, /zionismFlyer/);
 });

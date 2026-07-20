@@ -17,6 +17,7 @@ const SKIP_DIR_NAMES = new Set([
   ".next",
   "output",
   "coverage",
+  ".worktrees",
 ]);
 
 function walkFiles(dir: string, out: string[] = []): string[] {

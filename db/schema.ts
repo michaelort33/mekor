@@ -183,6 +183,15 @@ export const mailchimpSignupEventTypeEnum = pgEnum("mailchimp_signup_event_type"
 ]);
 export const askMekorQuestionVisibilityEnum = pgEnum("ask_mekor_question_visibility", ["public", "private"]);
 export const askMekorQuestionStatusEnum = pgEnum("ask_mekor_question_status", ["open", "answered", "closed"]);
+export const siteSuggestionKindEnum = pgEnum("site_suggestion_kind", [
+  "suggestion",
+  "feedback",
+  "bug",
+  "praise",
+  "other",
+]);
+export const siteSuggestionStatusEnum = pgEnum("site_suggestion_status", ["new", "reviewed", "archived"]);
+export const siteSuggestionPriorityEnum = pgEnum("site_suggestion_priority", ["low", "normal", "high"]);
 
 export const formSubmissions = pgTable("form_submissions", {
   id: serial("id").primaryKey(),
@@ -503,6 +512,55 @@ export const users = pgTable(
     ),
     createdAtIdIdx: index("users_created_at_id_idx").on(table.createdAt, table.id),
     renewalAutoMessagesIdx: index("users_renewal_auto_messages_idx").on(table.membershipRenewalDate, table.autoMessagesEnabled),
+  }),
+);
+
+export const siteFeedbackSessions = pgTable(
+  "site_feedback_sessions",
+  {
+    id: serial("id").primaryKey(),
+    publicId: varchar("public_id", { length: 40 }).notNull(),
+    sourcePath: varchar("source_path", { length: 512 }).notNull().default(""),
+    userId: integer("user_id").references(() => users.id),
+    userAgent: varchar("user_agent", { length: 512 }).notNull().default(""),
+    transcriptJson: json("transcript_json")
+      .$type<Array<{ role: "user" | "assistant"; content: string }>>()
+      .notNull()
+      .default([]),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    publicIdUniqueIdx: uniqueIndex("site_feedback_sessions_public_id_unique_idx").on(table.publicId),
+    createdAtIdx: index("site_feedback_sessions_created_at_idx").on(table.createdAt),
+    userIdIdx: index("site_feedback_sessions_user_id_idx").on(table.userId),
+  }),
+);
+
+export const siteSuggestions = pgTable(
+  "site_suggestions",
+  {
+    id: serial("id").primaryKey(),
+    sessionId: integer("session_id")
+      .notNull()
+      .references(() => siteFeedbackSessions.id),
+    kind: siteSuggestionKindEnum("kind").notNull(),
+    title: varchar("title", { length: 200 }).notNull(),
+    body: text("body").notNull(),
+    categoryDetail: varchar("category_detail", { length: 120 }).notNull().default(""),
+    contactName: varchar("contact_name", { length: 120 }).notNull().default(""),
+    contactEmail: varchar("contact_email", { length: 255 }).notNull().default(""),
+    priority: siteSuggestionPriorityEnum("priority").notNull().default("normal"),
+    status: siteSuggestionStatusEnum("status").notNull().default("new"),
+    adminNotes: text("admin_notes").notNull().default(""),
+    sourcePath: varchar("source_path", { length: 512 }).notNull().default(""),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    statusCreatedIdx: index("site_suggestions_status_created_idx").on(table.status, table.createdAt),
+    kindCreatedIdx: index("site_suggestions_kind_created_idx").on(table.kind, table.createdAt),
+    sessionIdIdx: index("site_suggestions_session_id_idx").on(table.sessionId),
   }),
 );
 

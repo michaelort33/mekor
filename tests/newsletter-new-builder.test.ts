@@ -21,7 +21,9 @@ test("new newsletter flow chooses a base, iterates with AI, previews safely, and
   assert.match(page, /credentials: "same-origin"/);
   assert.match(page, /response\.status === 401/);
   assert.match(page, /Your admin session expired/);
-  assert.match(page, /router\.push\(`\/admin\/templates\/\$\{payload\.template\.id\}\/studio`\)/);
+  assert.match(page, /Save & continue to send/);
+  assert.match(page, /NewsletterFlowSteps/);
+  assert.match(page, /router\.push\(`\/admin\/templates\/\$\{payload\.template\.id\}\/studio\?from=new`\)/);
   assert.doesNotMatch(page, /Generate HTML design/);
   assert.doesNotMatch(page, /Primary section title/);
   assert.doesNotMatch(page, /\/api\/admin\/templates\/send/);
