@@ -88,9 +88,13 @@ export function BackendShell({
               ☰
             </button>
             {crumbs?.map((crumb, i) => (
-              <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <span key={i} className={styles.crumbItem}>
                 {i > 0 ? <span className={styles.crumbsSep}>/</span> : null}
-                {crumb.href ? <Link href={crumb.href}>{crumb.label}</Link> : <span>{crumb.label}</span>}
+                {crumb.href ? (
+                  <Link href={crumb.href} className={styles.crumbLabel}>{crumb.label}</Link>
+                ) : (
+                  <span className={styles.crumbLabel} aria-current="page">{crumb.label}</span>
+                )}
               </span>
             ))}
           </div>
