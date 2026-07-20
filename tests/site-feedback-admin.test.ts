@@ -42,3 +42,23 @@ test("admin feedback APIs require actor and support status updates", async () =>
   assert.match(detailRoute, /site_feedback\.status_update/);
   assert.match(detailRoute, /SITE_SUGGESTION_STATUSES/);
 });
+
+test("public feedback APIs do not expose a suggestions list endpoint", async () => {
+  const { access } = await import("node:fs/promises");
+  const { readdir } = await import("node:fs/promises");
+
+  await assert.rejects(() => access("app/api/feedback/route.ts"));
+  const entries = await readdir("app/api/feedback");
+  assert.deepEqual(entries.sort(), ["chat", "submit"]);
+
+  const [chatRoute, submitRoute] = await Promise.all([
+    readFile("app/api/feedback/chat/route.ts", "utf8"),
+    readFile("app/api/feedback/submit/route.ts", "utf8"),
+  ]);
+  assert.doesNotMatch(chatRoute, /export async function GET/);
+  assert.doesNotMatch(submitRoute, /export async function GET/);
+  assert.doesNotMatch(chatRoute, /listSuggestionsForAdmin/);
+  assert.doesNotMatch(submitRoute, /listSuggestionsForAdmin/);
+  assert.match(chatRoute, /allowWithinWindow\(`feedback-chat:/);
+  assert.match(submitRoute, /allowWithinWindow\(`feedback-submit:/);
+});

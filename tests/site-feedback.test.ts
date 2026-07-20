@@ -4,6 +4,7 @@ import test from "node:test";
 
 import { createFeedbackChatModel } from "../lib/feedback/chat-model";
 import { saveSuggestionInputSchema } from "../lib/feedback/save-suggestion-schema";
+import { sanitizeSuggestionBody, stripControlCharacters } from "../lib/feedback/sanitize";
 import { FEEDBACK_SYSTEM_PROMPT } from "../lib/feedback/system-prompt";
 import {
   getSuggestionKindLabel,
@@ -89,4 +90,12 @@ test("feedback chat tools wire saveSuggestion to the service", async () => {
   assert.match(toolsSource, /saveSuggestion: tool\(/);
   assert.match(toolsSource, /saveSuggestionFromTool/);
   assert.match(toolsSource, /saveSuggestionInputSchema/);
+});
+
+test("sanitize strips control characters from suggestion text", () => {
+  assert.equal(stripControlCharacters("hello\u0000world\u0007!"), "helloworld!");
+  assert.equal(
+    sanitizeSuggestionBody("Line one\n\n\n\nLine two\u0008."),
+    "Line one\n\nLine two.",
+  );
 });

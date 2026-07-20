@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { getDb } from "@/db/client";
 import { siteFeedbackSessions, siteSuggestions } from "@/db/schema";
 import type { SaveSuggestionInput } from "@/lib/feedback/save-suggestion-schema";
+import { sanitizeSuggestionBody, sanitizeSuggestionText } from "@/lib/feedback/sanitize";
 import {
   type FeedbackTranscriptMessage,
   type SiteSuggestionDetail,
@@ -121,13 +122,13 @@ export async function saveSuggestionFromTool(input: {
     .values({
       sessionId: input.sessionId,
       kind: input.payload.kind,
-      title: input.payload.title.trim().slice(0, 200),
-      body: input.payload.body.trim().slice(0, 5000),
-      categoryDetail: (input.payload.categoryDetail || "").trim().slice(0, 120),
-      contactName: (input.payload.contactName || "").trim().slice(0, 120),
-      contactEmail: (input.payload.contactEmail || "").trim().slice(0, 255),
+      title: sanitizeSuggestionText(input.payload.title, 200),
+      body: sanitizeSuggestionBody(input.payload.body, 5000),
+      categoryDetail: sanitizeSuggestionText(input.payload.categoryDetail || "", 120),
+      contactName: sanitizeSuggestionText(input.payload.contactName || "", 120),
+      contactEmail: sanitizeSuggestionText(input.payload.contactEmail || "", 255),
       priority: input.payload.priority || "normal",
-      sourcePath: (input.sourcePath || "").trim().slice(0, 512),
+      sourcePath: sanitizeSuggestionText(input.sourcePath || "", 512),
     })
     .returning({ id: siteSuggestions.id });
 
