@@ -55,6 +55,28 @@ test("Rabbi links expose recognizable brands and external-link cues", async () =
   assert.match(primitiveSource, /function EighteenFortyMark/);
 });
 
+test("Rabbi headshots stay proportionate across stacked layouts", async () => {
+  const [pageSource, styleSource] = await Promise.all([
+    readSource("app/our-rabbis/page.tsx"),
+    readSource("app/our-rabbis/page.module.css"),
+  ]);
+
+  assert.match(pageSource, /cn\(styles\.profilePhotoWrap, styles\.hirschPhotoWrap\)/);
+  assert.match(styleSource, /grid-template-columns: minmax\(250px, 360px\) minmax\(0, 1fr\)/);
+  assert.match(
+    styleSource,
+    /\.profilePhotoWrap\.hirschPhotoWrap\s*\{[\s\S]*?max-width: 360px;[\s\S]*?\}/,
+  );
+  assert.match(
+    styleSource,
+    /@media \(max-width: 960px\)[\s\S]*?\.profilePhotoWrap\s*\{[\s\S]*?max-width: 420px;[\s\S]*?\}/,
+  );
+  assert.doesNotMatch(
+    styleSource,
+    /@media \(max-width: 760px\)[\s\S]*?\.profilePhotoWrap\s*\{[\s\S]*?max-width: 100%;/,
+  );
+});
+
 test("Our Rabbis uses the plural canonical route everywhere public", async () => {
   const [pageSource, configSource, homepageSource, menuSource, leadershipSource, mediumPageSource] =
     await Promise.all([

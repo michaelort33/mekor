@@ -95,7 +95,7 @@ export default function OurRabbisPage() {
       <section id="rabbi-eliezer-hirsch" className={styles.anchorSection}>
         <SectionCard className={styles.profileSectionCard}>
           <article className={styles.profileLayout}>
-            <div className={styles.profilePhotoWrap}>
+            <div className={cn(styles.profilePhotoWrap, styles.hirschPhotoWrap)}>
               <Image
                 src="https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/3e46359f1d8a8c9a5d886a6f6aa25c734c5de1d0-92f487_e03dc964305644a9b5eb3894502ed630-mv2.jpg"
                 alt="Rabbi Eliezer Hirsch"
