@@ -9,6 +9,7 @@
     "start": "node node_modules/next/dist/bin/next start",
     "lint": "node node_modules/eslint/bin/eslint.js",
     "test": "node node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts",
+    "review:contrast": "node node_modules/tsx/dist/cli.mjs scripts/review/contrast-crawl.ts",
     "prepush:deploy-check": "bash scripts/prepush-deploy-check.sh",
     "mirror:discover": "node node_modules/tsx/dist/cli.mjs scripts/mirror/01_discover.ts",
     "mirror:snapshot": "node node_modules/tsx/dist/cli.mjs scripts/mirror/02_snapshot_pages.ts",
