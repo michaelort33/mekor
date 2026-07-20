@@ -19,10 +19,10 @@ test("Rabbi Hirsch books and reflections retain the original wording and visible
   assert.match(source, /Pesach Without the Pain: A Practical Guide to the Laws and Practices of Passover/);
   assert.match(source, /Bringing Order to the Seder: A Modern Guide to the Traditional Passover Haggadah/);
   assert.match(source, /The Book of Life: A Transformative Guide to the High Holidays/);
-  assert.match(source, /<section className=\{styles\.publicationShelf\}[^>]*>/);
-  assert.match(source, /<h3 id="rabbi-hirsch-books">Books by Rabbi Hirsch<\/h3>/);
-  assert.match(source, /HIRSCH_BOOK_LINKS\.map[\s\S]*<BrandedLink key=\{book\.href\} \{\.\.\.book\} dense \/>/);
-  assert.equal(source.match(/brand: "amazon"/g)?.length, 4);
+  assert.match(source, /<ul className=\{styles\.bookList\} aria-label="Books by Rabbi Hirsch">/);
+  assert.match(source, /HIRSCH_BOOK_LINKS\.map[\s\S]*<a href=\{book\.href\}/);
+  assert.match(source, /HIRSCH_ONLINE_LINKS\.map[\s\S]*<BrandedLink key=\{item\.href\} \{\.\.\.item\} iconOnly \/>/);
+  assert.doesNotMatch(source, /publicationShelf|rabbi-hirsch-resources|HIRSCH_COMMUNITY_LINKS/);
 });
 
 test("Rabbi links expose recognizable brands and external-link cues", async () => {
@@ -33,12 +33,12 @@ test("Rabbi links expose recognizable brands and external-link cues", async () =
   ]);
 
   assert.match(pageSource, /A Quest for Our Times: The Louis Jacobs Haggadah \(Izzun Books, 2025\)/);
-  assert.match(pageSource, /brand: "youtube"/);
   assert.match(pageSource, /brand: "facebook"/);
   assert.match(pageSource, /brand: "linkedin"/);
   assert.match(pageSource, /Book Talk with Rabbi Steven Gotlib/);
   assert.match(pageSource, /Explore and connect/);
-  assert.match(pageSource, /Rabbi Hirsch community resources/);
+  assert.match(pageSource, /Rabbi Hirsch online resources/);
+  assert.match(pageSource, /iconOnly/);
   assert.match(pageSource, /https:\/\/18forty\.org\/author-name\/steven-gotlib\//);
   assert.match(pageSource, /brand: "eighteenforty"/);
   assert.match(homepageSource, /<BrandedLink key=\{link\.label\} \{\.\.\.link\} compact \/>/);
