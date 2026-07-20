@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 
 import { FeedbackFallbackForm } from "@/components/feedback/feedback-fallback-form";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
@@ -55,13 +55,9 @@ function storeSessionId(value: string) {
 }
 
 export function FeedbackChatPanel({ sourcePath }: FeedbackChatPanelProps) {
-  const [sessionPublicId, setSessionPublicId] = useState("");
+  const [sessionPublicId, setSessionPublicId] = useState(readStoredSessionId);
   const [draft, setDraft] = useState("");
   const [useFallback, setUseFallback] = useState(false);
-
-  useEffect(() => {
-    setSessionPublicId(readStoredSessionId());
-  }, []);
 
   const transport = useMemo(
     () =>
