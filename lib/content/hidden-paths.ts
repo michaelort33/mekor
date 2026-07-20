@@ -13,6 +13,7 @@ export const HIDDEN_CONTENT_PATHS = new Set<string>([
   "/post/goldie-2", // Goldie — Whole Foods.
   "/post/goldie-3", // Goldie — Franklin's Table.
   "/post/goldie-4", // Goldie — retired multi-location listing.
+  "/post/hipcityveg-1", // HipCityVeg — closed 40th Street location.
 ]);
 
 export function isHiddenContentPath(path: string | null | undefined): boolean {

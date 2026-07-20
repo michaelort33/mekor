@@ -34,7 +34,6 @@ export const KOSHER_MAP_LOCATIONS: Record<string, KosherMapLocation> = {
   "/post/giant-1": { lat: 40.0865898, lng: -75.0920257 },
   "/post/goldie-1": { lat: 39.9511728, lng: -75.1726389 },
   "/post/hipcityveg": { lat: 39.9507609, lng: -75.1703976 },
-  "/post/hipcityveg-1": { lat: 39.9535587, lng: -75.2028717 },
   "/post/house-of-kosher": { lat: 40.09268, lng: -75.033091 },
   "/post/insomnia-cookies-bala-cynwyd": { lat: 39.9972778, lng: -75.235337 },
   "/post/insomnia-cookies-upenn-hup": { lat: 39.9492891, lng: -75.1619217 },
