@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { timingSafeEqual } from "node:crypto";
 
 const SESSION_COOKIE = "mekor_admin_session";
-const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 function getSecret() {
   const secret = process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD;
