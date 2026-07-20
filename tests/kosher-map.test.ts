@@ -31,3 +31,11 @@ test("Say She Ate uses its verified South Street location", () => {
     lng: -75.1659843,
   });
 });
+
+test("HipCityVeg maps only its active 18th Street location", () => {
+  assert.deepEqual(KOSHER_MAP_LOCATIONS["/post/hipcityveg"], {
+    lat: 39.9507609,
+    lng: -75.1703976,
+  });
+  assert.equal(KOSHER_MAP_LOCATIONS["/post/hipcityveg-1"], undefined);
+});

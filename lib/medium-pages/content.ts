@@ -762,8 +762,8 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
           {
             title: "HipCityVeg",
             body: "Vegan fast-casual (IKC supervision)",
-            details: ["Multiple locations"],
-            links: [{ label: "hipcityveg.com", href: "https://hipcityveg.com/philadelphia/", external: true }],
+            details: ["127 S 18th Street, Philadelphia, PA 19103", "(215) 278-7605"],
+            links: [{ label: "hipcityveg.com", href: "https://hipcityveg.com/locations/", external: true }],
           },
           {
             title: "Luhv",
@@ -871,8 +871,8 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
           },
           {
             title: "HipCityVeg",
-            details: ["Multiple Philadelphia locations"],
-            links: [{ label: "Website", href: "https://hipcityveg.com/philadelphia/", external: true }],
+            details: ["127 S 18th Street, Philadelphia, PA 19103", "+1 215-278-7605"],
+            links: [{ label: "Website", href: "https://hipcityveg.com/locations/", external: true }],
           },
           {
             title: "Luhv Vegan Bistro / Deli",

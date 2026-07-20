@@ -44,6 +44,11 @@ const nextConfig: NextConfig = {
         destination: "/center-city?neighborhood=cherry-hill",
         permanent: true,
       },
+      {
+        source: "/post/hipcityveg-1",
+        destination: "/post/hipcityveg",
+        permanent: true,
+      },
     ];
   },
 };
