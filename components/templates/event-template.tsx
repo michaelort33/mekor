@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { EventSignupPanel } from "@/components/events/event-signup-panel";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
+import { buildEventStructuredData, serializeJsonLd } from "@/lib/seo/structured-data";
 import type { EventTemplateData } from "@/lib/templates/template-data";
 
 type EventTemplateProps = {
@@ -14,9 +15,13 @@ export function EventTemplate({ data, signupAuthenticated }: EventTemplateProps)
   const mapsHref = data.location
     ? `https://maps.google.com/?q=${encodeURIComponent(data.location)}`
     : null;
+  const structuredData = buildEventStructuredData(data);
 
   return (
     <main className="template-page template-page--event" data-native-nav="true">
+      {structuredData ? (
+        <script type="application/ld+json">{serializeJsonLd(structuredData)}</script>
+      ) : null}
       <SiteNavigation currentPath={data.path} />
 
       <article className="template-card">

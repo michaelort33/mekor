@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-
 import { KosherPlacesPage } from "@/components/kosher/kosher-places-page";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
+  path: "/center-city",
   title: "Kosher Restaurants | Mekor Habracha",
   description: "Search and filter kosher restaurants, bakeries, cafes, and shops across the Philadelphia area.",
-};
+});
 
 export const dynamic = "force-static";
 export const revalidate = 3600;

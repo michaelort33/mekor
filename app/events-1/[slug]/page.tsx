@@ -70,6 +70,8 @@ export default async function EventTemplatePage({ params }: PageProps) {
   }
 
   let eventId: number | null = null;
+  let startAt = route.template.data.startAt ?? null;
+  let endAt = route.template.data.endAt ?? null;
   let effectiveIsClosed = route.template.data.isClosed;
   let isPast = route.template.data.isPast;
   const signupAuthenticated = Boolean(await getUserSession());
@@ -86,6 +88,8 @@ export default async function EventTemplatePage({ params }: PageProps) {
       .limit(1);
     eventId = eventRow?.id ?? (await ensureManagedEventRecordByPath(path));
     if (eventRow) {
+      startAt = eventRow.startAt?.toISOString() ?? startAt;
+      endAt = eventRow.endAt?.toISOString() ?? endAt;
       isPast = isEventPast(eventRow);
       effectiveIsClosed = isEventClosed(eventRow);
     }
@@ -93,7 +97,7 @@ export default async function EventTemplatePage({ params }: PageProps) {
 
   return (
     <EventTemplate
-      data={{ ...route.template.data, eventId, isClosed: effectiveIsClosed, isPast }}
+      data={{ ...route.template.data, eventId, startAt, endAt, isClosed: effectiveIsClosed, isPast }}
       signupAuthenticated={signupAuthenticated}
     />
   );

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { NativeShell } from "@/components/navigation/native-shell";
@@ -7,13 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cleanExcerpt, normalizeQuery, searchUniversalDocuments } from "@/lib/search/universal";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
+  path: "/search",
   title: "Search | Mekor Habracha",
   description: "Search public content across Mekor Habracha pages, posts, news, and directories.",
-};
+  noIndex: true,
+});
 
 type SearchProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

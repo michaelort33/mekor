@@ -130,11 +130,11 @@ export default async function Team4Page() {
         </div>
       </SectionCard>
 
-      <SectionCard title="A new volunteer opportunity is coming soon..." className={styles.flatSection}>
+      <SectionCard title="How volunteering works" className={styles.flatSection}>
         <ol className={styles.stepsList}>
-          <li>Look out - this space will contain a new and special volunteer opportunity soon.</li>
           <li>Choose an opportunity in the sign-up form below.</li>
-          <li>Share your availability date and contact details.</li>
+          <li>Share your availability and contact details.</li>
+          <li>A Mekor coordinator will follow up with the next steps.</li>
         </ol>
         <p className={styles.noteText}>
           If you have an upcoming yahrzeit or would like to read Torah or Haftorah on a specific date, mention it in

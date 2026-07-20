@@ -14,6 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getPublicAskMekorQuestionBySlug, listPublicAskMekorQuestions } from "@/lib/ask-mekor/service";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import { buildQuestionStructuredData, serializeJsonLd } from "@/lib/seo/structured-data";
 
 export const dynamic = "force-dynamic";
 
@@ -28,16 +30,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const question = await getPublicAskMekorQuestionBySlug(slug);
 
   if (!question) {
-    return {
+    return buildPageMetadata({
+      path: `/ask-mekor/questions/${slug}`,
       title: "Ask Mekor | Mekor Habracha",
       description: "Browse recent Mekor Q&A and submit a question to Mekor.",
-    };
+      noIndex: true,
+    });
   }
 
-  return {
+  return buildPageMetadata({
+    path: `/ask-mekor/questions/${question.slug}`,
     title: `${question.title} | Ask Mekor`,
     description: `Browse this ${question.category.label.toLowerCase()} question and Mekor's public answer.`,
-  };
+  });
 }
 
 function formatLongDate(value: Date) {
@@ -102,9 +107,18 @@ export default async function AskMekorQuestionPage({ params }: PageProps) {
     limit: 4,
   });
   const related = items.filter((item) => item.id !== question.id).slice(0, 3);
+  const structuredData = buildQuestionStructuredData({
+    path: `/ask-mekor/questions/${question.slug}`,
+    title: question.title,
+    body: question.body,
+    askerName: question.askerName,
+    createdAt: question.createdAt,
+    replies: question.replies,
+  });
 
   return (
     <main className="internal-page px-4 pb-20 sm:px-6 lg:px-8">
+      <script type="application/ld+json">{serializeJsonLd(structuredData)}</script>
       <article className="mx-auto flex w-full max-w-[84rem] flex-col gap-8">
         <section className="flex flex-col gap-5 border-b border-[var(--color-border)] pb-6">
           <Button asChild variant="ghost" className="-ml-2 w-fit">

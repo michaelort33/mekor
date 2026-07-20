@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { EventsCalendar } from "@/app/events/events-calendar";
@@ -10,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RECURRING_EVENTS } from "@/lib/events/recurring";
 import { getManagedEvents } from "@/lib/events/store";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
+  path: "/events",
   title: "Events | Mekor Habracha",
   description: "Browse upcoming and recent Mekor Habracha events in calendar and list view.",
-};
+});
 
 export const dynamic = "force-dynamic";
 

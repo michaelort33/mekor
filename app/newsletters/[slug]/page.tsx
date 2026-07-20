@@ -10,6 +10,8 @@ import {
   NEWSLETTER_CATEGORY_LABELS,
 } from "@/lib/newsletters/data";
 import { getAdjacentNewslettersFromStore, getNewsletterFromStore } from "@/lib/newsletters/store";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import { buildArticleStructuredData, serializeJsonLd } from "@/lib/seo/structured-data";
 import styles from "./page.module.css";
 
 const PATH = "/newsletters";
@@ -23,11 +25,21 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const newsletter = await getNewsletterFromStore(slug);
-  if (!newsletter) return { title: "Newsletter | Mekor Habracha" };
-  return {
+  if (!newsletter) {
+    return buildPageMetadata({
+      path: `${PATH}/${slug}`,
+      title: "Newsletter | Mekor Habracha",
+      description: "Read Mekor Habracha community newsletters and announcements.",
+      noIndex: true,
+    });
+  }
+  return buildPageMetadata({
+    path: `${PATH}/${newsletter.slug}`,
     title: `${newsletter.title} | Mekor Habracha`,
     description: newsletter.preview,
-  };
+    image: newsletter.coverImage,
+    type: "article",
+  });
 }
 
 function IssueLink({
@@ -56,9 +68,17 @@ export default async function NewsletterPage({ params }: PageProps) {
   const newsletter = await getNewsletterFromStore(slug);
   if (!newsletter) notFound();
   const { newer, older } = await getAdjacentNewslettersFromStore(slug);
+  const structuredData = buildArticleStructuredData({
+    path: `${PATH}/${newsletter.slug}`,
+    title: newsletter.title,
+    description: newsletter.preview,
+    datePublished: newsletter.sentOn,
+    image: newsletter.coverImage,
+  });
 
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.content}>
+      <script type="application/ld+json">{serializeJsonLd(structuredData)}</script>
       <div className={styles.utilityBar}>
         <Link href={PATH} className={styles.allIssues}>
           <ArrowLeft aria-hidden="true" />

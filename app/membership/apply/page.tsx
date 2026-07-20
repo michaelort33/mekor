@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SectionCard } from "@/components/marketing/primitives";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { MembershipApplicationForm } from "./application-form";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
+  path: "/membership/apply",
   title: "Membership Application | Mekor Habracha",
   description: "Apply for Mekor Habracha membership online. Submit your household details directly to the Mekor admin team for review.",
-};
+});
 
 export default function MembershipApplicationPage() {
   return (
