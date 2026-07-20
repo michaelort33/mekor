@@ -42,6 +42,19 @@ test("donate experience wires cards, modal, sticky pill, and #donate interceptio
   assert.ok(ways >= 6, "expect at least six popular ways");
 });
 
+test("donations page keeps one home per giving path", async () => {
+  const source = await readTextFile("app/donations/page.tsx");
+  assert.match(source, /DonateExperience/);
+  assert.match(source, /id="other-ways"/);
+  assert.match(source, /Popular ways to give/);
+  assert.doesNotMatch(source, /Quick Donation Links/);
+  assert.doesNotMatch(source, /Donate by Card/);
+  const stripeLinks = (source.match(/STRIPE_DONATION_URL/g) ?? []).length;
+  assert.equal(stripeLinks, 2, "declaration plus exactly one render usage");
+  assert.match(source, /href: "#donate"/);
+  assert.match(source, /Sponsor a Kiddush/);
+});
+
 test("donation form speaks to donors and carries the dedication note", async () => {
   const source = await readTextFile("components/payments/donation-checkout-form.tsx");
   assert.doesNotMatch(source, /Secure donation intake/i);

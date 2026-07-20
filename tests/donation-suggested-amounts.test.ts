@@ -45,12 +45,15 @@ test("donation checkout form links amount to designation and renders quick picks
 });
 
 test("donations page shows suggested amounts and a concise common-ways card above the form", async () => {
-  const source = await readTextFile("app/donations/page.tsx");
+  const [source, experienceSource] = await Promise.all([
+    readTextFile("app/donations/page.tsx"),
+    readTextFile("components/donations/donate-experience.tsx"),
+  ]);
 
   assert.match(source, /Popular ways to give/);
-  assert.match(source, /showSuggestedAmounts/);
+  assert.match(experienceSource, /showSuggestedAmounts/);
   const commonIndex = source.indexOf("Popular ways to give");
-  const formIndex = source.indexOf("Donate inside Mekor");
+  const formIndex = source.lastIndexOf("DonateExperience");
   assert.ok(commonIndex >= 0 && formIndex >= 0);
   assert.ok(commonIndex < formIndex, "common-ways card must render above the checkout form");
 });

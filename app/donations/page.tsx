@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+import { DonateExperience } from "@/components/donations/donate-experience";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
-import { DonationCheckoutForm } from "@/components/payments/donation-checkout-form";
+import { HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
+import { POPULAR_WAYS } from "./popular-ways";
 import styles from "./page.module.css";
 
 const PATH = "/donations" as const;
@@ -22,25 +23,25 @@ const STRIPE_DONATION_URL = "https://donate.stripe.com/3cI6oz9ef0tU8qXdB35Ne00";
 const ONLINE_METHODS = [
   {
     label: "Credit / ACH / Apple Pay",
-    detail: "Donations may be made online by Credit, ACH or Apple Pay",
+    detail: "One-time or recurring through Stripe",
     href: STRIPE_DONATION_URL,
     brand: "stripe" as const,
   },
   {
     label: "Venmo",
-    detail: "Venmo",
+    detail: "@Mekor-Habracha",
     href: "https://www.venmo.com/u/Mekor-Habracha",
     brand: "venmo" as const,
   },
   {
     label: "PayPal Giving Fund",
-    detail: "PayPal Giving Fund",
+    detail: "No fees; PayPal adds 1%",
     href: "https://www.paypal.com/donate/?hosted_button_id=KUJ7EXBZP4MHC",
     brand: "paypal" as const,
   },
   {
     label: "PayPal Checkout",
-    detail: "regular PayPal",
+    detail: "Regular PayPal",
     href: "https://www.paypal.com/ncp/payment/C5ZNZELMHX2A4",
     brand: "paypal" as const,
   },
@@ -86,14 +87,6 @@ function PaymentIcon({ brand }: { brand: string }) {
   }
   return null;
 }
-
-const COMMON_WAYS_TO_GIVE = [
-  { label: "Kiddush or Third Meal sponsorship", amount: "$295 members · $360 non-members" },
-  { label: "Memorial plaque in the sanctuary", amount: "$1,000" },
-  { label: "Dedicate a Siddur or Machzor", amount: "$100 each" },
-  { label: "Dedicate a Chumash", amount: "$200" },
-  { label: "General contribution", amount: "Any amount is appreciated" },
-] as const;
 
 const DONATION_OPPORTUNITIES = [
   "Kiddush (Shabbat & Yom Tov) and Third Meal sponsorship ($295 members / $360 non-members)",
@@ -146,64 +139,18 @@ export default async function DonationsPage() {
           "Making a donation is a wonderful way to celebrate special occasions, honor your friends and family, or commemorate the yahrtzeit of your loved ones.",
         ]}
         actions={[
-          { label: "Zelle: mekorhabracha@gmail.com", href: "mailto:mekorhabracha@gmail.com" },
-          { label: "Credit / ACH / Apple Pay", href: STRIPE_DONATION_URL },
-          { label: "PayPal Giving Fund", href: "https://www.paypal.com/donate/?hosted_button_id=KUJ7EXBZP4MHC" },
-          { label: "Venmo", href: "https://www.venmo.com/u/Mekor-Habracha" },
+          { label: "Donate now", href: "#donate" },
+          { label: "Sponsor a Kiddush", href: "/kiddush" },
+          { label: "Other ways to give ↓", href: "#other-ways" },
         ]}
       />
 
-      <SectionCard title="Ways You Can Donate" className={styles.flatSection}>
-        <div className={styles.methodGrid}>
-          {ONLINE_METHODS.map((method) => (
-            <a
-              key={method.label}
-              href={method.href}
-              target={method.href.startsWith("http") ? "_blank" : undefined}
-              rel={method.href.startsWith("http") ? "noreferrer noopener" : undefined}
-              className={`${styles.methodCard} ${styles[`method--${method.brand}`] ?? ""}`}
-            >
-              <span className={styles.methodIconWrap}>
-                <PaymentIcon brand={method.brand} />
-              </span>
-              <span className={styles.methodBody}>
-                <span className={styles.methodTitle}>{method.label}</span>
-                <span className={styles.methodDetail}>{method.detail}</span>
-              </span>
-            </a>
-          ))}
-        </div>
-        <h3 className={styles.methodHeading}>Via Check</h3>
-        <p className={styles.copyText}>
-          Please send any checks to: <strong>Ellen Geller</strong>, <strong>3 Saint James Ct.</strong>,
-          <strong> Philadelphia, PA 19106</strong>.
-        </p>
-      </SectionCard>
-
       <SectionCard title="Popular ways to give" className={styles.flatSection}>
         <p className={styles.copyText}>
-          Not sure how much to give? These are the most common gifts. Pick a purpose and amount in the form below —
-          any amount is appreciated.
+          These are the most common gifts. Pick one to get started — every gift is tax-deductible, and any amount is
+          appreciated.
         </p>
-        <ul className={styles.commonList}>
-          {COMMON_WAYS_TO_GIVE.map((item) => (
-            <li key={item.label} className={styles.commonRow}>
-              <span className={styles.commonLabel}>{item.label}</span>
-              <span className={styles.commonAmount}>{item.amount}</span>
-            </li>
-          ))}
-        </ul>
-      </SectionCard>
-
-      <SectionCard className={`${styles.flatSection} ${styles.checkoutSection}`}>
-        <DonationCheckoutForm
-          title="Donate inside Mekor"
-          description="Pick what your gift is for, choose a suggested amount (or enter your own), and continue to secure checkout. Your details are saved for the receipt."
-          defaultAmountCents={3600}
-          defaultDesignation="General donation"
-          returnPath="/donations"
-          showSuggestedAmounts
-        />
+        <DonateExperience popularWays={POPULAR_WAYS} />
       </SectionCard>
 
       <SectionCard className={styles.flatSection}>
@@ -221,13 +168,14 @@ export default async function DonationsPage() {
             "Celebrate simchas with your Mekor community through Shabbat Kiddush sponsorships or honoring/memorializing those impactful individuals in one's life through sponsorship opportunities!",
             "All contributions are fully tax-deductible and will be acknowledged in a letter that may be used for tax purposes.",
             <>
-              Donations may be made online by Venmo, PayPal Giving Fund, regular PayPal, Zelle, credit card, ACH, or Apple Pay; through the <InlineLink href="/kiddush">Kiddush sponsorship page</InlineLink>; or by sending a check payable to Mekor Habracha, c/o Ellen Geller, 1500 Walnut St #206, Philadelphia, PA 19102. Please <InlineLink href="mailto:mekorhabracha@gmail.com">email the shul office</InlineLink> with your donation details and any dedication you would like to make.
+              Give right on this page with the donation form above, sponsor through the{" "}
+              <InlineLink href="/kiddush">Kiddush sponsorship page</InlineLink>, or{" "}
+              <InlineLink href="mailto:mekorhabracha@gmail.com">email the shul office</InlineLink> with your donation
+              details and any dedication you would like to make.
             </>,
           ]}
         />
-      </SectionCard>
-
-      <SectionCard title="All Donation Opportunities" className={styles.flatSection}>
+        <h3 className={styles.methodHeading}>All donation opportunities</h3>
         <ul className={styles.bulletList}>
           {DONATION_OPPORTUNITIES.map((item) => (
             <li key={item}>{item}</li>
@@ -274,6 +222,37 @@ export default async function DonationsPage() {
         </div>
       </SectionCard>
 
+      <SectionCard title="More ways to give" className={styles.flatSection}>
+        <div id="other-ways" className={styles.anchor} />
+        <p className={styles.copyText}>
+          Prefer Venmo, PayPal, Zelle, or a check? Every method below goes to the same place — supporting Mekor.
+        </p>
+        <div className={styles.methodGrid}>
+          {ONLINE_METHODS.map((method) => (
+            <a
+              key={method.label}
+              href={method.href}
+              target={method.href.startsWith("http") ? "_blank" : undefined}
+              rel={method.href.startsWith("http") ? "noreferrer noopener" : undefined}
+              className={`${styles.methodCard} ${styles[`method--${method.brand}`] ?? ""}`}
+            >
+              <span className={styles.methodIconWrap}>
+                <PaymentIcon brand={method.brand} />
+              </span>
+              <span className={styles.methodBody}>
+                <span className={styles.methodTitle}>{method.label}</span>
+                <span className={styles.methodDetail}>{method.detail}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+        <h3 className={styles.methodHeading}>Via Check</h3>
+        <p className={styles.copyText}>
+          Please send any checks to: <strong>Ellen Geller</strong>, <strong>3 Saint James Ct.</strong>,
+          <strong> Philadelphia, PA 19106</strong>.
+        </p>
+      </SectionCard>
+
       <SectionCard className={`${styles.flatSection} ${styles.affiliateCard}`}>
         <div className={styles.affiliateContent}>
           <div className={styles.affiliateText}>
@@ -299,33 +278,6 @@ export default async function DonationsPage() {
             </a>
           </div>
         </div>
-      </SectionCard>
-
-      <SectionCard className={`${styles.flatSection} ${styles.stripeCard}`}>
-        <div className={styles.stripePromo}>
-          <div className={styles.stripePromoText}>
-            <h2 className={styles.stripePromoHeading}>Donate by Card</h2>
-            <p className={styles.copyText}>
-              Make a secure one-time or recurring donation with Credit Card, ACH bank transfer, or Apple Pay through Stripe.
-            </p>
-          </div>
-          <a href={STRIPE_DONATION_URL} target="_blank" rel="noreferrer noopener" className={styles.stripeButton}>
-            Donate Now via Stripe →
-          </a>
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Quick Donation Links" className={styles.flatSection}>
-        <CTACluster
-          className={styles.quickLinksCluster}
-          items={[
-            { label: "Stripe (Credit / ACH / Apple Pay)", href: STRIPE_DONATION_URL },
-            { label: "Venmo", href: "https://www.venmo.com/u/Mekor-Habracha" },
-            { label: "PayPal Giving Fund", href: "https://www.paypal.com/donate/?hosted_button_id=KUJ7EXBZP4MHC" },
-            { label: "PayPal Checkout", href: "https://www.paypal.com/ncp/payment/C5ZNZELMHX2A4" },
-            { label: "Zelle: mekorhabracha@gmail.com", href: "mailto:mekorhabracha@gmail.com" },
-          ]}
-        />
       </SectionCard>
 
       <MarketingFooter />
