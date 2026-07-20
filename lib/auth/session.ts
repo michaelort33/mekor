@@ -1,7 +1,9 @@
 import { cookies } from "next/headers";
 
+import { USER_SESSION_MAX_AGE_SECONDS } from "@/lib/auth/session-constants";
+
 export const USER_SESSION_COOKIE = "mekor_user_session";
-export const USER_SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+export const USER_SESSION_MAX_AGE = USER_SESSION_MAX_AGE_SECONDS;
 
 export type UserSessionRole = "visitor" | "member" | "admin" | "super_admin";
 
@@ -110,7 +112,7 @@ export async function createUserSession(input: { userId: number; role: UserSessi
     {
       userId: input.userId,
       role: input.role,
-      exp: Date.now() + USER_SESSION_MAX_AGE * 1000,
+      exp: Date.now() + USER_SESSION_MAX_AGE_SECONDS * 1000,
     },
     secret,
   );
@@ -121,7 +123,7 @@ export async function createUserSession(input: { userId: number; role: UserSessi
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: USER_SESSION_MAX_AGE,
+    maxAge: USER_SESSION_MAX_AGE_SECONDS,
   });
 }
 

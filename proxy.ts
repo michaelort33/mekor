@@ -2,7 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getEdgeProtectionType, isAdminLoginPath, isApiPath } from "@/lib/auth/edge-route-policy";
 import { isLocalAdminAutologinEnabled } from "@/lib/auth/local-admin-autologin";
-import { USER_SESSION_COOKIE, getValidUserSessionRole } from "@/lib/auth/edge-session";
+import {
+  USER_SESSION_COOKIE,
+  getValidUserSessionRole,
+  maybeAttachRefreshedUserSessionCookie,
+} from "@/lib/auth/edge-session";
 import statusOverrides from "@/mirror-data/routes/status-overrides.json";
 
 const STATUS_MAP = new Map<string, number>(
@@ -123,7 +127,7 @@ export async function proxy(request: NextRequest) {
       return unauthorizedAdminResponse(request);
     }
 
-    return NextResponse.next();
+    return maybeAttachRefreshedUserSessionCookie(NextResponse.next(), token);
   }
 
   const token = request.cookies.get(USER_SESSION_COOKIE)?.value;
@@ -147,7 +151,7 @@ export async function proxy(request: NextRequest) {
     return membershipApprovalRequiredResponse(request, isApiPath(pathname));
   }
 
-  return NextResponse.next();
+  return maybeAttachRefreshedUserSessionCookie(NextResponse.next(), token);
 }
 
 export const config = {
