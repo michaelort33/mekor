@@ -8,6 +8,7 @@ import { HomeContactForm } from "@/components/home/home-contact-form";
 import { HomeNewsletterForm } from "@/components/home/home-newsletter-form";
 import { BrandedLink } from "@/components/marketing/primitives";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
+import { getEventDateParts } from "@/lib/events/format";
 import { getManagedEvents, type ManagedEvent } from "@/lib/events/store";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
@@ -82,6 +83,62 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const HOME_EVENTS_LIMIT = 5;
 
+function buildEventMeta(event: ManagedEvent) {
+  const parts = [event.timeLabel, event.location].map((value) => value?.trim()).filter(Boolean);
+  if (event.status === "ongoing") {
+    parts.unshift("Happening now");
+  }
+  return parts.join(" · ");
+}
+
+function FeaturedEventCard({ event }: { event: ManagedEvent }) {
+  const startParts = getEventDateParts(event.startAt);
+  const endParts = getEventDateParts(event.endAt);
+  const sameMonth =
+    startParts !== null &&
+    endParts !== null &&
+    startParts.year === endParts.year &&
+    startParts.monthIndex === endParts.monthIndex;
+  const dayText = startParts
+    ? sameMonth && endParts.day !== startParts.day
+      ? `${startParts.day}–${endParts.day}`
+      : String(startParts.day)
+    : null;
+  const meta = buildEventMeta(event);
+
+  return (
+    <article className={styles.eventFeature}>
+      <div className={styles.eventFeatureDate}>
+        {startParts ? (
+          <>
+            <span className={styles.eventMonth}>{startParts.monthShort}</span>
+            <span className={styles.eventFeatureDay}>{dayText}</span>
+          </>
+        ) : (
+          <span className={styles.eventDateText}>{event.shortDate || "TBD"}</span>
+        )}
+      </div>
+      <div className={styles.eventFeatureBody}>
+        <p className={styles.eventFeatureEyebrow}>
+          {event.status === "ongoing" ? "Happening now" : "Featured event"}
+        </p>
+        <h3 className={styles.eventFeatureTitle}>
+          <Link href={event.path}>{event.title}</Link>
+        </h3>
+        {meta ? <p className={styles.eventMeta}>{meta}</p> : null}
+        {event.summary ? <p className={styles.eventFeatureSummary}>{event.summary}</p> : null}
+        <Link
+          href={event.path}
+          className={styles.eventFeatureCta}
+          aria-label={`View details and schedule for ${event.title}`}
+        >
+          View details &amp; schedule
+        </Link>
+      </div>
+    </article>
+  );
+}
+
 function UpcomingEventsList({
   events,
   loading = false,
@@ -107,40 +164,43 @@ function UpcomingEventsList({
     );
   }
 
+  const featured = events.filter((event) => event.featured);
+  const rows = events.filter((event) => !event.featured);
+
   return (
     <div className={styles.eventsList}>
-      <ul className={styles.eventRows}>
-        {events.map((event) => {
-          const date = event.startAt ? new Date(event.startAt) : null;
-          const hasDate = date !== null && !Number.isNaN(date.getTime());
-          const meta = [event.timeLabel, event.location].map((value) => value?.trim()).filter(Boolean).join(" · ");
+      {featured.map((event) => (
+        <FeaturedEventCard key={event.path} event={event} />
+      ))}
+      {rows.length > 0 ? (
+        <ul className={styles.eventRows}>
+          {rows.map((event) => {
+            const dateParts = getEventDateParts(event.startAt);
+            const meta = buildEventMeta(event);
 
-          return (
-            <li key={event.path} className={styles.eventRow}>
-              <div className={styles.eventDate}>
-                {hasDate ? (
-                  <>
-                    <span className={styles.eventMonth}>
-                      {new Intl.DateTimeFormat("en-US", { month: "short" }).format(date)}
-                    </span>
-                    <span className={styles.eventDay}>
-                      {new Intl.DateTimeFormat("en-US", { day: "numeric" }).format(date)}
-                    </span>
-                  </>
-                ) : (
-                  <span className={styles.eventDateText}>{event.shortDate || "TBD"}</span>
-                )}
-              </div>
-              <div className={styles.eventInfo}>
-                <Link href={event.path} className={styles.eventName}>
-                  {event.title}
-                </Link>
-                {meta ? <p className={styles.eventMeta}>{meta}</p> : null}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+            return (
+              <li key={event.path} className={styles.eventRow}>
+                <div className={styles.eventDate}>
+                  {dateParts ? (
+                    <>
+                      <span className={styles.eventMonth}>{dateParts.monthShort}</span>
+                      <span className={styles.eventDay}>{dateParts.day}</span>
+                    </>
+                  ) : (
+                    <span className={styles.eventDateText}>{event.shortDate || "TBD"}</span>
+                  )}
+                </div>
+                <div className={styles.eventInfo}>
+                  <Link href={event.path} className={styles.eventName}>
+                    {event.title}
+                  </Link>
+                  {meta ? <p className={styles.eventMeta}>{meta}</p> : null}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
       <Link href="/events" className={styles.eventsMore}>
         View all events
       </Link>

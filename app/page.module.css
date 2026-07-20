@@ -716,6 +716,110 @@
   background: #214766;
 }
 
+.eventFeature {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 720px;
+  padding: 26px 28px;
+  border: 1px solid #d9dde8;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(27, 43, 65, 0.09);
+}
+
+.eventFeatureDate {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 14px;
+  background: #2b5a81;
+  color: #fff;
+  line-height: 1;
+}
+
+.eventFeatureDay {
+  margin-top: 6px;
+  font-family: avenir-lt-w01_85-heavy1475544, Arial, sans-serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.eventFeatureBody {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  min-width: 0;
+}
+
+.eventFeatureEyebrow {
+  margin: 0;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #925f1d;
+}
+
+.eventFeatureTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.eventFeatureTitle a {
+  color: #2b5a81;
+  font-family: avenir-lt-w01_85-heavy1475544, Arial, sans-serif;
+  text-decoration: none;
+}
+
+.eventFeatureTitle a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.eventFeatureSummary {
+  margin: 0;
+  color: #3c4358;
+  font-family: helvetica-w01-light, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.eventFeatureCta {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1px solid #214e79;
+  background: #214e79;
+  color: #fff;
+  font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.eventFeatureCta:hover {
+  background: #1c4368;
+  border-color: #1c4368;
+  transform: translateY(-1px);
+}
+
+.eventFeatureCta:focus-visible {
+  outline: 3px solid rgba(33, 78, 121, 0.35);
+  outline-offset: 3px;
+}
+
 .rabbisGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1207,6 +1311,25 @@
   .eventRow {
     gap: 14px;
     padding: 14px 16px;
+  }
+
+  .eventFeature {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 16px;
+    padding: 20px 18px;
+  }
+
+  .eventFeatureDate {
+    width: 72px;
+    height: 72px;
+  }
+
+  .eventFeatureDay {
+    font-size: 1.25rem;
+  }
+
+  .eventFeatureCta {
+    width: 100%;
   }
 
   .featureCopy,

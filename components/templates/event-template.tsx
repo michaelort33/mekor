@@ -66,6 +66,25 @@ export function EventTemplate({ data }: EventTemplateProps) {
           ) : null}
         </dl>
 
+        {data.schedule && data.schedule.length > 0 ? (
+          <section className="template-event-schedule" aria-label="Event schedule">
+            <h2>Schedule</h2>
+            {data.schedule.map((day) => (
+              <div key={day.dayLabel} className="template-event-schedule__day">
+                <h3>{day.dayLabel}</h3>
+                <ul>
+                  {day.items.map((item) => (
+                    <li key={`${item.time}-${item.label}`}>
+                      <span className="template-event-schedule__time">{item.time}</span>
+                      <span className="template-event-schedule__item">{item.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </section>
+        ) : null}
+
         <section className="template-content" aria-label="Event details">
           {data.about.map((line) => (
             <p key={line}>{line}</p>

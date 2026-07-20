@@ -55,6 +55,14 @@ export type ArticleTemplateData = {
   sourceUrl: string | null;
 };
 
+export type EventScheduleDay = {
+  dayLabel: string;
+  items: Array<{
+    time: string;
+    label: string;
+  }>;
+};
+
 export type EventTemplateData = {
   path: string;
   eventId: number | null;
@@ -67,6 +75,7 @@ export type EventTemplateData = {
   isClosed: boolean;
   isPast: boolean;
   about: string[];
+  schedule?: EventScheduleDay[];
   seeOtherEventsHref: string;
 };
 
