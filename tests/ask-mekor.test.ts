@@ -3,12 +3,12 @@ import test from "node:test";
 
 import { SITE_MENU, isNavGroup } from "../lib/navigation/site-menu";
 
-test("more menu includes Ask Mekor", () => {
-  const moreGroup = SITE_MENU.find((item) => item.label === "More");
-  assert.ok(moreGroup);
-  assert.equal(isNavGroup(moreGroup), true);
-  if (!moreGroup || !isNavGroup(moreGroup)) {
-    throw new Error("More menu group missing");
+test("community menu includes Ask Mekor", () => {
+  const communityGroup = SITE_MENU.find((item) => item.label === "Community");
+  assert.ok(communityGroup);
+  assert.equal(isNavGroup(communityGroup), true);
+  if (!communityGroup || !isNavGroup(communityGroup)) {
+    throw new Error("Community menu group missing");
   }
-  assert.equal(moreGroup.children.some((child) => child.href === "/ask-mekor" && child.label === "Ask Mekor"), true);
+  assert.equal(communityGroup.children.some((child) => child.href === "/ask-mekor" && child.label === "Ask Mekor"), true);
 });
