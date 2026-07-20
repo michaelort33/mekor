@@ -77,4 +77,6 @@ test("bulletin board hosts standing weekly evergreen content", async () => {
   assert.match(content, /Hebrew Help at Mekor/);
   assert.match(content, /Kosher Wine & Judaica/);
   assert.match(content, /zionismFlyer/);
+  assert.doesNotMatch(content, /http:\/\//);
+  assert.doesNotMatch(content, /wefreeco|kiyuminitiative/i);
 });
