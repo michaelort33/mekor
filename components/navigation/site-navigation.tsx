@@ -11,7 +11,6 @@ import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
 import { UniversalSearch } from "@/components/navigation/universal-search";
 import { Button } from "@/components/ui/button";
-import type { AccountAccessState } from "@/lib/auth/account-access";
 import { normalizeNavigationPath } from "@/lib/navigation/path";
 import { SITE_MENU, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
 
@@ -25,8 +24,6 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
   const [openDesktopByPath, setOpenDesktopByPath] = useState<Record<string, string | null>>({});
   const [mobileOpenByPath, setMobileOpenByPath] = useState<Record<string, boolean>>({});
   const [authenticated, setAuthenticated] = useState(false);
-  const [canAccessMembersArea, setCanAccessMembersArea] = useState(false);
-  const [accessState, setAccessState] = useState<AccountAccessState | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const mobileTriggerRef = useRef<HTMLButtonElement | null>(null);
   const previousMobileOpenRef = useRef(false);
@@ -73,24 +70,16 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
 
         if (!response.ok) {
           setAuthenticated(false);
-          setCanAccessMembersArea(false);
-          setAccessState(null);
           return;
         }
 
         const payload = (await response.json().catch(() => ({}))) as {
           authenticated?: boolean;
-          canAccessMembersArea?: boolean;
-          accessState?: AccountAccessState | null;
         };
         setAuthenticated(Boolean(payload.authenticated));
-        setCanAccessMembersArea(Boolean(payload.canAccessMembersArea));
-        setAccessState(payload.accessState ?? null);
       } catch {
         if (active) {
           setAuthenticated(false);
-          setCanAccessMembersArea(false);
-          setAccessState(null);
         }
       } finally {
         if (active) {
@@ -156,14 +145,11 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
 
       <div>
         <MobileDrawer
-          items={SITE_MENU}
           currentPath={activePath}
           isOpen={mobileOpen}
           onClose={() => setMobileOpen(false)}
           drawerId="native-mobile-drawer"
           authenticated={authenticated}
-          canAccessMembersArea={canAccessMembersArea}
-          accessState={accessState}
           isCheckingAuth={isCheckingAuth}
         />
       </div>

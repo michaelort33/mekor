@@ -7,7 +7,6 @@ import { useEffect, useMemo, useState } from "react";
 import { isNavigationPathActive } from "@/lib/navigation/path";
 import { NavBrand } from "@/components/navigation/nav-brand";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import type { AccountAccessState } from "@/lib/auth/account-access";
 import {
   GIVE_MENU,
   JOIN_US_LINK,
@@ -16,20 +15,16 @@ import {
   MOBILE_GROUPS,
   QUICK_TILES,
   SUPPORT_MEKOR_LINK,
-  type NavItem,
 } from "@/lib/navigation/site-menu";
 import { cn } from "@/lib/utils";
 import { openUniversalSearch } from "@/components/navigation/universal-search";
 
 type MobileDrawerProps = {
-  items: NavItem[];
   currentPath: string;
   isOpen: boolean;
   onClose: () => void;
   drawerId: string;
   authenticated: boolean;
-  canAccessMembersArea: boolean;
-  accessState: AccountAccessState | null;
   isCheckingAuth: boolean;
 };
 

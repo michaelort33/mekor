@@ -21,6 +21,19 @@ type NavCtaProps = {
 export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
   const [giveOpen, setGiveOpen] = useState(false);
   const giveRef = useRef<HTMLDivElement | null>(null);
+  const giveToggleRef = useRef<HTMLButtonElement | null>(null);
+  const giveItemRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+
+  const closeGiveMenu = (restoreFocus = false) => {
+    setGiveOpen(false);
+    if (restoreFocus) {
+      window.requestAnimationFrame(() => giveToggleRef.current?.focus());
+    }
+  };
+
+  const focusGiveItem = (index: number) => {
+    window.requestAnimationFrame(() => giveItemRefs.current[index]?.focus());
+  };
 
   useEffect(() => {
     if (!giveOpen) return;
@@ -30,7 +43,11 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
       }
     }
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setGiveOpen(false);
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setGiveOpen(false);
+        window.requestAnimationFrame(() => giveToggleRef.current?.focus());
+      }
     }
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -67,7 +84,15 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
         Join WhatsApp
       </a>
 
-      <div ref={giveRef} className="relative inline-flex overflow-visible">
+      <div
+        ref={giveRef}
+        className="relative inline-flex overflow-visible"
+        onBlur={(event) => {
+          if (!giveRef.current?.contains(event.relatedTarget)) {
+            setGiveOpen(false);
+          }
+        }}
+      >
         <span className="inline-flex overflow-hidden rounded-full shadow-[0_18px_45px_-28px_rgba(15,23,42,0.5)]">
           <Button asChild size="sm" className="rounded-none">
             <Link href={SUPPORT_MEKOR_LINK.href} aria-label="Donate to Mekor">
@@ -76,29 +101,61 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
             </Link>
           </Button>
           <button
+            ref={giveToggleRef}
             type="button"
             aria-label="More giving options"
             aria-expanded={giveOpen}
             aria-haspopup="menu"
+            aria-controls="native-give-menu"
             className="inline-flex items-center bg-[#1c4368] px-2.5 text-[#cfe0ef] transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
             style={{ borderLeft: "1px solid rgba(255,255,255,0.18)" }}
             onClick={() => setGiveOpen((open) => !open)}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+                setGiveOpen(true);
+                focusGiveItem(0);
+              }
+            }}
           >
             <ChevronDown className={cn("h-3 w-3 transition-transform", giveOpen && "rotate-180")} aria-hidden="true" />
           </button>
         </span>
         {giveOpen ? (
           <div
+            id="native-give-menu"
             role="menu"
             className="absolute right-0 top-[calc(100%+8px)] z-50 grid w-[240px] gap-0.5 rounded-[16px] border border-[var(--color-border)] bg-white p-1.5 shadow-[0_30px_60px_-30px_rgba(15,23,42,0.35)]"
           >
-            {GIVE_MENU.map((link) => (
+            {GIVE_MENU.map((link, index) => (
               <Link
                 key={link.label}
+                ref={(node) => {
+                  giveItemRefs.current[index] = node;
+                }}
                 href={link.href}
                 prefetch={false}
                 role="menuitem"
                 onClick={() => setGiveOpen(false)}
+                onKeyDown={(event) => {
+                  if (event.key === "ArrowDown") {
+                    event.preventDefault();
+                    focusGiveItem((index + 1) % GIVE_MENU.length);
+                  } else if (event.key === "ArrowUp") {
+                    event.preventDefault();
+                    focusGiveItem((index - 1 + GIVE_MENU.length) % GIVE_MENU.length);
+                  } else if (event.key === "Home") {
+                    event.preventDefault();
+                    focusGiveItem(0);
+                  } else if (event.key === "End") {
+                    event.preventDefault();
+                    focusGiveItem(GIVE_MENU.length - 1);
+                  } else if (event.key === "Escape") {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    closeGiveMenu(true);
+                  }
+                }}
                 className="rounded-[10px] px-3 py-2.5 text-sm font-medium text-[var(--color-foreground)] transition hover:bg-[var(--color-surface-strong)]"
               >
                 {link.label}

@@ -2,7 +2,6 @@ export type NavLink = {
   label: string;
   href: string;
   note?: string;
-  tone?: "default" | "cta";
 };
 
 export type NavColumn = {
@@ -62,128 +61,110 @@ export const QUICK_TILES: NavLink[] = [
   { label: "Visit Us", href: "/visit-us", note: "Plan your first Shabbat" },
 ];
 
-export const SITE_MENU: NavItem[] = [
+const MEMBERSHIP_MENU: NavGroup = {
+  label: "Membership",
+  href: "/membership",
+  children: [
+    { label: "Membership Overview", href: "/membership" },
+    { label: "Apply for Membership", href: "/membership/apply" },
+    { label: "Auxiliary & Alumni Membership", href: "/auxiliary-membership" },
+    { label: "Mekor Couples", href: "/mekorcouples" },
+  ],
+};
+
+const KOSHER_GUIDE_COLUMNS: NavColumn[] = [
   {
-    label: "Davening",
-    href: "/davening",
-  },
-  {
-    label: "Events",
-    href: "/events",
-  },
-  {
-    label: "Membership",
-    href: "/membership",
-    children: [
-      { label: "Membership Overview", href: "/membership" },
-      { label: "Apply for Membership", href: "/membership/apply" },
-      { label: "Auxiliary & Alumni Membership", href: "/auxiliary-membership" },
-      { label: "Mekor Couples", href: "/mekorcouples" },
-    ],
-  },
-  {
-    label: "Kosher Guide",
-    href: "/center-city",
-    children: [
+    title: "Neighborhoods",
+    links: [
       { label: "Center City & Vicinity", href: "/center-city" },
       { label: "Main Line/Manyunk", href: "/main-line-manyunk" },
       { label: "Old York Road/Northeast", href: "/old-yorkroad-northeast" },
       { label: "Cherry Hill", href: "/cherry-hill" },
-      { label: "Kosher Map", href: "/kosher-map" },
-    ],
-    columns: [
-      {
-        title: "Neighborhoods",
-        links: [
-          { label: "Center City & Vicinity", href: "/center-city" },
-          { label: "Main Line/Manyunk", href: "/main-line-manyunk" },
-          { label: "Old York Road/Northeast", href: "/old-yorkroad-northeast" },
-          { label: "Cherry Hill", href: "/cherry-hill" },
-        ],
-      },
-      {
-        title: "Tools",
-        links: [
-          { label: "Kosher Map", href: "/kosher-map", note: "Every certified spot, on one map" },
-        ],
-      },
     ],
   },
   {
-    label: "Who We Are",
-    href: "/about-us",
-    children: [
+    title: "Tools",
+    links: [{ label: "Kosher Map", href: "/kosher-map", note: "Every certified spot, on one map" }],
+  },
+];
+
+const KOSHER_GUIDE_MENU: NavGroup = {
+  label: "Kosher Guide",
+  href: "/center-city",
+  children: KOSHER_GUIDE_COLUMNS.flatMap((column) => column.links),
+  columns: KOSHER_GUIDE_COLUMNS,
+};
+
+const WHO_WE_ARE_COLUMNS: NavColumn[] = [
+  {
+    title: "Who we are",
+    links: [
       { label: "About Us", href: "/about-us" },
       { label: "Our Rabbis", href: "/our-rabbis" },
       { label: "Our Leadership", href: "/our-leadership" },
       { label: "Our Community", href: "/our-communities" },
       { label: "In The News", href: "/in-the-news" },
       { label: "From The Rabbi's Desk", href: "/from-the-rabbi-s-desk" },
-      { label: "Visit Us", href: "/visit-us" },
-      { label: "Contact Us", href: "/contact-us" },
-    ],
-    columns: [
-      {
-        title: "Who we are",
-        links: [
-          { label: "About Us", href: "/about-us" },
-          { label: "Our Rabbis", href: "/our-rabbis" },
-          { label: "Our Leadership", href: "/our-leadership" },
-          { label: "Our Community", href: "/our-communities" },
-          { label: "In The News", href: "/in-the-news" },
-          { label: "From The Rabbi's Desk", href: "/from-the-rabbi-s-desk" },
-        ],
-      },
-      {
-        title: "Plan a visit",
-        highlight: true,
-        links: [
-          { label: "Visit Us", href: "/visit-us", note: "Location, parking & what to expect" },
-          { label: "Contact Us", href: "/contact-us", note: "Reach the office or the rabbi" },
-        ],
-      },
     ],
   },
   {
-    label: "Community",
-    href: "/community-life",
-    triggerOnly: true,
-    children: [
-      { label: "Beit Midrash", href: "/center-city-beit-midrash" },
-      { label: "Bulletin Board", href: "/mekor-bulletin-board" },
+    title: "Plan a visit",
+    highlight: true,
+    links: [
+      { label: "Visit Us", href: "/visit-us", note: "Location, parking & what to expect" },
+      { label: "Contact Us", href: "/contact-us", note: "Reach the office or the rabbi" },
+    ],
+  },
+];
+
+const WHO_WE_ARE_MENU: NavGroup = {
+  label: "Who We Are",
+  href: "/about-us",
+  children: WHO_WE_ARE_COLUMNS.flatMap((column) => column.links),
+  columns: WHO_WE_ARE_COLUMNS,
+};
+
+const COMMUNITY_COLUMNS: NavColumn[] = [
+  {
+    title: "Learning",
+    links: [
+      { label: "Beit Midrash", href: "/center-city-beit-midrash", note: "Center City Beit Midrash" },
       { label: "Ask Mekor", href: "/ask-mekor" },
+    ],
+  },
+  {
+    title: "Community life",
+    links: [
+      { label: "Bulletin Board", href: "/mekor-bulletin-board" },
       { label: "Volunteer", href: "/team-4" },
       { label: "Israel", href: "/israel" },
       { label: "Past Newsletters", href: "/newsletters" },
       { label: "Testimonials", href: "/testimonials" },
       { label: "Philly Jewish Community", href: "/philly-jewish-community" },
     ],
-    columns: [
-      {
-        title: "Learning",
-        links: [
-          { label: "Beit Midrash", href: "/center-city-beit-midrash", note: "Center City Beit Midrash" },
-          { label: "Ask Mekor", href: "/ask-mekor" },
-        ],
-      },
-      {
-        title: "Community life",
-        links: [
-          { label: "Bulletin Board", href: "/mekor-bulletin-board" },
-          { label: "Volunteer", href: "/team-4" },
-          { label: "Israel", href: "/israel" },
-          { label: "Past Newsletters", href: "/newsletters" },
-          { label: "Testimonials", href: "/testimonials" },
-          { label: "Philly Jewish Community", href: "/philly-jewish-community" },
-        ],
-      },
-    ],
   },
+];
+
+const COMMUNITY_MENU: NavGroup = {
+  label: "Community",
+  href: "/community-life",
+  triggerOnly: true,
+  children: COMMUNITY_COLUMNS.flatMap((column) => column.links),
+  columns: COMMUNITY_COLUMNS,
+};
+
+export const SITE_MENU: NavItem[] = [
+  { label: "Davening", href: "/davening" },
+  { label: "Events", href: "/events" },
+  MEMBERSHIP_MENU,
+  KOSHER_GUIDE_MENU,
+  WHO_WE_ARE_MENU,
+  COMMUNITY_MENU,
 ];
 
 /** Mobile drawer accordion groups (below quick tiles + Give + WhatsApp). */
 export const MOBILE_GROUPS: NavGroup[] = [
-  SITE_MENU[2] as NavGroup, // Membership
-  SITE_MENU[4] as NavGroup, // Who We Are
-  SITE_MENU[5] as NavGroup, // Community
+  MEMBERSHIP_MENU,
+  WHO_WE_ARE_MENU,
+  COMMUNITY_MENU,
 ];
