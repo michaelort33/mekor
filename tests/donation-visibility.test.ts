@@ -47,7 +47,10 @@ test("donate button text stays light on the dark blue CTA background", async () 
     readTextFile("components/navigation/site-navigation.tsx"),
   ]);
 
-  assert.match(globalsCss, /a:not\(\[data-slot="button"\]\)/);
+  assert.match(
+    globalsCss,
+    /@layer\s+base\s*\{[\s\S]*?a:not\(\[data-slot="button"\]\)\s*\{\s*color:\s*inherit;/,
+  );
   assert.match(globalsCss, /a\[data-slot="button"\]\[data-variant="default"\]/);
   assert.match(buttonSource, /!text-\[#f8fbff\]/);
   assert.match(navCtaSource, /!text-\[#f8fbff\]/);
