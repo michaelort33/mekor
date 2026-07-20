@@ -28,16 +28,18 @@ export function SiteFeedbackWidget() {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex justify-end p-4 sm:p-6">
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button
-            size="lg"
-            className="pointer-events-auto shadow-[0_22px_50px_-24px_rgba(33,78,121,0.75)]"
-            aria-label="Share an idea with Mekor"
-          >
-            <MessageCircleHeart className="h-5 w-5" />
-            Share an idea
-          </Button>
-        </SheetTrigger>
+        {!open ? (
+          <SheetTrigger asChild>
+            <Button
+              size="lg"
+              className="pointer-events-auto shadow-[0_22px_50px_-24px_rgba(33,78,121,0.75)]"
+              aria-label="Share an idea with Mekor"
+            >
+              <MessageCircleHeart className="h-5 w-5" />
+              Share an idea
+            </Button>
+          </SheetTrigger>
+        ) : null}
         <SheetContent
           className={cn(
             "pointer-events-auto gap-5 overflow-hidden",
