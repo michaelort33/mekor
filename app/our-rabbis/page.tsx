@@ -4,7 +4,6 @@ import Image from "next/image";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import {
   BrandedLink,
-  CTACluster,
   HeroSection,
   InlineLink,
   SectionCard,
@@ -24,19 +23,16 @@ const HIRSCH_ONLINE_LINKS = [
   {
     label: "Rabbi Hirsch's Substack",
     href: "https://rabbieliezerhirsch.substack.com/",
-    description: "Essays, reflections, and Torah writing.",
     brand: "substack",
   },
   {
     label: "Rabbi Hirsch Podcast",
     href: "https://rabbiehirsch.castos.com/",
-    description: "Conversations on Torah and Jewish life.",
     brand: "podcast",
   },
   {
     label: "Amazon Author Page",
     href: "https://www.amazon.com/stores/Rabbi-Eliezer-Hirsch/author/B0876V66RG?ref=ap_rdr&store_ref=ap_rdr&isDramIntegrated=true&shoppingPortalEnabled=true",
-    description: "Browse Rabbi Hirsch's published books.",
     brand: "amazon",
   },
 ] satisfies CtaItem[];
@@ -131,20 +127,19 @@ export default function OurRabbisPage() {
                 <p>Rabbi Hirsch has made unwavering support for Israel a cornerstone of Mekor, articulating a fervent voice for Israel, and celebrating the many Mekor congregants who have made aliyah. In recognition of his pro-Israel advocacy efforts across the Philadelphia region, Rabbi Hirsch was honored in 2019 with the Guardian of Israel Award from the Philadelphia Chapter of the Zionist Organization of America (ZOA).</p>
                 <p>In addition to leading Congregation Mekor Habracha, Rabbi Hirsch serves as Dean of Jewish philosophy at <InlineLink href="https://genesisu.edu/">Genesis University</InlineLink>, a distance-learning college based in Suffern, NY.</p>
                 <p>Rabbi Hirsch received rabbinic ordination from <InlineLink href="http://nirc.edu/">Ner Israel Rabbinical College</InlineLink> in Baltimore, Maryland, and <InlineLink href="https://ohrreuven.com/">Yeshivas Ohr Reuven</InlineLink> in Monsey, NY. During his almost two decades of study in yeshiva, he forged close relationships with prominent rabbinic leaders and received years of training from renowned halachic authorities.</p>
-                <p>In 2010, Rabbi Hirsch was diagnosed with young-onset Parkinson&apos;s Disease, an incurable and progressive neurological condition. Since publicly sharing his diagnosis, Rabbi Hirsch has welcomed inquiries from individuals across the globe seeking halachic and spiritual guidance to cope with significant personal hardships.</p>
-                <CTACluster
-                  className={styles.editorialCluster}
-                  title="Rabbi Hirsch's Reflections"
-                  items={[
-                    {
-                      label: "On Parkinson's Disease and Emunah",
-                      href: "https://rabbieliezerhirsch.substack.com/p/on-parkinsons-disease-and-emunah",
-                      description: "Read Rabbi Hirsch's inspirational reflections on Substack.",
-                      brand: "substack",
-                    },
-                  ]}
-                />
+                <p>In 2010, Rabbi Hirsch was diagnosed with young-onset Parkinson&apos;s Disease, an incurable and progressive neurological condition. Since publicly sharing his diagnosis, Rabbi Hirsch has welcomed inquiries from individuals across the globe seeking halachic and spiritual guidance to cope with significant personal hardships. You can read some of Rabbi Hirsch&apos;s inspirational reflections on Parkinson&apos;s Disease <InlineLink href="https://e0b7a2b2-1782-4b0f-9b31-0691f453bd36.filesusr.com/ugd/92f487_19066816f85142bb94e30b3d0ff2bb26.pdf">here</InlineLink>.</p>
                 <p>Rabbi Hirsch has written three books about Jewish holidays to offer practical guidance and inspire a deeper, year-round connection to Torah and Jewish life.</p>
+                <section className={styles.publicationShelf} aria-labelledby="rabbi-hirsch-books">
+                  <div className={styles.publicationHeader}>
+                    <p className={styles.publicationEyebrow}>Published works</p>
+                    <h3 id="rabbi-hirsch-books">Books by Rabbi Hirsch</h3>
+                  </div>
+                  <div className={styles.publicationGrid}>
+                    {HIRSCH_BOOK_LINKS.map((book) => (
+                      <BrandedLink key={book.href} {...book} dense />
+                    ))}
+                  </div>
+                </section>
                 <p>Through his writing and teaching, Rabbi Hirsch illuminates the Torah&apos;s enduring relevance for Jews of all backgrounds.</p>
                 <p>Rabbi Hirsch and his wife Miriam have made Center City their home, finding deep meaning in building Jewish life and serving their beloved community.</p>
                 <p>You can reach Rabbi Hirsch at <InlineLink href="mailto:rabbiehirsch@mekorhabracha.org">rabbiehirsch@mekorhabracha.org</InlineLink>.</p>
@@ -153,21 +148,13 @@ export default function OurRabbisPage() {
           </article>
           <aside className={styles.resourcePanel} aria-labelledby="rabbi-hirsch-resources">
             <div className={styles.resourceHeader}>
-              <p className={styles.resourceEyebrow}>Explore and connect</p>
-              <h3 id="rabbi-hirsch-resources">Rabbi Hirsch online</h3>
+              <p className={styles.resourceEyebrow}>Read, listen, and connect</p>
+              <h3 id="rabbi-hirsch-resources">More from Rabbi Hirsch</h3>
             </div>
             <div className={styles.primaryResourceGrid}>
               {HIRSCH_ONLINE_LINKS.map((item) => (
-                <BrandedLink key={item.href} {...item} />
+                <BrandedLink key={item.href} {...item} dense />
               ))}
-            </div>
-            <div className={styles.resourceGroup}>
-              <p className={styles.resourceGroupLabel}>Books by Rabbi Hirsch</p>
-              <div className={styles.booksGrid}>
-                {HIRSCH_BOOK_LINKS.map((item) => (
-                  <BrandedLink key={item.href} {...item} />
-                ))}
-              </div>
             </div>
             <div className={styles.communityResources}>
               <p className={styles.communityResourcesLabel}>Community resources</p>

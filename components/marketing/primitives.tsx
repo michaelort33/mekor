@@ -210,9 +210,10 @@ function LinkBrandMark({ brand }: { brand: LinkBrand }) {
 type BrandedLinkProps = CtaItem & {
   className?: string;
   compact?: boolean;
+  dense?: boolean;
 };
 
-export function BrandedLink({ label, href, description, brand, className, compact = false }: BrandedLinkProps) {
+export function BrandedLink({ label, href, description, brand, className, compact = false, dense = false }: BrandedLinkProps) {
   const external = isHttpLink(href);
   const effectiveBrand = brand ?? (external ? "website" : undefined);
   const meta = effectiveBrand ? LINK_BRAND_META[effectiveBrand] : undefined;
@@ -226,6 +227,7 @@ export function BrandedLink({ label, href, description, brand, className, compac
       className={cn(
         brandStyles.link,
         compact && brandStyles.compact,
+        dense && brandStyles.dense,
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]",
         className,
       )}
