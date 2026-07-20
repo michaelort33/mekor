@@ -94,7 +94,13 @@ async function main() {
   console.log("Inserted/updated event:", PATH);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+main()
+  .then(() => {
+    // The shared db client keeps its pool open; exit explicitly so the
+    // one-shot script terminates.
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
