@@ -28,6 +28,20 @@ test("checkout API accepts and forwards a dedication note", async () => {
   assert.ok(metadataMentions.length >= 4, "dedicationNote must reach session, intent, and ledger metadata");
 });
 
+test("donate experience wires cards, modal, sticky pill, and #donate interception", async () => {
+  const [experienceSource, waysSource] = await Promise.all([
+    readTextFile("components/donations/donate-experience.tsx"),
+    readTextFile("app/donations/popular-ways.ts"),
+  ]);
+  assert.match(experienceSource, /IntersectionObserver/);
+  assert.match(experienceSource, /a\[href="#donate"\]/);
+  assert.match(experienceSource, /DialogContent/);
+  assert.match(experienceSource, /id="donate"/);
+  assert.match(waysSource, /href: "\/kiddush"/);
+  const ways = (waysSource.match(/label: "/g) ?? []).length;
+  assert.ok(ways >= 6, "expect at least six popular ways");
+});
+
 test("donation form speaks to donors and carries the dedication note", async () => {
   const source = await readTextFile("components/payments/donation-checkout-form.tsx");
   assert.doesNotMatch(source, /Secure donation intake/i);
