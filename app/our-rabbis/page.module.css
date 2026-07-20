@@ -55,7 +55,7 @@
 .profileLayout {
   display: grid;
   gap: clamp(20px, 2.8vw, 34px);
-  grid-template-columns: minmax(250px, 0.68fr) minmax(0, 1.32fr);
+  grid-template-columns: minmax(250px, 360px) minmax(0, 1fr);
   align-items: start;
 }
 
@@ -74,6 +74,11 @@
   border: 1px solid #ccd3dc;
   box-shadow: 0 10px 24px rgba(24, 36, 53, 0.1);
   aspect-ratio: 4 / 5;
+}
+
+.profilePhotoWrap.hirschPhotoWrap {
+  width: 100%;
+  max-width: 360px;
 }
 
 .profilePhoto {
@@ -284,10 +289,6 @@
   .profileText p {
     font-size: 0.96rem;
     line-height: 1.72;
-  }
-
-  .profilePhotoWrap {
-    max-width: 100%;
   }
 
   .resourcePanel {
