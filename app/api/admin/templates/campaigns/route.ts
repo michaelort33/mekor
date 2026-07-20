@@ -82,7 +82,7 @@ export async function GET(request: Request) {
   for (const delivery of deliveries) {
     const key = String(delivery.campaignId);
     deliveriesByCampaign[key] ??= [];
-    if (deliveriesByCampaign[key]!.length < 20) deliveriesByCampaign[key]!.push(delivery);
+    if (deliveriesByCampaign[key]!.length < 100) deliveriesByCampaign[key]!.push(delivery);
   }
   const eventCountsByCampaign: Record<string, Record<string, number>> = {};
   for (const event of providerEvents) {

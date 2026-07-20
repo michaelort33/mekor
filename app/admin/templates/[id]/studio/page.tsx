@@ -11,6 +11,7 @@ import {
 
 type PageProps = {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export const dynamic = "force-dynamic";
@@ -23,8 +24,11 @@ type StoredChatTurn = {
   subjectChanged: boolean;
 };
 
-export default async function NewsletterStudioPage({ params }: PageProps) {
+export default async function NewsletterStudioPage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const fromParam = resolvedSearchParams.from;
+  const fromNew = fromParam === "new" || (Array.isArray(fromParam) && fromParam.includes("new"));
   const templateId = Number(id);
 
   if (!Number.isInteger(templateId) || templateId < 1) {
@@ -39,7 +43,7 @@ export default async function NewsletterStudioPage({ params }: PageProps) {
         description="Split HTML editor and live preview with chat-assisted edits."
         breadcrumbs={[
           { href: "/admin", label: "Dashboard" },
-          { href: "/admin/templates", label: "Templates" },
+          { href: "/admin/templates", label: "Newsletters" },
           { label: "Studio" },
         ]}
       >
@@ -101,5 +105,11 @@ export default async function NewsletterStudioPage({ params }: PageProps) {
     ];
   });
 
-  return <NewsletterStudioClient template={template} initialMessages={initialMessages} />;
+  return (
+    <NewsletterStudioClient
+      template={template}
+      initialMessages={initialMessages}
+      fromNew={fromNew}
+    />
+  );
 }

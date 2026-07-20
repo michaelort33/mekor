@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
+import {
+  NewsletterCampaignHistory,
+  type NewsletterCampaignHistoryHandle,
+} from "@/components/admin/newsletter-campaign-history";
 import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import { type newsletterTemplates } from "@/db/schema";
 import styles from "../../new/page.module.css";
@@ -17,30 +21,6 @@ type EditTemplateFormProps = {
 };
 
 type RecipientGroup = "newsletter_subscribers" | "admins_only";
-
-type Campaign = {
-  id: number;
-  recipientGroup: RecipientGroup;
-  recipientCount: number;
-  successCount: number;
-  failedCount: number;
-  skippedCount: number;
-  status: "scheduled" | "sending" | "completed" | "partial" | "failed" | "cancelled";
-  scheduledAt: string | null;
-  startedAt: string;
-  completedAt: string | null;
-  sentByDisplayName: string;
-  sentByEmail: string;
-};
-
-type Delivery = {
-  id: number;
-  recipientEmail: string;
-  recipientName: string;
-  status: "queued" | "processing" | "sent" | "failed" | "skipped";
-  errorMessage: string;
-  sentAt: string | null;
-};
 
 type ActivityLog = {
   id: number;
@@ -56,28 +36,22 @@ const GROUP_OPTIONS: Array<{ value: RecipientGroup; label: string }> = [
   { value: "newsletter_subscribers", label: "Confirmed newsletter subscribers" },
   { value: "admins_only", label: "Admins only" },
 ];
-const GROUP_LABEL_MAP: Record<RecipientGroup, string> = Object.fromEntries(
-  GROUP_OPTIONS.map((option) => [option.value, option.label]),
-) as Record<RecipientGroup, string>;
 
 export function EditTemplateForm({ template }: EditTemplateFormProps) {
   const router = useRouter();
+  const historyRef = useRef<NewsletterCampaignHistoryHandle | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [previewingGroup, setPreviewingGroup] = useState(false);
   const [sendingCampaign, setSendingCampaign] = useState(false);
-  const [loadingCampaigns, setLoadingCampaigns] = useState(true);
   const [loadingActivity, setLoadingActivity] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [campaignError, setCampaignError] = useState("");
   const [campaignNotice, setCampaignNotice] = useState("");
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
-  const [deliveriesByCampaign, setDeliveriesByCampaign] = useState<Record<string, Delivery[]>>({});
-  const [eventCountsByCampaign, setEventCountsByCampaign] = useState<Record<string, Record<string, number>>>({});
   const [sendGroup, setSendGroup] = useState<RecipientGroup>("newsletter_subscribers");
   const [subjectOverride, setSubjectOverride] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
@@ -134,22 +108,6 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
     return true;
   }
 
-  async function loadCampaigns() {
-    setLoadingCampaigns(true);
-    const response = await fetch(`/api/admin/templates/campaigns?templateId=${template.id}&limit=12`);
-    const payload = (await response.json().catch(() => ({}))) as {
-      campaigns?: Campaign[];
-      deliveriesByCampaign?: Record<string, Delivery[]>;
-      eventCountsByCampaign?: Record<string, Record<string, number>>;
-    };
-    if (response.ok) {
-      setCampaigns(payload.campaigns ?? []);
-      setDeliveriesByCampaign(payload.deliveriesByCampaign ?? {});
-      setEventCountsByCampaign(payload.eventCountsByCampaign ?? {});
-    }
-    setLoadingCampaigns(false);
-  }
-
   async function loadActivityLogs() {
     setLoadingActivity(true);
     const response = await fetch(`/api/admin/templates/logs?templateId=${template.id}&limit=30`);
@@ -163,7 +121,6 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
   }
 
   useEffect(() => {
-    loadCampaigns().catch(() => setLoadingCampaigns(false));
     loadActivityLogs().catch(() => setLoadingActivity(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template.id]);
@@ -380,7 +337,7 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
       setCampaignNotice(feedback.message);
     }
     setSendingCampaign(false);
-    await loadCampaigns();
+    await historyRef.current?.reload();
     router.refresh();
   }
 
@@ -418,16 +375,7 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
     if (!response.ok) setCampaignError(payload.error || "Unable to schedule campaign.");
     else setCampaignNotice(`Campaign scheduled for ${when.toLocaleString()} for ${payload.recipientCount ?? 0} recipients.`);
     setSendingCampaign(false);
-    await loadCampaigns();
-  }
-
-  async function cancelCampaign(campaignId: number) {
-    if (!window.confirm("Cancel this scheduled newsletter?")) return;
-    const response = await fetch(`/api/admin/newsletters/campaigns/${campaignId}/cancel`, { method: "POST" });
-    const payload = (await response.json().catch(() => ({}))) as { error?: string };
-    if (!response.ok) setCampaignError(payload.error || "Unable to cancel campaign.");
-    else setCampaignNotice("Scheduled campaign cancelled.");
-    await loadCampaigns();
+    await historyRef.current?.reload();
   }
 
   return (
@@ -443,7 +391,7 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
       actions={
         <>
           <Link href={`/admin/templates/${template.id}/studio`} className={adminStyles.actionPill}>
-            Open Chat Studio
+            Open Studio
           </Link>
           <Link href="/admin/templates" className={adminStyles.actionPill}>
             Back to templates
@@ -695,48 +643,12 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
             ) : null}
           </fieldset>
 
-          <fieldset className={styles.fieldset}>
-            <legend>Campaign History</legend>
-            {loadingCampaigns ? <p>Loading campaigns...</p> : null}
-            {!loadingCampaigns && campaigns.length === 0 ? <p>No campaigns sent yet.</p> : null}
-            {!loadingCampaigns && campaigns.length > 0 ? (
-              <div className={styles.campaignList}>
-                {campaigns.map((campaign) => (
-                  <article key={campaign.id} className={styles.campaignCard}>
-                    <p>
-                      <strong>{campaign.status}</strong> · {campaign.successCount}/{campaign.recipientCount} sent
-                    </p>
-                    <p>
-                      Group: {GROUP_LABEL_MAP[campaign.recipientGroup] ?? campaign.recipientGroup} · {campaign.scheduledAt ? "Scheduled" : "Started"}: {" "}
-                      {new Date(campaign.scheduledAt || campaign.startedAt).toLocaleString()}
-                    </p>
-                    <p>
-                      By {campaign.sentByDisplayName} ({campaign.sentByEmail})
-                    </p>
-                    {eventCountsByCampaign[String(campaign.id)] ? (
-                      <p>Provider events: {Object.entries(eventCountsByCampaign[String(campaign.id)]!).map(([event, count]) => `${event} ${count}`).join(" · ")}</p>
-                    ) : null}
-                    {campaign.status === "scheduled" ? (
-                      <button type="button" className={styles.secondaryButton} onClick={() => cancelCampaign(campaign.id)}>Cancel scheduled send</button>
-                    ) : null}
-                    {deliveriesByCampaign[String(campaign.id)]?.length ? (
-                      <details>
-                        <summary>Recent deliveries</summary>
-                        <ul>
-                          {deliveriesByCampaign[String(campaign.id)]!.map((delivery) => (
-                            <li key={delivery.id}>
-                              {delivery.status} · {delivery.recipientEmail}
-                              {delivery.errorMessage ? ` · ${delivery.errorMessage}` : ""}
-                            </li>
-                          ))}
-                        </ul>
-                      </details>
-                    ) : null}
-                  </article>
-                ))}
-              </div>
-            ) : null}
-          </fieldset>
+          <NewsletterCampaignHistory
+            ref={historyRef}
+            templateId={template.id}
+            allowCancelScheduled
+            title="Campaign history"
+          />
 
           <fieldset className={styles.fieldset}>
             <legend>Template Activity Log</legend>

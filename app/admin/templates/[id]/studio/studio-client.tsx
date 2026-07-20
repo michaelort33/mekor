@@ -3,10 +3,16 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, getToolName, isToolUIPart, type UIMessage } from "ai";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
+import {
+  NewsletterCampaignHistory,
+  type NewsletterCampaignHistoryHandle,
+} from "@/components/admin/newsletter-campaign-history";
+import { NewsletterFlowSteps } from "@/components/admin/newsletter-flow-steps";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import {
   Message,
@@ -37,7 +43,10 @@ type TemplateRow = typeof newsletterTemplates.$inferSelect;
 type StudioClientProps = {
   template: TemplateRow;
   initialMessages: NewsletterStudioMessage[];
+  fromNew?: boolean;
 };
+
+type SendPhase = "idle" | "saving" | "sending" | "done";
 
 export type NewsletterStudioMessageMetadata = {
   persisted?: boolean;
@@ -89,7 +98,9 @@ function historyTime(value: string) {
   }).format(new Date(value));
 }
 
-export function NewsletterStudioClient({ template, initialMessages }: StudioClientProps) {
+export function NewsletterStudioClient({ template, initialMessages, fromNew = false }: StudioClientProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [html, setHtml] = useState(template.bodyHtml);
   const [subject, setSubject] = useState(template.subject || template.title);
   const [draft, setDraft] = useState("");
@@ -97,18 +108,26 @@ export function NewsletterStudioClient({ template, initialMessages }: StudioClie
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
+  const [sendPhase, setSendPhase] = useState<SendPhase>("idle");
   const [liveTick, setLiveTick] = useState(0);
+  const [showFromNewBanner, setShowFromNewBanner] = useState(fromNew);
+  const [highlightCampaignId, setHighlightCampaignId] = useState<number | null>(null);
+  const [flowFocus, setFlowFocus] = useState<"review" | "send">(fromNew ? "send" : "review");
 
   const [recipientQuery, setRecipientQuery] = useState("");
   const [recipientMenuOpen, setRecipientMenuOpen] = useState(false);
   const [recipientOptions, setRecipientOptions] = useState<SubscriberOption[]>([]);
   const [selectedRecipients, setSelectedRecipients] = useState<SubscriberOption[]>([]);
-  const [recipientListKey, setRecipientListKey] = useState<NewsletterRecipientListKey | null>(null);
+  const [recipientListKey, setRecipientListKey] = useState<NewsletterRecipientListKey | null>(
+    fromNew ? "michael_test" : null,
+  );
   const [loadingRecipients, setLoadingRecipients] = useState(false);
 
   const htmlRef = useRef(html);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const historyRef = useRef<NewsletterCampaignHistoryHandle | null>(null);
+  const sendSectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     htmlRef.current = html;
@@ -162,6 +181,11 @@ export function NewsletterStudioClient({ template, initialMessages }: StudioClie
     return () => clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional search debounce
   }, [recipientQuery, recipientMenuOpen]);
+
+  useEffect(() => {
+    if (!fromNew) return;
+    router.replace(pathname, { scroll: false });
+  }, [fromNew, pathname, router]);
 
   async function loadRecipients(query: string) {
     setLoadingRecipients(true);
@@ -277,17 +301,42 @@ export function NewsletterStudioClient({ template, initialMessages }: StudioClie
     setRecipientMenuOpen(false);
   }
 
+  const activeRecipientList = recipientListKey
+    ? NEWSLETTER_RECIPIENT_LISTS.find((list) => list.key === recipientListKey)!
+    : null;
+  const recipientCount = activeRecipientList?.emails.length ?? selectedRecipients.length;
+
+  function scrollToSend() {
+    setFlowFocus("send");
+    setShowFromNewBanner(false);
+    sendSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   async function runSend() {
     if (!recipientListKey && selectedRecipients.length === 0) {
       setError("Select at least one recipient from the searchable list.");
+      setFlowFocus("send");
       return;
     }
+    if (recipientListKey !== "michael_test") {
+      const confirmed = window.confirm(
+        `Send this newsletter now to ${recipientCount || "the selected"} recipient(s)?`,
+      );
+      if (!confirmed) return;
+    }
+
     setSending(true);
+    setSendPhase("saving");
     setError("");
     setNotice("");
+    setFlowFocus("send");
     try {
       const saved = await persistHtml(html, subject);
-      if (!saved) return;
+      if (!saved) {
+        setSendPhase("idle");
+        return;
+      }
+      setSendPhase("sending");
       const response = await fetch("/api/admin/templates/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -304,12 +353,14 @@ export function NewsletterStudioClient({ template, initialMessages }: StudioClie
       });
       const payload = (await response.json().catch(() => ({}))) as {
         error?: string;
+        campaignId?: number;
         successCount?: number;
         failedCount?: number;
         skippedCount?: number;
       };
       if (!response.ok) {
         setError(payload.error || "Send failed.");
+        setSendPhase("idle");
         return;
       }
       const feedback = buildSendFeedback({
@@ -320,24 +371,47 @@ export function NewsletterStudioClient({ template, initialMessages }: StudioClie
       });
       if (feedback.status === "failure") setError(feedback.message);
       else setNotice(feedback.message);
+      if (payload.campaignId) setHighlightCampaignId(payload.campaignId);
+      setSendPhase("done");
+      await historyRef.current?.reload();
+      document.getElementById("newsletter-send-results")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     } finally {
       setSending(false);
     }
   }
 
-  const activeRecipientList = recipientListKey
-    ? NEWSLETTER_RECIPIENT_LISTS.find((list) => list.key === recipientListKey)!
-    : null;
-  const recipientCount = activeRecipientList?.emails.length ?? selectedRecipients.length;
+  let sendPhaseLabel: string | null = null;
+  switch (sendPhase) {
+    case "idle":
+      sendPhaseLabel = null;
+      break;
+    case "saving":
+      sendPhaseLabel = "Saving HTML snapshot…";
+      break;
+    case "sending":
+      sendPhaseLabel = "Creating campaign and delivering via SendGrid…";
+      break;
+    case "done":
+      sendPhaseLabel = "Send finished. Expand the delivery table below for recipient-level results.";
+      break;
+    default: {
+      const _exhaustive: never = sendPhase;
+      void _exhaustive;
+      sendPhaseLabel = null;
+    }
+  }
 
   return (
     <AdminShell
       currentPath="/admin/templates"
       title="Newsletter Studio"
-      description="Preview the newsletter beside the AI editor, iterate until it is right, then choose recipients and send."
+      description="Review the live preview, polish with AI, then choose recipients and send — with delivery results on this same page."
       breadcrumbs={[
         { href: "/admin", label: "Dashboard" },
-        { href: "/admin/templates", label: "Templates" },
+        { href: "/admin/templates", label: "Newsletters" },
         { label: template.title || "Studio" },
       ]}
       actions={
@@ -352,15 +426,35 @@ export function NewsletterStudioClient({ template, initialMessages }: StudioClie
       }
     >
       <div className={styles.studio}>
+        <NewsletterFlowSteps current={flowFocus} ariaLabel="Newsletter studio steps" />
+
+        {showFromNewBanner ? (
+          <div className={styles.fromNewBanner} role="status">
+            <div>
+              <strong>Draft saved — next step is send.</strong>
+              <p>
+                Review the preview, make any last AI tweaks, then choose recipients below. For a safe check, use the
+                Michael test list first.
+              </p>
+            </div>
+            <button type="button" className={styles.primaryButton} onClick={scrollToSend}>
+              Go to send
+            </button>
+          </div>
+        ) : null}
+
         <div className={styles.toolbar}>
           <div className={styles.toolbarMeta}>
-            <p className={styles.toolbarEyebrow}>Preview + AI workbench</p>
+            <p className={styles.toolbarEyebrow}>Step 3 · Review & polish</p>
             <h2 className={styles.toolbarTitle}>{template.title}</h2>
           </div>
           <div className={styles.toolbarActions}>
             {liveTick > 0 ? <span className={styles.livePulse}>Live preview synced</span> : null}
             <button type="button" className={styles.secondaryButton} disabled={saving} onClick={() => void persistHtml(html, subject)}>
               {saving ? "Saving…" : "Save HTML"}
+            </button>
+            <button type="button" className={styles.secondaryButton} onClick={scrollToSend}>
+              Jump to send
             </button>
           </div>
         </div>
@@ -490,125 +584,162 @@ export function NewsletterStudioClient({ template, initialMessages }: StudioClie
           </aside>
         </div>
 
-        <section className={styles.sendBar} aria-label="Send newsletter">
-          <div className={styles.sendFields}>
-            <label className={styles.fieldLabel}>
-              Subject
-              <input
-                className={styles.subjectInput}
-                value={subject}
-                onChange={(event) => setSubject(event.target.value)}
-              />
-            </label>
-
-            <div className={styles.fieldLabel}>
-              Recipients
-              <div className={styles.recipientLists} aria-label="Newsletter recipient lists">
-                {NEWSLETTER_RECIPIENT_LISTS.map((list) => (
-                  <button
-                    key={list.key}
-                    type="button"
-                    className={recipientListKey === list.key ? styles.recipientListActive : styles.recipientList}
-                    aria-pressed={recipientListKey === list.key}
-                    onClick={() => selectRecipientList(list.key)}
-                  >
-                    <strong>{list.name}</strong>
-                    <span>{list.description}</span>
-                  </button>
-                ))}
-              </div>
-              <div className={styles.recipientShell}>
-                <div className={styles.recipientSearchRow}>
-                  <input
-                    value={recipientQuery}
-                    onChange={(event) => {
-                      setRecipientQuery(event.target.value);
-                      setRecipientMenuOpen(true);
-                    }}
-                    onFocus={() => {
-                      setRecipientMenuOpen(true);
-                      void loadRecipients(recipientQuery);
-                    }}
-                    placeholder="Search subscribers by name or email"
-                    aria-label="Search recipients"
-                  />
-                  <button
-                    type="button"
-                    className={styles.ghostButton}
-                    onClick={() => {
-                      setRecipientMenuOpen((open) => !open);
-                      if (!recipientMenuOpen) void loadRecipients(recipientQuery);
-                    }}
-                  >
-                    {loadingRecipients ? "…" : "Browse"}
-                  </button>
-                </div>
-                {recipientMenuOpen ? (
-                  <div className={styles.recipientMenu} role="listbox" aria-label="Recipient matches">
-                    {recipientOptions.length === 0 ? (
-                      <button type="button" className={styles.recipientOption} disabled>
-                        <span>{loadingRecipients ? "Searching…" : "No matching subscribed recipients"}</span>
-                      </button>
-                    ) : (
-                      recipientOptions.map((option) => (
-                        <button
-                          key={option.personId}
-                          type="button"
-                          className={styles.recipientOption}
-                          onClick={() => addRecipient(option)}
-                        >
-                          <span>
-                            <strong>{option.displayName}</strong>
-                            <span>{option.email}</span>
-                          </span>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                ) : null}
-              </div>
+        <section
+          ref={sendSectionRef}
+          id="newsletter-send"
+          className={styles.sendSection}
+          aria-label="Send newsletter"
+          onFocusCapture={() => setFlowFocus("send")}
+        >
+          <div className={styles.sendSectionHeader}>
+            <div>
+              <p className={styles.toolbarEyebrow}>Step 4 · Choose recipients and send</p>
+              <h3 className={styles.sendSectionTitle}>Send this newsletter</h3>
+              <p className={styles.panelHint}>
+                Start with the Michael test list to confirm delivery, then expand the results table to see exactly who
+                was emailed.
+              </p>
             </div>
+          </div>
 
-            {activeRecipientList ? (
-              <div className={styles.chipRow}>
-                <span className={styles.chip}>
-                  {activeRecipientList.name} · {activeRecipientList.emails.length} recipient
-                  <button type="button" aria-label={`Remove ${activeRecipientList.name}`} onClick={() => setRecipientListKey(null)}>
-                    ×
-                  </button>
-                </span>
+          <div className={styles.sendBar}>
+            <div className={styles.sendFields}>
+              <label className={styles.fieldLabel}>
+                Subject
+                <input
+                  className={styles.subjectInput}
+                  value={subject}
+                  onChange={(event) => setSubject(event.target.value)}
+                />
+              </label>
+
+              <div className={styles.fieldLabel}>
+                Recipients
+                <div className={styles.recipientLists} aria-label="Newsletter recipient lists">
+                  {NEWSLETTER_RECIPIENT_LISTS.map((list) => (
+                    <button
+                      key={list.key}
+                      type="button"
+                      className={recipientListKey === list.key ? styles.recipientListActive : styles.recipientList}
+                      aria-pressed={recipientListKey === list.key}
+                      onClick={() => selectRecipientList(list.key)}
+                    >
+                      <strong>{list.name}</strong>
+                      <span>{list.description}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className={styles.recipientShell}>
+                  <div className={styles.recipientSearchRow}>
+                    <input
+                      value={recipientQuery}
+                      onChange={(event) => {
+                        setRecipientQuery(event.target.value);
+                        setRecipientMenuOpen(true);
+                      }}
+                      onFocus={() => {
+                        setRecipientMenuOpen(true);
+                        void loadRecipients(recipientQuery);
+                      }}
+                      placeholder="Search subscribers by name or email"
+                      aria-label="Search recipients"
+                    />
+                    <button
+                      type="button"
+                      className={styles.ghostButton}
+                      onClick={() => {
+                        setRecipientMenuOpen((open) => !open);
+                        if (!recipientMenuOpen) void loadRecipients(recipientQuery);
+                      }}
+                    >
+                      {loadingRecipients ? "…" : "Browse"}
+                    </button>
+                  </div>
+                  {recipientMenuOpen ? (
+                    <div className={styles.recipientMenu} role="listbox" aria-label="Recipient matches">
+                      {recipientOptions.length === 0 ? (
+                        <button type="button" className={styles.recipientOption} disabled>
+                          <span>{loadingRecipients ? "Searching…" : "No matching subscribed recipients"}</span>
+                        </button>
+                      ) : (
+                        recipientOptions.map((option) => (
+                          <button
+                            key={option.personId}
+                            type="button"
+                            className={styles.recipientOption}
+                            onClick={() => addRecipient(option)}
+                          >
+                            <span>
+                              <strong>{option.displayName}</strong>
+                              <span>{option.email}</span>
+                            </span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  ) : null}
+                </div>
               </div>
-            ) : selectedRecipients.length > 0 ? (
-              <div className={styles.chipRow}>
-                {selectedRecipients.map((recipient) => (
-                  <span key={recipient.personId} className={styles.chip}>
-                    {recipient.displayName}
-                    <button type="button" aria-label={`Remove ${recipient.displayName}`} onClick={() => removeRecipient(recipient.personId)}>
+
+              {activeRecipientList ? (
+                <div className={styles.chipRow}>
+                  <span className={styles.chip}>
+                    {activeRecipientList.name} · {activeRecipientList.emails.length} recipient
+                    <button type="button" aria-label={`Remove ${activeRecipientList.name}`} onClick={() => setRecipientListKey(null)}>
                       ×
                     </button>
                   </span>
-                ))}
-              </div>
-            ) : (
-              <p className={styles.statusText}>Choose one or more confirmed weekly subscribers, then send via SendGrid.</p>
-            )}
+                </div>
+              ) : selectedRecipients.length > 0 ? (
+                <div className={styles.chipRow}>
+                  {selectedRecipients.map((recipient) => (
+                    <span key={recipient.personId} className={styles.chip}>
+                      {recipient.displayName}
+                      <button type="button" aria-label={`Remove ${recipient.displayName}`} onClick={() => removeRecipient(recipient.personId)}>
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className={styles.statusText}>Choose one or more confirmed weekly subscribers, then send via SendGrid.</p>
+              )}
+            </div>
+
+            <div className={styles.sendActions}>
+              <button
+                type="button"
+                className={styles.dangerButton}
+                disabled={sending || recipientCount === 0}
+                onClick={() => void runSend()}
+              >
+                {sending ? "Sending…" : `Send to ${recipientCount || "…"}`}
+              </button>
+              <p className={styles.statusText}>
+                {activeRecipientList
+                  ? `Test list is restricted to ${activeRecipientList.emails.join(", ")}.`
+                  : "Uses the current HTML snapshot through the existing SendGrid campaign pipeline."}
+              </p>
+            </div>
           </div>
 
-          <div className={styles.sendActions}>
-            <button
-              type="button"
-              className={styles.dangerButton}
-              disabled={sending || recipientCount === 0}
-              onClick={() => void runSend()}
+          {sendPhaseLabel ? (
+            <div
+              className={sendPhase === "done" ? styles.sendProgressDone : styles.sendProgress}
+              role="status"
+              aria-live="polite"
             >
-              {sending ? "Sending…" : `Send to ${recipientCount || "…"}`}
-            </button>
-            <p className={styles.statusText}>
-              {activeRecipientList
-                ? `Test list is restricted to ${activeRecipientList.emails.join(", ")}.`
-                : "Uses the current HTML snapshot through the existing SendGrid campaign pipeline."}
-            </p>
-          </div>
+              {sending ? <span className={styles.sendSpinner} aria-hidden="true" /> : null}
+              <span>{sendPhaseLabel}</span>
+            </div>
+          ) : null}
+
+          <NewsletterCampaignHistory
+            ref={historyRef}
+            templateId={template.id}
+            highlightCampaignId={highlightCampaignId}
+            autoExpandLatest
+          />
         </section>
       </div>
 

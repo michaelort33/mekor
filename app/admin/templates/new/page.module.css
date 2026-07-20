@@ -357,6 +357,20 @@
   justify-content: flex-end;
 }
 
+.saveAction {
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  max-width: min(100%, 360px);
+}
+
+.saveAction small {
+  color: #627387;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  text-align: right;
+}
+
 .detailsBar {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
