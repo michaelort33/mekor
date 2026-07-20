@@ -4,6 +4,9 @@ import Script from "next/script";
 
 import { SiteFeedbackWidget } from "@/components/feedback/site-feedback-widget";
 import { BRAND_ASSETS } from "@/lib/brand-assets";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo/site";
+import { serializeJsonLd, SITE_STRUCTURED_DATA } from "@/lib/seo/structured-data";
 
 import "./globals.css";
 
@@ -22,9 +25,14 @@ const headingFont = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Mekor Habracha | Center City Synagogue | Philadelphia | Synagogue",
-  description:
-    "Mekor Habracha / Center City Synagogue is a vibrant, inclusive Modern Orthodox community located in the heart of Center City, Philadelphia.",
+  metadataBase: new URL(SITE_URL),
+  ...buildPageMetadata({
+    path: "/",
+    title: "Mekor Habracha | Center City Synagogue in Philadelphia",
+    description: SITE_DESCRIPTION,
+  }),
+  applicationName: SITE_NAME,
+  category: "religion",
   icons: {
     icon: [
       { url: BRAND_ASSETS.faviconIco.url, type: "image/x-icon", sizes: "any" },
@@ -49,13 +57,7 @@ export default function RootLayout({
         className={`${bodyFont.variable} ${headingFont.variable}`}
         style={{ backgroundColor: "#f7f3eb", color: "#1f3043" }}
       >
-        <link
-          rel="preload"
-          href="/fonts/lulo-clean-w01-one-bold.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
+        <script type="application/ld+json">{serializeJsonLd(SITE_STRUCTURED_DATA)}</script>
         {gtmId ? (
           <Script
             id="gtm-script"

@@ -11,6 +11,7 @@ import {
 } from "@/components/ask-mekor/ask-mekor-ui";
 import { Button } from "@/components/ui/button";
 import { listPublicAskMekorQuestions } from "@/lib/ask-mekor/service";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -26,16 +27,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const category = categories.find((item) => item.slug === slug);
 
   if (!category) {
-    return {
+    return buildPageMetadata({
+      path: `/ask-mekor/categories/${slug}`,
       title: "Ask Mekor | Mekor Habracha",
       description: "Browse recent Mekor Q&A and submit a question to Mekor.",
-    };
+      noIndex: true,
+    });
   }
 
-  return {
+  return buildPageMetadata({
+    path: `/ask-mekor/categories/${category.slug}`,
     title: `${category.label} | Ask Mekor`,
     description: category.description || `Browse public ${category.label.toLowerCase()} questions and answers from the Mekor board.`,
-  };
+  });
 }
 
 export default async function AskMekorCategoryPage({ params }: PageProps) {

@@ -72,6 +72,8 @@ export type EventTemplateData = {
   shortDate: string;
   location: string;
   timeLabel: string;
+  startAt?: string | null;
+  endAt?: string | null;
   isClosed: boolean;
   isPast: boolean;
   about: string[];

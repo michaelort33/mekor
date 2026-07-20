@@ -82,9 +82,9 @@ test("metadata parity keeps canonical and social fields for template docs", asyn
   assert.ok(doc, "expected event document");
 
   const metadata = buildDocumentMetadata(doc);
-  assert.equal(metadata.description, doc?.description);
-  assert.equal(metadata.alternates?.canonical, doc?.canonical);
-  assert.equal(metadata.openGraph?.url, doc?.canonical);
+  assert.match(String(metadata.description), /Mekor Pesach Seders/);
+  assert.equal(metadata.alternates?.canonical, `https://www.mekorhabracha.org${doc?.canonical}`);
+  assert.equal(metadata.openGraph?.url, `https://www.mekorhabracha.org${doc?.canonical}`);
   assert.equal(metadata.twitter?.title, doc?.twitterTitle.replace(/\bMekor 3\b/g, "Mekor Habracha"));
 });
 

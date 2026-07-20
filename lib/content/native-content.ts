@@ -12,6 +12,7 @@ import type {
   NativeSearchIndexRecord,
   NativeTemplateRecord,
 } from "@/lib/content/types";
+import { isHiddenContentPath } from "@/lib/content/hidden-paths";
 
 export type NativeSectionSitemap =
   | "blog-categories-sitemap"
@@ -20,6 +21,11 @@ export type NativeSectionSitemap =
   | "dynamic-news-sitemap"
   | "pages-sitemap";
 
+export type NativeSitemapEntry = {
+  path: string;
+  lastModified?: string;
+};
+
 const documents = documentsData as NativeContentDocument[];
 const index = indexData as NativeContentIndexRecord[];
 const routeData = routesData as NativeGeneratedRouteData;
@@ -27,6 +33,30 @@ const searchRecords = searchData as NativeSearchIndexRecord[];
 const templateRecords = templatesData as NativeTemplateRecord[];
 
 const PUBLIC_PATH_REWRITES = new Map([["/our-rabbi", "/our-rabbis"]]);
+
+const SITEMAP_PATH_REWRITES = new Map([
+  ["/our-rabbi", "/our-rabbis"],
+  ["/cherry-hill", "/center-city"],
+  ["/main-line-manyunk", "/center-city"],
+  ["/old-yorkroad-northeast", "/center-city"],
+  ["/kosher-map", "/center-city"],
+]);
+
+const NON_INDEXABLE_SITEMAP_PATHS = new Set([
+  "/about-5",
+  "/centercity-southphillyeruvupdate-old",
+  "/copy-of-center-city-beit-midrash",
+  "/copy-of-pesach-at-mekor",
+  "/center-city-south-philly-er",
+  "/donation-thank-you-page",
+  "/events-page",
+  "/kosher-posts",
+  "/letterfromisrael",
+  "/membership-old",
+  "/old-kosher-restaurants",
+  "/s-projects-side-by-side",
+  "/thank-you",
+]);
 
 function toPublicPath(pathValue: string) {
   return PUBLIC_PATH_REWRITES.get(pathValue) ?? pathValue;
@@ -201,17 +231,45 @@ function matchesSection(pathValue: string, section: NativeSectionSitemap) {
 }
 
 export async function listRoutesBySection(section: NativeSectionSitemap) {
-  return [
-    ...new Set(
-      routeData.canonical
-        .map((record) => toPublicPath(record.path))
-        .filter(
-          (pathValue) =>
-            !isRetiredKosherBrowsePath(pathValue) && matchesSection(pathValue, section),
-        )
-        .sort((a, b) => a.localeCompare(b)),
-    ),
-  ];
+  return (await listSitemapEntriesBySection(section)).map((entry) => entry.path);
+}
+
+export async function listSitemapEntriesBySection(
+  section: NativeSectionSitemap,
+): Promise<NativeSitemapEntry[]> {
+  const byPath = new Map<string, NativeSitemapEntry>();
+
+  for (const record of routeData.canonical) {
+    if (
+      NON_INDEXABLE_SITEMAP_PATHS.has(record.path) ||
+      isHiddenContentPath(record.path) ||
+      isRetiredKosherBrowsePath(record.path)
+    ) {
+      continue;
+    }
+
+    const publicPath = SITEMAP_PATH_REWRITES.get(record.path) ?? toPublicPath(record.path);
+    if (!matchesSection(publicPath, section)) {
+      continue;
+    }
+
+    const document = documentByPath.get(record.path) ?? documentByPath.get(publicPath);
+    const candidate: NativeSitemapEntry = {
+      path: publicPath,
+      ...(document?.capturedAt ? { lastModified: document.capturedAt } : {}),
+    };
+    const existing = byPath.get(publicPath);
+
+    if (
+      !existing ||
+      (candidate.lastModified &&
+        (!existing.lastModified || candidate.lastModified > existing.lastModified))
+    ) {
+      byPath.set(publicPath, candidate);
+    }
+  }
+
+  return [...byPath.values()].sort((left, right) => left.path.localeCompare(right.path));
 }
 
 export async function buildSearchDocuments() {

@@ -17,6 +17,30 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    const privateNoIndexRoutes = [
+      "/admin/:path*",
+      "/account/:path*",
+      "/api/:path*",
+      "/members/:path*",
+      "/community/:path*",
+      "/member-events/:path*",
+      "/profile/:path*",
+      "/invite/:path*",
+      "/login",
+      "/signup",
+      "/forgot-password",
+      "/reset-password",
+      "/newsletter/confirmed",
+      "/newsletter/unsubscribed",
+      "/search",
+    ];
+
+    return privateNoIndexRoutes.map((source) => ({
+      source,
+      headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+    }));
+  },
   async redirects() {
     return [
       {

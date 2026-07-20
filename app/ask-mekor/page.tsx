@@ -1,5 +1,4 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import { ArrowRight, Search } from "lucide-react";
 
 import { AskMekorInfoDialog } from "@/components/ask-mekor/ask-mekor-info-dialog";
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { listPublicAskMekorQuestions } from "@/lib/ask-mekor/service";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -24,10 +24,11 @@ type PageProps = {
   }>;
 };
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
+  path: "/ask-mekor",
   title: "Ask Mekor | Mekor Habracha",
   description: "Browse recent Mekor Q&A and submit a question to Mekor.",
-};
+});
 
 export default async function AskMekorPage({ searchParams }: PageProps) {
   const filters = await searchParams;

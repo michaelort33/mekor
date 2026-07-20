@@ -356,6 +356,12 @@ a[data-slot="button"][data-variant="default"]:hover {
   color: var(--native-page-heading);
 }
 
+main:has(> [data-native-nav-root]) :is(h1, h2, h3) {
+  overflow-wrap: break-word;
+  word-break: normal;
+  text-wrap: balance;
+}
+
 .native-nav {
   position: sticky;
   top: 0;

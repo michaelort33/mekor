@@ -1,16 +1,17 @@
-import type { Metadata } from "next";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { NewsletterArchive } from "@/components/newsletters/newsletter-archive";
 import { getNewsletterSummariesFromStore } from "@/lib/newsletters/store";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import styles from "./page.module.css";
 
 const PATH = "/newsletters";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
+  path: PATH,
   title: "Past Newsletters | Mekor Habracha",
   description:
     "Search and read Mekor Habracha weekly newsletters, community announcements, classes, events, and eruv updates in our complete local archive.",
-};
+});
 
 export const dynamic = "force-dynamic";
 

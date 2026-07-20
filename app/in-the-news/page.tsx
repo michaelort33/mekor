@@ -1,16 +1,16 @@
-import type { Metadata } from "next";
-
 import { InTheNewsDirectory } from "@/components/in-the-news/in-the-news-directory";
 import { NativeShell } from "@/components/navigation/native-shell";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getManagedInTheNews } from "@/lib/in-the-news/store";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
+  path: "/in-the-news",
   title: "In The News | Mekor Habracha",
   description:
     "Browse press coverage and feature stories about Mekor Habracha with searchable, filterable archive controls.",
-};
+});
 
 export const dynamic = "force-dynamic";
 

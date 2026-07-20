@@ -10,8 +10,7 @@ import { BrandedLink } from "@/components/marketing/primitives";
 import { SiteNavigation } from "@/components/navigation/site-navigation";
 import { getEventDateParts } from "@/lib/events/format";
 import { getManagedEvents, type ManagedEvent } from "@/lib/events/store";
-import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
-import { buildDocumentMetadata } from "@/lib/templates/metadata";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import styles from "@/app/page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -77,8 +76,13 @@ const SOCIAL_LINKS = [
 ] as const;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const document = await getNativeDocumentByPath("/");
-  return buildDocumentMetadata(document);
+  return buildPageMetadata({
+    path: "/",
+    title: "Mekor Habracha | Center City Synagogue in Philadelphia",
+    description:
+      "Visit Mekor Habracha, a welcoming Modern Orthodox synagogue in Center City Philadelphia, for daily minyan, Shabbat services, Torah learning, and community events.",
+    image: HERO_IMAGE,
+  });
 }
 
 const HOME_EVENTS_LIMIT = 5;
@@ -235,7 +239,11 @@ export default function HomePage() {
         <div className={styles.heroOverlay} />
         <div className={styles.heroInner}>
           <p className={styles.heroEyebrow}>Welcome to</p>
-          <h1 className={styles.heroTitle}>Mekor Habracha</h1>
+          <h1 className={styles.heroTitle}>
+            <span>Mekor</span>
+            {" "}
+            <span>Habracha</span>
+          </h1>
           <div className={styles.heroDivider} />
           <p className={styles.heroSubtitle}>Center City Synagogue</p>
           <a className={styles.heroArrow} href="#about" aria-label="Jump to about section">

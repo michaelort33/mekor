@@ -2,36 +2,39 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-static";
 
-const robots = `User-agent: *
-Allow: /
-Disallow: *?lightbox=
+const privatePaths = [
+  "/api/",
+  "/admin/",
+  "/account/",
+  "/members/",
+  "/community/",
+  "/member-events/",
+  "/profile/",
+  "/invite/",
+];
 
-# Optimization for Google Ads Bot
-User-agent: AdsBot-Google-Mobile
-User-agent: AdsBot-Google
-Disallow: /_partials*
-Disallow: /pro-gallery-webapp/v1/galleries/*
+function rulesFor(userAgent: string) {
+  return [
+    `User-agent: ${userAgent}`,
+    "Allow: /",
+    ...privatePaths.map((path) => `Disallow: ${path}`),
+  ].join("\n");
+}
 
-# Block PetalBot
-User-agent: PetalBot
-Disallow: /
-
-# Crawl delay for overly enthusiastic bots
-User-agent: dotbot
-Crawl-delay: 10
-User-agent: AhrefsBot
-Crawl-delay: 10
-
-Sitemap: https://www.mekorhabracha.org/sitemap.xml
-
-# Auto generated, go to SEO Tools > Robots.txt Editor to change this`;
+const robots = [
+  rulesFor("*"),
+  rulesFor("OAI-SearchBot"),
+  rulesFor("GPTBot"),
+  rulesFor("ChatGPT-User"),
+  "Sitemap: https://www.mekorhabracha.org/sitemap.xml",
+].join("\n\n");
 
 export async function GET() {
   return new NextResponse(robots, {
     status: 200,
     headers: {
       "content-type": "text/plain; charset=utf-8",
-      "cache-control": "public, max-age=3600",
+      "cache-control": "public, s-maxage=3600, stale-while-revalidate=86400",
     },
   });
 }

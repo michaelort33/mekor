@@ -51,6 +51,8 @@ export const HAND_AUTHORED_TEMPLATES: NativeTemplateRecord[] = [
       shortDate: event.shortDate,
       location: event.location,
       timeLabel: event.detailTimeLabel,
+      startAt: event.startAt,
+      endAt: event.endAt,
       isClosed: false,
       isPast: false,
       about: event.about,
