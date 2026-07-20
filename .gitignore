@@ -80,3 +80,6 @@ rebuild-assets/flat/
 
 # Large generated aggregate (keep local, do not commit)
 mirror-data/content/all-documents.json
+
+# Git worktrees (local isolated checkouts)
+.worktrees/
