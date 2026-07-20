@@ -15,7 +15,7 @@ Approved by the site owner in-session on 2026-07-20. Problem: shell copy on `/me
 6. `BOARD_NAV` label `Standing info` → `Essentials` (href unchanged).
 
 `app/page.tsx` (homepage teaser):
-7. Paragraph → `Tot Shabbat, Hebrew Help, membership, Eruv support, classes, and neighborly offers — every standing notice, one click away.` ("View the Bulletin Board" link unchanged; a test pins it.)
+7. Paragraph → `Tot Shabbat, Hebrew Help, membership, Eruv support, classes, and neighborly offers — all in one place.` ("View the Bulletin Board" link unchanged; a test pins it.)
 
 `lib/newsletter/weekly-cleaned.ts`:
 8. `Standing community info now lives on Mekor's <strong>Living Flyer Board</strong> so this weekly email stays focused on this Shabbat:` → `Ongoing programs and community resources are always on the <strong>Mekor Bulletin Board</strong>:` (list and "Open the Bulletin Board" button unchanged). Affects future drafts from the starter only.

@@ -124,7 +124,7 @@ export default async function DonationsPage() {
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         eyebrow="Support Mekor"
-        title="How You Can Donate and Help Mekor"
+        title="Support Mekor Habracha"
         subtitle="Sustain Jewish life in Center City"
         tone="dark"
         className={styles.heroFlat}
@@ -135,8 +135,8 @@ export default async function DonationsPage() {
           objectPosition: "center center",
         }}
         description={[
-          "The generosity of members and visitors who make donations to our shul are vital to help us continue serving our congregation as well as members of the wider Jewish community.",
-          "Making a donation is a wonderful way to celebrate special occasions, honor your friends and family, or commemorate the yahrtzeit of your loved ones.",
+          "Donations from members and visitors make it possible for Mekor to serve our congregation and the wider Jewish community.",
+          "Give to celebrate a special occasion, honor family and friends, or remember a loved one on a yahrtzeit.",
         ]}
         actions={[
           { label: "Donate now", href: "#donate" },
@@ -147,8 +147,8 @@ export default async function DonationsPage() {
 
       <SectionCard title="Popular ways to give" className={styles.flatSection}>
         <p className={styles.copyText}>
-          These are the most common gifts. Pick one to get started — every gift is tax-deductible, and any amount is
-          appreciated.
+          These are the most common gifts. Pick one to get started. Any amount is appreciated, and tax receipts are
+          provided when applicable.
         </p>
         <DonateExperience popularWays={POPULAR_WAYS} />
       </SectionCard>
@@ -156,7 +156,7 @@ export default async function DonationsPage() {
       <SectionCard className={styles.flatSection}>
         <SplitMediaText
           className={styles.splitPanel}
-          title="Sponsor/ Dedication"
+          title="Sponsorships & Dedications"
           kicker="Celebrate simchas"
           media={{
             src: DONATION_IMAGES.support,
@@ -165,8 +165,8 @@ export default async function DonationsPage() {
             objectPosition: "center center",
           }}
           paragraphs={[
-            "Celebrate simchas with your Mekor community through Shabbat Kiddush sponsorships or honoring/memorializing those impactful individuals in one's life through sponsorship opportunities!",
-            "All contributions are fully tax-deductible and will be acknowledged in a letter that may be used for tax purposes.",
+            "Celebrate a simcha with the Mekor community through a Shabbat Kiddush sponsorship, or honor or remember someone meaningful with a dedication.",
+            "Eligible charitable contributions receive a receipt stating the deductible amount for your records.",
             <>
               Give right on this page with the donation form above, sponsor through the{" "}
               <InlineLink href="/kiddush">Kiddush sponsorship page</InlineLink>, or{" "}
@@ -181,7 +181,7 @@ export default async function DonationsPage() {
             <li key={item}>{item}</li>
           ))}
         </ul>
-        <p className={styles.copyText}>General contributions -- any amount is appreciated!</p>
+        <p className={styles.copyText}>General contributions — any amount is appreciated.</p>
       </SectionCard>
 
       <SectionCard className={styles.flatSection}>
@@ -190,11 +190,8 @@ export default async function DonationsPage() {
             <p className={styles.dedicationKicker}>Legacy Giving</p>
             <h2 className={styles.dedicationTitle}>Building and Space Dedications</h2>
             <p className={styles.copyText}>
-              Building spaces still available for dedication: Kitchen ($25,000); Library ($50,000); Synagogue Art
-              Exhibit Hall ($20,000); 1 of 2 Children&apos;s spaces ($25,000 each); Mekor Sanctuary & Event Space ($100,000).
-            </p>
-            <p className={styles.copyText}>
-              General contributions -- any amount is appreciated!
+              Create a lasting legacy by dedicating one of the spaces that supports prayer, learning, and community
+              life at Mekor.
             </p>
             <div className={styles.dedicationActions}>
               <a href="mailto:admin@mekorhabracha.org?subject=Dedication%20Opportunity" className={styles.dedicationButton}>

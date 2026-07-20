@@ -22,7 +22,7 @@ Deleted: hero raw payment links, "Donate by Card" promo card, "Quick Donation Li
 ## Donation flow
 - New reusable `components/ui/dialog.tsx` (Radix, styled to match `sheet.tsx` conventions).
 - `DonateExperience` client component owns: modal state, popular-ways grid, sticky button, `#donate` interception. The same `DonationCheckoutForm` renders inline and in the modal (remounted with a key when opened from a card).
-- **Copy**: badge "Secure donation intake" is removed. Form title defaults to **"Make a donation"**; a trust line "Tax-deductible · Secure checkout via Stripe" replaces the badge.
+- **Copy**: badge "Secure donation intake" is removed. Form title defaults to **"Make a donation"**; a trust line "Secure checkout via Stripe · Tax receipt when applicable" replaces the badge.
 - **Pre-fill**: existing `usePublicProfilePrefill` (name/email/phone from `/api/account/profile` when signed in) is kept and verified; works identically in the modal.
 - **New optional field**: "Dedication / in honor of" (`dedicationNote`, max 300 chars) → checkout API schema → Stripe session/payment-intent metadata → payments ledger metadata.
 - Three new designations in `lib/payments/shared.ts` with suggested amounts: **Memorial plaque** [$1,000], **Book dedication** [$100, $200], **Community dinner** [$1,800, $1,000]. The API accepts free-string designations, so this is config-only.

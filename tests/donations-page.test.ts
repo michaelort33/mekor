@@ -39,6 +39,8 @@ test("donate experience wires cards, modal, sticky pill, and #donate interceptio
   assert.match(experienceSource, /a\[href="#donate"\]/);
   assert.match(experienceSource, /DialogContent/);
   assert.match(experienceSource, /id="donate"/);
+  assert.match(experienceSource, /onCloseAutoFocus/);
+  assert.match(experienceSource, /openerRef\.current\?\.focus\(\)/);
   assert.match(waysSource, /href: "\/kiddush"/);
   const ways = (waysSource.match(/label: "/g) ?? []).length;
   assert.ok(ways >= 6, "expect at least six popular ways");
@@ -61,7 +63,7 @@ test("donation form speaks to donors and carries the dedication note", async () 
   const source = await readTextFile("components/payments/donation-checkout-form.tsx");
   assert.doesNotMatch(source, /Secure donation intake/i);
   assert.match(source, /Make a donation/);
-  assert.match(source, /Tax-deductible · Secure checkout via Stripe/);
+  assert.match(source, /Secure checkout via Stripe · Tax receipt when applicable/);
   assert.match(source, /Dedication \/ in honor of \(optional\)/);
   assert.match(source, /dedicationNote/);
   assert.match(source, /itemName/);

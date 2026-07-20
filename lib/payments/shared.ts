@@ -46,6 +46,8 @@ export const DESIGNATION_OPTIONS = [
   "Holiday appeal",
 ] as const;
 
+export type DonationDesignation = (typeof DESIGNATION_OPTIONS)[number];
+
 // Suggested quick-pick amounts (in cents) per designation. The first amount is
 // used as the default whenever a donor switches to that designation, so the
 // amount field no longer gets "stuck" on an unrelated value (e.g. $36 for a

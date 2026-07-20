@@ -14,7 +14,7 @@
 
 ## Global Constraints
 - Branch: `claude/donations-bulletin-redesign` (stacked on the nav branch; PR base = `claude/menu-redesign-implementation-151451`).
-- "Secure donation intake" must appear nowhere after the change; form title default becomes "Make a donation"; trust line "Tax-deductible · Secure checkout via Stripe".
+- "Secure donation intake" must appear nowhere after the change; form title default becomes "Make a donation"; trust line "Secure checkout via Stripe · Tax receipt when applicable".
 - New designations exactly: "Memorial plaque" `[100000]`, "Book dedication" `[10000, 20000]`, "Community dinner" `[180000, 100000]`.
 - `dedicationNote`: optional, trimmed, max 300; flows to Stripe session + payment-intent metadata and `recordPayment` metadata.
 - Sticky pill bottom-LEFT (feedback bubble owns bottom-right); hidden while modal open or inline form visible.
@@ -58,7 +58,7 @@ test("bulletin board shell copy speaks to members, not about content strategy", 
   assert.match(pageSource, /Community Essentials/);
   assert.match(pageSource, /kept up to date/);
   assert.match(contentSource, /label: "Essentials"/);
-  assert.match(homepageSource, /every standing notice, one click away/);
+  assert.match(homepageSource, /all in one place/);
   assert.match(newsletterSource, /always on the <strong>Mekor Bulletin Board<\/strong>/);
 });
 ```
@@ -171,7 +171,7 @@ export { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, Dia
 **Files:**
 - Modify: `components/payments/donation-checkout-form.tsx`, `tests/donations-page.test.ts` (add form assertions), `tests/donation-suggested-amounts.test.ts` (anchor swap from Task B)
 
-**Interfaces (produced):** new optional props `itemName?: string | null` (default null, sent in POST when set), `frameless?: boolean` (default false — modal usage skips the Card wrapper); new internal `dedicationNote` state + input labeled "Dedication / in honor of (optional)", sent in POST when non-empty; default `title` becomes "Make a donation"; Badge replaced by `<p>` trust line `Tax-deductible · Secure checkout via Stripe`.
+**Interfaces (produced):** new optional props `itemName?: string | null` (default null, sent in POST when set), `frameless?: boolean` (default false — modal usage skips the Card wrapper); new internal `dedicationNote` state + input labeled "Dedication / in honor of (optional)", sent in POST when non-empty; default `title` becomes "Make a donation"; Badge replaced by `<p>` trust line `Secure checkout via Stripe · Tax receipt when applicable`.
 
 - [ ] **Step D1:** Add to `tests/donations-page.test.ts`:
 
@@ -180,7 +180,7 @@ test("donation form speaks to donors and carries the dedication note", async () 
   const source = await readTextFile("components/payments/donation-checkout-form.tsx");
   assert.doesNotMatch(source, /Secure donation intake/i);
   assert.match(source, /Make a donation/);
-  assert.match(source, /Tax-deductible · Secure checkout via Stripe/);
+  assert.match(source, /Secure checkout via Stripe · Tax receipt when applicable/);
   assert.match(source, /Dedication \/ in honor of \(optional\)/);
   assert.match(source, /dedicationNote/);
   assert.match(source, /itemName/);

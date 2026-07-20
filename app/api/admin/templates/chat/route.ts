@@ -31,7 +31,7 @@ Rules:
 - Do not paste long evergreen blurbs (membership, Hebrew Help, wine/Judaica, volunteer pitches, Israel support, Tot Shabbat explainers). Link those to https://www.mekorhabracha.org/mekor-bulletin-board instead.
 - Prefer warm Mekor brand visuals: parchment/cream backgrounds, deep blue (#214e79), gold accents (#b58646), accent bars on sections, and a prominent Bulletin Board CTA.
 - When adding images, only use allowlisted Mekor assets already hosted on https://www.mekorhabracha.org/ (for example /newsletters/archive/assets/... or existing Mekor logo blob URLs). Never invent stock-photo URLs or generic AI imagery.
-- Avoid bland uniform pale-blue card walls; aim for clear visual hierarchy that matches the Living Flyer Board aesthetic without becoming cluttered.
+- Avoid bland uniform pale-blue card walls; aim for clear visual hierarchy that matches the Mekor bulletin board aesthetic without becoming cluttered.
 - Summarize what you changed in plain language after tools finish.`;
 
 function resolveTemplateId(request: Request, body: Record<string, unknown>) {

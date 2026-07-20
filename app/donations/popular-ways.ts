@@ -1,9 +1,11 @@
+import type { DonationDesignation } from "@/lib/payments/shared";
+
 export type PopularWay = {
   label: string;
   note: string;
   /** When set, the card links out (e.g. the guided Kiddush page) instead of opening the modal. */
   href?: string;
-  designation?: string;
+  designation?: DonationDesignation;
   amountCents?: number;
 };
 

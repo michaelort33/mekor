@@ -163,7 +163,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
           "General contributions of any amount",
         ],
         paragraphs: [
-          "All contributions are tax-deductible and acknowledged by letter.",
+          "Contributions are acknowledged, and tax receipts are issued when applicable.",
           "For dedication details or custom giving options, email the shul office.",
         ],
         links: [{ label: "Email the Shul", href: "mailto:mekorhabracha@gmail.com" }],

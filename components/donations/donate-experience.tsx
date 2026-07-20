@@ -25,6 +25,7 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
   const [inlineVisible, setInlineVisible] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const inlineRef = useRef<HTMLElement | null>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
@@ -34,6 +35,7 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
       const anchor = target?.closest?.('a[href="#donate"]');
       if (!anchor) return;
       event.preventDefault();
+      openerRef.current = anchor as HTMLElement;
       setSelected(null);
       setOpen(true);
     }
@@ -60,7 +62,8 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
     };
   }, []);
 
-  function openWay(way: PopularWay) {
+  function openWay(way: PopularWay, opener: HTMLElement) {
+    openerRef.current = opener;
     setSelected(way);
     setOpen(true);
   }
@@ -96,7 +99,7 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
               key={way.label}
               type="button"
               aria-haspopup="dialog"
-              onClick={() => openWay(way)}
+              onClick={(event) => openWay(way, event.currentTarget)}
               className={cardClassName}
             >
               {body}
@@ -110,7 +113,12 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            openerRef.current?.focus();
+          }}
+        >
           <DialogTitle className="sr-only">Make a donation</DialogTitle>
           <DialogDescription className="sr-only">Choose an amount and continue to secure checkout.</DialogDescription>
           <DonationCheckoutForm
@@ -128,7 +136,8 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
       <button
         type="button"
         aria-haspopup="dialog"
-        onClick={() => {
+        onClick={(event) => {
+          openerRef.current = event.currentTarget;
           setSelected(null);
           setOpen(true);
         }}

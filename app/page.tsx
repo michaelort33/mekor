@@ -252,8 +252,7 @@ export default function HomePage() {
               <p className={styles.bulletinEyebrow}>Community board</p>
               <h2 id="home-bulletin-title">Bulletin Board</h2>
               <p>
-                Tot Shabbat, Hebrew Help, membership, Eruv support, classes, and neighborly offers — every standing
-                notice, one click away.
+                Tot Shabbat, Hebrew Help, membership, Eruv support, classes, and neighborly offers — all in one place.
               </p>
               <Link href="/mekor-bulletin-board" className={styles.bulletinCta}>
                 View the Bulletin Board

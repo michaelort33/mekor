@@ -8,14 +8,15 @@ async function readTextFile(relativePath: string) {
 }
 
 test("bulletin board shell copy speaks to members, not about content strategy", async () => {
-  const [pageSource, contentSource, homepageSource, newsletterSource] = await Promise.all([
+  const [pageSource, contentSource, homepageSource, newsletterSource, studioPromptSource] = await Promise.all([
     readTextFile("app/mekor-bulletin-board/page.tsx"),
     readTextFile("app/mekor-bulletin-board/content.ts"),
     readTextFile("app/page.tsx"),
     readTextFile("lib/newsletter/weekly-cleaned.ts"),
+    readTextFile("app/api/admin/templates/chat/route.ts"),
   ]);
 
-  for (const source of [pageSource, homepageSource, newsletterSource]) {
+  for (const source of [pageSource, homepageSource, newsletterSource, studioPromptSource]) {
     assert.doesNotMatch(source, /Living Flyer Board/i);
     assert.doesNotMatch(source, /stays? focused/);
   }
@@ -24,6 +25,6 @@ test("bulletin board shell copy speaks to members, not about content strategy", 
   assert.match(pageSource, /Community Essentials/);
   assert.match(pageSource, /kept up to\s+date/);
   assert.match(contentSource, /label: "Essentials"/);
-  assert.match(homepageSource, /every standing\s+notice, one click away/);
+  assert.match(homepageSource, /all in one place/);
   assert.match(newsletterSource, /always on the <strong>Mekor Bulletin Board<\/strong>/);
 });
