@@ -20,6 +20,13 @@ import type {
   NativeGeneratedRouteData,
   NativeTemplateRecord,
 } from "@/lib/content/types";
+import {
+  HAND_AUTHORED_DOCUMENTS,
+  HAND_AUTHORED_INDEX,
+  HAND_AUTHORED_ROUTES,
+  HAND_AUTHORED_SEARCH,
+  HAND_AUTHORED_TEMPLATES,
+} from "@/lib/content/hand-authored";
 
 const OUTPUT_DIR = path.join(process.cwd(), "lib/content/generated");
 const DOCUMENT_TYPES: NativeDocumentType[] = [
@@ -54,6 +61,27 @@ function toDocumentRecord(document: NativePageDocument): NativeContentDocument {
 
 function sortByPath<T extends { path: string }>(rows: T[]): T[] {
   return rows.slice().sort((a, b) => a.path.localeCompare(b.path));
+}
+
+function mergeByPath<T extends { path: string }>(generated: T[], handAuthored: T[]): T[] {
+  const records = new Map(generated.map((record) => [record.path, record]));
+  for (const record of handAuthored) {
+    records.set(record.path, record);
+  }
+  return sortByPath([...records.values()]);
+}
+
+function mergeTemplates(
+  generated: NativeTemplateRecord[],
+  handAuthored: NativeTemplateRecord[],
+): NativeTemplateRecord[] {
+  const records = new Map(generated.map((record) => [record.document.path, record]));
+  for (const record of handAuthored) {
+    records.set(record.document.path, record);
+  }
+  return [...records.values()].sort((a, b) =>
+    a.document.path.localeCompare(b.document.path),
+  );
 }
 
 async function loadAllDocuments() {
@@ -118,11 +146,21 @@ async function main() {
     getNativeSearchIndex(),
   ]);
 
-  const documentRecords = sortByPath(allDocuments.map((document) => toDocumentRecord(document)));
-  const templateRecords = templateResults
-    .filter((row): row is NativeTemplateRecord => Boolean(row))
-    .sort((a, b) => a.document.path.localeCompare(b.document.path));
-  const routeData: NativeGeneratedRouteData = routes;
+  const documentRecords = mergeByPath(
+    allDocuments.map((document) => toDocumentRecord(document)),
+    HAND_AUTHORED_DOCUMENTS,
+  );
+  const templateRecords = mergeTemplates(
+    templateResults.filter((row): row is NativeTemplateRecord => Boolean(row)),
+    HAND_AUTHORED_TEMPLATES,
+  );
+  const contentIndex = mergeByPath(index, HAND_AUTHORED_INDEX);
+  const routeData: NativeGeneratedRouteData = {
+    ...routes,
+    canonical: mergeByPath(routes.canonical, HAND_AUTHORED_ROUTES.canonical),
+    reachable: mergeByPath(routes.reachable, HAND_AUTHORED_ROUTES.reachable),
+  };
+  const searchRecords = mergeByPath(search, HAND_AUTHORED_SEARCH);
 
   await Promise.all([
     fs.writeFile(
@@ -137,7 +175,7 @@ async function main() {
     ),
     fs.writeFile(
       path.join(OUTPUT_DIR, "index.json"),
-      JSON.stringify(index, null, 2) + "\n",
+      JSON.stringify(contentIndex, null, 2) + "\n",
       "utf8",
     ),
     fs.writeFile(
@@ -147,7 +185,7 @@ async function main() {
     ),
     fs.writeFile(
       path.join(OUTPUT_DIR, "search.json"),
-      JSON.stringify(search, null, 2) + "\n",
+      JSON.stringify(searchRecords, null, 2) + "\n",
       "utf8",
     ),
   ]);

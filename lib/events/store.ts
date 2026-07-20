@@ -55,10 +55,11 @@ export function toManagedEvent(row: {
   registrationDeadline?: Date | null;
   signupEnabled?: boolean | null;
 }): ManagedEvent {
+  const now = new Date();
   const startAt = row.startAt ? row.startAt.toISOString() : null;
   const endAt = row.endAt ? row.endAt.toISOString() : null;
   const registrationDeadline = row.registrationDeadline ? row.registrationDeadline.toISOString() : null;
-  const status = getEventStatus({ startAt, endAt });
+  const status = getEventStatus({ startAt, endAt }, now);
   const isPast = status === "past";
 
   return {
@@ -72,7 +73,7 @@ export function toManagedEvent(row: {
     summary: readSourceSummary(row.sourceJson),
     startAt,
     endAt,
-    isClosed: isEventClosed({ startAt, endAt, isClosed: row.isClosed }),
+    isClosed: isEventClosed({ startAt, endAt, isClosed: row.isClosed }, now),
     isPast,
     status,
     featured: row.sourceJson?.featured === true,
@@ -82,7 +83,7 @@ export function toManagedEvent(row: {
       isClosed: row.isClosed,
       signupEnabled: row.signupEnabled ?? true,
       registrationDeadline,
-    }),
+    }, now),
     registrationDeadline,
   };
 }

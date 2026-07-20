@@ -3,6 +3,15 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 
+import {
+  HAND_AUTHORED_DOCUMENTS,
+  HAND_AUTHORED_INDEX,
+  HAND_AUTHORED_ROUTES,
+  HAND_AUTHORED_SEARCH,
+  HAND_AUTHORED_TEMPLATES,
+} from "../lib/content/hand-authored";
+import { TISHA_BAV_5786_EVENT } from "../lib/events/tisha-bav-5786";
+
 const EVENT_PATH = "/events-1/tisha-bav-5786";
 
 async function readJsonFile<T>(relativePath: string) {
@@ -92,14 +101,28 @@ test("Tisha B'Av 5786 template preserves the flyer schedule verbatim", async () 
 
 test("Tisha B'Av DB script stores instant-correct Eastern-time boundaries", async () => {
   const script = await readTextFile("scripts/db/add-tisha-bav-5786-event.ts");
-  assert.match(script, /2026-07-22T20:15:00-04:00/, "start = Mincha, Wed 8:15 PM EDT");
-  assert.match(script, /2026-07-23T20:57:00-04:00/, "end = Fast Ends, Thu 8:57 PM EDT");
-  assert.match(script, /featured:\s*true/);
+  assert.equal(TISHA_BAV_5786_EVENT.startAt, "2026-07-22T20:15:00-04:00");
+  assert.equal(TISHA_BAV_5786_EVENT.endAt, "2026-07-23T20:57:00-04:00");
+  assert.equal(TISHA_BAV_5786_EVENT.featured, true);
+  assert.match(script, /TISHA_BAV_5786_EVENT/);
   assert.doesNotMatch(
     script,
     /new Date\(\s*2026\s*,/,
     "machine-local Date construction is not instant-safe",
   );
+});
+
+test("content generation keeps the hand-authored event in every bundle", async () => {
+  assert.equal(HAND_AUTHORED_DOCUMENTS.filter((row) => row.path === EVENT_PATH).length, 1);
+  assert.equal(HAND_AUTHORED_INDEX.filter((row) => row.path === EVENT_PATH).length, 1);
+  assert.equal(HAND_AUTHORED_TEMPLATES.filter((row) => row.document.path === EVENT_PATH).length, 1);
+  assert.equal(HAND_AUTHORED_ROUTES.canonical.filter((row) => row.path === EVENT_PATH).length, 1);
+  assert.equal(HAND_AUTHORED_SEARCH.filter((row) => row.path === EVENT_PATH).length, 1);
+
+  const generator = await readTextFile("scripts/content/generate-native-content.ts");
+  assert.match(generator, /HAND_AUTHORED_DOCUMENTS/);
+  assert.match(generator, /HAND_AUTHORED_TEMPLATES/);
+  assert.match(generator, /HAND_AUTHORED_ROUTES/);
 });
 
 test("homepage events section stays data-driven and zone-pinned", async () => {

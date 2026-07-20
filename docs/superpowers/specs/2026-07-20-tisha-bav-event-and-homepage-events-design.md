@@ -18,8 +18,9 @@ Status: Approved for autonomous implementation (detailed spec supplied by user; 
   `managedEventContractSchema` (`lib/native/contracts.ts`). Consumed by the homepage
   (`app/page.tsx` → `HomeUpcomingEvents`) and the Events hub (`app/events/page.tsx` →
   `EventsCalendar`). No duplicated homepage content.
-- **Detail pages:** `/events-1/<slug>` renders `EventTemplate` from hand-authorable
-  generated bundles (`lib/content/generated/{documents,index,templates,routes,search}.json`),
+- **Detail pages:** `/events-1/<slug>` renders `EventTemplate` from generated bundles
+  (`lib/content/generated/{documents,index,templates,routes,search}.json`). Hand-authored
+  event definitions are merged into those bundles by `content:generate`,
   statically imported by `lib/content/native-content.ts`. The route resolves only if
   `routes.json` lists the path as canonical. Precedent: "An Evening with Yaakov Zimmerman"
   (`scripts/db/add-zimmerman-event.ts` + bundle entries).
@@ -30,7 +31,8 @@ Status: Approved for autonomous implementation (detailed spec supplied by user; 
 - **Past events access:** Events hub month view splits upcoming/past with a keyboard-operable
   `Past (n)` accordion (`aria-expanded`/`aria-controls`). Homepage never shows past events.
 - **Admin:** `app/admin/events` manages registrations only; event records are created by
-  idempotent scripts + content bundle edits (site is mid-migration off Wix; no CMS UI yet).
+  idempotent scripts plus canonical hand-authored definitions that feed content generation
+  (site is mid-migration off Wix; no CMS UI yet).
 
 ## Gaps found (verified against installed drizzle/postgres sources and live data)
 
@@ -47,7 +49,7 @@ Status: Approved for autonomous implementation (detailed spec supplied by user; 
 
 ## Design decisions
 
-### D1. Add Tisha B'Av 5786 via the established pattern (script + bundles)
+### D1. Add Tisha B'Av 5786 from one canonical definition
 
 - `scripts/db/add-tisha-bav-5786-event.ts`, upsert keyed on path (Zimmerman precedent), with:
   - slug `tisha-bav-5786`, path `/events-1/tisha-bav-5786`, title `Tisha B'Av 5786`
@@ -55,13 +57,14 @@ Status: Approved for autonomous implementation (detailed spec supplied by user; 
     `endAt = 2026-07-23T20:57:00-04:00` (Fast Ends 8:57 PM) → the event stays in the
     upcoming/ongoing views through the end of the fast, then drops off automatically.
   - `shortDate "Jul 22–23, 2026"`, `timeLabel "Wed 8:15 PM – Thu 8:57 PM"`,
-    `location "Mekor Habracha · Center City Synagogue"` (the flyer names only the synagogue;
+    `location "Mekor Habracha / Center City Synagogue"` (the flyer names only the synagogue;
     no street address is invented on the event record).
   - `sourceJson`: `heroImage: ""` (flyer images are not available as files in this session —
     no image is fabricated), canonical path, description summarizing only flyer content,
     `featured: true`, plus the full two-day `schedule` copied verbatim from the flyers.
-- Bundle entries in all five generated JSONs mirroring the Zimmerman shape, so the detail
-  page resolves (routes canonical), is searchable, and is in the events sitemap.
+- `lib/events/tisha-bav-5786.ts` is the canonical definition used by both the DB seed and
+  `lib/content/hand-authored.ts`; `content:generate` merges the derived records into all five
+  generated JSON bundles, so the detail page resolves, is searchable, and enters the sitemap.
 - Detail page content: full schedule preserved exactly, rendered as a structured schedule
   (see D4), with a short factual intro. Registration/signup stays enabled-by-default like
   other events (the signup panel is feature-flagged site-wide and independent of this event).
@@ -106,10 +109,8 @@ Status: Approved for autonomous implementation (detailed spec supplied by user; 
 
 ### D5. Out of scope (proposed follow-ups, documented in PR)
 
-- Admin CRUD UI for events (would replace the script+bundle authoring path; at that point
+- Admin CRUD UI for events (would replace the script+definition authoring path; at that point
   promote `featured` to a real column and add `cancelled`).
-- Merging hand-authored events into `content:generate` inputs so bundle regeneration cannot
-  drop them (regeneration is currently rare; Zimmerman has the same exposure today).
 - Registration links to external systems (no such link exists on the flyers).
 
 ## Testing
@@ -125,8 +126,8 @@ House style is node:test with pure-function and source-regex tests (nav contract
 5. Homepage source contract: featured card markup is data-driven (no hard-coded event
    strings in `app/page.tsx`).
 
-Baseline note: 4 test files currently fail in this worktree due to a placeholder
-`DATABASE_URL` (ENOTFOUND host) — pre-existing, tracked as the comparison baseline.
+Review validation: the secretless suite completes with 263 tests, 261 passing and two
+database-dependent skips.
 
 ## Assumptions (flyer data was complete; nothing else invented)
 

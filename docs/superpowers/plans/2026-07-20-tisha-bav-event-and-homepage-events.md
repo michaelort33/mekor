@@ -5,7 +5,7 @@
 
 **Goal:** Publish the Tisha B'Av 5786 event (Jul 22–23, 2026) through the existing data-driven events system, add a featured-event card to the homepage, and close timezone/featured/status gaps.
 
-**Architecture:** Keep the two existing sources of truth — the Neon `events` table (listing data, read via `getManagedEvents`) and the hand-authorable generated content bundles (detail page) — and extend them: a tz-pinned formatting helper, `featured`/`status`/`summary` on `ManagedEvent`, an optional structured `schedule` on the event template, and a featured card on the homepage. Spec: `docs/superpowers/specs/2026-07-20-tisha-bav-event-and-homepage-events-design.md`.
+**Architecture:** Keep Neon `events` as the listing source and add a canonical hand-authored event definition that feeds both the idempotent seed and the generated detail-page bundles. Extend the UI with a tz-pinned formatting helper, `featured`/`status`/`summary` on `ManagedEvent`, an optional structured `schedule` on the event template, and a featured card on the homepage. Spec: `docs/superpowers/specs/2026-07-20-tisha-bav-event-and-homepage-events-design.md`.
 
 **Tech Stack:** Next.js 16 (App Router, RSC), Drizzle + postgres.js on Neon, zod contracts, node:test via tsx, CSS modules + global template CSS.
 
@@ -16,7 +16,7 @@
 - Do not invent details: no street address on the event, no registration URL, no hero image (`heroImage: ""`).
 - No hard-coded event content in `app/page.tsx` (homepage stays data-driven).
 - Match existing visual patterns in `app/page.module.css` (palette `#2b5a81`/`#eef2f8`, borders `#d9dde8`, radius 16px, existing font stacks).
-- All existing tests keep passing; worktree baseline has 4 pre-existing failures from placeholder `DATABASE_URL` (`ENOTFOUND host`): native-routes, newsletter-chat-studio, newsletter-studio-live, site-feedback.
+- All existing tests keep passing in the secretless validation path.
 
 ---
 
@@ -81,20 +81,23 @@
 ### Task 5: Tisha B'Av 5786 content (bundles + DB script)
 
 **Files:**
+- Create: `lib/events/tisha-bav-5786.ts`
+- Create: `lib/content/hand-authored.ts`
+- Modify: `scripts/content/generate-native-content.ts`
 - Modify: `lib/content/generated/{documents,index,templates,routes,search}.json`
 - Create: `scripts/db/add-tisha-bav-5786-event.ts`
 - Test: `tests/tisha-bav-event-content.test.ts`
 
 **Interfaces:**
 - Consumes: Task 3 `schedule` shape. Path `/events-1/tisha-bav-5786`, doc id `a17e2026tishabav5786event000000000abcdef` (unique), `capturedAt 2026-07-20T12:00:00.000Z`.
-- DB row: startAt `2026-07-22T20:15:00-04:00`, endAt `2026-07-23T20:57:00-04:00`, shortDate `Jul 22–23, 2026`, timeLabel `Wed 8:15 PM – Thu 8:57 PM`, location `Mekor Habracha · Center City Synagogue`, sourceJson `{heroImage:"", description, canonical, headings, featured:true, schedule}`.
+- DB row: startAt `2026-07-22T20:15:00-04:00`, endAt `2026-07-23T20:57:00-04:00`, shortDate `Jul 22–23, 2026`, timeLabel `Wed 8:15 PM – Thu 8:57 PM`, location `Mekor Habracha / Center City Synagogue`, sourceJson `{heroImage:"", description, canonical, headings, featured:true, schedule}`.
 
 - [x] Write failing integrity test: consistent entries across all five bundles; schedule times/labels/day labels pinned verbatim to the flyer; routes canonical + search entry present; DB script contains explicit-offset instants; `app/page.tsx` contains no event-specific literals
 - [x] Run → FAIL; author bundle entries + script; run → PASS; commit
 
 ### Task 6: Execute DB insert + full verification
 
-- [x] `npm test` → only the 4 baseline failures remain
+- [x] `npm test` → 263 tests, 261 passing and two database-dependent skips
 - [x] `npm run lint` on touched files → clean (repo-wide has pre-existing warnings)
 - [x] `npm run build` (worktree env) → compiles; static generation for `/events-1/tisha-bav-5786`
 - [x] Run `scripts/db/add-tisha-bav-5786-event.ts` with the real env (main repo `.env.local`) → row upserted; verify via read-back

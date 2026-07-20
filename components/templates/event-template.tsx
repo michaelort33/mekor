@@ -7,9 +7,10 @@ import type { EventTemplateData } from "@/lib/templates/template-data";
 
 type EventTemplateProps = {
   data: EventTemplateData;
+  signupAuthenticated: boolean;
 };
 
-export function EventTemplate({ data }: EventTemplateProps) {
+export function EventTemplate({ data, signupAuthenticated }: EventTemplateProps) {
   const mapsHref = data.location
     ? `https://maps.google.com/?q=${encodeURIComponent(data.location)}`
     : null;
@@ -91,7 +92,12 @@ export function EventTemplate({ data }: EventTemplateProps) {
           ))}
         </section>
 
-        <EventSignupPanel eventId={data.eventId} isClosed={data.isClosed} isPast={data.isPast} />
+        <EventSignupPanel
+          eventId={data.eventId}
+          isClosed={data.isClosed}
+          isPast={data.isPast}
+          isAuthenticated={signupAuthenticated}
+        />
 
         <div className="template-card__source template-card__source--actions">
           <Link href={data.seeOtherEventsHref}>See other events</Link>

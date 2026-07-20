@@ -67,14 +67,20 @@ type EventSignupPanelProps = {
   eventId: number | null;
   isClosed: boolean;
   isPast?: boolean;
+  isAuthenticated: boolean;
 };
 
-export function EventSignupPanel({ eventId, isClosed, isPast = false }: EventSignupPanelProps) {
-  const [loading, setLoading] = useState(Boolean(eventId));
+export function EventSignupPanel({
+  eventId,
+  isClosed,
+  isPast = false,
+  isAuthenticated,
+}: EventSignupPanelProps) {
+  const [loading, setLoading] = useState(Boolean(eventId && isAuthenticated));
   const [feedLoading, setFeedLoading] = useState(Boolean(eventId));
   const [saving, setSaving] = useState(false);
   const [savingFeed, setSavingFeed] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(eventId && !isAuthenticated ? "Please log in to register." : "");
   const [notice, setNotice] = useState("");
   const [signupData, setSignupData] = useState<SignupData | null>(null);
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
@@ -112,6 +118,13 @@ export function EventSignupPanel({ eventId, isClosed, isPast = false }: EventSig
 
   async function loadSignup() {
     if (!eventId) {
+      setLoading(false);
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setError("Please log in to register.");
+      setSignupData(null);
       setLoading(false);
       return;
     }
@@ -169,7 +182,7 @@ export function EventSignupPanel({ eventId, isClosed, isPast = false }: EventSig
       setFeedLoading(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventId]);
+  }, [eventId, isAuthenticated]);
 
   async function register() {
     if (!eventId || !signupData) return;

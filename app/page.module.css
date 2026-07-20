@@ -784,11 +784,15 @@
 }
 
 .eventFeatureSummary {
+  display: -webkit-box;
   margin: 0;
+  overflow: hidden;
   color: #3c4358;
   font-family: helvetica-w01-light, Arial, sans-serif;
   font-size: 1rem;
   line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 .eventFeatureCta {
