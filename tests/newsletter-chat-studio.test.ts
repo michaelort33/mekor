@@ -88,10 +88,37 @@ test("studio preview and persistence keep editable HTML isolated", async () => {
   assert.doesNotMatch(studio, /chatDrawer/);
   assert.match(studio, /method: "PATCH"/);
   assert.match(studio, /saveQueueRef\.current\.then/);
-  assert.match(studio, /const saved = await persistHtml\(html, subject\);\s+if \(!saved\) return;/);
+  assert.match(studio, /const saved = await persistHtml\(html, subject\);/);
+  assert.match(studio, /if \(!saved\) \{\s+setSendPhase\("idle"\);\s+return;\s+\}/);
   assert.match(studio, /saveTimerRef\.current = setTimeout\(\(\) => \{\s+void persistHtml\(nextHtml\);/);
   assert.match(templateRoute, /export async function PATCH/);
   assert.match(templateRoute, /bodyHtml: sanitizeNewsletterHtml\(body\.bodyHtml\)/);
+});
+
+test("studio send flow shows guidance, campaign history table, and uses campaignId feedback", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const [studio, studioPage, campaignsRoute, history, steps] = await Promise.all([
+    readFile("app/admin/templates/[id]/studio/studio-client.tsx", "utf8"),
+    readFile("app/admin/templates/[id]/studio/page.tsx", "utf8"),
+    readFile("app/api/admin/templates/campaigns/route.ts", "utf8"),
+    readFile("components/admin/newsletter-campaign-history.tsx", "utf8"),
+    readFile("components/admin/newsletter-flow-steps.tsx", "utf8"),
+  ]);
+
+  assert.match(studioPage, /fromNew=\{fromNew\}/);
+  assert.match(studio, /NewsletterFlowSteps/);
+  assert.match(studio, /id="newsletter-send"/);
+  assert.match(studio, /NewsletterCampaignHistory/);
+  assert.match(studio, /highlightCampaignId/);
+  assert.match(studio, /payload\.campaignId/);
+  assert.match(studio, /fromNew \? "michael_test" : null/);
+  assert.match(studio, /Creating campaign and delivering via SendGrid/);
+  assert.match(history, /<table className=\{styles\.table\}>/);
+  assert.match(history, /\/api\/admin\/templates\/campaigns\?templateId=/);
+  assert.match(history, /Show recipients/);
+  assert.match(steps, /Review & polish/);
+  assert.match(steps, /Send/);
+  assert.match(campaignsRoute, /length < 100/);
 });
 
 test("newsletter AI turns are saved and restored as template history", async () => {
@@ -132,6 +159,7 @@ test("Michael test list is server-resolved to one confirmed subscriber", async (
   assert.equal(list.name, "Michael test list");
   assert.deepEqual(list.emails, ["michaelort@hyatus.com"]);
   assert.match(studio, /recipientGroup: recipientListKey \? "recipient_list" : "selected"/);
+  assert.match(studio, /Michael test list/);
   assert.match(sendRoute, /getNewsletterRecipientList/);
   assert.match(sendRoute, /Test recipient is not a confirmed weekly subscriber/);
 });

@@ -211,6 +211,50 @@
   background: #ffffff;
 }
 
+.fromNewBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid #9fc0dc;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #eef6fc, #f7fbff);
+}
+
+.fromNewBanner strong {
+  display: block;
+  color: var(--studio-ink);
+  font-size: 0.98rem;
+}
+
+.fromNewBanner p {
+  margin: 4px 0 0;
+  color: var(--studio-muted);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  max-width: 62ch;
+}
+
+.sendSection {
+  display: grid;
+  gap: 12px;
+  scroll-margin-top: 18px;
+}
+
+.sendSectionHeader {
+  display: grid;
+  gap: 4px;
+  padding: 2px 2px 0;
+}
+
+.sendSectionTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--studio-ink);
+}
+
 .sendBar {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) auto;
@@ -220,6 +264,44 @@
   border: 1px solid var(--studio-line);
   border-radius: 16px;
   background: linear-gradient(180deg, #ffffff, #f5f8fb);
+}
+
+.sendProgress,
+.sendProgressDone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.sendProgress {
+  color: #173f61;
+  background: #eaf3fb;
+  border: 1px solid #b9d0e4;
+}
+
+.sendProgressDone {
+  color: #1f6b45;
+  background: #e8f6ee;
+  border: 1px solid #b5dcc5;
+}
+
+.sendSpinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(31, 79, 120, 0.25);
+  border-top-color: #1f4f78;
+  animation: studioSpin 0.8s linear infinite;
+}
+
+@keyframes studioSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .sendFields {

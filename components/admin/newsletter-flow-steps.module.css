@@ -1,0 +1,86 @@
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0 0 20px;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  border: 1px solid #d7e0e8;
+  border-radius: 14px;
+  background: #d7e0e8;
+}
+
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 66px;
+  padding: 12px 14px;
+  color: #708092;
+  background: #f7f9fb;
+}
+
+.steps li > span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #c5d1dd;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.steps li div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.steps strong {
+  color: inherit;
+  font-size: 0.83rem;
+}
+
+.steps small {
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
+.activeStep {
+  color: #173f61;
+  background: #edf5fb;
+}
+
+.activeStep > span {
+  border-color: #1f5f91;
+  color: #fff;
+  background: #1f5f91;
+}
+
+.completeStep {
+  color: #39704d;
+  background: #f0f7f2;
+}
+
+.completeStep > span {
+  border-color: #39704d;
+}
+
+@media (max-width: 900px) {
+  .steps {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+
+  .steps li {
+    min-height: 54px;
+  }
+}

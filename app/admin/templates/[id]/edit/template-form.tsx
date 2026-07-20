@@ -443,7 +443,7 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
       actions={
         <>
           <Link href={`/admin/templates/${template.id}/studio`} className={adminStyles.actionPill}>
-            Open Chat Studio
+            Open Studio
           </Link>
           <Link href="/admin/templates" className={adminStyles.actionPill}>
             Back to templates

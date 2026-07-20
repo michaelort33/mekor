@@ -34,6 +34,14 @@
   color: #5a6a7a;
 }
 
+.intro {
+  margin: 0 0 18px;
+  max-width: 70ch;
+  color: #4a5d70;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 .createButton {
   display: inline-flex;
   align-items: center;
