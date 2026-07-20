@@ -3,15 +3,15 @@ import test from "node:test";
 
 import { SITE_MENU, isNavGroup } from "../lib/navigation/site-menu";
 
-test("more menu includes Past Newsletters", () => {
-  const moreGroup = SITE_MENU.find((item) => item.label === "More");
+test("community menu includes Past Newsletters", () => {
+  const communityGroup = SITE_MENU.find((item) => item.label === "Community");
 
-  assert.ok(moreGroup);
-  assert.equal(isNavGroup(moreGroup), true);
-  if (!isNavGroup(moreGroup)) return;
+  assert.ok(communityGroup);
+  assert.equal(isNavGroup(communityGroup), true);
+  if (!isNavGroup(communityGroup)) return;
 
   assert.equal(
-    moreGroup.children.some((child) => child.href === "/newsletters" && child.label === "Past Newsletters"),
+    communityGroup.children.some((child) => child.href === "/newsletters" && child.label === "Past Newsletters"),
     true,
   );
 });

@@ -4,7 +4,7 @@ import path from "node:path";
 import { getNativeSearchIndex } from "@/lib/native-content/content-loader";
 import { isHiddenContentPath } from "@/lib/content/hidden-paths";
 import type { NativeDocumentType } from "@/lib/content/types";
-import { SITE_MENU, isNavGroup } from "@/lib/navigation/site-menu";
+import { GIVE_MENU, MEMBERS_MENU, SITE_MENU, isNavGroup } from "@/lib/navigation/site-menu";
 
 export type UniversalSearchDocument = {
   path: string;
@@ -116,6 +116,12 @@ function buildMenuLabelMap() {
       if (childPath && !map.has(childPath)) {
         map.set(childPath, child.label);
       }
+    }
+  }
+  for (const link of [...GIVE_MENU, ...MEMBERS_MENU]) {
+    const linkPath = normalizePathname(link.href);
+    if (linkPath && !map.has(linkPath)) {
+      map.set(linkPath, link.label);
     }
   }
   return map;
