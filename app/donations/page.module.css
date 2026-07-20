@@ -112,14 +112,18 @@
   font-weight: 700;
   letter-spacing: -0.01em;
   color: #1a2a3a;
-}.bulletList {
+}
+
+.bulletList {
   margin: 0;
   padding-left: 1.16rem;
   display: grid;
   gap: 8px;
   color: #445262;
   line-height: 1.64;
-}.affiliateCard {
+}
+
+.affiliateCard {
   overflow: hidden;
   background: #f7f5f1;
 }
@@ -231,7 +235,9 @@
   .affiliateButtons {
     min-width: 0;
   }
-}.splitPanel :global(h2) {
+}
+
+.splitPanel :global(h2) {
   color: #1f3349;
   font-size: clamp(1.8rem, 2.3vw, 2.35rem);
   line-height: 1.1;
@@ -241,7 +247,9 @@
 .splitPanel :global(p) {
   color: #435262;
   line-height: 1.72;
-}.dedicationButton,
+}
+
+.dedicationButton,
 .dedicationButtonSecondary {
   display: inline-flex;
   align-items: center;
@@ -372,7 +380,6 @@
     justify-self: end;
   }
 }
-
 
 @media (max-width: 760px) {
   .stack {

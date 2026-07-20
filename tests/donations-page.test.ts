@@ -24,8 +24,10 @@ test("popular-ways designations exist with their spec amounts", () => {
 test("checkout API accepts and forwards a dedication note", async () => {
   const source = await readTextFile("app/api/donations/checkout/route.ts");
   assert.match(source, /dedicationNote: z\.string\(\)\.trim\(\)\.max\(300\)\.default\(""\)/);
-  const metadataMentions = source.match(/dedicationNote/g) ?? [];
-  assert.ok(metadataMentions.length >= 4, "dedicationNote must reach session, intent, and ledger metadata");
+  const spreadSites = source.match(/\.\.\.\(parsed\.data\.dedicationNote \? \{ dedicationNote: parsed\.data\.dedicationNote \} : \{\}\)/g) ?? [];
+  assert.equal(spreadSites.length, 4, "dedicationNote must reach session, payment-intent, recordPayment, and ledger metadata");
+  const intentBlock = source.slice(source.indexOf("payment_intent_data"), source.indexOf("line_items"));
+  assert.match(intentBlock, /dedicationNote/);
 });
 
 test("donate experience wires cards, modal, sticky pill, and #donate interception", async () => {

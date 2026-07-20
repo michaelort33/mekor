@@ -28,6 +28,8 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const target = event.target as Element | null;
       const anchor = target?.closest?.('a[href="#donate"]');
       if (!anchor) return;
@@ -43,11 +45,12 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
     const sentinel = sentinelRef.current;
     const inline = inlineRef.current;
     if (!sentinel || !inline) return;
-    const sentinelObserver = new IntersectionObserver(([entry]) => {
+    const sentinelObserver = new IntersectionObserver((entries) => {
+      const entry = entries[entries.length - 1];
       setHeroPassed(!entry.isIntersecting && entry.boundingClientRect.top < 0);
     });
-    const inlineObserver = new IntersectionObserver(([entry]) => {
-      setInlineVisible(entry.isIntersecting);
+    const inlineObserver = new IntersectionObserver((entries) => {
+      setInlineVisible(entries[entries.length - 1].isIntersecting);
     });
     sentinelObserver.observe(sentinel);
     inlineObserver.observe(inline);
@@ -89,7 +92,13 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
             );
           }
           return (
-            <button key={way.label} type="button" onClick={() => openWay(way)} className={cardClassName}>
+            <button
+              key={way.label}
+              type="button"
+              aria-haspopup="dialog"
+              onClick={() => openWay(way)}
+              className={cardClassName}
+            >
               {body}
             </button>
           );
@@ -97,7 +106,7 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
       </div>
 
       <section id="donate" ref={inlineRef} aria-label="Make a donation" className="scroll-mt-28">
-        <DonationCheckoutForm returnPath="/donations" showSuggestedAmounts />
+        <DonationCheckoutForm returnPath="/donations" showSuggestedAmounts defaultAmountCents={3600} />
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -118,6 +127,7 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
 
       <button
         type="button"
+        aria-haspopup="dialog"
         onClick={() => {
           setSelected(null);
           setOpen(true);

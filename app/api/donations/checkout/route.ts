@@ -73,6 +73,7 @@ export async function POST(request: Request) {
         donorName: parsed.data.donorName,
         donorEmail: parsed.data.donorEmail,
         donorPhone: parsed.data.donorPhone,
+        ...(parsed.data.dedicationNote ? { dedicationNote: parsed.data.dedicationNote } : {}),
       },
     },
     line_items: [

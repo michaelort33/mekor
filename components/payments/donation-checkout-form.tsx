@@ -102,7 +102,13 @@ export function DonationCheckoutForm({
         ...(itemName ? { itemName } : {}),
         ...(dedicationNote.trim() ? { dedicationNote: dedicationNote.trim() } : {}),
       }),
-    });
+    }).catch(() => null);
+
+    if (!response) {
+      setError("Unable to reach checkout. Check your connection and try again.");
+      setLoading(false);
+      return;
+    }
 
     const payload = (await response.json().catch(() => ({}))) as { error?: string; url?: string };
     if (!response.ok || !payload.url) {
