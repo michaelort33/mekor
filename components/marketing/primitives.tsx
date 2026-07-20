@@ -82,17 +82,19 @@ function RenderLink({
   className,
   style,
   brand,
+  title,
   children,
 }: {
   href: string;
   className?: string;
   style?: CSSProperties;
   brand?: LinkBrand;
+  title?: string;
   children: ReactNode;
 }) {
   if (href.startsWith("/") && !href.startsWith("//")) {
     return (
-      <Link href={href} className={className} style={style} data-brand={brand}>
+      <Link href={href} className={className} style={style} data-brand={brand} title={title}>
         {children}
       </Link>
     );
@@ -104,6 +106,7 @@ function RenderLink({
       className={className}
       style={style}
       data-brand={brand}
+      title={title}
       target={isHttpLink(href) ? "_blank" : undefined}
       rel={isHttpLink(href) ? "noreferrer noopener" : undefined}
     >
@@ -210,10 +213,10 @@ function LinkBrandMark({ brand }: { brand: LinkBrand }) {
 type BrandedLinkProps = CtaItem & {
   className?: string;
   compact?: boolean;
-  dense?: boolean;
+  iconOnly?: boolean;
 };
 
-export function BrandedLink({ label, href, description, brand, className, compact = false, dense = false }: BrandedLinkProps) {
+export function BrandedLink({ label, href, description, brand, className, compact = false, iconOnly = false }: BrandedLinkProps) {
   const external = isHttpLink(href);
   const effectiveBrand = brand ?? (external ? "website" : undefined);
   const meta = effectiveBrand ? LINK_BRAND_META[effectiveBrand] : undefined;
@@ -224,10 +227,11 @@ export function BrandedLink({ label, href, description, brand, className, compac
       href={href}
       brand={effectiveBrand}
       style={style}
+      title={iconOnly ? label : undefined}
       className={cn(
         brandStyles.link,
         compact && brandStyles.compact,
-        dense && brandStyles.dense,
+        iconOnly && brandStyles.iconOnly,
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]",
         className,
       )}
