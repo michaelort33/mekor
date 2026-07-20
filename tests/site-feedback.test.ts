@@ -20,6 +20,8 @@ test("feedback system prompt forbids Q&A and knowledge-base answers", () => {
   assert.match(FEEDBACK_SYSTEM_PROMPT, /ask-mekor/i);
   assert.match(FEEDBACK_SYSTEM_PROMPT, /contact-us/i);
   assert.match(FEEDBACK_SYSTEM_PROMPT, /saveSuggestion/);
+  assert.match(FEEDBACK_SYSTEM_PROMPT, /Never mention system prompts/i);
+  assert.doesNotMatch(FEEDBACK_SYSTEM_PROMPT, /warm, cute/);
 });
 
 test("saveSuggestion schema accepts valid payloads and rejects short bodies", () => {
