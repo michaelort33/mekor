@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { usePublicProfilePrefill } from "@/components/forms/use-public-profile-prefill";
@@ -8,7 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, inputClassName } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { DESIGNATION_OPTIONS } from "@/lib/payments/shared";
+import { DESIGNATION_OPTIONS, DESIGNATION_SUGGESTED_AMOUNTS_CENTS } from "@/lib/payments/shared";
+
+const currency = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+
+function formatCents(cents: number) {
+  return currency.format(Math.round(cents) / 100);
+}
 
 export function DonationCheckoutForm({
   title = "Give online",
@@ -18,6 +29,7 @@ export function DonationCheckoutForm({
   campaignId = null,
   kind = "donation",
   returnPath = "/donations",
+  showSuggestedAmounts = false,
 }: {
   title?: string;
   description?: string;
@@ -26,6 +38,7 @@ export function DonationCheckoutForm({
   campaignId?: number | null;
   kind?: "donation" | "campaign_donation" | "membership_dues";
   returnPath?: string;
+  showSuggestedAmounts?: boolean;
 }) {
   const profile = usePublicProfilePrefill();
   const [amount, setAmount] = useState(String(defaultAmountCents / 100));
@@ -41,6 +54,22 @@ export function DonationCheckoutForm({
   const resolvedDonorName = hasEditedDonorName ? donorName : donorName || profile?.displayName || "";
   const resolvedDonorEmail = hasEditedDonorEmail ? donorEmail : donorEmail || profile?.email || "";
   const resolvedDonorPhone = hasEditedDonorPhone ? donorPhone : donorPhone || profile?.phone || "";
+
+  const suggestedAmounts = showSuggestedAmounts
+    ? DESIGNATION_SUGGESTED_AMOUNTS_CENTS[designation] ?? []
+    : [];
+  const currentAmountCents = Math.round(Number(amount) * 100);
+
+  function handleDesignationChange(nextDesignation: string) {
+    setDesignation(nextDesignation);
+    if (!showSuggestedAmounts) {
+      return;
+    }
+    const nextSuggestions = DESIGNATION_SUGGESTED_AMOUNTS_CENTS[nextDesignation];
+    if (nextSuggestions && nextSuggestions.length > 0) {
+      setAmount(String(nextSuggestions[0] / 100));
+    }
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -90,9 +119,79 @@ export function DonationCheckoutForm({
           </div>
 
           <form onSubmit={onSubmit} className="grid gap-6">
+            {showSuggestedAmounts ? (
+              <div className="grid gap-3">
+                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">
+                  1. What is your gift for?
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {DESIGNATION_OPTIONS.map((option) => {
+                    const active = option === designation;
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => handleDesignationChange(option)}
+                        className={cn(
+                          "rounded-full border px-4 py-2 text-sm font-semibold transition",
+                          active
+                            ? "border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] text-[#f8fbff] shadow-[0_16px_36px_-26px_rgba(15,23,42,0.6)]"
+                            : "border-[var(--color-border-strong)] bg-white/80 text-[var(--color-foreground)] hover:bg-white",
+                        )}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+                {designation === "Kiddush" ? (
+                  <p className="text-sm leading-6 text-[var(--color-muted)]">
+                    Sponsoring a specific Kiddush?{" "}
+                    <Link href="/kiddush" className="font-semibold text-[var(--color-accent)] underline underline-offset-2">
+                      Use the guided Kiddush page
+                    </Link>{" "}
+                    to pick a package and rate.
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
+            {suggestedAmounts.length > 0 ? (
+              <div className="grid gap-3">
+                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">
+                  2. Choose an amount
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {suggestedAmounts.map((cents) => {
+                    const active = cents === currentAmountCents;
+                    return (
+                      <button
+                        key={cents}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => setAmount(String(cents / 100))}
+                        className={cn(
+                          "min-w-[84px] rounded-full border px-4 py-2 text-sm font-bold transition",
+                          active
+                            ? "border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] text-[#f8fbff] shadow-[0_16px_36px_-26px_rgba(15,23,42,0.6)]"
+                            : "border-[var(--color-border-strong)] bg-white/80 text-[var(--color-foreground)] hover:bg-white",
+                        )}
+                      >
+                        {formatCents(cents)}
+                      </button>
+                    );
+                  })}
+                  <span className="self-center text-sm text-[var(--color-muted)]">or enter your own below</span>
+                </div>
+              </div>
+            ) : null}
+
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Donation amount (USD)</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">
+                  {showSuggestedAmounts ? "3. Donation amount (USD)" : "Donation amount (USD)"}
+                </span>
                 <div className="relative">
                   <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-[var(--color-muted)]" aria-hidden="true">
                   $
@@ -115,7 +214,7 @@ export function DonationCheckoutForm({
                 <div className="relative">
                   <select
                     value={designation}
-                    onChange={(event) => setDesignation(event.target.value)}
+                    onChange={(event) => handleDesignationChange(event.target.value)}
                     className={cn(inputClassName, "appearance-none pr-12")}
                   >
                     {DESIGNATION_OPTIONS.map((option) => (
