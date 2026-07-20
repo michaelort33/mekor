@@ -27,9 +27,14 @@ test("site feedback widget uses sheet chat chrome and validates public chat inpu
 
   assert.match(widget, /Share an idea/);
   assert.match(widget, /<SheetTitle>Share an idea<\/SheetTitle>/);
-  assert.match(widget, /doesn’t answer questions/);
+  assert.match(widget, /This chat is for feedback only/);
+  assert.match(widget, /won’t answer questions/);
+  assert.doesNotMatch(widget, /with warmth|with a smile/i);
   assert.match(widget, /max-sm:inset-0/);
   assert.match(widget, /FeedbackChatPanel/);
+  assert.match(panel, /Have an idea for Mekor\?/);
+  assert.match(panel, /Share a suggestion, bug report, or kind note/);
+  assert.doesNotMatch(panel, /with warmth|with a smile|Hi friend/i);
   assert.match(panel, /DefaultChatTransport/);
   assert.match(panel, /\/api\/feedback\/chat/);
   assert.match(panel, /MessageScrollerProvider/);

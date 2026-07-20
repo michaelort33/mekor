@@ -50,8 +50,8 @@ export function SiteFeedbackWidget() {
           <SheetHeader>
             <SheetTitle>Share an idea</SheetTitle>
             <SheetDescription>
-              We’d love your suggestions — this chat collects feedback with warmth. It doesn’t answer questions or
-              search a knowledge base.
+              We’d love your suggestions. This chat is for feedback only — it won’t answer questions or search our
+              site.
             </SheetDescription>
           </SheetHeader>
           <div className="flex min-h-0 flex-1 flex-col">

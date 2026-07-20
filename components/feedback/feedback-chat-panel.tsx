@@ -120,11 +120,11 @@ export function FeedbackChatPanel({ sourcePath }: FeedbackChatPanelProps) {
               {messages.length === 0 ? (
                 <div className="rounded-[22px] bg-[rgba(39,72,109,0.06)] px-4 py-4 text-sm leading-6 text-[var(--color-foreground)]">
                   <strong className="block font-[family-name:var(--font-heading)] text-xl tracking-[-0.02em]">
-                    Hi friend — got an idea for Mekor?
+                    Have an idea for Mekor?
                   </strong>
                   <span className="mt-2 block text-[var(--color-muted)]">
-                    I collect suggestions and feedback with a smile. I don’t answer questions or look things up —
-                    just share what would make the site or community experience kinder.
+                    Share a suggestion, bug report, or kind note about the site or community experience. This chat
+                    won’t answer questions or look things up.
                   </span>
                 </div>
               ) : (
@@ -169,7 +169,7 @@ export function FeedbackChatPanel({ sourcePath }: FeedbackChatPanelProps) {
           <p className="text-xs leading-5 text-[var(--color-muted)]" role={chatError ? "alert" : undefined}>
             {chatError
               ? chatError.message
-              : "This chat collects feedback only — for questions try Ask Mekor or Contact Us."}
+              : "Feedback only — for questions, try Ask Mekor or Contact Us."}
           </p>
           <div className="flex shrink-0 items-center gap-2">
             {busy ? (
