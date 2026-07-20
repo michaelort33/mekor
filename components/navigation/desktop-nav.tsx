@@ -4,11 +4,9 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import type { NavItem } from "@/lib/navigation/site-menu";
-import { cn } from "@/lib/utils";
 import { isNavigationPathActive } from "@/lib/navigation/path";
-import { isNavGroup } from "@/lib/navigation/site-menu";
+import { isNavGroup, type NavColumn, type NavItem } from "@/lib/navigation/site-menu";
+import { cn } from "@/lib/utils";
 
 type DesktopNavProps = {
   items: NavItem[];
@@ -21,13 +19,13 @@ function getGroupId(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
-export function DesktopNav({
-  items,
-  currentPath,
-  openGroupId,
-  setOpenGroupId,
-}: DesktopNavProps) {
-  const rootRef = useRef<HTMLDivElement | null>(null);
+/**
+ * 6-item primary nav. Groups with `columns` render a two-column panel
+ * (with optional highlighted card, e.g. "Plan a visit"); groups without
+ * columns render a simple single-column dropdown.
+ */
+export function DesktopNav({ items, currentPath, openGroupId, setOpenGroupId }: DesktopNavProps) {
+  const rootRef = useRef<HTMLElement | null>(null);
   const groupButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const closeTimerRef = useRef<number | null>(null);
 
@@ -49,39 +47,35 @@ export function DesktopNav({
   const focusFirstSubmenuLink = (groupId: string) => {
     window.requestAnimationFrame(() => {
       const firstSubmenuLink = rootRef.current?.querySelector<HTMLAnchorElement>(
-        `#native-nav-submenu-${groupId} a[href]`,
+        `#native-desktop-panel-${groupId} a[href]`,
       );
       firstSubmenuLink?.focus();
     });
   };
 
   useEffect(() => {
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
+    function onPointerDown(event: PointerEvent) {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
         setOpenGroupId(null);
       }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpenGroupId(null);
-      }
-    };
-
-    document.addEventListener("pointerdown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpenGroupId(null);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
     return () => {
       clearCloseTimer();
-      document.removeEventListener("pointerdown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
     };
   }, [setOpenGroupId]);
 
   return (
-    <div
-      className="hidden min-[1441px]:block"
+    <nav
       ref={rootRef}
+      aria-label="Primary"
+      className="hidden items-center gap-1 min-[1441px]:flex"
       onBlur={(event) => {
         const nextTarget = event.relatedTarget;
         if (!(nextTarget instanceof Node) || !rootRef.current?.contains(nextTarget)) {
@@ -90,184 +84,98 @@ export function DesktopNav({
         }
       }}
     >
-      <ul className="flex items-center gap-1 rounded-full border border-white/40 bg-white/72 px-2 py-2 shadow-[0_18px_44px_-32px_rgba(15,23,42,0.44)] backdrop-blur">
-        {items.map((item) => {
-          const active = isNavigationPathActive(currentPath, item.href);
-          const focusRing =
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]";
-          const itemClassName =
-            item.tone === "cta"
-              ? cn(
-                  "inline-flex items-center whitespace-nowrap rounded-full border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-4 py-2 text-[14px] font-semibold tracking-[0.02em] [color:#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] transition visited:[color:#f8fbff] hover:bg-[linear-gradient(180deg,#285f90_0%,#1c4368_100%)] hover:[color:#ffffff] focus-visible:[color:#ffffff]",
-                  focusRing,
-                  active && "shadow-[0_20px_48px_-28px_rgba(15,23,42,0.55)]",
-                )
-              : cn(
-                  "inline-flex items-center whitespace-nowrap rounded-full px-3 py-2 text-[14px] font-medium tracking-[0.01em] text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]",
-                  focusRing,
-                  active && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
-                );
-          const toggleClassName =
-            item.tone === "cta"
-              ? cn("mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full [color:#f8fbff] transition hover:bg-white/10 hover:[color:#ffffff]", focusRing)
-              : cn("mr-1 inline-flex h-8 w-8 items-center justify-center rounded-full text-[var(--color-muted)] transition hover:bg-black/5 hover:text-[var(--color-foreground)]", focusRing);
+      {items.map((item) => {
+        const isActive = isNavigationPathActive(currentPath, item.href);
 
-          if (!isNavGroup(item)) {
-            return (
-              <li key={item.label}>
-                <Link
-                  href={item.href}
-                  prefetch={false}
-                  className={itemClassName}
-                  style={item.tone === "cta" ? { color: "#f8fbff" } : undefined}
-                  onClick={() => setOpenGroupId(null)}
-                  aria-current={active ? "page" : undefined}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            );
-          }
-
-          const groupId = getGroupId(item.label);
-          const isOpen = openGroupId === groupId;
-          const submenuId = `native-nav-submenu-${groupId}`;
-          const groupActive = active || item.children.some((child) => isNavigationPathActive(currentPath, child.href));
-
+        if (!isNavGroup(item)) {
           return (
-            <li
+            <Link
               key={item.label}
-              className="relative"
-              onMouseEnter={() => {
+              href={item.href}
+              prefetch={false}
+              aria-current={isActive ? "page" : undefined}
+              className={cn(
+                "rounded-full px-3.5 py-2 text-[15px] text-[var(--color-foreground)] transition hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]",
+                isActive && "bg-white/85 font-semibold",
+              )}
+            >
+              {item.label}
+            </Link>
+          );
+        }
+
+        const groupId = getGroupId(item.label);
+        const isOpen = openGroupId === groupId;
+        const groupActive =
+          isActive || item.children.some((child) => isNavigationPathActive(currentPath, child.href));
+        const columns: NavColumn[] =
+          item.columns ?? [{ title: item.label, links: item.children }];
+
+        return (
+          <div
+            key={item.label}
+            className="relative"
+            onMouseEnter={() => {
+              clearCloseTimer();
+              setOpenGroupId(groupId);
+            }}
+            onMouseLeave={scheduleClose}
+          >
+            <button
+              ref={(node) => {
+                groupButtonRefs.current[groupId] = node;
+              }}
+              type="button"
+              aria-expanded={isOpen}
+              aria-haspopup="true"
+              aria-controls={`native-desktop-panel-${groupId}`}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[15px] text-[var(--color-foreground)] transition hover:bg-white/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]",
+                (isOpen || groupActive) && "bg-white/85 font-semibold shadow-[0_10px_24px_-18px_rgba(15,23,42,0.4)]",
+              )}
+              onClick={() => setOpenGroupId(isOpen ? null : groupId)}
+              onFocus={() => {
                 clearCloseTimer();
                 setOpenGroupId(groupId);
               }}
-              onMouseLeave={scheduleClose}
+              onKeyDown={(event) => {
+                if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  setOpenGroupId(groupId);
+                  focusFirstSubmenuLink(groupId);
+                }
+              }}
             >
-              <div className="flex items-center rounded-full">
-                {item.triggerOnly ? (
-                  <button
-                    type="button"
-                    className={cn(
-                      itemClassName,
-                      groupActive && item.tone === "cta" && "[color:#ffffff]",
-                      groupActive &&
-                        item.tone !== "cta" &&
-                        "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
-                      isOpen && item.tone !== "cta" && "text-[var(--color-foreground)]",
-                    )}
-                    onClick={() => setOpenGroupId(isOpen ? null : groupId)}
-                    onFocus={() => {
-                      clearCloseTimer();
-                      setOpenGroupId(groupId);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        setOpenGroupId(groupId);
-                        focusFirstSubmenuLink(groupId);
-                      }
-                    }}
-                    aria-expanded={isOpen}
-                    aria-controls={submenuId}
-                    aria-haspopup="true"
-                  >
-                    {item.label}
-                  </button>
-                ) : (
-                  <Link
-                    href={item.href}
-                    prefetch={false}
-                    className={cn(
-                      itemClassName,
-                      groupActive && item.tone === "cta" && "[color:#ffffff]",
-                      groupActive &&
-                        item.tone !== "cta" &&
-                        "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.35)]",
-                      isOpen && item.tone !== "cta" && "text-[var(--color-foreground)]",
-                    )}
-                    onFocus={() => {
-                      clearCloseTimer();
-                      setOpenGroupId(groupId);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === "ArrowDown") {
-                        event.preventDefault();
-                        setOpenGroupId(groupId);
-                        focusFirstSubmenuLink(groupId);
-                      }
-                    }}
-                    aria-current={groupActive ? "page" : undefined}
-                  >
-                    {item.label}
-                  </Link>
-                )}
-                <button
-                  ref={(node) => {
-                    groupButtonRefs.current[groupId] = node;
-                  }}
-                  type="button"
-                  className={toggleClassName}
-                  aria-expanded={isOpen}
-                  aria-controls={submenuId}
-                  aria-haspopup="true"
-                  aria-label={`Toggle ${item.label} submenu`}
-                  onClick={() => setOpenGroupId(isOpen ? null : groupId)}
-                  onFocus={() => {
-                    clearCloseTimer();
-                    setOpenGroupId(groupId);
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setOpenGroupId(groupId);
-                      focusFirstSubmenuLink(groupId);
-                    }
+              {item.label}
+              <ChevronDown
+                className={cn("h-3 w-3 text-[var(--color-muted)] transition-transform", isOpen && "rotate-180")}
+                aria-hidden="true"
+              />
+            </button>
 
-                    if (event.key === "Escape") {
-                      event.preventDefault();
-                      setOpenGroupId(null);
-                    }
-                  }}
-                >
-                  <span className="sr-only">Toggle {item.label} submenu</span>
-                  <ChevronDown
-                    className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
-                    aria-hidden="true"
-                  />
-                </button>
-              </div>
+            {isOpen ? (
               <div
-                id={submenuId}
-                className={cn(
-                  "absolute left-0 top-[calc(100%+0.85rem)] z-40 min-w-[18rem] rounded-[28px] border border-[var(--color-border)] bg-[rgba(255,255,255,0.96)] p-3 shadow-[0_30px_80px_-36px_rgba(15,23,42,0.52)] backdrop-blur transition",
-                  isOpen ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0",
-                )}
+                id={`native-desktop-panel-${groupId}`}
+                className="absolute left-1/2 top-[calc(100%+12px)] z-50 flex w-max max-w-[720px] -translate-x-1/2 gap-8 rounded-[20px] border border-[var(--color-border)] bg-white px-7 py-6 shadow-[0_34px_70px_-34px_rgba(15,23,42,0.4)]"
               >
-                <div className="mb-3 flex items-center justify-between gap-3 px-2 pt-1">
-                  <Badge>{item.tone === "cta" ? "Get started" : "Explore"}</Badge>
-                  {item.triggerOnly ? null : (
-                    <Link
-                      href={item.href}
-                      className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]"
-                    >
-                      {item.tone === "cta" ? "Apply Now" : "View All"}
-                    </Link>
-                  )}
-                </div>
-                <ul className="grid gap-1">
-                  {item.children.map((child) => {
-                    const childActive = isNavigationPathActive(currentPath, child.href);
-                    return (
-                      <li key={child.label}>
+                {columns.map((col) => (
+                  <div
+                    key={col.title}
+                    className={cn(
+                      "min-w-[190px]",
+                      col.highlight &&
+                        "-m-2 w-[240px] rounded-[14px] border border-[#d9e4ee] bg-[#f2f6fa] p-4",
+                    )}
+                  >
+                    <div className="mb-2.5 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
+                      {col.title}
+                    </div>
+                    <div className="grid gap-0.5">
+                      {col.links.map((link) => (
                         <Link
-                          href={child.href}
+                          key={link.label}
+                          href={link.href}
                           prefetch={false}
-                          className={cn(
-                            "block rounded-[20px] px-4 py-3 text-sm font-medium text-[var(--color-muted)] transition hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]",
-                            childActive && "bg-[var(--color-surface-strong)] text-[var(--color-foreground)]",
-                          )}
-                          aria-current={childActive ? "page" : undefined}
                           onClick={() => setOpenGroupId(null)}
                           onKeyDown={(event) => {
                             if (event.key === "Escape") {
@@ -276,18 +184,27 @@ export function DesktopNav({
                               groupButtonRefs.current[groupId]?.focus();
                             }
                           }}
+                          aria-current={isNavigationPathActive(currentPath, link.href) ? "page" : undefined}
+                          className={cn(
+                            "-mx-2.5 rounded-[10px] px-2.5 py-2 text-[15px] leading-snug text-[var(--color-foreground)] transition hover:bg-[var(--color-surface-strong)]",
+                            isNavigationPathActive(currentPath, link.href) &&
+                              "bg-[var(--color-surface-strong)] font-semibold",
+                          )}
                         >
-                          {child.label}
+                          {link.label}
+                          {link.note ? (
+                            <span className="block text-[12.5px] text-[var(--color-muted)]">{link.note}</span>
+                          ) : null}
                         </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </nav>
   );
 }
