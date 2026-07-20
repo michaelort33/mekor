@@ -13,6 +13,7 @@ import { UniversalSearch } from "@/components/navigation/universal-search";
 import { Button } from "@/components/ui/button";
 import { normalizeNavigationPath } from "@/lib/navigation/path";
 import { SITE_MENU, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
+import { cn } from "@/lib/utils";
 
 type SiteNavigationProps = {
   currentPath: string;
@@ -25,6 +26,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
   const [mobileOpenByPath, setMobileOpenByPath] = useState<Record<string, boolean>>({});
   const [authenticated, setAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
   const mobileTriggerRef = useRef<HTMLButtonElement | null>(null);
   const previousMobileOpenRef = useRef(false);
   const openDesktopGroupId = openDesktopByPath[activePath] ?? null;
@@ -57,6 +59,15 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
 
     previousMobileOpenRef.current = mobileOpen;
   }, [mobileOpen]);
+
+  useEffect(() => {
+    const syncScrolledState = () => setIsScrolled(window.scrollY > 24);
+
+    syncScrolledState();
+    window.addEventListener("scroll", syncScrolledState, { passive: true });
+
+    return () => window.removeEventListener("scroll", syncScrolledState);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -97,9 +108,18 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 px-4 pt-4 sm:px-6 lg:px-8" data-native-nav-root="true">
-        <div className="mx-auto flex w-full max-w-[84rem] items-center justify-between gap-3">
-          <NavBrand />
+      <header
+        className={cn(
+          "sticky top-0 z-40 border-b px-4 transition-[padding,background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out motion-reduce:transition-none sm:px-6 lg:px-8",
+          isScrolled
+            ? "border-[#d8cbb8]/80 bg-[#f8f3eb]/95 py-2 shadow-[0_16px_36px_-26px_rgba(15,23,42,0.58)] backdrop-blur-xl"
+            : "border-transparent bg-transparent pb-0 pt-4",
+        )}
+        data-native-nav-root="true"
+        data-scrolled={isScrolled ? "true" : "false"}
+      >
+        <div className="mx-auto flex w-full max-w-[110rem] items-center justify-between gap-3">
+          <NavBrand compact={isScrolled} />
 
           <DesktopNav
             items={SITE_MENU}

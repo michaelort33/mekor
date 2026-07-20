@@ -239,7 +239,11 @@ export default function HomePage() {
         <div className={styles.heroOverlay} />
         <div className={styles.heroInner}>
           <p className={styles.heroEyebrow}>Welcome to</p>
-          <h1 className={styles.heroTitle}>Mekor Habracha</h1>
+          <h1 className={styles.heroTitle}>
+            <span>Mekor</span>
+            {" "}
+            <span>Habracha</span>
+          </h1>
           <div className={styles.heroDivider} />
           <p className={styles.heroSubtitle}>Center City Synagogue</p>
           <a className={styles.heroArrow} href="#about" aria-label="Jump to about section">
