@@ -32,6 +32,10 @@
   border-radius: 6px !important;
 }
 
+.heroFlat :global(a[data-slot="button"][data-variant="default"]) {
+  color: #f8fbff !important;
+}
+
 .flatSection {
   border-radius: 10px !important;
   border: 1px solid #cbc4b7 !important;

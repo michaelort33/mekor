@@ -5,11 +5,12 @@ import { KiddushSponsorshipForm } from "@/components/forms/kiddush-sponsorship-f
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { KiddushPaymentSection } from "@/components/payments/kiddush-payment-section";
+import { KIDDUSH_LINK } from "@/lib/navigation/site-menu";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import styles from "./page.module.css";
 
-const PATH = "/kiddush" as const;
+const PATH = KIDDUSH_LINK.href;
 const PAYPAL_SPONSOR_URL = "https://www.paypal.com/ncp/payment/C5ZNZELMHX2A4";
 
 const KIDDUSH_IMAGES = {
@@ -62,8 +63,8 @@ export default async function KiddushPage() {
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
         eyebrow="Support Mekor"
-        title="How You Can Sponsor a Kiddush"
-        subtitle="Sponsor The Kiddush"
+        title="Sponsor a Kiddush"
+        subtitle="Celebrate a simcha with the Mekor community"
         className={styles.heroFlat}
         image={{
           src: KIDDUSH_IMAGES.hero,
@@ -76,8 +77,8 @@ export default async function KiddushPage() {
           "Whether you're marking a special occasion, honoring a loved one, or commemorating a yahrtzeit, your sponsorship helps us create a warm and welcoming Shabbat experience for all.",
         ]}
         actions={[
-          { label: "Sponsor via PayPal", href: PAYPAL_SPONSOR_URL },
-          { label: "Sponsor The Kiddush", href: "#kiddush-payment" },
+          { label: "Choose a sponsorship", href: "#kiddush-payment" },
+          { label: "Pay with PayPal", href: PAYPAL_SPONSOR_URL },
         ]}
       />
 
@@ -114,8 +115,9 @@ export default async function KiddushPage() {
       <SectionCard title="Quick Links" className={styles.flatSection}>
         <CTACluster
           items={[
-            { label: "Sponsor The Kiddush", href: PAYPAL_SPONSOR_URL },
-            { label: "General Donation Page", href: "/donations" },
+            { label: "Choose a sponsorship", href: "#kiddush-payment" },
+            { label: "Pay with PayPal", href: PAYPAL_SPONSOR_URL },
+            { label: "General donations", href: "/donations" },
             { label: "Email: admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org" },
             { label: "Call: (215) 525-4246", href: "tel:+12155254246" },
           ]}
