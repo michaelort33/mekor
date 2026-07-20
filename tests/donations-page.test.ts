@@ -27,3 +27,13 @@ test("checkout API accepts and forwards a dedication note", async () => {
   const metadataMentions = source.match(/dedicationNote/g) ?? [];
   assert.ok(metadataMentions.length >= 4, "dedicationNote must reach session, intent, and ledger metadata");
 });
+
+test("donation form speaks to donors and carries the dedication note", async () => {
+  const source = await readTextFile("components/payments/donation-checkout-form.tsx");
+  assert.doesNotMatch(source, /Secure donation intake/i);
+  assert.match(source, /Make a donation/);
+  assert.match(source, /Tax-deductible · Secure checkout via Stripe/);
+  assert.match(source, /Dedication \/ in honor of \(optional\)/);
+  assert.match(source, /dedicationNote/);
+  assert.match(source, /itemName/);
+});

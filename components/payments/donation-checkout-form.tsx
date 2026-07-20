@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { usePublicProfilePrefill } from "@/components/forms/use-public-profile-prefill";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, inputClassName } from "@/components/ui/input";
@@ -22,14 +21,16 @@ function formatCents(cents: number) {
 }
 
 export function DonationCheckoutForm({
-  title = "Give online",
-  description = "Choose the designation clearly so the gift is classified correctly downstream.",
+  title = "Make a donation",
+  description = "Choose what your gift supports, pick an amount, and continue to secure checkout.",
   defaultAmountCents = 1800,
   defaultDesignation = "General donation",
   campaignId = null,
   kind = "donation",
   returnPath = "/donations",
   showSuggestedAmounts = false,
+  itemName = null,
+  frameless = false,
 }: {
   title?: string;
   description?: string;
@@ -39,6 +40,8 @@ export function DonationCheckoutForm({
   kind?: "donation" | "campaign_donation" | "membership_dues";
   returnPath?: string;
   showSuggestedAmounts?: boolean;
+  itemName?: string | null;
+  frameless?: boolean;
 }) {
   const profile = usePublicProfilePrefill();
   const [amount, setAmount] = useState(String(defaultAmountCents / 100));
@@ -46,6 +49,7 @@ export function DonationCheckoutForm({
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
   const [donorPhone, setDonorPhone] = useState("");
+  const [dedicationNote, setDedicationNote] = useState("");
   const [hasEditedDonorName, setHasEditedDonorName] = useState(false);
   const [hasEditedDonorEmail, setHasEditedDonorEmail] = useState(false);
   const [hasEditedDonorPhone, setHasEditedDonorPhone] = useState(false);
@@ -95,6 +99,8 @@ export function DonationCheckoutForm({
         campaignId,
         kind,
         returnPath,
+        ...(itemName ? { itemName } : {}),
+        ...(dedicationNote.trim() ? { dedicationNote: dedicationNote.trim() } : {}),
       }),
     });
 
@@ -108,14 +114,14 @@ export function DonationCheckoutForm({
     window.location.assign(payload.url);
   }
 
-  return (
-    <section className="w-full">
-      <Card className="overflow-hidden bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(245,239,229,0.92))] p-5 sm:p-7">
+  const formBody = (
         <div className="grid gap-6">
           <div className="space-y-3">
-            <Badge>Secure donation intake</Badge>
-          <h3>{title}</h3>
+            <h3>{title}</h3>
             <p className="max-w-3xl text-base leading-7 text-[var(--color-muted)]">{description}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">
+              Tax-deductible · Secure checkout via Stripe
+            </p>
           </div>
 
           <form onSubmit={onSubmit} className="grid gap-6">
@@ -273,6 +279,18 @@ export function DonationCheckoutForm({
                   inputMode="tel"
                 />
               </label>
+
+              <label className="grid gap-2 md:col-span-2 xl:col-span-3">
+                <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">
+                  Dedication / in honor of (optional)
+                </span>
+                <Input
+                  value={dedicationNote}
+                  onChange={(event) => setDedicationNote(event.target.value)}
+                  maxLength={300}
+                  placeholder="e.g. In memory of Sarah bat Avraham"
+                />
+              </label>
             </div>
 
             {error ? <p className="text-sm font-medium text-rose-700">{error}</p> : null}
@@ -287,6 +305,16 @@ export function DonationCheckoutForm({
             </div>
           </form>
         </div>
+  );
+
+  if (frameless) {
+    return <section className="w-full">{formBody}</section>;
+  }
+
+  return (
+    <section className="w-full">
+      <Card className="overflow-hidden bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(245,239,229,0.92))] p-5 sm:p-7">
+        {formBody}
       </Card>
     </section>
   );
