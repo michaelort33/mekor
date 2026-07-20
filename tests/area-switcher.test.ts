@@ -1,7 +1,21 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import test from "node:test";
 
 import { buildAreaSwitcherLinks } from "../lib/navigation/area-switcher";
+
+async function readTextFile(relativePath: string) {
+  return readFile(path.join(process.cwd(), relativePath), "utf8");
+}
+
+test("active area switcher link keeps light text on the dark blue pill", async () => {
+  const css = await readTextFile("components/navigation/area-switcher.module.css");
+
+  assert.match(css, /\.linkCurrent,\s*\n\.linkCurrent:visited\s*\{[\s\S]*?color:\s*#f7fbff\s*!important/);
+  assert.match(css, /\.linkCurrent:hover,\s*\n\.linkCurrent:focus-visible\s*\{[\s\S]*?color:\s*#f7fbff\s*!important/);
+  assert.match(css, /\.link\s*\{[\s\S]*?color:\s*#274d6f\s*!important/);
+});
 
 test("admin area switcher includes all workspace links for admins", () => {
   const links = buildAreaSwitcherLinks({

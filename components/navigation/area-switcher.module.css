@@ -28,7 +28,8 @@
   border: 1px solid #bfd0df;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.92);
-  color: #274d6f;
+  /* Beat global a { color: inherit } so pill text stays readable. */
+  color: #274d6f !important;
   padding: 0 13px;
   font-size: 0.8rem;
   font-weight: 700;
@@ -38,32 +39,38 @@
   transition: background-color 130ms ease, border-color 130ms ease, color 130ms ease, transform 130ms ease;
 }
 
+.link:visited {
+  color: #274d6f !important;
+}
+
 .link:hover,
 .link:focus-visible {
   border-color: #5a82aa;
   background: #edf4fc;
-  color: #173f63;
+  color: #173f63 !important;
   outline: 2px solid rgba(67, 124, 178, 0.18);
   outline-offset: 2px;
   transform: translateY(-1px);
 }
 
-.linkCurrent {
+.linkCurrent,
+.linkCurrent:visited {
   border-color: #2f6396;
   background: linear-gradient(180deg, #31689d 0%, #25527d 100%);
-  color: #f7fbff;
+  color: #f7fbff !important;
 }
 
 .linkCurrent:hover,
 .linkCurrent:focus-visible {
   border-color: #25527d;
   background: linear-gradient(180deg, #2d6193 0%, #214a71 100%);
-  color: #f7fbff;
+  color: #f7fbff !important;
 }
 
-.linkSignIn {
+.linkSignIn,
+.linkSignIn:visited {
   border-style: dashed;
-  color: #4b6985;
+  color: #4b6985 !important;
 }
 
 .switcher--compact .label {
