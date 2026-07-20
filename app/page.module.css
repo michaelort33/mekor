@@ -297,28 +297,44 @@
 .bulletinSection {
   padding: 52px 0;
   background:
-    linear-gradient(180deg, rgba(248, 249, 252, 0.92) 0%, rgba(255, 255, 255, 0.98) 100%),
-    radial-gradient(720px 280px at 12% 0%, rgba(178, 205, 233, 0.28) 0%, rgba(178, 205, 233, 0) 70%);
-  border-top: 1px solid #e8ecf4;
-  border-bottom: 1px solid #e8ecf4;
+    linear-gradient(180deg, rgba(248, 243, 235, 0.96) 0%, rgba(255, 253, 248, 0.98) 100%),
+    radial-gradient(720px 280px at 12% 0%, rgba(181, 134, 70, 0.16) 0%, rgba(181, 134, 70, 0) 70%);
+  border-top: 1px solid #e5d8c4;
+  border-bottom: 1px solid #e5d8c4;
 }
 
 .bulletinPanel {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(180px, 0.9fr) minmax(0, 1.3fr);
   align-items: center;
-  gap: 32px;
-  padding: clamp(28px, 3.5vw, 40px);
-  border: 1px solid #d5e2ef;
-  border-radius: 18px;
+  gap: 28px;
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid rgba(61, 48, 28, 0.14);
+  border-radius: 20px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(238, 244, 251, 0.95) 100%);
-  box-shadow: 0 18px 40px -28px rgba(33, 78, 121, 0.35);
+    linear-gradient(135deg, rgba(255, 253, 248, 0.98) 0%, rgba(244, 239, 230, 0.96) 100%);
+  box-shadow: 0 18px 40px -28px rgba(42, 34, 22, 0.45);
+}
+
+.bulletinThumbWrap {
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(33, 78, 121, 0.16);
+  background: #163049;
+  box-shadow: 0 12px 28px -22px rgba(24, 55, 83, 0.7);
+}
+
+.bulletinThumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 
 .bulletinCopy {
   display: grid;
   gap: 12px;
+  justify-items: start;
 }
 
 .bulletinEyebrow {
@@ -328,7 +344,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #5b6072;
+  color: #925f1d;
 }
 
 .bulletinCopy h2 {
@@ -336,7 +352,7 @@
   font-family: lulo-clean-w01-one-bold, var(--font-heading), sans-serif;
   font-size: clamp(1.7rem, 3.1vw, 2.25rem);
   letter-spacing: -0.03em;
-  color: #2b5a81;
+  color: #214e79;
   line-height: 1.15;
 }
 
@@ -1057,9 +1073,12 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .supportActions,
-  .bulletinPanel {
+  .supportActions {
     justify-items: start;
+  }
+
+  .bulletinPanel {
+    justify-items: stretch;
   }
 
   .supportActions {

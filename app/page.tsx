@@ -17,6 +17,8 @@ export const dynamic = "force-dynamic";
 
 const HERO_IMAGE = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/c2c6235de9c6d719cd098e19d77b7f21c18899f1-11062b_8135b27108d04d2a97adc750a341fb79-mv2.jpeg";
 const DAVEING_IMAGE = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/b562092e8484e9d5c6e62671c670e606b2d338cc-92f487_34e64b1fb2e94c56886578290ef2bcd0-mv2.jpeg";
+const BULLETIN_TEASER_IMAGE =
+  "/newsletters/archive/assets/01b4787397a5-210e849f-0dff-f50d-8135-5cfaa09eb671.png";
 const MAP_EMBED_SRC =
   "https://www.google.com/maps?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102&output=embed";
 
@@ -237,17 +239,26 @@ export default function HomePage() {
       <section className={styles.bulletinSection} aria-labelledby="home-bulletin-title">
         <div className={styles.container}>
           <div className={styles.bulletinPanel}>
+            <div className={styles.bulletinThumbWrap} aria-hidden="true">
+              <Image
+                src={BULLETIN_TEASER_IMAGE}
+                alt=""
+                width={640}
+                height={220}
+                className={styles.bulletinThumb}
+              />
+            </div>
             <div className={styles.bulletinCopy}>
-              <p className={styles.bulletinEyebrow}>Community board</p>
+              <p className={styles.bulletinEyebrow}>Living flyer board</p>
               <h2 id="home-bulletin-title">Bulletin Board</h2>
               <p>
                 Tot Shabbat, membership, Hebrew Help, wine &amp; Judaica links, Eruv support, classes, and other standing
                 community notices live on one page — so this homepage and the weekly newsletter stay focused.
               </p>
+              <Link href="/mekor-bulletin-board" className={styles.bulletinCta}>
+                View the Bulletin Board
+              </Link>
             </div>
-            <Link href="/mekor-bulletin-board" className={styles.bulletinCta}>
-              View the Bulletin Board
-            </Link>
           </div>
         </div>
       </section>

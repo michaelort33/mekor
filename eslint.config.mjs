@@ -17,6 +17,8 @@ const eslintConfig = defineConfig([
     ".claude/**",
     "mirror-data/**",
     "old-archived-version/**",
+    // Local git worktrees (isolated checkouts; may contain their own .next)
+    ".worktrees/**",
   ]),
 ]);
 
