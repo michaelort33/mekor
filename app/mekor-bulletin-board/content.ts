@@ -66,7 +66,7 @@ export const ZIONISM_CLASS_RSVP = "https://forms.gle/aDkUYeBj3qvudcMD9";
 
 export const BOARD_NAV = [
   { label: "Featured", href: "#featured-now" },
-  { label: "Standing info", href: "#standing-info" },
+  { label: "Essentials", href: "#standing-info" },
   { label: "Updates", href: "#community-updates" },
   { label: "Announcements", href: "#community-announcements" },
   { label: "Support", href: "#support-mekor" },

@@ -34,6 +34,9 @@ export const PAYMENT_KIND_OPTIONS: Array<{ value: PaymentKind; label: string }> 
 export const DESIGNATION_OPTIONS = [
   "General donation",
   "Kiddush",
+  "Memorial plaque",
+  "Book dedication",
+  "Community dinner",
   "Membership dues",
   "Security donation",
   "Meals",
@@ -43,6 +46,8 @@ export const DESIGNATION_OPTIONS = [
   "Holiday appeal",
 ] as const;
 
+export type DonationDesignation = (typeof DESIGNATION_OPTIONS)[number];
+
 // Suggested quick-pick amounts (in cents) per designation. The first amount is
 // used as the default whenever a donor switches to that designation, so the
 // amount field no longer gets "stuck" on an unrelated value (e.g. $36 for a
@@ -50,6 +55,9 @@ export const DESIGNATION_OPTIONS = [
 export const DESIGNATION_SUGGESTED_AMOUNTS_CENTS: Record<string, readonly number[]> = {
   "General donation": [3600, 5400, 11800, 36000],
   Kiddush: [29500, 36000, 10000, 3600],
+  "Memorial plaque": [100000],
+  "Book dedication": [10000, 20000],
+  "Community dinner": [180000, 100000],
   "Security donation": [5400, 18000, 36000],
   "Building fund": [18000, 36000, 100000],
   "Chesed fund": [1800, 3600, 11800],

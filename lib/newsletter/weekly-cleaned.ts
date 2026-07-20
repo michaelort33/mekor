@@ -137,7 +137,7 @@ export function generateWeeklyCleanedHtml(input: WeeklyCleanedInput = {}) {
                 ${section("Weekday Services", values.weekdayServicesHtml)}
                 ${section(
                   "Community Bulletin Board",
-                  `<p style="margin:0 0 12px;line-height:1.55;">Standing community info now lives on Mekor&apos;s <strong>Living Flyer Board</strong> so this weekly email stays focused on this Shabbat:</p>
+                  `<p style="margin:0 0 12px;line-height:1.55;">Ongoing programs and community resources are always on the <strong>Mekor Bulletin Board</strong>:</p>
 <ul style="margin:0 0 16px;padding-left:18px;line-height:1.6;">
   <li>Tot Shabbat &amp; family programming</li>
   <li>Membership, Hebrew Help, and volunteering</li>

@@ -244,11 +244,11 @@ export default async function BulletinBoardPage() {
           <div className={styles.heroShade} />
         </div>
         <div className={styles.heroInner}>
-          <p className={styles.heroEyebrow}>Community hub · Living flyer board</p>
+          <p className={styles.heroEyebrow}>Flyers · Programs · Notices</p>
           <h1>Mekor Bulletin Board</h1>
           <p className={styles.heroLead}>
-            Standing community info in one place — so the homepage and weekly newsletter stay focused on what&apos;s new
-            this week.
+            Classes, campaigns, volunteer opportunities, and neighborly offers — posted in one place and kept up to
+            date.
           </p>
           <nav className={styles.chipNav} aria-label="Bulletin board sections">
             {BOARD_NAV.map((item) => (
@@ -260,42 +260,12 @@ export default async function BulletinBoardPage() {
         </div>
       </header>
 
-      <section className={styles.boardIntro} aria-label="About this board">
-        <div className={styles.introCopy}>
-          <p className={styles.sectionEyebrow}>From the weekly newsletter</p>
-          <h2>One board for repeating community info</h2>
-          <p>
-            Tot Shabbat, membership, Hebrew Help, wine &amp; Judaica links, volunteering, and other standing notices live
-            here. The weekly Shabbat newsletter highlights this week&apos;s schedule, sponsors, and fresh announcements —
-            then points back to this board.
-          </p>
-        </div>
-        <div className={styles.introGallery}>
-          <Image
-            src={BOARD_IMAGES.shabbatBanner}
-            alt="Shabbat at Mekor"
-            width={640}
-            height={220}
-            className={styles.introThumb}
-            loading="lazy"
-          />
-          <Image
-            src={BOARD_IMAGES.volunteersBanner}
-            alt="Volunteers needed at Mekor"
-            width={640}
-            height={220}
-            className={styles.introThumb}
-            loading="lazy"
-          />
-        </div>
-      </section>
-
       <section className={styles.boardSection} aria-labelledby="featured-now-title">
         <div id="featured-now" className={styles.anchor} />
         <div className={styles.sectionHeading}>
           <p className={styles.sectionEyebrow}>Pinned flyers</p>
           <h2 id="featured-now-title">Featured Now</h2>
-          <p>Time-sensitive campaigns and classes — linked from the homepage instead of repeating full write-ups.</p>
+          <p>This season&apos;s campaigns and classes, happening right now.</p>
         </div>
         <div className={styles.featuredGrid}>
           {FEATURED_NOW.map((item) => (
@@ -308,8 +278,8 @@ export default async function BulletinBoardPage() {
         <div id="standing-info" className={styles.anchor} />
         <div className={styles.sectionHeading}>
           <p className={styles.sectionEyebrow}>Keep handy</p>
-          <h2 id="standing-info-title">Standing Community Info</h2>
-          <p>Evergreen programs and links that used to repeat in every weekly newsletter.</p>
+          <h2 id="standing-info-title">Community Essentials</h2>
+          <p>The programs, contacts, and resources you&apos;ll come back to all year.</p>
         </div>
         <div className={styles.standingGrid}>
           {STANDING_INFO.map((item) => (

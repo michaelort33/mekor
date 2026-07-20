@@ -14,6 +14,7 @@ const checkoutSchema = z.object({
   donorName: z.string().trim().min(1).max(180),
   donorEmail: z.string().trim().email().max(255),
   donorPhone: z.string().trim().max(60).default(""),
+  dedicationNote: z.string().trim().max(300).default(""),
   campaignId: z.number().int().min(1).nullable().default(null),
   kind: z.enum(["donation", "campaign_donation", "membership_dues"]).default("donation"),
   returnPath: z.string().trim().max(255).default("/donations"),
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
       donorName: parsed.data.donorName,
       donorEmail: parsed.data.donorEmail,
       donorPhone: parsed.data.donorPhone,
+      ...(parsed.data.dedicationNote ? { dedicationNote: parsed.data.dedicationNote } : {}),
     },
     payment_intent_data: {
       metadata: {
@@ -71,6 +73,7 @@ export async function POST(request: Request) {
         donorName: parsed.data.donorName,
         donorEmail: parsed.data.donorEmail,
         donorPhone: parsed.data.donorPhone,
+        ...(parsed.data.dedicationNote ? { dedicationNote: parsed.data.dedicationNote } : {}),
       },
     },
     line_items: [
@@ -105,6 +108,7 @@ export async function POST(request: Request) {
     metadata: {
       checkoutSessionId: session.id,
       returnPath: parsed.data.returnPath,
+      ...(parsed.data.dedicationNote ? { dedicationNote: parsed.data.dedicationNote } : {}),
     },
   });
 
@@ -122,6 +126,7 @@ export async function POST(request: Request) {
         checkoutSessionId: session.id,
         returnPath: parsed.data.returnPath,
         paymentLedgerId: payment.id,
+        ...(parsed.data.dedicationNote ? { dedicationNote: parsed.data.dedicationNote } : {}),
       },
       updatedAt: new Date(),
     })

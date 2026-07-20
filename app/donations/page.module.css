@@ -114,15 +114,6 @@
   color: #1a2a3a;
 }
 
-.checkoutSection {
-  border-color: #ccd4dd;
-  background: #f8f7f3;
-}
-
-.checkoutSection::before {
-  background: linear-gradient(90deg, rgba(58, 103, 154, 0.26) 0%, rgba(58, 103, 154, 0.06) 100%);
-}
-
 .bulletList {
   margin: 0;
   padding-left: 1.16rem;
@@ -130,40 +121,6 @@
   gap: 8px;
   color: #445262;
   line-height: 1.64;
-}
-
-.commonList {
-  list-style: none;
-  margin: 14px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-}
-
-.commonRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px 18px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 1px solid #dbe2ea;
-  background: #f6f8fb;
-}
-
-.commonLabel {
-  color: #23374d;
-  font-weight: 700;
-  font-size: 0.98rem;
-  line-height: 1.35;
-}
-
-.commonAmount {
-  color: #214e79;
-  font-weight: 700;
-  font-size: 0.92rem;
-  white-space: nowrap;
 }
 
 .affiliateCard {
@@ -280,70 +237,6 @@
   }
 }
 
-.stripeCard {
-  border-color: #ccd4dd;
-  background: #f8f7f3;
-}
-
-.stripePromo {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 24px;
-}
-
-.stripePromoText {
-  display: grid;
-  gap: 8px;
-}
-
-.stripePromoHeading {
-  margin: 0;
-  color: #1f3349;
-  font-size: clamp(1.3rem, 2.6vw, 1.8rem);
-  line-height: 1.15;
-  font-family: var(--font-heading);
-}
-
-.stripePromoHeading::after {
-  content: "";
-  display: block;
-  width: 40px;
-  height: 3px;
-  margin: 14px 0 0;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-accent) 60%, transparent);
-}
-
-.stripeButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 52px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%);
-  color: #f8fbff;
-  text-decoration: none;
-  padding: 0 24px;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.45);
-  transition: transform 120ms ease, background 120ms ease;
-}
-
-.stripeButton:hover {
-  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%);
-  transform: translateY(-1px);
-}
-
-.stripeButton:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
 .splitPanel :global(h2) {
   color: #1f3349;
   font-size: clamp(1.8rem, 2.3vw, 2.35rem);
@@ -354,20 +247,6 @@
 .splitPanel :global(p) {
   color: #435262;
   line-height: 1.72;
-}
-
-.quickLinksCluster :global(a) {
-  border-radius: 8px;
-  border: 1px solid #ccd4dd;
-  background: #f5f6f2;
-  box-shadow: none;
-  padding: 12px 14px;
-}
-
-.quickLinksCluster :global(a:hover) {
-  transform: none;
-  border-color: #b7c1cd;
-  background: #eef1f4;
 }
 
 .dedicationButton,
@@ -502,17 +381,6 @@
   }
 }
 
-@media (max-width: 600px) {
-  .stripePromo {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
-  }
-
-  .stripeButton {
-    width: 100%;
-  }
-}
-
 @media (max-width: 760px) {
   .stack {
     gap: 16px;
@@ -525,4 +393,10 @@
   .dedicationActions {
     display: grid;
   }
+}
+
+.anchor {
+  position: relative;
+  top: -96px;
+  height: 0;
 }

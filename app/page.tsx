@@ -249,11 +249,10 @@ export default function HomePage() {
               />
             </div>
             <div className={styles.bulletinCopy}>
-              <p className={styles.bulletinEyebrow}>Living flyer board</p>
+              <p className={styles.bulletinEyebrow}>Community board</p>
               <h2 id="home-bulletin-title">Bulletin Board</h2>
               <p>
-                Tot Shabbat, membership, Hebrew Help, wine &amp; Judaica links, Eruv support, classes, and other standing
-                community notices live on one page — so this homepage and the weekly newsletter stay focused.
+                Tot Shabbat, Hebrew Help, membership, Eruv support, classes, and neighborly offers — all in one place.
               </p>
               <Link href="/mekor-bulletin-board" className={styles.bulletinCta}>
                 View the Bulletin Board

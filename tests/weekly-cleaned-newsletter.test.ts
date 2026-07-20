@@ -27,7 +27,7 @@ test("weekly cleaned starter keeps lean weekly sections and links the bulletin b
   assert.match(html, /Community Bulletin Board/);
   assert.match(html, new RegExp(WEEKLY_CLEANED_BULLETIN_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(html, /Open the Bulletin Board/);
-  assert.match(html, /Living Flyer Board/);
+  assert.match(html, /always on the <strong>Mekor Bulletin Board<\/strong>/);
   assert.match(html, new RegExp(`src="${WEEKLY_CLEANED_LOGO_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`));
   assert.match(
     html,
@@ -70,9 +70,8 @@ test("bulletin board hosts standing weekly evergreen content", async () => {
     readFile("app/mekor-bulletin-board/page.tsx", "utf8"),
     readFile("app/mekor-bulletin-board/content.ts", "utf8"),
   ]);
-  assert.match(page, /Standing Community Info/);
+  assert.match(page, /Community Essentials/);
   assert.match(page, /Featured Now/);
-  assert.match(page, /Living Flyer Board|Living flyer board/);
   assert.match(content, /Tot Shabbat/);
   assert.match(content, /Hebrew Help at Mekor/);
   assert.match(content, /Kosher Wine & Judaica/);
