@@ -175,6 +175,11 @@
     "file": "documents/event/events-1__special-discussion-with-mark-trencher-of-nishma-research--d8e7bbdce5b7.json"
   },
   {
+    "path": "/events-1/tisha-bav-5786",
+    "type": "event",
+    "file": "documents/event/events-1__tisha-bav-5786--a17e2026tis.json"
+  },
+  {
     "path": "/events-page",
     "type": "page",
     "file": "documents/page/events-page--47366e10f734.json"
