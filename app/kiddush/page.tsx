@@ -32,40 +32,35 @@ const SPONSOR_OPTIONS: readonly KiddushOption[] = [
     tagline: "Most popular",
     featured: true,
     icon: "kiddush",
-    amountCents: 29500,
-    pricing: [
-      { label: "Member", amount: "$295" },
-      { label: "Non-member", amount: "$360" },
+    rates: [
+      { id: "member", label: "Member", amountCents: 29500 },
+      { id: "non-member", label: "Non-member", amountCents: 36000 },
     ],
     body: "Celebrate a simcha with your Mekor community by sponsoring a Shabbat Kiddush — an anniversary, a new baby, a graduation, or the memory of someone dear. A warm, welcoming way to bring people together.",
-    note: "Pay by card below, or via Venmo or PayPal.",
   },
   {
     title: "Birthday Kiddush",
     icon: "birthday",
-    amountCents: 3600,
-    pricing: [{ label: "Flat sponsorship", amount: "$36" }],
+    rates: [{ id: "flat", label: "Flat sponsorship", amountCents: 3600 }],
     body: "Celebrate our shul birthdays each month! Sponsor Kiddush in honor of your loved one's birthday month. Special birthday treats are served (and singing may occur).",
     when: "Every 3rd Shabbat of the month",
-    note: "Tell us the exact birth date of the person you're celebrating.",
+    note: "Add the exact birth date in the dedication field so we can celebrate on the right week.",
   },
   {
     title: "Third Meal (Seudah Shlishit)",
     icon: "thirdMeal",
-    amountCents: 10000,
-    pricing: [
-      { label: "Member", amount: "$100" },
-      { label: "Non-member", amount: "$125" },
+    rates: [
+      { id: "member", label: "Member", amountCents: 10000 },
+      { id: "non-member", label: "Non-member", amountCents: 12500 },
     ],
     body: "Complete the Shabbat experience by sponsoring Seudah Shlishit, served between Mincha and Maariv — a time for community, singing, and Torah. Typical spread: fresh bagels or rolls, tuna and egg salads, cream cheese, and light refreshments.",
   },
   {
     title: "Bagel Brunch Kiddush",
     icon: "bagelBrunch",
-    amountCents: 72000,
-    pricing: [
-      { label: "Member", amount: "$720" },
-      { label: "Non-member", amount: "$775" },
+    rates: [
+      { id: "member", label: "Member", amountCents: 72000 },
+      { id: "non-member", label: "Non-member", amountCents: 77500 },
     ],
     body: "The standard Shabbat Kiddush spread plus a generous assortment of fresh bagels, a lox and whitefish tray, tuna and egg salads, cheeses, cream cheese, and a tomato-and-onion tray. Good food, good company, and the joy of Shabbat together.",
   },
