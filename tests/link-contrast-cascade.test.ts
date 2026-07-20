@@ -32,6 +32,8 @@ test("known dark CTA link styles still declare light text colors", async () => {
         /\.bulletinCta\s*\{[\s\S]*?color:\s*#fff/,
         /\.eventsMore\s*\{[\s\S]*?color:\s*#fff/,
         /\.footerArchive\s*\{[\s\S]*?color:\s*#fff/,
+        /\.supportPrimary,\s*\n\.supportPrimary:visited\s*\{[\s\S]*?color:\s*#214e79\s*!important/,
+        /\.supportSecondary,\s*\n\.supportSecondary:visited\s*\{[\s\S]*?color:\s*#fff\s*!important/,
       ],
     },
     {

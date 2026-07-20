@@ -256,14 +256,15 @@
 .supportPrimary:visited {
   border: 1px solid #fff;
   background: #fff;
-  color: #214e79;
+  /* Beat parent .supportPanel { color: #fff } / global anchor inherit. */
+  color: #214e79 !important;
 }
 
 .supportSecondary,
 .supportSecondary:visited {
   border: 1px solid rgba(255, 255, 255, 0.55);
   background: transparent;
-  color: #fff;
+  color: #fff !important;
 }
 
 .supportPrimary:hover,
@@ -273,11 +274,13 @@
 
 .supportPrimary:hover {
   background: #f1f6fb;
+  color: #214e79 !important;
 }
 
 .supportSecondary:hover {
   border-color: #fff;
   background: rgba(255, 255, 255, 0.1);
+  color: #fff !important;
 }
 
 .supportPrimary:focus-visible,
