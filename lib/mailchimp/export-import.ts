@@ -23,7 +23,7 @@ export const MAILCHIMP_EXPORT_SOURCES = [
     segmentLabel: "Members",
     exportKind: "segment",
     exportId: "99c5db5458",
-    topic: null,
+    topic: "members",
   },
   {
     directory: "alumni",
@@ -60,7 +60,7 @@ export const MAILCHIMP_EXPORT_SOURCES = [
 export const MAILCHIMP_EXPORT_STATUSES = ["subscribed", "unsubscribed", "cleaned", "nonsubscribed"] as const;
 export type MailchimpExportStatus = (typeof MAILCHIMP_EXPORT_STATUSES)[number];
 
-export const MAILCHIMP_NEWSLETTER_TOPICS = ["weekly", "announcements", "events", "kids"] as const;
+export const MAILCHIMP_NEWSLETTER_TOPICS = ["weekly", "announcements", "events", "kids", "members"] as const;
 export type MailchimpNewsletterTopic = (typeof MAILCHIMP_NEWSLETTER_TOPICS)[number];
 export type NativeNewsletterStatus = "subscribed" | "unsubscribed" | "bounced";
 

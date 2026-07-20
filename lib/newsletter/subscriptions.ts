@@ -10,8 +10,31 @@ import {
 } from "@/db/schema";
 import { sendSendGridEmail } from "@/lib/notifications/sendgrid";
 
-export const NEWSLETTER_TOPICS = ["weekly", "announcements", "events", "kids", "eruv", "classes", "community"] as const;
+export const NEWSLETTER_TOPICS = [
+  "weekly",
+  "announcements",
+  "events",
+  "kids",
+  "eruv",
+  "classes",
+  "community",
+  "members",
+] as const;
 export type NewsletterTopic = (typeof NEWSLETTER_TOPICS)[number];
+
+// The primary Shabbat newsletter list (~1,900 contacts). Every subscription
+// should include this list, so it is always added alongside any other topics.
+export const PRIMARY_NEWSLETTER_TOPIC: NewsletterTopic = "weekly";
+
+// Statuses we must not silently overwrite when a person is auto-subscribed: an
+// explicit unsubscribe/bounce/complaint should be respected, not resurrected.
+const PROTECTED_SUBSCRIPTION_STATUSES = new Set(["unsubscribed", "bounced", "complained"]);
+
+// Resolve the full set of topics for a subscription, always including the
+// primary Shabbat list and de-duplicating the rest.
+export function resolveSubscriptionTopics(topics?: readonly NewsletterTopic[]): NewsletterTopic[] {
+  return Array.from(new Set<NewsletterTopic>([PRIMARY_NEWSLETTER_TOPIC, ...(topics ?? [])]));
+}
 
 const CONFIRMATION_TTL_MS = 48 * 60 * 60 * 1000;
 
@@ -273,6 +296,97 @@ export async function requestNewsletterSubscription(input: {
   });
 
   return { subscription, alreadySubscribed: false, confirmationSent: true };
+}
+
+/**
+ * Directly subscribe a contact (single opt-in) to one or more newsletter lists,
+ * always including the primary Shabbat list. Used for flows where the person is
+ * explicitly opting in by providing their details (e.g. becoming a member),
+ * so no double opt-in confirmation email is sent. Existing explicit unsubscribes
+ * are respected and never resurrected.
+ */
+export async function subscribeEmailToNewsletterLists(input: {
+  email: string;
+  displayName?: string;
+  topics?: readonly NewsletterTopic[];
+  source: string;
+}) {
+  const email = normalizeNewsletterEmail(input.email);
+  const db = getDb();
+  const now = new Date();
+  const topics = resolveSubscriptionTopics(input.topics);
+
+  const person = await ensureNewsletterPerson({
+    email,
+    displayName: input.displayName,
+    source: input.source,
+    now,
+  });
+
+  await db
+    .insert(communicationPreferences)
+    .values({
+      personId: person.id,
+      emailOptIn: true,
+      preferredChannel: "email",
+      createdAt: now,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: communicationPreferences.personId,
+      set: { emailOptIn: true, updatedAt: now },
+    });
+
+  const subscribedTopics: NewsletterTopic[] = [];
+
+  for (const topic of topics) {
+    const [existing] = await db
+      .select({ id: newsletterSubscriptions.id, status: newsletterSubscriptions.status })
+      .from(newsletterSubscriptions)
+      .where(and(eq(newsletterSubscriptions.personId, person.id), eq(newsletterSubscriptions.topic, topic)))
+      .limit(1);
+
+    if (existing && PROTECTED_SUBSCRIPTION_STATUSES.has(existing.status)) {
+      // Respect an explicit opt-out; do not re-subscribe.
+      continue;
+    }
+
+    if (existing?.status === "subscribed") {
+      subscribedTopics.push(topic);
+      continue;
+    }
+
+    await db
+      .insert(newsletterSubscriptions)
+      .values({
+        personId: person.id,
+        topic,
+        status: "subscribed",
+        source: input.source,
+        unsubscribeToken: newToken(),
+        confirmedAt: now,
+        unsubscribedAt: null,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: [newsletterSubscriptions.personId, newsletterSubscriptions.topic],
+        set: {
+          status: "subscribed",
+          source: input.source,
+          confirmationTokenHash: null,
+          confirmationExpiresAt: null,
+          confirmedAt: now,
+          unsubscribedAt: null,
+          updatedAt: now,
+        },
+      });
+    subscribedTopics.push(topic);
+  }
+
+  await syncNewsletterEmailPreference(person.id);
+
+  return { personId: person.id, topics, subscribedTopics };
 }
 
 export async function confirmNewsletterSubscription(token: string) {
