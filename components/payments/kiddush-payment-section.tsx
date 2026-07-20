@@ -1,22 +1,43 @@
 "use client";
 
 import { useState } from "react";
+import { CalendarDays, Cake, Croissant, Info, Sandwich, Sparkles, Wine } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 import { SectionCard } from "@/components/marketing/primitives";
 import { DonationCheckoutForm } from "@/components/payments/donation-checkout-form";
 import { cn } from "@/lib/utils";
 import styles from "@/app/kiddush/page.module.css";
 
-type KiddushOption = {
+export type KiddushPrice = {
+  label: string;
+  amount: string;
+};
+
+export type KiddushOptionIcon = "kiddush" | "birthday" | "thirdMeal" | "bagelBrunch";
+
+export type KiddushOption = {
   title: string;
-  rate: string;
   amountCents: number;
   body: string;
+  icon: KiddushOptionIcon;
+  pricing: readonly KiddushPrice[];
+  tagline?: string;
+  when?: string;
+  note?: string;
+  featured?: boolean;
 };
 
 type KiddushPaymentSectionProps = {
   options: readonly KiddushOption[];
   returnPath: string;
+};
+
+const ICONS: Record<KiddushOptionIcon, LucideIcon> = {
+  kiddush: Wine,
+  birthday: Cake,
+  thirdMeal: Sandwich,
+  bagelBrunch: Croissant,
 };
 
 export function KiddushPaymentSection({ options, returnPath }: KiddushPaymentSectionProps) {
@@ -27,32 +48,79 @@ export function KiddushPaymentSection({ options, returnPath }: KiddushPaymentSec
     return null;
   }
 
+  function selectOption(title: string) {
+    setSelectedTitle(title);
+    if (typeof window !== "undefined") {
+      window.location.hash = "kiddush-payment";
+    }
+  }
+
   return (
     <>
-      <SectionCard title="Kiddush Sponsorship Options">
+      <SectionCard
+        title="Choose your sponsorship"
+        description="Pick the celebration that fits your simcha, then continue to secure checkout below. Prefer to pay another way? Venmo and PayPal work too."
+      >
         <div className={styles.optionGrid}>
           {options.map((option) => {
             const selected = option.title === selectedOption.title;
+            const Icon = ICONS[option.icon];
 
             return (
               <article
-                className={cn(styles.optionCard, selected && styles.optionCardActive)}
+                className={cn(
+                  styles.optionCard,
+                  option.featured && styles.optionCardFeatured,
+                  selected && styles.optionCardActive,
+                )}
                 key={option.title}
                 aria-current={selected ? "true" : undefined}
               >
-                <p className={styles.optionTitle}>{option.title}</p>
-                <p className={styles.optionRate}>{option.rate}</p>
+                {option.tagline ? (
+                  <span className={styles.optionRibbon}>
+                    <Sparkles aria-hidden="true" className={styles.optionRibbonIcon} />
+                    {option.tagline}
+                  </span>
+                ) : null}
+
+                <span className={styles.optionIcon} aria-hidden="true">
+                  <Icon strokeWidth={1.8} />
+                </span>
+
+                <h3 className={styles.optionTitle}>{option.title}</h3>
+
+                <div className={styles.priceList}>
+                  {option.pricing.map((price) => (
+                    <div className={styles.priceRow} key={`${option.title}-${price.label}`}>
+                      <span className={styles.priceLabel}>{price.label}</span>
+                      <span className={styles.priceValue}>{price.amount}</span>
+                    </div>
+                  ))}
+                </div>
+
                 <p className={styles.optionBody}>{option.body}</p>
+
+                {option.when ? (
+                  <p className={styles.optionMeta}>
+                    <CalendarDays aria-hidden="true" className={styles.optionMetaIcon} />
+                    <span>{option.when}</span>
+                  </p>
+                ) : null}
+
+                {option.note ? (
+                  <p className={cn(styles.optionMeta, styles.optionNote)}>
+                    <Info aria-hidden="true" className={styles.optionMetaIcon} />
+                    <span>{option.note}</span>
+                  </p>
+                ) : null}
+
                 <button
                   type="button"
                   aria-pressed={selected}
                   className={styles.optionAction}
-                  onClick={() => {
-                    setSelectedTitle(option.title);
-                    window.location.hash = "kiddush-payment";
-                  }}
+                  onClick={() => selectOption(option.title)}
                 >
-                  {selected ? "Selected" : "Use this amount"}
+                  {selected ? "Selected — continue below" : "Sponsor this"}
                 </button>
               </article>
             );
@@ -61,8 +129,8 @@ export function KiddushPaymentSection({ options, returnPath }: KiddushPaymentSec
       </SectionCard>
 
       <SectionCard
-        title="Pay for a Kiddush"
-        description={`Enter the sponsorship amount here and continue directly to secure Stripe checkout. ${selectedOption.title} is currently selected.`}
+        title="Complete your sponsorship"
+        description={`${selectedOption.title} is selected. Confirm or adjust the amount, then continue to secure Stripe checkout.`}
         className={styles.checkoutSection}
       >
         <div id="kiddush-payment">
