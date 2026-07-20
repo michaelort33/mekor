@@ -87,6 +87,14 @@ function PaymentIcon({ brand }: { brand: string }) {
   return null;
 }
 
+const COMMON_WAYS_TO_GIVE = [
+  { label: "Kiddush or Third Meal sponsorship", amount: "$295 members · $360 non-members" },
+  { label: "Memorial plaque in the sanctuary", amount: "$1,000" },
+  { label: "Dedicate a Siddur or Machzor", amount: "$100 each" },
+  { label: "Dedicate a Chumash", amount: "$200" },
+  { label: "General contribution", amount: "Any amount is appreciated" },
+] as const;
+
 const DONATION_OPPORTUNITIES = [
   "Kiddush (Shabbat & Yom Tov) and Third Meal sponsorship ($295 members / $360 non-members)",
   "Plaque on memorial board in the shul sanctuary ($1,000)",
@@ -172,13 +180,29 @@ export default async function DonationsPage() {
         </p>
       </SectionCard>
 
+      <SectionCard title="Popular ways to give" className={styles.flatSection}>
+        <p className={styles.copyText}>
+          Not sure how much to give? These are the most common gifts. Pick a purpose and amount in the form below —
+          any amount is appreciated.
+        </p>
+        <ul className={styles.commonList}>
+          {COMMON_WAYS_TO_GIVE.map((item) => (
+            <li key={item.label} className={styles.commonRow}>
+              <span className={styles.commonLabel}>{item.label}</span>
+              <span className={styles.commonAmount}>{item.amount}</span>
+            </li>
+          ))}
+        </ul>
+      </SectionCard>
+
       <SectionCard className={`${styles.flatSection} ${styles.checkoutSection}`}>
         <DonationCheckoutForm
           title="Donate inside Mekor"
-          description="This intake flow keeps the donation purpose explicit, preserves donor details for receipts, and standardizes classification across sources."
+          description="Pick what your gift is for, choose a suggested amount (or enter your own), and continue to secure checkout. Your details are saved for the receipt."
           defaultAmountCents={3600}
           defaultDesignation="General donation"
           returnPath="/donations"
+          showSuggestedAmounts
         />
       </SectionCard>
 
@@ -203,7 +227,7 @@ export default async function DonationsPage() {
         />
       </SectionCard>
 
-      <SectionCard title="Donation Opportunities" className={styles.flatSection}>
+      <SectionCard title="All Donation Opportunities" className={styles.flatSection}>
         <ul className={styles.bulletList}>
           {DONATION_OPPORTUNITIES.map((item) => (
             <li key={item}>{item}</li>
