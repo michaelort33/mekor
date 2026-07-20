@@ -77,25 +77,10 @@ export async function POST(request: Request) {
 
     const { object } = await generateObject({
       model,
-<<<<<<< HEAD
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are an expert synagogue email designer working in a multi-turn editing conversation. Output strict JSON with keys: title,subject,parshaName,shabbatDate,hebrewDate,candleLighting,bodyHtml,summary. bodyHtml must be complete email-safe HTML using inline styles and no scripts. In generate mode, create the newsletter from scratch. In update mode, preserve the current HTML and metadata unless the request asks to change them; make the smallest targeted edit that satisfies the request. For weekly Shabbat emails, keep content lean (this week's schedule, sponsors, fresh announcements) and link evergreen items to https://www.mekorhabracha.org/mekor-bulletin-board instead of repeating long standing blurbs. The summary should briefly tell the admin what changed.",
-        },
-        {
-          role: "user",
-          content: buildUserPrompt(parsed.data),
-        },
-      ],
-=======
       schema: aiResultSchema,
       system:
         "You are an expert synagogue email designer working in a multi-turn editing conversation. Output values for title, subject, parshaName, shabbatDate, hebrewDate, candleLighting, bodyHtml, and summary. bodyHtml must be complete email-safe HTML using inline styles and no scripts. In generate mode, create the newsletter from scratch. In update mode, preserve the current HTML and metadata unless the request asks to change them; make the smallest targeted edit that satisfies the request. For weekly Shabbat emails, keep content lean (this week's schedule, sponsors, fresh announcements) and link evergreen items to https://www.mekorhabracha.org/mekor-bulletin-board instead of repeating long standing blurbs. The summary should briefly tell the admin what changed.",
       prompt: buildUserPrompt(parsed.data),
->>>>>>> cbf5a6a (Fix newsletter AI Unauthorized and use AI Gateway)
       temperature: 0.4,
     });
 
