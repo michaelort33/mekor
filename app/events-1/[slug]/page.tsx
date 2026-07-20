@@ -6,6 +6,7 @@ import { BadRequestTemplate } from "@/components/templates/bad-request-template"
 import { EventTemplate } from "@/components/templates/event-template";
 import { getDb } from "@/db/client";
 import { events } from "@/db/schema";
+import { getUserSession } from "@/lib/auth/session";
 import { isEventClosed, isEventPast } from "@/lib/events/status";
 import { ensureManagedEventRecordByPath } from "@/lib/events/store";
 import { loadNativeContentIndex } from "@/lib/native-content/content-loader";
@@ -71,6 +72,7 @@ export default async function EventTemplatePage({ params }: PageProps) {
   let eventId: number | null = null;
   let effectiveIsClosed = route.template.data.isClosed;
   let isPast = route.template.data.isPast;
+  const signupAuthenticated = Boolean(await getUserSession());
   if (process.env.DATABASE_URL) {
     const [eventRow] = await getDb()
       .select({
@@ -89,5 +91,10 @@ export default async function EventTemplatePage({ params }: PageProps) {
     }
   }
 
-  return <EventTemplate data={{ ...route.template.data, eventId, isClosed: effectiveIsClosed, isPast }} />;
+  return (
+    <EventTemplate
+      data={{ ...route.template.data, eventId, isClosed: effectiveIsClosed, isPast }}
+      signupAuthenticated={signupAuthenticated}
+    />
+  );
 }

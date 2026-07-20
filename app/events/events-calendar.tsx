@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { getEventDateParts } from "@/lib/events/format";
 import type { ManagedEvent } from "@/lib/events/store";
 import { canShowEventSignupAction } from "@/lib/events/signup-availability";
 
@@ -23,20 +24,20 @@ type MonthBucket = {
   events: ManagedEvent[];
 };
 
-function monthKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+function monthKeyFromParts(year: number, monthIndex: number) {
+  return `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
 }
 
-function monthLabel(date: Date) {
-  return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(date);
-}
-
-function closestMonthIndex(months: MonthBucket[], anchorDate: Date) {
+function closestMonthIndex(months: MonthBucket[], anchor: { year: number; monthIndex: number } | null) {
   if (months.length === 0) {
     return -1;
   }
 
-  const currentMonthKey = monthKey(anchorDate);
+  if (!anchor) {
+    return 0;
+  }
+
+  const currentMonthKey = monthKeyFromParts(anchor.year, anchor.monthIndex);
   const currentIndex = months.findIndex((month) => month.key === currentMonthKey);
 
   if (currentIndex >= 0) {
@@ -49,8 +50,8 @@ function closestMonthIndex(months: MonthBucket[], anchorDate: Date) {
   for (let index = 0; index < months.length; index += 1) {
     const bucket = months[index];
     const distance =
-      (bucket.firstDay.getFullYear() - anchorDate.getFullYear()) * 12 +
-      (bucket.firstDay.getMonth() - anchorDate.getMonth());
+      (bucket.firstDay.getUTCFullYear() - anchor.year) * 12 +
+      (bucket.firstDay.getUTCMonth() - anchor.monthIndex);
     const absDistance = Math.abs(distance);
 
     if (
@@ -65,34 +66,21 @@ function closestMonthIndex(months: MonthBucket[], anchorDate: Date) {
   return chosenIndex;
 }
 
-function dayNumber(dateIso: string | null) {
-  if (!dateIso) {
-    return null;
-  }
-  const date = new Date(dateIso);
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-  return date.getDate();
-}
-
 function buildMonthBuckets(events: ManagedEvent[]): MonthBucket[] {
   const byKey = new Map<string, MonthBucket>();
 
   for (const event of events) {
-    if (!event.startAt) {
+    // Pin month/day placement to the synagogue's time zone rather than the
+    // visitor's, so evening events never drift to the next calendar day.
+    const parts = getEventDateParts(event.startAt);
+    if (!parts) {
       continue;
     }
 
-    const start = new Date(event.startAt);
-    if (Number.isNaN(start.getTime())) {
-      continue;
-    }
-
-    const firstDay = new Date(start.getFullYear(), start.getMonth(), 1);
-    const key = monthKey(firstDay);
+    const firstDay = new Date(Date.UTC(parts.year, parts.monthIndex, 1));
+    const key = monthKeyFromParts(parts.year, parts.monthIndex);
     const existing = byKey.get(key);
-    const day = start.getDate();
+    const day = parts.day;
 
     if (existing) {
       existing.events.push(event);
@@ -105,10 +93,10 @@ function buildMonthBuckets(events: ManagedEvent[]): MonthBucket[] {
 
     byKey.set(key, {
       key,
-      label: monthLabel(firstDay),
+      label: `${parts.monthLong} ${parts.year}`,
       firstDay,
-      daysInMonth: new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate(),
-      startsOn: firstDay.getDay(),
+      daysInMonth: new Date(Date.UTC(parts.year, parts.monthIndex + 1, 0)).getUTCDate(),
+      startsOn: firstDay.getUTCDay(),
       byDay: { [day]: [event] },
       events: [event],
     });
@@ -134,7 +122,7 @@ export function EventsCalendar({
   const months = useMemo(() => buildMonthBuckets(events), [events]);
   const [selectedMonthKey, setSelectedMonthKey] = useState("");
   const [expandedPastMonthKey, setExpandedPastMonthKey] = useState("");
-  const defaultMonthIndex = useMemo(() => closestMonthIndex(months, new Date()), [months]);
+  const defaultMonthIndex = useMemo(() => closestMonthIndex(months, getEventDateParts(new Date())), [months]);
   const selectedMonthIndex = useMemo(() => {
     if (months.length === 0) {
       return -1;
@@ -249,7 +237,7 @@ export function EventsCalendar({
         {upcomingEvents.map((event) => (
           <article key={event.path} className="events-hub__event-card">
             <div className="events-hub__event-meta">
-              <span>{event.shortDate || dayNumber(event.startAt)}</span>
+              <span>{event.shortDate || getEventDateParts(event.startAt)?.day}</span>
               {event.location ? <span>{event.location}</span> : null}
               {event.isClosed ? (
                 <span className="events-hub__closed-badge">Closed</span>
@@ -286,7 +274,7 @@ export function EventsCalendar({
               {pastEvents.map((event) => (
                 <article key={event.path} className="events-hub__event-card">
                   <div className="events-hub__event-meta">
-                    <span>{event.shortDate || dayNumber(event.startAt)}</span>
+                    <span>{event.shortDate || getEventDateParts(event.startAt)?.day}</span>
                     {event.location ? <span>{event.location}</span> : null}
                     <span className="events-hub__closed-badge">Past</span>
                   </div>

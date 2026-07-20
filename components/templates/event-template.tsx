@@ -7,9 +7,10 @@ import type { EventTemplateData } from "@/lib/templates/template-data";
 
 type EventTemplateProps = {
   data: EventTemplateData;
+  signupAuthenticated: boolean;
 };
 
-export function EventTemplate({ data }: EventTemplateProps) {
+export function EventTemplate({ data, signupAuthenticated }: EventTemplateProps) {
   const mapsHref = data.location
     ? `https://maps.google.com/?q=${encodeURIComponent(data.location)}`
     : null;
@@ -66,13 +67,37 @@ export function EventTemplate({ data }: EventTemplateProps) {
           ) : null}
         </dl>
 
+        {data.schedule && data.schedule.length > 0 ? (
+          <section className="template-event-schedule" aria-label="Event schedule">
+            <h2>Schedule</h2>
+            {data.schedule.map((day) => (
+              <div key={day.dayLabel} className="template-event-schedule__day">
+                <h3>{day.dayLabel}</h3>
+                <ul>
+                  {day.items.map((item) => (
+                    <li key={`${item.time}-${item.label}`}>
+                      <span className="template-event-schedule__time">{item.time}</span>
+                      <span className="template-event-schedule__item">{item.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </section>
+        ) : null}
+
         <section className="template-content" aria-label="Event details">
           {data.about.map((line) => (
             <p key={line}>{line}</p>
           ))}
         </section>
 
-        <EventSignupPanel eventId={data.eventId} isClosed={data.isClosed} isPast={data.isPast} />
+        <EventSignupPanel
+          eventId={data.eventId}
+          isClosed={data.isClosed}
+          isPast={data.isPast}
+          isAuthenticated={signupAuthenticated}
+        />
 
         <div className="template-card__source template-card__source--actions">
           <Link href={data.seeOtherEventsHref}>See other events</Link>

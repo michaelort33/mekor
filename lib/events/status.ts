@@ -28,6 +28,25 @@ export function isEventClosed(input: Pick<EventStatusInput, "startAt" | "endAt" 
   return Boolean(input.isClosed) || isEventPast(input, now);
 }
 
+export type EventStatus = "upcoming" | "ongoing" | "past";
+
+export function getEventStatus(
+  input: Pick<EventStatusInput, "startAt" | "endAt">,
+  now = new Date(),
+): EventStatus {
+  if (isEventPast(input, now)) {
+    return "past";
+  }
+
+  const start = toDate(input.startAt);
+  const end = toDate(input.endAt);
+  if (start && end && start.getTime() <= now.getTime() && now.getTime() < end.getTime()) {
+    return "ongoing";
+  }
+
+  return "upcoming";
+}
+
 export function canAcceptEventSignup(
   input: Pick<EventStatusInput, "startAt" | "endAt" | "isClosed" | "signupEnabled" | "registrationDeadline">,
   now = new Date(),

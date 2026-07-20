@@ -1864,6 +1864,26 @@
     ]
   },
   {
+    "path": "/events-1/tisha-bav-5786",
+    "type": "event",
+    "title": "Tisha B’Av 5786",
+    "description": "Tisha B’Av 5786 at Mekor Habracha / Center City Synagogue — Mincha, the beginning of the fast, and Maariv with Megilat Eicha on Wednesday evening, July 22nd; morning services, Kinnot, a class with Rabbi Hirsch, Mincha, Maariv, and the end of the fast on Thursday, July 23rd.",
+    "excerpt": "Tisha B’Av services at Mekor Habracha: Mincha, the beginning of the fast, and Maariv with Megilat Eicha on Wednesday, July 22nd; morning services, Kinnot, a class with Rabbi Hirsch, Mincha, Maariv, and the end of the fast on Thursday, July 23rd.",
+    "terms": [
+      "tisha",
+      "b'av",
+      "tisha b'av",
+      "5786",
+      "fast",
+      "eicha",
+      "kinnot",
+      "mincha",
+      "maariv",
+      "rabbi hirsch",
+      "event"
+    ]
+  },
+  {
     "path": "/events-page",
     "type": "page",
     "title": "Events Page | Mekor 3",

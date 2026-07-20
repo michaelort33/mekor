@@ -335,10 +335,13 @@ export const managedEventContractSchema = z
     shortDate: z.string(),
     location: z.string(),
     timeLabel: z.string(),
+    summary: z.string(),
     startAt: isoDateTimeString.nullable(),
     endAt: isoDateTimeString.nullable(),
     isClosed: z.boolean(),
     isPast: z.boolean(),
+    status: z.enum(["upcoming", "ongoing", "past"]),
+    featured: z.boolean(),
     signupEnabled: z.boolean(),
     registrationDeadline: isoDateTimeString.nullable(),
   })

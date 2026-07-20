@@ -4294,6 +4294,54 @@ body.native-nav--mobile-open {
   line-height: 1.45;
 }
 
+.template-event-schedule {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 22px;
+}
+
+.template-event-schedule h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.template-event-schedule__day {
+  padding: 16px;
+  background: #f8fbff;
+  border: 1px solid #d8e0e8;
+  border-radius: 12px;
+}
+
+.template-event-schedule__day h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #1d3046;
+}
+
+.template-event-schedule__day ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.template-event-schedule__day li {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+  color: #1d3046;
+  line-height: 1.45;
+}
+
+.template-event-schedule__time {
+  font-weight: 700;
+  color: #4c6580;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .template-content {
   display: grid;
   gap: 14px;

@@ -3,7 +3,12 @@ import { asc, desc, eq } from "drizzle-orm";
 import { toBlobUrl } from "@/lib/assets/blob-rewrite";
 import { getDb } from "@/db/client";
 import { eventSignupSettings, events } from "@/db/schema";
-import { canAcceptEventSignup, isEventClosed, isEventPast } from "@/lib/events/status";
+import {
+  canAcceptEventSignup,
+  getEventStatus,
+  isEventClosed,
+  type EventStatus,
+} from "@/lib/events/status";
 import { normalizeEventSignupSettings } from "@/lib/events/signup-settings";
 import { validateManagedEventsContract } from "@/lib/native/contracts";
 
@@ -15,10 +20,13 @@ export type ManagedEvent = {
   shortDate: string;
   location: string;
   timeLabel: string;
+  summary: string;
   startAt: string | null;
   endAt: string | null;
   isClosed: boolean;
   isPast: boolean;
+  status: EventStatus;
+  featured: boolean;
   signupEnabled: boolean;
   registrationDeadline: string | null;
 };
@@ -28,7 +36,12 @@ function readSourceHeroImage(sourceJson: Record<string, unknown> | null | undefi
   return typeof value === "string" ? toBlobUrl(value) : "";
 }
 
-function toManagedEvent(row: {
+function readSourceSummary(sourceJson: Record<string, unknown> | null | undefined) {
+  const value = sourceJson?.description;
+  return typeof value === "string" ? value.trim() : "";
+}
+
+export function toManagedEvent(row: {
   slug: string;
   path: string;
   title: string;
@@ -42,10 +55,12 @@ function toManagedEvent(row: {
   registrationDeadline?: Date | null;
   signupEnabled?: boolean | null;
 }): ManagedEvent {
+  const now = new Date();
   const startAt = row.startAt ? row.startAt.toISOString() : null;
   const endAt = row.endAt ? row.endAt.toISOString() : null;
   const registrationDeadline = row.registrationDeadline ? row.registrationDeadline.toISOString() : null;
-  const isPast = isEventPast({ startAt, endAt });
+  const status = getEventStatus({ startAt, endAt }, now);
+  const isPast = status === "past";
 
   return {
     slug: row.slug,
@@ -55,17 +70,20 @@ function toManagedEvent(row: {
     shortDate: row.shortDate,
     location: row.location,
     timeLabel: row.timeLabel,
+    summary: readSourceSummary(row.sourceJson),
     startAt,
     endAt,
-    isClosed: isEventClosed({ startAt, endAt, isClosed: row.isClosed }),
+    isClosed: isEventClosed({ startAt, endAt, isClosed: row.isClosed }, now),
     isPast,
+    status,
+    featured: row.sourceJson?.featured === true,
     signupEnabled: canAcceptEventSignup({
       startAt,
       endAt,
       isClosed: row.isClosed,
       signupEnabled: row.signupEnabled ?? true,
       registrationDeadline,
-    }),
+    }, now),
     registrationDeadline,
   };
 }
