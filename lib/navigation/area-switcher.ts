@@ -55,8 +55,10 @@ export function buildAreaSwitcherLinks(input: {
   const canAccessMemberArea = input.canAccessMembersArea ?? isMemberCapableRole(input.role);
   const canAccessAdminArea = isAdminLevelRole(input.role);
   const shouldShowMemberArea = canAccessMemberArea || authenticated || input.includeSignInLinks;
+  // Admins always see Admin from any area (members, public, admin). Non-admins only
+  // see an Admin Sign In affordance when already on admin routes with sign-in links on.
   const shouldShowAdminArea =
-    currentArea === "admin" && (canAccessAdminArea || input.includeSignInLinks);
+    canAccessAdminArea || (currentArea === "admin" && Boolean(input.includeSignInLinks));
   const links: AreaSwitcherLink[] = [
     {
       area: "site",

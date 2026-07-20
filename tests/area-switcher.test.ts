@@ -30,16 +30,30 @@ test("admin area switcher includes all workspace links for admins", () => {
   );
 });
 
-test("member area switcher hides admin link even for admins", () => {
+test("member area switcher shows admin link for admins", () => {
   const links = buildAreaSwitcherLinks({
-    currentPath: "/account",
+    currentPath: "/members",
     currentArea: "member",
     role: "admin",
   });
 
   assert.deepEqual(
     links.map((link) => link.label),
-    ["Public Site", "Member Area"],
+    ["Public Site", "Member Area", "Admin"],
+  );
+  assert.equal(links.find((link) => link.area === "admin")?.href, "/admin");
+});
+
+test("public site switcher shows admin link for super admins", () => {
+  const links = buildAreaSwitcherLinks({
+    currentPath: "/",
+    currentArea: "site",
+    role: "super_admin",
+  });
+
+  assert.deepEqual(
+    links.map((link) => link.label),
+    ["Public Site", "Member Area", "Admin"],
   );
 });
 
