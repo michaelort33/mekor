@@ -139,21 +139,26 @@
   height: 34px;
   padding: 0;
   place-items: center;
-  border-color: #27384a;
+  border-color: #c6d0db;
   border-radius: 999px;
-  background: #27384a;
-  color: #fff;
+  background: #f8fafc;
+  color: #27384a;
+  box-shadow: 0 1px 2px rgba(39, 56, 74, 0.08);
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
 
 .iconOnly[data-brand] {
-  border-color: #27384a;
-  background: #27384a;
+  border-color: #c6d0db;
+  background: #f8fafc;
+  color: #27384a;
 }
 
 .iconOnly:hover,
 .iconOnly[data-brand]:hover {
-  border-color: #1f5b87;
-  background: #1f5b87;
+  border-color: #8fa4b8;
+  background: #eef3f8;
+  color: #1f5b87;
+  box-shadow: 0 2px 5px rgba(39, 56, 74, 0.12);
 }
 
 .iconOnly .inner {
@@ -186,7 +191,7 @@
 
 .iconOnly:hover .icon,
 .iconOnly[data-brand]:hover .icon {
-  color: #fff;
+  color: inherit;
 }
 
 .iconOnly .icon svg {

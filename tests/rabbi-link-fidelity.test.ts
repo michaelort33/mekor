@@ -55,6 +55,23 @@ test("Rabbi links expose recognizable brands and external-link cues", async () =
   assert.match(primitiveSource, /function EighteenFortyMark/);
 });
 
+test("Rabbi Hirsch icon links keep dark marks on a light surface", async () => {
+  const brandStyleSource = await readSource("components/marketing/brand-link.module.css");
+
+  assert.match(
+    brandStyleSource,
+    /\.iconOnly\s*\{[\s\S]*?border-color: #c6d0db;[\s\S]*?background: #f8fafc;[\s\S]*?color: #27384a;[\s\S]*?\}/,
+  );
+  assert.match(
+    brandStyleSource,
+    /\.iconOnly\[data-brand\]:hover\s*\{[\s\S]*?background: #eef3f8;[\s\S]*?color: #1f5b87;[\s\S]*?\}/,
+  );
+  assert.match(
+    brandStyleSource,
+    /\.iconOnly\[data-brand\]:hover \.icon\s*\{[\s\S]*?color: inherit;[\s\S]*?\}/,
+  );
+});
+
 test("Rabbi headshots stay proportionate across stacked layouts", async () => {
   const [pageSource, styleSource] = await Promise.all([
     readSource("app/our-rabbis/page.tsx"),
