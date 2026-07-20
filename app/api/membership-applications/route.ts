@@ -9,6 +9,7 @@ import { users } from "@/db/schema";
 import { canAccessMembersArea, resolveAccountAccess } from "@/lib/auth/account-access";
 import { createMembershipApplicationRecord } from "@/lib/membership/application-service";
 import { buildApplicantDisplayName, membershipApplicationSchema } from "@/lib/membership/applications";
+import { subscribeEmailToNewsletterLists } from "@/lib/newsletter/subscriptions";
 import { ensurePersonForUser } from "@/lib/people/service";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
@@ -133,6 +134,21 @@ export async function POST(request: Request) {
     ...parsed.data,
     submittedByUserId,
   });
+
+  // Becoming a member subscribes the applicant to the Members list and the
+  // primary Shabbat newsletter. Never let a subscription hiccup block the
+  // membership application itself.
+  try {
+    await subscribeEmailToNewsletterLists({
+      email,
+      displayName: buildApplicantDisplayName(parsed.data),
+      topics: ["members"],
+      source: "membership_application",
+    });
+  } catch (error) {
+    console.error("Failed to subscribe member applicant to newsletter lists", error);
+  }
+
   return NextResponse.json(
     {
       ok: true,

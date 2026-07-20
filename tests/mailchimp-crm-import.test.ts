@@ -134,7 +134,7 @@ test("Mailchimp exports deduplicate people but preserve separate audience profil
     assert.equal(alice.profile.phone, "+12155550100");
     assert.deepEqual(
       parsed.topicPlans.filter((plan) => plan.email === alice.email).map((plan) => [plan.topic, plan.status]),
-      [["announcements", "subscribed"], ["kids", "subscribed"], ["weekly", "subscribed"]],
+      [["announcements", "subscribed"], ["kids", "subscribed"], ["members", "subscribed"], ["weekly", "subscribed"]],
     );
     const bob = parsed.people.find((person) => person.email === "bob@example.com")!;
     assert.equal(bob.status, "inactive");
