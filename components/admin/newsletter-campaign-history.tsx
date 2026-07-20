@@ -43,6 +43,7 @@ type NewsletterCampaignHistoryProps = {
   templateId: number;
   highlightCampaignId?: number | null;
   autoExpandLatest?: boolean;
+  allowCancelScheduled?: boolean;
   className?: string;
   title?: string;
 };
@@ -74,6 +75,7 @@ export const NewsletterCampaignHistory = forwardRef<
     templateId,
     highlightCampaignId = null,
     autoExpandLatest = true,
+    allowCancelScheduled = false,
     className,
     title = "Send results & history",
   },
@@ -88,6 +90,8 @@ export const NewsletterCampaignHistory = forwardRef<
   >({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
 
   const loadCampaigns = useCallback(async () => {
@@ -151,6 +155,28 @@ export const NewsletterCampaignHistory = forwardRef<
     });
   }
 
+  async function cancelScheduled(campaignId: number) {
+    if (!window.confirm("Cancel this scheduled newsletter?")) return;
+    setCancellingId(campaignId);
+    setError("");
+    setNotice("");
+    try {
+      const response = await fetch(`/api/admin/newsletters/campaigns/${campaignId}/cancel`, {
+        method: "POST",
+        credentials: "same-origin",
+      });
+      const payload = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) {
+        setError(payload.error || "Unable to cancel campaign.");
+        return;
+      }
+      setNotice("Scheduled campaign cancelled.");
+      await loadCampaigns();
+    } finally {
+      setCancellingId(null);
+    }
+  }
+
   return (
     <section
       className={[styles.panel, className].filter(Boolean).join(" ")}
@@ -170,6 +196,7 @@ export const NewsletterCampaignHistory = forwardRef<
       </div>
 
       {error ? <p className={styles.error}>{error}</p> : null}
+      {notice ? <p className={styles.notice}>{notice}</p> : null}
       {loading && campaigns.length === 0 ? <p className={styles.muted}>Loading send history…</p> : null}
       {!loading && !error && campaigns.length === 0 ? (
         <p className={styles.muted}>No sends yet for this newsletter. Choose recipients above and send a test.</p>
@@ -225,6 +252,16 @@ export const NewsletterCampaignHistory = forwardRef<
                           .map(([event, count]) => `${event} ${count}`)
                           .join(" · ")}
                       </p>
+                    ) : null}
+                    {allowCancelScheduled && campaign.status === "scheduled" ? (
+                      <button
+                        type="button"
+                        className={styles.cancelButton}
+                        disabled={cancellingId === campaign.id}
+                        onClick={() => void cancelScheduled(campaign.id)}
+                      >
+                        {cancellingId === campaign.id ? "Cancelling…" : "Cancel scheduled send"}
+                      </button>
                     ) : null}
                     {deliveries.length === 0 ? (
                       <p className={styles.muted}>No delivery rows available for this send yet.</p>

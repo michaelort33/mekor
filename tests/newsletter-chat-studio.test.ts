@@ -116,9 +116,21 @@ test("studio send flow shows guidance, campaign history table, and uses campaign
   assert.match(history, /<table className=\{styles\.table\}>/);
   assert.match(history, /\/api\/admin\/templates\/campaigns\?templateId=/);
   assert.match(history, /Show recipients/);
+  assert.match(history, /allowCancelScheduled/);
+  assert.match(history, /Cancel scheduled send/);
   assert.match(steps, /Review & polish/);
   assert.match(steps, /Send/);
   assert.match(campaignsRoute, /length < 100/);
+});
+
+test("classic editor reuses shared campaign history table", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const editForm = await readFile("app/admin/templates/[id]/edit/template-form.tsx", "utf8");
+
+  assert.match(editForm, /NewsletterCampaignHistory/);
+  assert.match(editForm, /allowCancelScheduled/);
+  assert.match(editForm, /historyRef\.current\?\.reload\(\)/);
+  assert.doesNotMatch(editForm, /Recent deliveries/);
 });
 
 test("newsletter AI turns are saved and restored as template history", async () => {

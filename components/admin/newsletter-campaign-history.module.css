@@ -37,6 +37,28 @@
   font-size: 0.9rem;
 }
 
+.notice {
+  margin: 0;
+  color: #1f6b45;
+  font-size: 0.9rem;
+}
+
+.cancelButton {
+  justify-self: start;
+  border: 1px solid #c5d1dd;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: #fff;
+  color: #8b2e2e;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancelButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .refreshButton {
   border: 1px solid #c5d1dd;
   border-radius: 999px;
