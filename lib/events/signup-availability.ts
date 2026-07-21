@@ -5,7 +5,12 @@ export function canShowEventSignupAction(input: {
   endAt?: string | null;
   isClosed: boolean;
   signupEnabled: boolean;
+  specialSchedule?: boolean;
   registrationDeadline?: string | null;
 }) {
+  if (input.specialSchedule) {
+    return false;
+  }
+
   return canAcceptEventSignup(input);
 }

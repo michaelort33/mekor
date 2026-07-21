@@ -35,6 +35,7 @@ async function main() {
       canonical: event.path,
       headings: [event.title],
       featured: event.featured,
+      specialSchedule: event.specialSchedule,
       schedule: event.schedule,
     } as Record<string, unknown>,
     updatedAt: new Date(),

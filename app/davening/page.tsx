@@ -7,6 +7,7 @@ import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/pri
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
 import { MyZmanimWidget } from "./myzmanim-widget";
+import { SpecialDaveningSchedules } from "./special-davening-schedules";
 import styles from "./page.module.css";
 
 const PATH = "/davening" as const;
@@ -161,7 +162,7 @@ const WEEKDAY_NOTES = [
   "On occasion, you may find the building door locked. If so, please call the shul at (215) 525-4246 and leave a message to gain access, or wait by the door for one of our members to arrive with a building key.",
 ] as const;
 
-export const dynamic = "force-static";
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const document = await getNativeDocumentByPath(PATH);
@@ -197,6 +198,8 @@ export default async function DaveningPage() {
           { label: "Email admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org" },
         ]}
       />
+
+      <SpecialDaveningSchedules />
 
       <SectionCard className={`${styles.sectionCard} ${styles.calendarSection}`}>
         <div className={styles.scheduleIntro}>

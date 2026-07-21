@@ -1681,6 +1681,20 @@ body.native-nav--mobile-open {
   font-weight: 700;
 }
 
+.events-hub__special-schedule-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  border-radius: 999px;
+  border: 1px solid #9bb1c5;
+  background: #edf3f8;
+  padding: 3px 9px;
+  color: #294f72;
+  font-size: 0.76rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
 .events-hub__event-link {
   display: inline-block;
   margin-top: 9px;
@@ -4309,6 +4323,15 @@ body.native-nav--mobile-open {
 .template-event-schedule h2 {
   margin: 0;
   font-size: 22px;
+}
+
+.template-event-schedule__note {
+  margin: -4px 0 2px;
+  padding: 11px 13px;
+  border-left: 3px solid #5f84a5;
+  background: #f2f6fa;
+  color: #3c5268;
+  line-height: 1.55;
 }
 
 .template-event-schedule__day {

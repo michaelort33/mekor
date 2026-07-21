@@ -65,6 +65,10 @@ test("Tisha B'Av 5786 template preserves the flyer schedule verbatim", async () 
       data: {
         title: string;
         location: string;
+        isSpecialSchedule?: boolean;
+        scheduleTitle?: string;
+        scheduleNote?: string;
+        signupEnabled?: boolean;
         schedule?: Array<{ dayLabel: string; items: Array<{ time: string; label: string }> }>;
       };
     }>
@@ -75,6 +79,10 @@ test("Tisha B'Av 5786 template preserves the flyer schedule verbatim", async () 
   const record = records[0];
   assert.equal(record.kind, "event");
   assert.equal(record.data.title, "Tisha B’Av 5786");
+  assert.equal(record.data.isSpecialSchedule, true);
+  assert.equal(record.data.scheduleTitle, "Tisha B’Av service schedule");
+  assert.match(record.data.scheduleNote ?? "", /replace the regular Davening schedule/);
+  assert.equal(record.data.signupEnabled, false);
 
   const schedule = record.data.schedule;
   assert.ok(schedule && schedule.length > 0, "expected a structured schedule");

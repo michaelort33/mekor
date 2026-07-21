@@ -55,6 +55,11 @@ export const HAND_AUTHORED_TEMPLATES: NativeTemplateRecord[] = [
       endAt: event.endAt,
       isClosed: false,
       isPast: false,
+      isSpecialSchedule: event.specialSchedule,
+      scheduleTitle: "Tisha B’Av service schedule",
+      scheduleNote:
+        "These special service times replace the regular Davening schedule on Wednesday evening and Thursday.",
+      signupEnabled: false,
       about: event.about,
       schedule: event.schedule,
       seeOtherEventsHref: "/events",

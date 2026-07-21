@@ -124,7 +124,13 @@ function FeaturedEventCard({ event }: { event: ManagedEvent }) {
       </div>
       <div className={styles.eventFeatureBody}>
         <p className={styles.eventFeatureEyebrow}>
-          {event.status === "ongoing" ? "Happening now" : "Featured event"}
+          {event.specialSchedule
+            ? event.status === "ongoing"
+              ? "Special schedule · happening now"
+              : "Special davening schedule"
+            : event.status === "ongoing"
+              ? "Happening now"
+              : "Featured event"}
         </p>
         <h3 className={styles.eventFeatureTitle}>
           <Link href={event.path}>{event.title}</Link>

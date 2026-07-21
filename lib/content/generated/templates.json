@@ -670,8 +670,14 @@
       "shortDate": "Jul 22–23, 2026",
       "location": "Mekor Habracha / Center City Synagogue",
       "timeLabel": "Wed, Jul 22, 8:15 PM – Thu, Jul 23, 8:57 PM",
+      "startAt": "2026-07-22T20:15:00-04:00",
+      "endAt": "2026-07-23T20:57:00-04:00",
       "isClosed": false,
       "isPast": false,
+      "isSpecialSchedule": true,
+      "scheduleTitle": "Tisha B’Av service schedule",
+      "scheduleNote": "These special service times replace the regular Davening schedule on Wednesday evening and Thursday.",
+      "signupEnabled": false,
       "about": [
         "Tisha B’Av 5786 at Mekor Habracha / Center City Synagogue. The full schedule for Wednesday, July 22nd and Thursday, July 23rd is below.",
         "The fast begins on Wednesday, July 22nd at 8:23pm and ends on Thursday, July 23rd at 8:57pm."

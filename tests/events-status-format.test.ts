@@ -80,16 +80,19 @@ test("toManagedEvent surfaces featured, summary, and status and passes the contr
       heroImage: "",
       description: "Communal observance of Tisha B'Av at Mekor Habracha.",
       featured: true,
+      specialSchedule: true,
     },
   });
 
   assert.equal(managed.featured, true);
+  assert.equal(managed.specialSchedule, true);
   assert.equal(managed.summary, "Communal observance of Tisha B'Av at Mekor Habracha.");
   assert.ok(["upcoming", "ongoing", "past"].includes(managed.status));
   assert.equal(managed.isPast, managed.status === "past");
 
   const [validated] = validateManagedEventsContract([managed], "test: featured event");
   assert.equal(validated.featured, true);
+  assert.equal(validated.specialSchedule, true);
   assert.equal(validated.summary, "Communal observance of Tisha B'Av at Mekor Habracha.");
   assert.equal(validated.status, managed.status);
 });
@@ -109,6 +112,7 @@ test("toManagedEvent defaults featured/summary when sourceJson omits them", () =
   });
 
   assert.equal(managed.featured, false);
+  assert.equal(managed.specialSchedule, false);
   assert.equal(managed.summary, "");
   assert.equal(managed.status, "upcoming");
   validateManagedEventsContract([managed], "test: plain event");
