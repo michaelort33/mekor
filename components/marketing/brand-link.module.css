@@ -102,7 +102,7 @@
 }
 
 .destination {
-  color: #6a7b8f;
+  color: var(--color-muted);
   font-size: 0.69rem;
   font-weight: 700;
   line-height: 1.2;
