@@ -11,7 +11,7 @@ test("kiddush checkout is a single guided flow with rate selection", async () =>
   const source = await readTextFile("components/payments/kiddush-payment-section.tsx");
 
   assert.match(source, /Choose a Kiddush/);
-  assert.match(source, /Pick your rate/);
+  assert.match(source, /Choose a rate/);
   assert.match(source, /Your details/);
   assert.match(source, /role="radiogroup"/);
   assert.match(source, /Pay \$\{formatCents\(effectiveCents\)\} securely|Pay \$/);

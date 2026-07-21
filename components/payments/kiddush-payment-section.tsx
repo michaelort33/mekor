@@ -140,8 +140,8 @@ export function KiddushPaymentSection({ options, returnPath }: KiddushPaymentSec
 
   return (
     <SectionCard
-      title="Sponsor a Kiddush"
-      description="Choose a Kiddush and rate, then enter your details to continue to checkout."
+      title="Choose your sponsorship"
+      description="Select a Kiddush, choose the rate, and check out securely."
       className={styles.checkoutSection}
     >
       <div id="kiddush-payment" className={styles.flowScrollAnchor} />
@@ -205,7 +205,7 @@ export function KiddushPaymentSection({ options, returnPath }: KiddushPaymentSec
           <section className={styles.step}>
             <h3 className={styles.stepHeading}>
               <span className={styles.stepNumber}>2</span>
-              Pick your rate
+              Choose a rate
             </h3>
             {selectedOption.rates.length > 1 ? (
               <div className={styles.rateToggle} role="radiogroup" aria-label="Sponsorship rate">
@@ -339,8 +339,7 @@ export function KiddushPaymentSection({ options, returnPath }: KiddushPaymentSec
               {loading ? "Opening checkout…" : `Pay ${formatCents(effectiveCents)} securely`}
             </Button>
             <p className={styles.summaryHint}>
-              Secure card checkout via Stripe. Prefer Venmo or PayPal? Use the links below and email the office your
-              dedication.
+              Card payments use Stripe. For Venmo or PayPal, use the links below and email your dedication to the office.
             </p>
           </div>
         </aside>

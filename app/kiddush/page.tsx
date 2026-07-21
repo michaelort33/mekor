@@ -5,7 +5,7 @@ import { CalendarHeart, HandCoins, ShieldCheck } from "lucide-react";
 
 import { KiddushSponsorshipForm } from "@/components/forms/kiddush-sponsorship-form";
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
-import { CTACluster, HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
+import { HeroSection, InlineLink, SectionCard, SplitMediaText } from "@/components/marketing/primitives";
 import { KiddushPaymentSection, type KiddushOption } from "@/components/payments/kiddush-payment-section";
 import { KIDDUSH_LINK } from "@/lib/navigation/site-menu";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
@@ -21,8 +21,8 @@ const KIDDUSH_IMAGES = {
 } as const;
 
 const HERO_HIGHLIGHTS = [
-  { icon: HandCoins, title: "Four ways to sponsor", detail: "From a $36 birthday to a full bagel brunch" },
-  { icon: ShieldCheck, title: "Secure checkout", detail: "Pay by card via Stripe, Venmo, or PayPal" },
+  { icon: HandCoins, title: "Four ways to sponsor", detail: "From Birthday Kiddush to a full bagel brunch" },
+  { icon: ShieldCheck, title: "Secure card checkout", detail: "Pay by card, or use Venmo or PayPal" },
   { icon: CalendarHeart, title: "Simchas and yahrtzeits", detail: "Celebrate a simcha or honor someone’s memory" },
 ] as const;
 
@@ -83,10 +83,11 @@ export default async function KiddushPage() {
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
       <HeroSection
-        eyebrow="Support Mekor"
+        eyebrow="Kiddush Sponsorship"
         title="Sponsor a Kiddush"
         subtitle="For a simcha or yahrtzeit"
-        className={styles.heroFlat}
+        tone="dark"
+        className={styles.heroSection}
         image={{
           src: KIDDUSH_IMAGES.hero,
           alt: "Kiddush gathering at Mekor Habracha",
@@ -103,11 +104,11 @@ export default async function KiddushPage() {
         ]}
       />
 
-      <ul className={styles.highlightRow}>
+      <ul className={styles.sponsorBand} aria-label="Kiddush sponsorship details">
         {HERO_HIGHLIGHTS.map((highlight) => {
           const Icon = highlight.icon;
           return (
-            <li className={styles.highlightCard} key={highlight.title}>
+            <li className={styles.sponsorFact} key={highlight.title}>
               <span className={styles.highlightIcon} aria-hidden="true">
                 <Icon strokeWidth={1.8} />
               </span>
@@ -122,10 +123,9 @@ export default async function KiddushPage() {
 
       <KiddushPaymentSection options={SPONSOR_OPTIONS} returnPath={PATH} />
 
-      <SectionCard className={`${styles.flatSection} ${styles.mediaSection}`}>
+      <SectionCard className={`${styles.sectionCard} ${styles.mediaSection}`}>
         <SplitMediaText
-          title="Sponsor The Kiddush"
-          kicker="Kiddush Sponsorship"
+          title="Other ways to sponsor"
           media={{
             src: KIDDUSH_IMAGES.community,
             alt: "Community celebration table",
@@ -143,23 +143,11 @@ export default async function KiddushPage() {
       </SectionCard>
 
       <SectionCard
-        title="Request a Kiddush Sponsorship"
-        description="Send the sponsorship details here so the office can confirm the date, dedication, and payment plan with you."
-        className={styles.flatSection}
+        title="Need to confirm a date?"
+        description="Send the details to the office before paying if you want to check availability or discuss an option."
+        className={`${styles.sectionCard} ${styles.requestSection}`}
       >
         <KiddushSponsorshipForm sourcePath={PATH} />
-      </SectionCard>
-
-      <SectionCard title="Quick Links" className={styles.flatSection}>
-        <CTACluster
-          items={[
-            { label: "Choose a sponsorship", href: "#kiddush-payment" },
-            { label: "Pay with PayPal", href: PAYPAL_SPONSOR_URL },
-            { label: "General donations", href: "/donations" },
-            { label: "Email: admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org" },
-            { label: "Call: (215) 525-4246", href: "tel:+12155254246" },
-          ]}
-        />
       </SectionCard>
 
       <MarketingFooter />
