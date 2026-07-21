@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-
 type MyZmanimWidgetProps = {
   embedHtml?: string;
   embedUrl?: string;
@@ -15,43 +13,31 @@ export function MyZmanimWidget({
   title = "MyZmanim live zmanim",
   className,
 }: MyZmanimWidgetProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!embedHtml || !containerRef.current) {
-      return;
-    }
-
-    const container = containerRef.current;
-    container.innerHTML = "";
-
-    const template = document.createElement("template");
-    template.innerHTML = embedHtml.trim();
-
-    for (const childNode of template.content.childNodes) {
-      if (childNode.nodeName.toLowerCase() !== "script") {
-        container.appendChild(childNode.cloneNode(true));
-        continue;
-      }
-
-      const sourceScript = childNode as HTMLScriptElement;
-      const runtimeScript = document.createElement("script");
-
-      for (const { name, value } of Array.from(sourceScript.attributes)) {
-        runtimeScript.setAttribute(name, value);
-      }
-
-      runtimeScript.textContent = sourceScript.textContent;
-      container.appendChild(runtimeScript);
-    }
-
-    return () => {
-      container.innerHTML = "";
-    };
-  }, [embedHtml]);
-
   if (embedHtml) {
-    return <div ref={containerRef} className={className} />;
+    const srcDoc = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html, body { margin: 0; min-height: 100%; background: transparent; }
+      body { box-sizing: border-box; display: grid; justify-items: center; padding: 2px; }
+      table { max-width: 100%; }
+    </style>
+  </head>
+  <body>${embedHtml.trim()}</body>
+</html>`;
+
+    return (
+      <iframe
+        srcDoc={srcDoc}
+        title={title}
+        className={className}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
+      />
+    );
   }
 
   if (embedUrl) {
