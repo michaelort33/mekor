@@ -253,7 +253,9 @@ export default function HomePage() {
           <div className={styles.heroDivider} />
           <p className={styles.heroSubtitle}>Center City Synagogue</p>
           <a className={styles.heroArrow} href="#about" aria-label="Jump to about section">
-            <span aria-hidden="true">⌄</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
           </a>
         </div>
       </section>
