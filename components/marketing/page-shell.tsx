@@ -137,8 +137,7 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePa
                 asChild
                 size="sm"
                 variant="outline"
-                className="border-white/25 bg-white/10 hover:bg-white/18"
-                style={{ color: "#f8fbff" }}
+                className="border-white/25 bg-white/10 text-[#f8fbff] hover:bg-white/18 hover:text-white"
               >
                 <Link href="/visit-us">Plan a Visit</Link>
               </Button>

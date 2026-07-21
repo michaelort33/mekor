@@ -365,9 +365,8 @@ export function HeroSection({
                 asChild
                 variant={index === 0 ? "default" : tone === "dark" ? "outline" : "secondary"}
                 className={cn(
-                  tone === "dark" && index !== 0 && "border-white/20 bg-white/10 hover:bg-white/18",
+                  tone === "dark" && index !== 0 && "border-white/25 bg-white/12 text-[#f8fbff] hover:bg-white/20 hover:text-white",
                 )}
-                style={tone === "dark" && index !== 0 ? { color: "#f8fbff" } : undefined}
               >
                 <RenderLink href={action.href}>{action.label}</RenderLink>
               </Button>

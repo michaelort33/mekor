@@ -142,7 +142,7 @@ export function DonateExperience({ popularWays }: DonateExperienceProps) {
           setOpen(true);
         }}
         className={cn(
-          "fixed bottom-5 left-5 z-40 inline-flex items-center gap-2 rounded-full border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-5 py-3 text-sm font-semibold !text-[#f8fbff] shadow-[0_18px_45px_-24px_rgba(15,23,42,0.65)] transition hover:!text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]",
+          "fixed bottom-5 left-5 z-40 inline-flex items-center gap-2 rounded-full border border-transparent bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] px-5 py-3 text-sm font-semibold text-[#f8fbff] shadow-[0_18px_45px_-24px_rgba(15,23,42,0.65)] transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]",
           showSticky ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",
         )}
         aria-hidden={!showSticky}

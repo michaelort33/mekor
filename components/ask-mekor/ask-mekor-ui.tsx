@@ -157,7 +157,7 @@ export function AskMekorCategoryNav({
           className={cn(
             "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition",
             !selectedSlug
-              ? "border-[var(--color-accent-strong)] bg-[var(--color-accent-strong)] !text-white font-medium shadow-[0_12px_26px_-22px_rgba(15,23,42,0.55)]"
+              ? "border-[var(--color-accent-strong)] bg-[var(--color-accent-strong)] text-white font-medium shadow-[0_12px_26px_-22px_rgba(15,23,42,0.55)]"
               : "border-[var(--color-border)] bg-white text-[var(--color-muted)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-foreground)]",
           )}
         >
