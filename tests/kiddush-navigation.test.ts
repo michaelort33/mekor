@@ -14,7 +14,7 @@ test("kiddush sponsorship is a first-class give menu entry", () => {
 
   assert.ok(kiddushItem);
   assert.equal(kiddushItem?.label, "Sponsor a Kiddush");
-  assert.equal(kiddushItem?.note, "Celebrate a simcha with the community");
+  assert.equal(kiddushItem?.note, "For a simcha or yahrtzeit");
 });
 
 test("kiddush is not buried inside any public nav group", () => {
@@ -37,7 +37,20 @@ test("desktop give menu and mobile drawer surface sponsor a kiddush", async () =
   ]);
 
   assert.match(navCtaSource, /GIVE_MENU/);
-  assert.match(drawerSource, /Sponsor a Kiddush — celebrate a simcha/);
+  assert.match(drawerSource, /Sponsor a Kiddush — for a simcha or yahrtzeit/);
   assert.match(pageSource, /Choose a sponsorship/);
   assert.match(pageSource, /#kiddush-payment/);
+});
+
+test("kiddush sponsorship gives yahrtzeits equal billing with simchas", async () => {
+  const [pageSource, checkoutSource] = await Promise.all([
+    readTextFile("app/kiddush/page.tsx"),
+    readTextFile("components/payments/kiddush-payment-section.tsx"),
+  ]);
+
+  assert.match(pageSource, /subtitle="For a simcha or yahrtzeit"/);
+  assert.match(pageSource, /commemorate a yahrtzeit by sponsoring a Shabbat Kiddush/);
+  assert.match(pageSource, /honoring the memory of someone impactful in your life/);
+  assert.match(checkoutSource, /placeholder="In honor or memory of…"/);
+  assert.doesNotMatch(pageSource, /Celebrate a simcha with the Mekor community/);
 });

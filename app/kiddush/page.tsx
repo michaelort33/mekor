@@ -23,7 +23,7 @@ const KIDDUSH_IMAGES = {
 const HERO_HIGHLIGHTS = [
   { icon: HandCoins, title: "Four ways to sponsor", detail: "From a $36 birthday to a full bagel brunch" },
   { icon: ShieldCheck, title: "Secure checkout", detail: "Pay by card via Stripe, Venmo, or PayPal" },
-  { icon: CalendarHeart, title: "Mark any occasion", detail: "Simchas, yahrtzeits, and milestones" },
+  { icon: CalendarHeart, title: "Simchas and yahrtzeits", detail: "Celebrate a simcha or honor someone’s memory" },
 ] as const;
 
 const SPONSOR_OPTIONS: readonly KiddushOption[] = [
@@ -36,13 +36,13 @@ const SPONSOR_OPTIONS: readonly KiddushOption[] = [
       { id: "member", label: "Member", amountCents: 29500 },
       { id: "non-member", label: "Non-member", amountCents: 36000 },
     ],
-    body: "Celebrate a simcha with your Mekor community by sponsoring a Shabbat Kiddush — an anniversary, a new baby, a graduation, or the memory of someone dear. A warm, welcoming way to bring people together.",
+    body: "Celebrate simchas with your Mekor community or commemorate a yahrtzeit by sponsoring a Shabbat Kiddush. Whether you’re marking a special anniversary, a new baby, a graduation, or honoring the memory of someone impactful in your life, a Kiddush sponsorship is a meaningful way to bring people together.",
   },
   {
     title: "Birthday Kiddush",
     icon: "birthday",
     rates: [{ id: "flat", label: "Flat sponsorship", amountCents: 3600 }],
-    body: "Celebrate our shul birthdays each month! Sponsor Kiddush in honor of your loved one's birthday month. Special birthday treats are served (and singing may occur).",
+    body: "Let’s celebrate our shul birthdays every month with Birthday Kiddush! Sponsor Kiddush in honor of your loved one’s birthday month. Special birthday treats will be served (and singing may occur).",
     when: "Every 3rd Shabbat of the month",
     note: "Add the exact birth date in the dedication field so we can celebrate on the right week.",
   },
@@ -53,7 +53,7 @@ const SPONSOR_OPTIONS: readonly KiddushOption[] = [
       { id: "member", label: "Member", amountCents: 10000 },
       { id: "non-member", label: "Non-member", amountCents: 12500 },
     ],
-    body: "Complete the Shabbat experience by sponsoring Seudah Shlishit, served between Mincha and Maariv — a time for community, singing, and Torah. Typical spread: fresh bagels or rolls, tuna and egg salads, cream cheese, and light refreshments.",
+    body: "Join us in making the Shabbat experience complete by sponsoring our beloved Third Meal. Served between Mincha and Maariv, Seudah Shlishit is a time for community, singing, and words of Torah as we savor the last moments of Shabbat together. A typical menu includes fresh bagels or rolls, tuna and egg salads, cream cheese, spreads, and light refreshments. Your sponsorship helps create a warm, welcoming atmosphere for all.",
   },
   {
     title: "Bagel Brunch Kiddush",
@@ -62,7 +62,7 @@ const SPONSOR_OPTIONS: readonly KiddushOption[] = [
       { id: "member", label: "Member", amountCents: 72000 },
       { id: "non-member", label: "Non-member", amountCents: 77500 },
     ],
-    body: "The standard Shabbat Kiddush spread plus a generous assortment of fresh bagels, a lox and whitefish tray, tuna and egg salads, cheeses, cream cheese, and a tomato-and-onion tray. Good food, good company, and the joy of Shabbat together.",
+    body: "Our Bagel Brunch Kiddush features the standard Shabbat Kiddush spread, plus a delicious assortment of fresh bagels, a lox and whitefish tray, tuna and egg salads, cheeses, cream cheese, and a tomato-and-onion tray. A perfect way to enjoy good food, good company, and the joy of Shabbat together.",
   },
 ] as const;
 
@@ -85,7 +85,7 @@ export default async function KiddushPage() {
       <HeroSection
         eyebrow="Support Mekor"
         title="Sponsor a Kiddush"
-        subtitle="Celebrate a simcha with the Mekor community"
+        subtitle="For a simcha or yahrtzeit"
         className={styles.heroFlat}
         image={{
           src: KIDDUSH_IMAGES.hero,
@@ -94,8 +94,8 @@ export default async function KiddushPage() {
           objectPosition: "center center",
         }}
         description={[
-          "Sponsoring a Kiddush is a meaningful way to bring our community together in celebration and fellowship.",
-          "Whether you're marking a special occasion, honoring a loved one, or commemorating a yahrtzeit, your sponsorship helps us create a warm and welcoming Shabbat experience for all.",
+          "Celebrate simchas with your Mekor community or commemorate a yahrtzeit by sponsoring a Shabbat Kiddush.",
+          "Whether you’re marking a special anniversary, a new baby, a graduation, or honoring the memory of someone impactful in your life, a Kiddush sponsorship is a meaningful way to bring people together.",
         ]}
         actions={[
           { label: "Choose a sponsorship", href: "#kiddush-payment" },
