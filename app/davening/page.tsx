@@ -185,6 +185,7 @@ export default async function DaveningPage() {
         eyebrow="Services"
         title="Davening"
         subtitle="Shabbat and Weekday Services Schedule"
+        tone="dark"
         className={styles.heroSection}
         image={{
           src: DAVENING_IMAGES.hero,
@@ -279,7 +280,7 @@ export default async function DaveningPage() {
       <SectionCard
         title="Live Zmanim"
         description="Today's halachic times for Philadelphia, updated daily by MyZmanim. The Mekor service schedule above remains the source for minyan times."
-        className={styles.sectionCard}
+        className={`${styles.sectionCard} ${styles.zmanimSection}`}
       >
         {MYZMANIM_WIDGET_EMBED_HTML || MYZMANIM_WIDGET_URL ? (
           <div className={styles.zmanimEmbedWrap}>
@@ -326,12 +327,12 @@ export default async function DaveningPage() {
       <SectionCard
         title="Let Us Know!"
         description="Interested in reading Torah or Haftorah, or leading davening? Have an upcoming yahrzeit?"
-        className={styles.sectionCard}
+        className={`${styles.sectionCard} ${styles.formSection}`}
       >
         <DaveningRsvpForm sourcePath={PATH} />
       </SectionCard>
 
-      <SectionCard title="Nearby Weekday Minyanim" className={styles.sectionCard}>
+      <SectionCard title="Nearby Weekday Minyanim" className={`${styles.sectionCard} ${styles.nearbySection}`}>
         <CTACluster
           className={styles.linkCluster}
           items={[
