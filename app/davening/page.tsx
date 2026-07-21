@@ -6,6 +6,7 @@ import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page
 import { CTACluster, HeroSection, SectionCard } from "@/components/marketing/primitives";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
+import { DEFAULT_MYZMANIM_WIDGET_EMBED_HTML } from "./myzmanim-config";
 import { MyZmanimWidget } from "./myzmanim-widget";
 import { SpecialDaveningSchedules } from "./special-davening-schedules";
 import styles from "./page.module.css";
@@ -13,7 +14,9 @@ import styles from "./page.module.css";
 const PATH = "/davening" as const;
 const MINYAN_WHATSAPP_URL = "https://chat.whatsapp.com/INZrPssTZeHK5xrx5ghECF";
 const MYZMANIM_WIDGET_EMBED_HTML =
-  process.env.MYZMANIM_WIDGET_EMBED_HTML || process.env.NEXT_PUBLIC_MYZMANIM_WIDGET_EMBED_HTML || "";
+  process.env.MYZMANIM_WIDGET_EMBED_HTML ||
+  process.env.NEXT_PUBLIC_MYZMANIM_WIDGET_EMBED_HTML ||
+  DEFAULT_MYZMANIM_WIDGET_EMBED_HTML;
 const MYZMANIM_WIDGET_URL = process.env.MYZMANIM_WIDGET_URL || process.env.NEXT_PUBLIC_MYZMANIM_WIDGET_URL || "";
 
 const DAVENING_IMAGES = {
@@ -275,7 +278,7 @@ export default async function DaveningPage() {
 
       <SectionCard
         title="Live Zmanim"
-        description="For up-to-the-minute daily zmanim, use the MyZmanim widget below when available. The Mekor service schedule above remains the primary davening schedule."
+        description="Today's halachic times for Philadelphia, updated daily by MyZmanim. The Mekor service schedule above remains the source for minyan times."
         className={styles.sectionCard}
       >
         {MYZMANIM_WIDGET_EMBED_HTML || MYZMANIM_WIDGET_URL ? (
@@ -289,15 +292,16 @@ export default async function DaveningPage() {
         ) : (
           <div className={styles.zmanimFallback}>
             <p>
-              MyZmanim requires an account and a site-specific issued widget embed. To activate the live embed, set
-              <code> MYZMANIM_WIDGET_EMBED_HTML</code> or <code> NEXT_PUBLIC_MYZMANIM_WIDGET_EMBED_HTML</code> to the
-              issued MyZmanim embed code. If MyZmanim gave you a direct iframe URL instead, <code> MYZMANIM_WIDGET_URL</code>
-              and <code> NEXT_PUBLIC_MYZMANIM_WIDGET_URL</code> are still supported.
+              Live zmanim are temporarily unavailable here. You can still view today&apos;s Philadelphia times directly
+              on MyZmanim.
             </p>
             <CTACluster
               className={styles.linkCluster}
               items={[
-                { label: "Open MyZmanim", href: "https://www.myzmanim.com/" },
+                {
+                  label: "View Philadelphia Zmanim",
+                  href: "https://www.myzmanim.com/day.aspx?askdefault=1&vars=43276999&q=philadelphia",
+                },
                 { label: "Join Minyan WhatsApp", href: MINYAN_WHATSAPP_URL },
               ]}
             />
