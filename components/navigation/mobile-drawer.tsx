@@ -121,7 +121,7 @@ export function MobileDrawer({
                 onClick={onClose}
                 className="block border-t border-white/15 bg-[#1c4368] px-4 py-2.5 text-[13.5px] [color:#cfe0ef] visited:[color:#cfe0ef] hover:[color:#fff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
               >
-                Sponsor a Kiddush — celebrate a simcha
+                Sponsor a Kiddush — for a simcha or yahrtzeit
               </Link>
             ) : null}
           </div>

@@ -41,7 +41,7 @@ export const KIDDUSH_LINK = {
 /** Split-button dropdown next to Donate. */
 export const GIVE_MENU: NavLink[] = [
   { label: "Donate to Mekor", href: "/donations" },
-  { label: KIDDUSH_LINK.label, href: KIDDUSH_LINK.href, note: "Celebrate a simcha with the community" },
+  { label: KIDDUSH_LINK.label, href: KIDDUSH_LINK.href, note: "For a simcha or yahrtzeit" },
 ];
 
 /** Members-only links — rendered behind Dashboard / the drawer's Members strip, never in the public nav. */

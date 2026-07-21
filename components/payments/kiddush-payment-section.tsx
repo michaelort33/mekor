@@ -141,7 +141,7 @@ export function KiddushPaymentSection({ options, returnPath }: KiddushPaymentSec
   return (
     <SectionCard
       title="Sponsor a Kiddush"
-      description="Three quick steps: choose a Kiddush, pick your rate, then continue to secure checkout."
+      description="Choose a Kiddush and rate, then enter your details to continue to checkout."
       className={styles.checkoutSection}
     >
       <div id="kiddush-payment" className={styles.flowScrollAnchor} />
@@ -311,7 +311,7 @@ export function KiddushPaymentSection({ options, returnPath }: KiddushPaymentSec
                 <Input
                   value={dedication}
                   onChange={(event) => setDedication(event.target.value)}
-                  placeholder="In honor of…"
+                  placeholder="In honor or memory of…"
                   maxLength={120}
                 />
               </label>
