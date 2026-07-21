@@ -111,7 +111,10 @@
   width: 52px;
   height: 52px;
   margin-top: 22px;
-  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  background: #183753;
+  color: #fff;
   font-size: 2rem;
   text-decoration: none;
 }
@@ -973,7 +976,7 @@
 
 .footer {
   background: #3f4359;
-  color: #9b9eac;
+  color: #c5c7d1;
   padding: 52px 0 28px;
 }
 
@@ -1021,12 +1024,12 @@
   font-family: helvetica-w01-light, Arial, sans-serif;
   font-size: 0.9375rem;
   line-height: 1.5;
-  color: #9b9eac;
+  color: #c5c7d1;
 }
 
 .footerContact a {
   width: fit-content;
-  color: #9b9eac;
+  color: #c5c7d1;
   font-family: helvetica-w01-light, Arial, sans-serif;
   font-size: 0.9375rem;
   line-height: 1.5;
@@ -1062,7 +1065,7 @@
 }
 
 .footerNewsletterInput::placeholder {
-  color: #84858a;
+  color: #c5c7d1;
 }
 
 .footerNewsletterInput:focus {
@@ -1073,7 +1076,7 @@
   min-height: 50px !important;
   border: 1px solid #2c2d2e !important;
   border-radius: 10px !important;
-  background: #7f808a !important;
+  background: #6f707a !important;
   color: #fff !important;
   box-shadow: none !important;
   font-family: avenir-lt-w01_35-light1475496, Arial, sans-serif;
