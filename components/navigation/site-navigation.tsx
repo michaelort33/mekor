@@ -147,7 +147,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
             <Button
               asChild
               size="sm"
-              className="min-[1441px]:hidden max-[359px]:w-9 max-[359px]:px-0 !text-[#f8fbff] hover:!text-white visited:!text-[#f8fbff]"
+              className="min-[1441px]:hidden max-[359px]:w-9 max-[359px]:px-0 text-[#f8fbff] hover:text-white visited:text-[#f8fbff]"
             >
               <Link href={SUPPORT_MEKOR_LINK.href} aria-label="Donate or sponsor Mekor">
                 <Heart className="h-3.5 w-3.5" strokeWidth={2.25} aria-hidden="true" />

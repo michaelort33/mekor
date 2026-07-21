@@ -10,12 +10,12 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] !text-[#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] hover:bg-[linear-gradient(180deg,#285f90_0%,#1c4368_100%)] hover:!text-white visited:!text-[#f8fbff]",
+          "bg-[linear-gradient(180deg,#2f6fa8_0%,#214e79_100%)] text-[#f8fbff] shadow-[0_18px_45px_-28px_rgba(15,23,42,0.45)] hover:bg-[linear-gradient(180deg,#285f90_0%,#1c4368_100%)] hover:text-white visited:text-[#f8fbff]",
         secondary:
-          "bg-[var(--color-surface-strong)] !text-[var(--color-foreground)] shadow-[0_16px_40px_-30px_rgba(15,23,42,0.35)] hover:bg-[var(--color-surface)]",
-        ghost: "bg-transparent !text-[var(--color-foreground)] hover:bg-black/5",
+          "bg-[var(--color-surface-strong)] text-[var(--color-foreground)] shadow-[0_16px_40px_-30px_rgba(15,23,42,0.35)] hover:bg-[var(--color-surface)]",
+        ghost: "bg-transparent text-[var(--color-foreground)] hover:bg-black/5",
         outline:
-          "border-[var(--color-border-strong)] bg-white/70 !text-[var(--color-foreground)] hover:bg-white",
+          "border-[var(--color-border-strong)] bg-white/70 text-[var(--color-foreground)] hover:bg-white",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20",
         link: "text-primary underline-offset-4 hover:underline",

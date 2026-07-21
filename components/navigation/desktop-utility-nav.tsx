@@ -53,7 +53,7 @@ export function DesktopUtilityNav({
             href={JOIN_US_LINK.href}
             target="_blank"
             rel="noreferrer noopener"
-            className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#2e9e5b] px-4 text-[14px] font-semibold text-white shadow-sm transition hover:bg-[#278a4f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+            className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#237a45] px-4 text-[14px] font-semibold text-white shadow-sm transition hover:bg-[#1f6f3d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
           >
             <span className="h-2 w-2 rounded-full bg-[#d6f5e2]" aria-hidden="true" />
             Join WhatsApp
@@ -63,7 +63,7 @@ export function DesktopUtilityNav({
             asChild
             size="sm"
             variant="ghost"
-            className="min-h-10 border border-white/25 bg-white/10 px-4 text-[14px] !text-white hover:bg-white/20 hover:!text-white"
+            className="min-h-10 border border-white/25 bg-white/10 px-4 text-[14px] text-white hover:bg-white/20 hover:text-white"
           >
             <Link href={authAction.href}>{authAction.label}</Link>
           </Button>
@@ -73,7 +73,7 @@ export function DesktopUtilityNav({
               asChild
               size="sm"
               variant="ghost"
-              className="min-h-10 px-3 text-[14px] !text-white/85 hover:bg-white/15 hover:!text-white"
+              className="min-h-10 px-3 text-[14px] text-white/85 hover:bg-white/15 hover:text-white"
             >
               <Link href="/logout">Sign Out</Link>
             </Button>
