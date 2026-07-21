@@ -1,179 +1,253 @@
 .page {
+  --davening-navy: #183753;
+  --davening-blue: #2d668f;
+  --davening-ink: #21364b;
+  --davening-muted: #5a6d80;
+  --davening-line: #cad5df;
+  --davening-paper: #fbfcfd;
   background:
-    linear-gradient(180deg, rgba(251, 248, 241, 0.98) 0%, rgba(243, 238, 228, 0.98) 100%),
-    #f7f3ea;
+    linear-gradient(180deg, rgba(24, 55, 83, 0.08) 0, transparent 28rem),
+    #f5f3ee;
 }
 
 .stack {
-  display: grid;
-  gap: 20px;
+  gap: clamp(18px, 2.4vw, 30px);
+  max-width: 88rem !important;
 }
 
 .heroSection {
-  border-radius: 10px !important;
-  border: 1px solid #c8bda9 !important;
-  box-shadow: 0 7px 22px rgba(29, 43, 57, 0.11) !important;
+  min-height: clamp(430px, 48vw, 610px);
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 22px !important;
+  background: var(--davening-navy) !important;
+  box-shadow: 0 24px 70px -42px rgba(12, 30, 48, 0.72) !important;
 }
 
 .heroSection > :global(div:nth-child(2)) {
   background:
-    linear-gradient(180deg, rgba(244, 235, 219, 0.24) 0%, rgba(232, 218, 197, 0.7) 72%, rgba(222, 205, 182, 0.88) 100%) !important;
+    linear-gradient(90deg, rgba(10, 26, 42, 0.9) 0%, rgba(12, 30, 48, 0.72) 48%, rgba(12, 30, 48, 0.28) 100%),
+    linear-gradient(180deg, rgba(8, 20, 32, 0.08), rgba(8, 20, 32, 0.44)) !important;
 }
 
 .heroSection :global(h1) {
-  line-height: 0.98 !important;
-  letter-spacing: -0.02em !important;
+  max-width: 9ch;
+  font-size: clamp(3.5rem, 8vw, 7.2rem) !important;
+  line-height: 0.9 !important;
+  letter-spacing: -0.045em !important;
+  color: #fff !important;
+  text-shadow: 0 4px 26px rgba(0, 0, 0, 0.24);
 }
 
 .heroSection :global(p) {
-  color: #3a4c5e !important;
+  max-width: 66ch;
+  color: rgba(247, 250, 253, 0.82) !important;
 }
 
 .heroSection :global(a) {
+  min-height: 46px;
   border-radius: 999px !important;
-  border-color: var(--color-border-strong) !important;
-  background: rgba(255, 255, 255, 0.7) !important;
-  color: var(--color-accent) !important;
+  border: 1px solid rgba(255, 255, 255, 0.46) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
   box-shadow: none !important;
+  backdrop-filter: blur(7px);
 }
 
-.heroSection :global(a:first-child) {
-  border-color: transparent !important;
-  background: linear-gradient(180deg, #2f6fa8 0%, #214e79 100%) !important;
-  color: #f8fbff !important;
-  box-shadow: 0 18px 45px -28px rgba(15, 23, 42, 0.45) !important;
+.heroSection :global(a[href*="chat.whatsapp.com"]) {
+  border-color: #fff !important;
+  background: #fff !important;
+  color: var(--davening-navy) !important;
+}
+
+.heroSection :global(a[href^="mailto:"]) {
+  color: #fff !important;
 }
 
 .heroSection :global(a:hover) {
-  background: #ffffff !important;
-  border-color: var(--color-accent) !important;
+  border-color: #fff !important;
+  background: rgba(255, 255, 255, 0.2) !important;
   transform: translateY(-1px) !important;
 }
 
-.heroSection :global(a:first-child:hover) {
-  background: linear-gradient(180deg, #285f90 0%, #1c4368 100%) !important;
-  border-color: transparent !important;
+.heroSection :global(a[href*="chat.whatsapp.com"]:hover) {
+  background: #edf5fb !important;
+  color: var(--davening-navy) !important;
 }
 
-.heroSection :global(a:focus-visible) {
-  outline: 2px solid var(--color-accent) !important;
-  outline-offset: 2px !important;
+.heroSection :global(a:focus-visible),
+.linkCluster :global(a:focus-visible) {
+  outline: 3px solid #8fc4ea !important;
+  outline-offset: 3px !important;
 }
 
 .sectionCard {
-  border-radius: 8px !important;
-  border: 1px solid #d4cbb9 !important;
-  background: #fffdfa !important;
-  box-shadow: 0 2px 12px rgba(34, 47, 62, 0.08) !important;
+  border: 1px solid var(--davening-line) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  box-shadow: 0 18px 54px -46px rgba(18, 45, 69, 0.7) !important;
+  animation: sectionReveal 420ms ease-out both;
+}
+
+.sectionCard > :global(div:first-child):has(> h3) {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(280px, 1.3fr);
+  gap: 16px 32px;
+  align-items: end;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--davening-line);
+}
+
+.sectionCard > :global(div:first-child):has(> h3) > :global(h3) {
+  color: var(--davening-ink);
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  line-height: 0.98;
+}
+
+.sectionCard > :global(div:first-child):has(> h3) > :global(span) {
+  display: none;
+}
+
+.sectionCard > :global(div:first-child):has(> h3) > :global(p) {
+  max-width: 68ch;
+  color: var(--davening-muted);
+  font-size: 0.98rem;
+  line-height: 1.68;
 }
 
 .calendarSection {
-  border-color: #d4cbb9 !important;
-  background: #fffdf8 !important;
+  padding: clamp(22px, 3.4vw, 42px) !important;
+  background: var(--davening-paper) !important;
 }
 
 .specialSchedulesCard {
   overflow: hidden;
-  border-color: #9fb4c8 !important;
+  border-color: #7895ad !important;
   background:
-    linear-gradient(135deg, rgba(225, 234, 242, 0.74) 0%, rgba(255, 253, 248, 0.94) 58%),
-    #fffdf8 !important;
+    linear-gradient(135deg, rgba(227, 237, 245, 0.94) 0%, rgba(250, 252, 253, 0.98) 60%),
+    #f7fafc !important;
 }
 
-.specialSchedulesIntro {
+.specialSchedulesIntro,
+.scheduleIntro {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 0.86fr) minmax(320px, 1.14fr);
+  gap: 22px 42px;
   align-items: end;
 }
 
-.specialSchedulesIntro > p {
+.specialSchedulesIntro > p,
+.scheduleLead {
   margin: 0;
-  color: #465c72;
+  max-width: 68ch;
+  color: var(--davening-muted);
   font-size: 1rem;
-  line-height: 1.65;
+  line-height: 1.68;
+}
+
+.scheduleEyebrow {
+  margin: 0 0 9px;
+  color: var(--davening-blue);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.scheduleTitle {
+  margin: 0;
+  color: var(--davening-ink);
+  font-family: var(--font-heading);
+  font-size: clamp(2.15rem, 4vw, 3.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
 .specialSchedulesUpcoming {
-  margin-top: 20px;
+  margin-top: 26px;
 }
 
 .specialSchedule {
-  border: 1px solid #b8c7d5;
-  border-radius: 8px;
-  background: rgba(255, 254, 250, 0.92);
-  box-shadow: 0 12px 28px rgba(39, 64, 88, 0.08);
-  padding: clamp(16px, 2.4vw, 24px);
+  overflow: hidden;
+  border: 1px solid #9fb3c4;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .specialSchedule[data-archived="true"] {
-  background: #fffdf9;
-  box-shadow: none;
+  background: #f8fafb;
 }
 
 .specialScheduleHeader {
   display: flex;
   justify-content: space-between;
-  gap: 18px;
+  gap: 20px;
   align-items: end;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #ccd7e1;
+  padding: clamp(18px, 2.6vw, 28px);
+  background: var(--davening-navy);
+  color: #fff;
 }
 
 .specialScheduleHeader h3 {
-  margin: 4px 0 0;
-  color: #213a53;
+  margin: 5px 0 0;
+  color: #fff;
   font-family: var(--font-heading);
-  font-size: clamp(1.65rem, 3vw, 2.35rem);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.8rem, 3.4vw, 2.8rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
 }
 
 .specialScheduleHeader a {
-  color: #245d8d;
-  font-size: 0.92rem;
-  font-weight: 700;
-  text-underline-offset: 4px;
+  flex: 0 0 auto;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 750;
+  text-decoration-color: rgba(255, 255, 255, 0.54);
+  text-underline-offset: 5px;
 }
 
 .specialScheduleDate {
   margin: 0;
-  color: #4c6780;
-  font-size: 0.78rem;
+  color: #b9d5e9;
+  font-size: 0.76rem;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
 .specialScheduleNote {
-  margin: 14px 0 0;
-  color: #43586c;
-  line-height: 1.58;
+  margin: 0;
+  padding: 18px clamp(18px, 2.6vw, 28px) 0;
+  color: #435a6f;
+  line-height: 1.62;
 }
 
 .specialScheduleDays {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
   margin-top: 18px;
+  border-top: 1px solid var(--davening-line);
 }
 
 .specialScheduleDay {
-  border-left: 3px solid #6288a9;
-  background: #f5f8fa;
-  padding: 15px 16px 16px;
+  padding: clamp(18px, 2.6vw, 28px);
+  background: transparent;
+}
+
+.specialScheduleDay + .specialScheduleDay {
+  border-left: 1px solid var(--davening-line);
 }
 
 .specialScheduleDay h4 {
-  margin: 0 0 12px;
-  color: #29445d;
+  margin: 0 0 14px;
+  color: var(--davening-ink);
   font-size: 1rem;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .specialScheduleDay ol {
   display: grid;
-  gap: 9px;
+  gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -181,23 +255,25 @@
 
 .specialScheduleDay li {
   display: grid;
-  grid-template-columns: 78px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 14px;
   align-items: baseline;
-  color: #31495f;
+  padding: 10px 0;
+  border-top: 1px solid #dce4ea;
+  color: #334c63;
   line-height: 1.42;
 }
 
 .specialScheduleDay time {
-  color: #1f4f78;
+  color: var(--davening-blue);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .pastSpecialSchedules {
-  margin-top: 18px;
-  border-top: 1px solid #c8d3de;
+  margin-top: 20px;
+  border-top: 1px solid #aabcc9;
 }
 
 .pastSpecialSchedules summary {
@@ -205,10 +281,10 @@
   justify-content: space-between;
   gap: 16px;
   align-items: center;
-  min-height: 48px;
-  color: #314b63;
+  min-height: 54px;
+  color: #314c63;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 750;
   list-style: none;
 }
 
@@ -219,165 +295,141 @@
 .pastSpecialSchedules summary span:last-child {
   display: inline-grid;
   place-items: center;
-  min-width: 28px;
-  min-height: 28px;
+  min-width: 30px;
+  min-height: 30px;
   border-radius: 999px;
-  background: #e2eaf1;
-  color: #315474;
+  background: var(--davening-navy);
+  color: #fff;
   font-size: 0.8rem;
 }
 
 .pastSpecialSchedulesBody {
-  padding-top: 6px;
-}
-
-.scheduleIntro {
-  display: grid;
-  gap: 12px;
-  align-items: end;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.86fr);
-}
-
-.scheduleEyebrow {
-  margin: 0 0 8px;
-  color: #5c6c7d;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.scheduleTitle {
-  margin: 0;
-  color: #24374c;
-  font-family: var(--font-heading);
-  font-size: clamp(2rem, 3.6vw, 3.05rem);
-  line-height: 0.98;
-  letter-spacing: -0.02em;
-}
-
-.scheduleTitle::after {
-  content: "";
-  display: block;
-  width: 40px;
-  height: 3px;
-  margin: 14px 0 0;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-accent) 60%, transparent);
-}
-
-.scheduleLead {
-  margin: 0;
-  color: #4d5f73;
-  font-size: 1rem;
-  line-height: 1.65;
+  padding-top: 4px;
 }
 
 .infoBand {
-  margin-top: 16px;
   display: grid;
-  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 22px;
+  border-block: 1px solid var(--davening-line);
 }
 
 .infoBand p {
   margin: 0;
-  border-radius: 6px;
-  border: 1px solid #ddd3c2;
-  background: #fff9ef;
-  padding: 12px 13px;
-  color: #4d5e72;
+  padding: 16px 18px;
+  color: #425a70;
   line-height: 1.56;
 }
 
+.infoBand p + p {
+  border-left: 1px solid var(--davening-line);
+}
+
 .desktopCalendar {
-  margin-top: 16px;
   display: grid;
-  gap: 11px;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .dayColumn {
   display: grid;
-  gap: 10px;
   align-content: start;
-  border-radius: 7px;
-  border: 1px solid #ddd3c2;
-  background: #fffaf0;
-  padding: 12px 10px 11px;
   min-height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--davening-line);
+  border-radius: 12px;
+  background: #fff;
 }
 
 .dayColumn[data-kind="friday"] {
-  border-color: #d6ccb9;
-  background: #fbf4e7;
+  border-color: #aebdca;
+  background: #f7fafc;
 }
 
 .dayColumn[data-kind="shabbat"] {
-  border-color: #d6ccb9;
-  background: #f7efe2;
+  grid-column: 1 / -1;
+  border-color: #7996ad;
+  background: #f4f8fb;
 }
 
 .dayHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  min-height: 52px;
+  padding: 13px 16px;
+  background: #edf3f7;
+  border-bottom: 1px solid var(--davening-line);
+}
+
+.dayColumn[data-kind="shabbat"] .dayHeader {
+  background: var(--davening-navy);
 }
 
 .dayName {
   margin: 0;
-  color: #2e4359;
-  font-size: 0.93rem;
+  color: var(--davening-ink);
+  font-family: var(--font-heading);
+  font-size: 1.18rem;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.015em;
+}
+
+.dayColumn[data-kind="shabbat"] .dayName {
+  color: #fff;
 }
 
 .entryStack {
   display: grid;
-  gap: 8px;
+  padding: 4px 16px;
+}
+
+.dayColumn[data-kind="shabbat"] .entryStack {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 10px 12px;
 }
 
 .entryCard {
-  border-radius: 5px;
-  padding: 10px 9px;
-  background: #fffefb;
-  border: 1px solid #e1d8c9;
-  box-shadow: none;
+  min-width: 0;
+  padding: 13px 0;
+  border-top: 1px solid #dbe3e9;
+  background: transparent;
 }
 
-.entryCard[data-tone="daybreak"] {
-  background: #fffefb;
+.entryCard:first-child {
+  border-top: 0;
 }
 
-.entryCard[data-tone="midday"] {
-  background: #fff9f0;
+.dayColumn[data-kind="shabbat"] .entryCard {
+  padding: 10px 14px;
+  border-top: 0;
+  border-left: 1px solid #d4dfe7;
 }
 
-.entryCard[data-tone="evening"] {
-  background: #fbf7ef;
+.dayColumn[data-kind="shabbat"] .entryCard:first-child {
+  border-left: 0;
 }
 
 .entryLabel {
   margin: 0;
-  color: #31485f;
-  font-size: 0.8rem;
-  font-weight: 700;
+  color: #30495f;
+  font-size: 0.82rem;
+  font-weight: 760;
   line-height: 1.4;
 }
 
 .entryTime {
-  margin: 4px 0 0;
-  color: #233d58;
+  margin: 5px 0 0;
+  color: var(--davening-ink);
   font-family: var(--font-heading);
-  font-size: 1.03rem;
+  font-size: 1.12rem;
   line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
 .entryDetail {
   margin: 5px 0 0;
-  color: #5d6f83;
+  color: var(--davening-muted);
   font-size: 0.77rem;
   line-height: 1.45;
 }
@@ -385,28 +437,49 @@
 .dayNotes {
   display: grid;
   gap: 6px;
+  margin-top: auto;
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--davening-line);
+  background: rgba(237, 243, 247, 0.54);
 }
 
 .dayNotes p {
   margin: 0;
-  color: #617184;
-  font-size: 0.77rem;
-  line-height: 1.48;
+  color: #5d7082;
+  font-size: 0.78rem;
+  line-height: 1.5;
 }
 
 .mobileCalendar {
   display: none;
 }
 
+.zmanimSection {
+  overflow: hidden;
+  background:
+    linear-gradient(110deg, #183753 0, #183753 31%, rgba(255, 255, 255, 0.98) 31.1%) !important;
+}
+
+.zmanimSection > :global(div:first-child):has(> h3) {
+  border-bottom-color: rgba(255, 255, 255, 0.22);
+}
+
+.zmanimSection > :global(div:first-child):has(> h3) > :global(h3) {
+  color: #fff;
+}
+
 .zmanimEmbedWrap {
   display: grid;
   justify-items: center;
+  width: min(100%, 720px);
+  margin-inline: auto;
   overflow: hidden;
-  border-radius: 8px;
-  border: 1px solid #ddd3c2;
-  background: linear-gradient(180deg, #fffefb 0%, #fff9ef 100%);
-  padding: 20px;
-  box-shadow: none;
+  border: 1px solid #9fb1bf;
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, #edf3f7 0, #fff 68px),
+    #fff;
+  padding: 26px 18px;
 }
 
 .zmanimEmbed {
@@ -424,134 +497,216 @@
 
 .zmanimFallback p {
   margin: 0;
-  color: #4d5f73;
+  max-width: 70ch;
+  color: var(--davening-muted);
   line-height: 1.62;
-}
-
-.mobileDayCard {
-  display: grid;
-  gap: 10px;
-  border-radius: 7px;
-  border: 1px solid #ddd3c2;
-  background: #fffaf0;
-  padding: 12px;
-}
-
-.mobileDayCard[data-kind="friday"] {
-  border-color: #d6ccb9;
-  background: #fbf4e7;
-}
-
-.mobileDayCard[data-kind="shabbat"] {
-  border-color: #d6ccb9;
-  background: #f7efe2;
-}
-
-.mobileDayHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.mobileEntryList {
-  display: grid;
-  gap: 8px;
-}
-
-.mobileEntryRow {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-  border-radius: 5px;
-  border: 1px solid #e1d8c9;
-  background: #fffefb;
-  padding: 10px 9px;
-}
-
-.mobileEntryTime {
-  margin: 0;
-  color: #233d58;
-  font-family: var(--font-heading);
-  font-size: 0.97rem;
-  line-height: 1.22;
-  letter-spacing: -0.02em;
-  text-align: right;
 }
 
 .noteGrid {
   display: grid;
-  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 34px;
 }
 
 .noteCard {
-  border-radius: 6px;
-  border: 1px solid #ddd3c2;
-  background: #fff9ef;
-  padding: 12px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  min-height: 76px;
+  padding: 18px 4px 18px 24px;
+  border-bottom: 1px solid var(--davening-line);
 }
 
-.noteCard p {
-  margin: 0;
-  color: #4d5e72;
-  line-height: 1.58;
+.noteCard::before {
+  content: "";
+  position: absolute;
+  top: 26px;
+  left: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--davening-blue);
 }
 
+.noteCard p,
 .noteText {
   margin: 0;
-  color: #4d5e72;
-  line-height: 1.58;
+  color: #415970;
+  line-height: 1.64;
+}
+
+.formSection {
+  background:
+    linear-gradient(90deg, rgba(225, 235, 243, 0.5), rgba(255, 255, 255, 0) 30%),
+    #fff !important;
+}
+
+.nearbySection {
+  background: #f3f7fa !important;
 }
 
 .participateCard {
-  border-color: #d4cbb9 !important;
-  background: #fffdf8 !important;
+  border-color: #315b7d !important;
+  background: var(--davening-navy) !important;
+  color: #fff;
+}
+
+.participateCard > :global(div:first-child):has(> h3) {
+  border-bottom-color: rgba(255, 255, 255, 0.18);
+}
+
+.participateCard > :global(div:first-child):has(> h3) > :global(h3),
+.participateCard .noteText {
+  color: #fff;
+}
+
+.linkCluster :global(div) {
+  gap: 8px !important;
 }
 
 .linkCluster :global(a) {
-  border-radius: 6px !important;
-  border: 1px solid #ced8e4 !important;
-  background: #f8fbfe !important;
+  min-height: 54px;
+  border: 0 !important;
+  border-bottom: 1px solid #bdcad5 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
   box-shadow: none !important;
-  padding: 0.85rem 0.95rem !important;
+  padding: 0.85rem 0.25rem !important;
 }
 
 .linkCluster :global(a:hover) {
-  transform: translateY(-1px) !important;
-  border-color: var(--color-accent) !important;
-  background: #ffffff !important;
-}
-
-.linkCluster :global(a:focus-visible) {
-  outline: 2px solid var(--color-accent) !important;
-  outline-offset: 2px !important;
+  border-bottom-color: var(--davening-blue) !important;
+  background: rgba(255, 255, 255, 0.58) !important;
+  transform: translateX(3px) !important;
 }
 
 .linkCluster :global(span) {
-  color: #264b71 !important;
+  color: #244b6d !important;
 }
 
-@media (max-width: 1180px) {
+.participateCard .linkCluster :global(a) {
+  border-bottom-color: rgba(255, 255, 255, 0.28) !important;
+}
+
+.participateCard .linkCluster :global(a:hover) {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.participateCard .linkCluster :global(span) {
+  color: #fff !important;
+}
+
+.mobileDayCard {
+  overflow: hidden;
+  border: 1px solid var(--davening-line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.mobileDayCard[data-kind="shabbat"] {
+  border-color: #7895ad;
+}
+
+.mobileDayHeader {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--davening-line);
+  background: #edf3f7;
+}
+
+.mobileDayCard[data-kind="shabbat"] .mobileDayHeader {
+  background: var(--davening-navy);
+}
+
+.mobileDayCard[data-kind="shabbat"] .dayName {
+  color: #fff;
+}
+
+.mobileEntryList {
+  padding: 2px 14px;
+}
+
+.mobileEntryRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(118px, 0.58fr);
+  gap: 14px;
+  align-items: start;
+  padding: 13px 0;
+  border-top: 1px solid #dbe3e9;
+}
+
+.mobileEntryRow:first-child {
+  border-top: 0;
+}
+
+.mobileEntryTime {
+  margin: 0;
+  color: var(--davening-ink);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-align: right;
+}
+
+@keyframes sectionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero buttons inherit important color utilities from the shared Button.
+   Keeping these overrides in the earlier base layer gives the page-specific
+   important declarations the intended priority in the CSS cascade. */
+@layer base {
+  .heroSection :global(a[href*="chat.whatsapp.com"]) {
+    color: var(--davening-navy) !important;
+  }
+
+  .heroSection :global(a[href^="mailto:"]) {
+    color: #fff !important;
+  }
+}
+
+@media (max-width: 1060px) {
   .desktopCalendar {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dayColumn[data-kind="shabbat"] {
+    grid-column: 1 / -1;
+  }
+
+  .dayColumn[data-kind="shabbat"] .entryStack {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dayColumn[data-kind="shabbat"] .entryCard:nth-child(4) {
+    border-left: 0;
   }
 }
 
 @media (max-width: 900px) {
+  .specialSchedulesIntro,
   .scheduleIntro,
-  .specialSchedulesIntro {
+  .sectionCard > :global(div:first-child):has(> h3) {
     grid-template-columns: 1fr;
   }
 
-  .specialScheduleDays {
-    grid-template-columns: 1fr;
-  }
-
+  .specialScheduleDays,
   .infoBand,
   .noteGrid {
     grid-template-columns: 1fr;
+  }
+
+  .specialScheduleDay + .specialScheduleDay,
+  .infoBand p + p {
+    border-left: 0;
+    border-top: 1px solid var(--davening-line);
   }
 
   .desktopCalendar {
@@ -559,27 +714,49 @@
   }
 
   .mobileCalendar {
-    margin-top: 14px;
     display: grid;
     gap: 10px;
+    margin-top: 18px;
   }
 
+  .zmanimSection {
+    background: #fff !important;
+  }
+
+  .zmanimSection > :global(div:first-child):has(> h3) > :global(h3) {
+    color: var(--davening-ink);
+  }
 }
 
 @media (max-width: 760px) {
   .stack {
-    gap: 15px;
+    gap: 14px;
   }
 
-  .scheduleLead,
-  .infoBand p,
-  .noteCard p,
-  .noteText {
-    font-size: 0.96rem;
+  .heroSection {
+    min-height: 520px;
+    border-radius: 14px !important;
+    padding-inline: 22px !important;
   }
 
-  .scheduleTitle {
-    font-size: clamp(1.7rem, 9vw, 2.2rem);
+  .heroSection > :global(div:nth-child(2)) {
+    background:
+      linear-gradient(180deg, rgba(8, 22, 36, 0.38) 0%, rgba(8, 22, 36, 0.84) 54%, rgba(8, 22, 36, 0.95) 100%) !important;
+  }
+
+  .heroSection :global(h1) {
+    font-size: clamp(3.25rem, 18vw, 5rem) !important;
+  }
+
+  .sectionCard,
+  .calendarSection {
+    border-radius: 12px !important;
+    padding: 20px 18px !important;
+  }
+
+  .scheduleTitle,
+  .sectionCard > :global(div:first-child):has(> h3) > :global(h3) {
+    font-size: clamp(1.95rem, 10vw, 2.65rem);
   }
 
   .specialScheduleHeader {
@@ -588,7 +765,7 @@
   }
 
   .specialScheduleDay li {
-    grid-template-columns: 74px minmax(0, 1fr);
+    grid-template-columns: 76px minmax(0, 1fr);
     gap: 10px;
   }
 
@@ -601,14 +778,21 @@
   }
 
   .zmanimEmbedWrap {
-    padding: 14px 8px;
+    padding: 14px 4px;
   }
 
-  .heroSection {
-    border-radius: 8px !important;
+  .linkCluster :global(div) {
+    grid-template-columns: 1fr !important;
   }
+}
 
+@media (prefers-reduced-motion: reduce) {
   .sectionCard {
-    border-radius: 7px !important;
+    animation: none;
+  }
+
+  .heroSection :global(a),
+  .linkCluster :global(a) {
+    transition: none !important;
   }
 }
