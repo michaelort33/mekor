@@ -5,20 +5,15 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { GIVE_MENU, JOIN_US_LINK, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
+import { GIVE_MENU, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
 import { openUniversalSearch } from "@/components/navigation/universal-search";
 import { cn } from "@/lib/utils";
 
-type NavCtaProps = {
-  isSignedIn: boolean;
-  isCheckingAuth: boolean;
-};
-
 /**
- * Desktop right-hand cluster: search icon (demoted) · WhatsApp pill (promoted)
- * · Donate split-button with GIVE_MENU dropdown · Sign In / Dashboard.
+ * Main-tier desktop actions: search + Donate/Sponsor split-button.
+ * Quick links, WhatsApp, and authentication live in the blue utility tier.
  */
-export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
+export function NavCta() {
   const [giveOpen, setGiveOpen] = useState(false);
   const giveRef = useRef<HTMLDivElement | null>(null);
   const giveToggleRef = useRef<HTMLButtonElement | null>(null);
@@ -57,12 +52,6 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
     };
   }, [giveOpen]);
 
-  const authAction = isCheckingAuth
-    ? { label: "Checking…", href: "/login?next=%2Fmembers" }
-    : isSignedIn
-      ? { label: "Dashboard", href: "/account" }
-      : { label: "Sign In", href: "/login?next=%2Fmembers" };
-
   return (
     <div className="flex flex-none items-center gap-1.5 whitespace-nowrap">
       <button
@@ -73,16 +62,6 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
       >
         <Search className="h-4 w-4" aria-hidden="true" />
       </button>
-
-      <a
-        href={JOIN_US_LINK.href}
-        target="_blank"
-        rel="noreferrer noopener"
-        className="inline-flex items-center gap-2 rounded-full border border-[#c4dcc9] bg-[#e7f2e9] px-3.5 py-2 text-sm font-semibold text-[#1e5c3d] transition hover:border-[#8fbf9e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
-      >
-        <span className="h-2 w-2 rounded-full bg-[#2e9e5b]" aria-hidden="true" />
-        Join WhatsApp
-      </a>
 
       <div
         ref={giveRef}
@@ -166,18 +145,6 @@ export function NavCta({ isSignedIn, isCheckingAuth }: NavCtaProps) {
         ) : null}
       </div>
 
-      <Button asChild size="sm" variant="ghost" className="bg-white/60 hover:bg-white">
-        <Link href={authAction.href}>
-          <span>{authAction.label}</span>
-        </Link>
-      </Button>
-      {isSignedIn && !isCheckingAuth ? (
-        <Button asChild size="sm" variant="ghost">
-          <Link href="/logout">
-            <span>Sign Out</span>
-          </Link>
-        </Button>
-      ) : null}
     </div>
   );
 }

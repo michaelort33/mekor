@@ -30,6 +30,24 @@ test("desktop dropdown triggers highlight only while open", async () => {
   assert.doesNotMatch(desktopNavSource, /groupActive/);
 });
 
+test("option 2a splits desktop navigation into utility and browse tiers", async () => {
+  const [navigationSource, utilitySource, navCtaSource, menuSource] = await Promise.all([
+    readSource("components/navigation/site-navigation.tsx"),
+    readSource("components/navigation/desktop-utility-nav.tsx"),
+    readSource("components/navigation/nav-cta.tsx"),
+    readSource("lib/navigation/site-menu.ts"),
+  ]);
+
+  assert.match(navigationSource, /<DesktopUtilityNav/);
+  assert.match(navigationSource, /items=\{DESKTOP_BROWSE_MENU\}/);
+  assert.match(utilitySource, /aria-label="Quick links"/);
+  assert.match(utilitySource, /linear-gradient\(180deg,#30699c_0%,#28618f_100%\)/);
+  assert.match(utilitySource, /Join WhatsApp/);
+  assert.match(menuSource, /DESKTOP_UTILITY_LINKS:[\s\S]*Davening[\s\S]*Events[\s\S]*Visit Us/);
+  assert.match(menuSource, /DESKTOP_BROWSE_MENU:[\s\S]*MEMBERSHIP_MENU[\s\S]*KOSHER_GUIDE_MENU[\s\S]*WHO_WE_ARE_MENU[\s\S]*COMMUNITY_MENU/);
+  assert.doesNotMatch(navCtaSource, /JOIN_US_LINK/);
+});
+
 test("public headings keep balanced, word-safe wrapping", async () => {
   const [globalStyles, homepageSource, homepageStyles] = await Promise.all([
     readSource("app/globals.css"),

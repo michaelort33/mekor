@@ -6,13 +6,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { DesktopNav } from "@/components/navigation/desktop-nav";
+import { DesktopUtilityNav } from "@/components/navigation/desktop-utility-nav";
 import { MobileDrawer } from "@/components/navigation/mobile-drawer";
 import { NavBrand } from "@/components/navigation/nav-brand";
 import { NavCta } from "@/components/navigation/nav-cta";
 import { UniversalSearch } from "@/components/navigation/universal-search";
 import { Button } from "@/components/ui/button";
 import { normalizeNavigationPath } from "@/lib/navigation/path";
-import { SITE_MENU, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
+import { DESKTOP_BROWSE_MENU, SUPPORT_MEKOR_LINK } from "@/lib/navigation/site-menu";
 import { cn } from "@/lib/utils";
 
 type SiteNavigationProps = {
@@ -110,19 +111,30 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
     <>
       <header
         className={cn(
-          "sticky top-0 z-40 border-b px-4 transition-[padding,background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out motion-reduce:transition-none sm:px-6 lg:px-8",
+          "sticky top-0 z-40 border-b transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 ease-out motion-reduce:transition-none",
           isScrolled
-            ? "border-[#d8cbb8]/80 bg-[#f8f3eb]/95 py-2 shadow-[0_16px_36px_-26px_rgba(15,23,42,0.58)] backdrop-blur-xl"
-            : "border-transparent bg-transparent pb-0 pt-4",
+            ? "border-[#d8cbb8]/80 bg-[#f8f3eb]/95 shadow-[0_16px_36px_-26px_rgba(15,23,42,0.58)] backdrop-blur-xl"
+            : "border-transparent bg-transparent min-[1441px]:bg-[#f8f3eb]",
         )}
         data-native-nav-root="true"
         data-scrolled={isScrolled ? "true" : "false"}
       >
-        <div className="mx-auto flex w-full max-w-[110rem] items-center justify-between gap-3">
+        <DesktopUtilityNav
+          currentPath={activePath}
+          isSignedIn={authenticated}
+          isCheckingAuth={isCheckingAuth}
+        />
+
+        <div
+          className={cn(
+            "mx-auto flex w-full max-w-[110rem] items-center justify-between gap-3 px-4 transition-[padding] duration-300 ease-out motion-reduce:transition-none sm:px-6 lg:px-8",
+            isScrolled ? "py-2 min-[1441px]:py-2.5" : "pb-0 pt-4 min-[1441px]:py-3",
+          )}
+        >
           <NavBrand compact={isScrolled} />
 
           <DesktopNav
-            items={SITE_MENU}
+            items={DESKTOP_BROWSE_MENU}
             currentPath={activePath}
             openGroupId={openDesktopGroupId}
             setOpenGroupId={setOpenDesktopGroupId}
@@ -130,7 +142,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
 
           <div className="flex flex-none items-center gap-2">
             <div className="hidden min-[1441px]:flex">
-              <NavCta isSignedIn={authenticated} isCheckingAuth={isCheckingAuth} />
+              <NavCta />
             </div>
             <Button
               asChild

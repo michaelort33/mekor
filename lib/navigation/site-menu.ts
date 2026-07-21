@@ -61,6 +61,13 @@ export const QUICK_TILES: NavLink[] = [
   { label: "Visit Us", href: "/visit-us", note: "Plan your first Shabbat" },
 ];
 
+/** Desktop-only quick actions displayed in the blue utility tier. */
+export const DESKTOP_UTILITY_LINKS: NavLink[] = [
+  { label: "Davening", href: "/davening" },
+  { label: "Events", href: "/events" },
+  { label: "Visit Us", href: "/visit-us" },
+];
+
 const MEMBERSHIP_MENU: NavGroup = {
   label: "Membership",
   href: "/membership",
@@ -154,8 +161,15 @@ const COMMUNITY_MENU: NavGroup = {
 };
 
 export const SITE_MENU: NavItem[] = [
-  { label: "Davening", href: "/davening" },
-  { label: "Events", href: "/events" },
+  ...DESKTOP_UTILITY_LINKS.slice(0, 2),
+  MEMBERSHIP_MENU,
+  KOSHER_GUIDE_MENU,
+  WHO_WE_ARE_MENU,
+  COMMUNITY_MENU,
+];
+
+/** Four browse menus in option 2a's main desktop tier. */
+export const DESKTOP_BROWSE_MENU: NavItem[] = [
   MEMBERSHIP_MENU,
   KOSHER_GUIDE_MENU,
   WHO_WE_ARE_MENU,
