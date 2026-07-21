@@ -42,6 +42,9 @@ test("option 2a splits desktop navigation into utility and browse tiers", async 
   assert.match(navigationSource, /items=\{DESKTOP_BROWSE_MENU\}/);
   assert.match(utilitySource, /aria-label="Quick links"/);
   assert.match(utilitySource, /linear-gradient\(180deg,#30699c_0%,#28618f_100%\)/);
+  assert.match(utilitySource, /items-center justify-center/);
+  assert.match(utilitySource, /min-h-10/);
+  assert.doesNotMatch(utilitySource, /justify-between/);
   assert.match(utilitySource, /Join WhatsApp/);
   assert.match(menuSource, /DESKTOP_UTILITY_LINKS:[\s\S]*Davening[\s\S]*Events[\s\S]*Visit Us/);
   assert.match(menuSource, /DESKTOP_BROWSE_MENU:[\s\S]*MEMBERSHIP_MENU[\s\S]*KOSHER_GUIDE_MENU[\s\S]*WHO_WE_ARE_MENU[\s\S]*COMMUNITY_MENU/);
