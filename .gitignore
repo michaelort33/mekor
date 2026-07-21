@@ -10,9 +10,6 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
 # next.js
 /.next/
 /out/
@@ -42,9 +39,7 @@ yarn-error.log*
 next-env.d.ts
 .env*.local
 
-# Local automation/crawl artifacts
-.playwright-cli/
-output/
+# Local artifacts
 /.codex/
 docs/design/newsletters/
 reports/newsletter-qa/

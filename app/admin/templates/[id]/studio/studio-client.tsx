@@ -179,7 +179,6 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
       void loadRecipients(recipientQuery);
     }, 180);
     return () => clearTimeout(handle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional search debounce
   }, [recipientQuery, recipientMenuOpen]);
 
   useEffect(() => {

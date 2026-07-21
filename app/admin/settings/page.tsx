@@ -78,7 +78,6 @@ export default function AdminSettingsPage() {
       setError("Unable to load settings");
       setLoading(false);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function saveSetting(setting: Setting) {

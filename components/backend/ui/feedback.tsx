@@ -40,7 +40,7 @@ export function Skeleton({
 }
 
 // Deterministic widths so the skeleton looks varied but renders are pure.
-// Math.random() in render trips react-hooks/purity in CI.
+// Keep the rendered height stable for the lifetime of this module.
 const SKELETON_STACK_WIDTHS = ["88%", "72%", "94%", "65%", "82%", "76%", "90%"];
 
 export function SkeletonStack({ rows = 3, gap = 12 }: { rows?: number; gap?: number }) {

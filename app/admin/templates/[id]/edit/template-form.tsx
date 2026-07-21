@@ -122,7 +122,6 @@ export function EditTemplateForm({ template }: EditTemplateFormProps) {
 
   useEffect(() => {
     loadActivityLogs().catch(() => setLoadingActivity(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template.id]);
 
   async function generateDesign() {
