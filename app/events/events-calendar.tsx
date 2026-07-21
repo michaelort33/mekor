@@ -242,11 +242,14 @@ export function EventsCalendar({
               {event.isClosed ? (
                 <span className="events-hub__closed-badge">Closed</span>
               ) : null}
+              {event.specialSchedule ? (
+                <span className="events-hub__special-schedule-badge">Special schedule</span>
+              ) : null}
             </div>
             <h3>{event.title}</h3>
             {event.timeLabel ? <p>{event.timeLabel}</p> : null}
             <Link href={event.path} className="events-hub__event-link">
-              View event
+              {event.specialSchedule ? "View schedule" : "View event"}
             </Link>
             {allowSignup && canShowEventSignupAction(event) ? (
               <Link href={`${event.path}#signup`} className="events-hub__event-link">
@@ -277,11 +280,14 @@ export function EventsCalendar({
                     <span>{event.shortDate || getEventDateParts(event.startAt)?.day}</span>
                     {event.location ? <span>{event.location}</span> : null}
                     <span className="events-hub__closed-badge">Past</span>
+                    {event.specialSchedule ? (
+                      <span className="events-hub__special-schedule-badge">Special schedule</span>
+                    ) : null}
                   </div>
                   <h3>{event.title}</h3>
                   {event.timeLabel ? <p>{event.timeLabel}</p> : null}
                   <Link href={event.path} className="events-hub__event-link">
-                    View event
+                    {event.specialSchedule ? "View schedule" : "View event"}
                   </Link>
                 </article>
               ))}

@@ -27,6 +27,7 @@ export type ManagedEvent = {
   isPast: boolean;
   status: EventStatus;
   featured: boolean;
+  specialSchedule: boolean;
   signupEnabled: boolean;
   registrationDeadline: string | null;
 };
@@ -77,6 +78,7 @@ export function toManagedEvent(row: {
     isPast,
     status,
     featured: row.sourceJson?.featured === true,
+    specialSchedule: row.sourceJson?.specialSchedule === true,
     signupEnabled: canAcceptEventSignup({
       startAt,
       endAt,

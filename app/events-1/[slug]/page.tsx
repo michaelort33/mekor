@@ -74,7 +74,8 @@ export default async function EventTemplatePage({ params }: PageProps) {
   let endAt = route.template.data.endAt ?? null;
   let effectiveIsClosed = route.template.data.isClosed;
   let isPast = route.template.data.isPast;
-  const signupAuthenticated = Boolean(await getUserSession());
+  const signupAuthenticated =
+    route.template.data.signupEnabled === false ? false : Boolean(await getUserSession());
   if (process.env.DATABASE_URL) {
     const [eventRow] = await getDb()
       .select({

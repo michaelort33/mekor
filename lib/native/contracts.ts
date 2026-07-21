@@ -342,6 +342,7 @@ export const managedEventContractSchema = z
     isPast: z.boolean(),
     status: z.enum(["upcoming", "ongoing", "past"]),
     featured: z.boolean(),
+    specialSchedule: z.boolean(),
     signupEnabled: z.boolean(),
     registrationDeadline: isoDateTimeString.nullable(),
   })

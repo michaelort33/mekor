@@ -26,7 +26,9 @@ export function EventTemplate({ data, signupAuthenticated }: EventTemplateProps)
 
       <article className="template-card">
         <header className="template-card__header">
-          <p className="template-card__eyebrow">Event</p>
+          <p className="template-card__eyebrow">
+            {data.isSpecialSchedule ? "Special davening schedule" : "Event"}
+          </p>
           <h1>{data.title}</h1>
           <p>{data.subtitle}</p>
         </header>
@@ -74,7 +76,8 @@ export function EventTemplate({ data, signupAuthenticated }: EventTemplateProps)
 
         {data.schedule && data.schedule.length > 0 ? (
           <section className="template-event-schedule" aria-label="Event schedule">
-            <h2>Schedule</h2>
+            <h2>{data.scheduleTitle ?? "Schedule"}</h2>
+            {data.scheduleNote ? <p className="template-event-schedule__note">{data.scheduleNote}</p> : null}
             {data.schedule.map((day) => (
               <div key={day.dayLabel} className="template-event-schedule__day">
                 <h3>{day.dayLabel}</h3>
@@ -97,15 +100,18 @@ export function EventTemplate({ data, signupAuthenticated }: EventTemplateProps)
           ))}
         </section>
 
-        <EventSignupPanel
-          eventId={data.eventId}
-          isClosed={data.isClosed}
-          isPast={data.isPast}
-          isAuthenticated={signupAuthenticated}
-        />
+        {data.signupEnabled !== false ? (
+          <EventSignupPanel
+            eventId={data.eventId}
+            isClosed={data.isClosed}
+            isPast={data.isPast}
+            isAuthenticated={signupAuthenticated}
+          />
+        ) : null}
 
         <div className="template-card__source template-card__source--actions">
           <Link href={data.seeOtherEventsHref}>See other events</Link>
+          {data.isSpecialSchedule ? <Link href="/davening">View regular davening times</Link> : null}
           {mapsHref ? (
             <a href={mapsHref} target="_blank" rel="noreferrer noopener">
               Open location in maps

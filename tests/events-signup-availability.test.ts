@@ -8,6 +8,10 @@ test("signup action is shown only for open events with enabled signup", () => {
   assert.equal(canShowEventSignupAction({ isClosed: false, signupEnabled: true }), true);
   assert.equal(canShowEventSignupAction({ isClosed: true, signupEnabled: true }), false);
   assert.equal(canShowEventSignupAction({ isClosed: false, signupEnabled: false }), false);
+  assert.equal(
+    canShowEventSignupAction({ isClosed: false, signupEnabled: true, specialSchedule: true }),
+    false,
+  );
 });
 
 test("signup action is hidden after the event start time or deadline passes", () => {

@@ -37,6 +37,7 @@ export const TISHA_BAV_5786_EVENT = {
   endAt: "2026-07-23T20:57:00-04:00",
   capturedAt: "2026-07-20T12:00:00.000Z",
   featured: true,
+  specialSchedule: true,
   description:
     "Tisha B’Av 5786 at Mekor Habracha / Center City Synagogue — Mincha, the beginning of the fast, and Maariv with Megilat Eicha on Wednesday evening, July 22nd; morning services, Kinnot, a class with Rabbi Hirsch, Mincha, Maariv, and the end of the fast on Thursday, July 23rd.",
   about: [

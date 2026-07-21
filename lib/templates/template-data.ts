@@ -76,6 +76,10 @@ export type EventTemplateData = {
   endAt?: string | null;
   isClosed: boolean;
   isPast: boolean;
+  isSpecialSchedule?: boolean;
+  scheduleTitle?: string;
+  scheduleNote?: string;
+  signupEnabled?: boolean;
   about: string[];
   schedule?: EventScheduleDay[];
   seeOtherEventsHref: string;
