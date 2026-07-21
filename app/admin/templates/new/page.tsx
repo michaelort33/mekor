@@ -109,7 +109,6 @@ export default function NewTemplatePage() {
       setTemplates(payload.templates ?? []);
       setLoadingTemplates(false);
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredTemplates = useMemo(() => {

@@ -195,7 +195,6 @@ export default function AdminPersonDetailPage() {
       setError("Unable to load person");
       setLoading(false);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [personId]);
 
   async function savePerson() {

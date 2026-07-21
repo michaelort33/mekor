@@ -74,7 +74,6 @@ export function AskMekorAdminConsole() {
 
   useEffect(() => {
     void loadQuestions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

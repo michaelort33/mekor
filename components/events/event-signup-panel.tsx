@@ -181,7 +181,6 @@ export function EventSignupPanel({
       setFeedItems([]);
       setFeedLoading(false);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId, isAuthenticated]);
 
   async function register() {
@@ -488,7 +487,6 @@ export function EventSignupPanel({
             {feedItems.map((item) => (
               <li key={item.id} className={styles.feedItem}>
                 {item.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={item.avatarUrl} alt={`${item.displayName} avatar`} className={styles.feedAvatar} />
                 ) : (
                   <div className={styles.feedAvatarPlaceholder} aria-hidden="true">

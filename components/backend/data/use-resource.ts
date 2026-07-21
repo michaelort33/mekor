@@ -76,7 +76,6 @@ export function useResource<T>(
       controller.abort();
       if (timer) clearInterval(timer);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, options.skip, options.pollMs]);
 
   const refresh = useCallback(async () => {

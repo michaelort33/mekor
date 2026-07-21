@@ -165,7 +165,6 @@ export function NewsletterArchive({ newsletters }: { newsletters: NewsletterSumm
               </div>
             </div>
             {featured.coverImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={featured.coverImage} alt="" className={styles.featuredImage} />
             ) : null}
             <ArrowRight className={styles.featuredArrow} aria-hidden="true" />

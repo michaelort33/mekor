@@ -102,7 +102,6 @@ export function FeedbackAdminConsole() {
 
   useEffect(() => {
     void loadList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

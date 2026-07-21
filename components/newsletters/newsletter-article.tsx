@@ -54,7 +54,6 @@ function ContentNode({ node }: { node: NewsletterContentNode }) {
   if (node.type === "break") return <br />;
   if (node.type === "image") {
     // Imported newsletter assets are local and keep their original aspect ratios.
-    // eslint-disable-next-line @next/next/no-img-element
     return <img src={node.src} alt={node.alt} loading="lazy" className={styles.inlineImage} />;
   }
   if (node.type === "link") {
@@ -90,7 +89,6 @@ function Block({ block }: { block: NewsletterBlock }) {
 
   if (block.kind === "image") {
     const image = (
-      // eslint-disable-next-line @next/next/no-img-element
       <img src={block.node.src} alt={block.node.alt} loading="lazy" className={styles.image} />
     );
     return block.href ? (

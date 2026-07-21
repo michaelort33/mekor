@@ -354,7 +354,6 @@ export default function AccountProfilePage() {
                 <CardBody>
                   <div style={{ display: "flex", alignItems: "center", gap: "var(--bk-space-4)", marginBottom: "var(--bk-space-3)" }}>
                     {form.avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={form.avatarUrl}
                         alt="Avatar preview"

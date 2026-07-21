@@ -152,7 +152,6 @@ export default async function CommunityProfilePage({ params }: PageProps) {
       <article className={styles.card}>
         <header className={styles.header}>
           {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt={`${displayName} avatar`} className={styles.avatar} />
           ) : (
             <div className={styles.avatarPlaceholder} aria-hidden="true">
