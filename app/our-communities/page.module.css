@@ -1,5 +1,7 @@
 .page {
-  background: linear-gradient(180deg, #f2efe8 0%, #f6f4ee 100%);
+  background:
+    linear-gradient(180deg, rgba(24, 55, 83, 0.08) 0, transparent 30rem),
+    #f5f3ee;
 }
 
 .stack {
@@ -8,26 +10,24 @@
 }
 
 .heroFlat {
-  border: 1px solid #c6bdaa !important;
-  border-radius: 12px !important;
-  box-shadow: 0 10px 28px rgba(34, 45, 58, 0.1) !important;
+  border-color: #c7d2dc !important;
   overflow: hidden;
 }
 
 .heroFlat :global(div.absolute.inset-0:nth-of-type(2)) {
-  background: linear-gradient(180deg, rgba(248, 244, 235, 0.24) 0%, rgba(238, 231, 217, 0.64) 100%) !important;
+  background: linear-gradient(180deg, rgba(24, 55, 83, 0.02), rgba(24, 55, 83, 0.2)) !important;
 }
 
 .heroFlat :global(h1) {
-  font-size: clamp(2rem, 5.6vw, 3.9rem) !important;
+  font-size: clamp(2.65rem, 6.2vw, 5.25rem) !important;
   line-height: 1.03 !important;
   letter-spacing: -0.02em !important;
-  color: #262116;
+  color: #20364b;
   text-wrap: balance;
 }
 
 .heroFlat :global(p) {
-  color: #4d473d !important;
+  color: #4d6174 !important;
 }
 
 .heroFlat :global(a) {
@@ -59,10 +59,10 @@
 }
 
 .flatSection {
-  border-radius: 11px !important;
-  border: 1px solid #cbc4b7 !important;
-  background: #fbfaf7 !important;
-  box-shadow: 0 6px 20px rgba(34, 45, 58, 0.08) !important;
+  border-radius: 14px !important;
+  border: 1px solid #cbd6df !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 14px 32px -28px rgba(15, 35, 55, 0.58) !important;
   gap: 22px;
 }
 
@@ -131,9 +131,9 @@
 }
 
 .valueCard {
-  border: 1px solid #d4cdc0;
+  border: 1px solid #d2dce4;
   border-radius: 10px;
-  background: #f9f7f2;
+  background: #f8fafc;
   padding: 18px;
   display: grid;
   gap: 10px;

@@ -35,7 +35,7 @@ export function RecurringEventsSection({
         {events.map((event) => (
           <Card
             key={event.path}
-            className="overflow-hidden border-[#d6cfbf] bg-[#fffaf1] shadow-[0_1px_0_rgba(255,255,255,0.7)_inset]"
+            className="overflow-hidden rounded-[14px] border-[#cbd6df] bg-white shadow-[0_12px_28px_-24px_rgba(15,35,55,0.58)]"
           >
             <div
               className={

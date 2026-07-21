@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import brandStyles from "@/components/marketing/brand-link.module.css";
+import heroStyles from "@/components/marketing/hero-section.module.css";
 import { cn } from "@/lib/utils";
 
 export type LinkBrand =
@@ -276,48 +277,49 @@ export function HeroSection({
   return (
     <section
       className={cn(
-        "relative isolate overflow-hidden rounded-[40px] border border-[var(--color-border)] px-6 py-8 shadow-[0_42px_100px_-60px_rgba(15,23,42,0.5)] sm:px-8 sm:py-10 lg:px-12 lg:py-14",
-        tone === "dark"
-          ? "bg-[linear-gradient(140deg,rgba(18,35,59,0.94),rgba(44,71,102,0.88))] text-white"
-          : "bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(250,245,238,0.93))] text-[var(--color-foreground)]",
-        align === "center" && "text-center",
-        variant === "quiet" && "min-h-[30rem] sm:min-h-[34rem]",
+        heroStyles.hero,
+        tone === "dark" ? heroStyles.dark : heroStyles.light,
+        image && heroStyles.withImage,
+        align === "center" && heroStyles.center,
+        variant === "quiet" && heroStyles.quiet,
         className,
       )}
+      data-tone={tone}
+      data-has-image={image ? "true" : "false"}
     >
       {image ? (
-        <div className="absolute inset-0">
+        <div className={cn("absolute inset-0", heroStyles.media)}>
           <Image
             src={image.src}
             alt={image.alt}
             fill
             priority
-            sizes="100vw"
+            sizes={tone === "dark" ? "100vw" : "(max-width: 760px) 100vw, 48vw"}
             style={{
               objectPosition: image.objectPosition,
               objectFit: image.objectFit,
             }}
-            className={cn("scale-[1.02]", tone === "dark" ? "opacity-40" : "opacity-20")}
+            className={heroStyles.mediaImage}
           />
         </div>
       ) : null}
       <div
         className={cn(
           "absolute inset-0",
-          tone === "dark"
-            ? "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_34%),linear-gradient(180deg,rgba(8,16,29,0.05),rgba(8,16,29,0.26))]"
-            : "bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.66),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.52),rgba(248,243,235,0.82))]",
+          heroStyles.overlay,
         )}
       />
       <div
         className={cn(
-          "relative z-10 flex max-w-3xl flex-col gap-5",
+          "relative z-10 flex flex-col",
+          heroStyles.content,
           align === "center" && "mx-auto items-center",
         )}
       >
         {eyebrow ? (
           <Badge
             className={cn(
+              heroStyles.eyebrow,
               align === "center" ? "self-center" : "self-start",
               tone === "dark" ? "border-white/14 bg-white/10 text-[rgba(255,255,255,0.75)]" : "",
             )}
@@ -325,31 +327,31 @@ export function HeroSection({
             {eyebrow}
           </Badge>
         ) : null}
-        <div className="space-y-4">
-          <h1 className="font-[family-name:var(--font-heading)] text-5xl leading-[0.92] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
+        <div className={heroStyles.headingGroup}>
+          <h1 className={heroStyles.title}>
             {title}
           </h1>
           <span
             aria-hidden
             className={cn(
-              "block h-[3px] w-12 rounded-full",
-              tone === "dark" ? "bg-white/45" : "bg-[color-mix(in_srgb,var(--color-accent)_65%,transparent)]",
+              heroStyles.rule,
+              tone === "dark" ? heroStyles.ruleDark : heroStyles.ruleLight,
             )}
           />
           {subtitle ? (
-            <p className={cn("text-lg font-medium tracking-[0.04em] sm:text-xl", tone === "dark" ? "text-[rgba(255,255,255,0.75)]" : "text-[var(--color-muted)]")}>
+            <p className={cn(heroStyles.subtitle, tone === "dark" ? heroStyles.copyDark : heroStyles.copyLight)}>
               {subtitle}
             </p>
           ) : null}
         </div>
         {lines.length > 0 ? (
-          <div className="space-y-3">
+          <div className={heroStyles.descriptionGroup}>
             {lines.map((line) => (
               <p
                 key={line}
                 className={cn(
-                  "max-w-2xl text-base leading-7 sm:text-lg sm:leading-8",
-                  tone === "dark" ? "text-[rgba(255,255,255,0.82)]" : "text-[var(--color-muted)]",
+                  heroStyles.description,
+                  tone === "dark" ? heroStyles.copyDark : heroStyles.copyLight,
                 )}
               >
                 {line}
@@ -358,13 +360,14 @@ export function HeroSection({
           </div>
         ) : null}
         {actions?.length ? (
-          <div className={cn("flex flex-wrap gap-3", align === "center" && "justify-center")}>
+          <div className={cn(heroStyles.actions, align === "center" && "justify-center")}>
             {actions.map((action, index) => (
               <Button
                 key={`${action.href}-${action.label}`}
                 asChild
                 variant={index === 0 ? "default" : tone === "dark" ? "outline" : "secondary"}
                 className={cn(
+                  heroStyles.action,
                   tone === "dark" && index !== 0 && "border-white/25 bg-white/12 text-[#f8fbff] hover:bg-white/20 hover:text-white",
                 )}
               >
@@ -388,7 +391,7 @@ export function SplitMediaText({
 }: SplitMediaTextProps) {
   return (
     <article className={cn("grid gap-6 lg:grid-cols-2 lg:gap-8 [&>*]:min-w-0", reverse && "lg:[&>*:first-child]:order-2", className)}>
-      <div className="relative overflow-hidden rounded-[30px] bg-[var(--color-surface-soft)]">
+      <div className="relative overflow-hidden rounded-[14px] border border-[var(--color-border)] bg-[var(--color-surface-soft)]">
         <Image
           src={media.src}
           alt={media.alt}
@@ -432,7 +435,7 @@ export function SectionCard({
   return (
     <Card
       className={cn(
-        "px-5 py-6 sm:px-7 sm:py-7 lg:px-8 lg:py-8",
+        "rounded-[16px] border-[var(--color-border)] px-5 py-6 shadow-[0_12px_28px_-24px_rgba(15,35,55,0.58)] sm:px-7 sm:py-7 lg:px-8 lg:py-8",
         tone === "dark" && "bg-[linear-gradient(145deg,rgba(18,35,59,0.98),rgba(40,66,95,0.96))] text-white",
         tone === "blue" && "bg-[linear-gradient(145deg,rgba(235,241,247,0.94),rgba(221,232,242,0.98))]",
         className,
