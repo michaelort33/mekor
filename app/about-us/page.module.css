@@ -1,7 +1,7 @@
 .page {
   background:
-    linear-gradient(180deg, rgba(252, 249, 243, 0.98) 0%, rgba(244, 240, 232, 0.98) 100%),
-    #f7f3ea;
+    linear-gradient(180deg, rgba(24, 55, 83, 0.08) 0, transparent 30rem),
+    #f5f3ee;
 }
 
 .stack {
@@ -10,15 +10,12 @@
 }
 
 .heroSection {
-  border-radius: 12px !important;
-  border: 1px solid #c8bda9 !important;
-  box-shadow: 0 10px 30px rgba(29, 43, 57, 0.12) !important;
+  border-color: #c7d2dc !important;
   overflow: hidden;
 }
 
 .heroSection > :global(div:nth-child(2)) {
-  background:
-    linear-gradient(180deg, rgba(250, 246, 238, 0.22) 0%, rgba(246, 238, 226, 0.66) 66%, rgba(240, 230, 214, 0.86) 100%) !important;
+  background: linear-gradient(180deg, rgba(24, 55, 83, 0.02), rgba(24, 55, 83, 0.2)) !important;
 }
 
 .heroSection :global(h1) {
@@ -40,10 +37,10 @@
 }
 
 .sectionCard {
-  border-radius: 10px !important;
-  border: 1px solid #d4cbb9 !important;
-  background: #fffdfa !important;
-  box-shadow: 0 6px 20px rgba(36, 48, 62, 0.08) !important;
+  border-radius: 14px !important;
+  border: 1px solid #cbd6df !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 14px 32px -28px rgba(15, 35, 55, 0.58) !important;
 }
 
 .sectionCard :global(h3) {
@@ -60,10 +57,10 @@
 }
 
 .splitSection > :global(div:first-child) {
-  border-radius: 10px !important;
-  border: 1px solid #d6ccbb !important;
+  border-radius: 12px !important;
+  border: 1px solid #cbd6df !important;
   box-shadow: none !important;
-  background: #f3eee3 !important;
+  background: #f4f7f9 !important;
   overflow: hidden;
 }
 

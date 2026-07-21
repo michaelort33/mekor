@@ -1,8 +1,7 @@
 .page {
   background:
-    radial-gradient(120% 70% at 0% 0%, rgba(66, 95, 130, 0.1) 0%, rgba(66, 95, 130, 0) 58%),
-    radial-gradient(150% 80% at 100% 100%, rgba(192, 173, 139, 0.18) 0%, rgba(192, 173, 139, 0) 66%),
-    #f4f1ea;
+    linear-gradient(180deg, rgba(24, 55, 83, 0.08) 0, transparent 30rem),
+    #f5f3ee;
 }
 
 .stack {
@@ -15,6 +14,7 @@
 }
 
 .heroGraphic {
+  min-height: clamp(240px, 28vw, 340px);
   border-radius: 14px;
   border: 1px solid #324862;
   background: linear-gradient(160deg, #2d4868 0%, #243d5a 100%);
@@ -46,10 +46,8 @@
 .profileSectionCard {
   border-radius: 14px;
   border: 1px solid #cfd4dd;
-  background:
-    linear-gradient(180deg, rgba(253, 253, 251, 0.98) 0%, rgba(247, 249, 252, 0.94) 100%),
-    #fcfcfb;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: none;
 }
 
 .profileLayout {

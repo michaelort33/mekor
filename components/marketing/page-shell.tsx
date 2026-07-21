@@ -94,7 +94,7 @@ export function MarketingPageShell({
     >
       <SiteNavigation currentPath={currentPath} />
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[24rem] bg-[radial-gradient(circle_at_top_left,rgba(39,72,109,0.18),transparent_58%),radial-gradient(circle_at_top_right,rgba(191,149,92,0.16),transparent_40%)]" />
-      <div className={cn("mx-auto flex w-full max-w-[84rem] flex-col gap-8 px-4 pb-20 pt-6 sm:px-6 lg:px-8 [&>*]:min-w-0", contentClassName)}>
+      <div className={cn("mx-auto flex w-full max-w-[84rem] flex-col gap-6 px-4 pb-20 pt-6 sm:px-6 lg:px-8 [&>*]:min-w-0", contentClassName)}>
         {children}
       </div>
     </main>
@@ -104,7 +104,7 @@ export function MarketingPageShell({
 export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePath = "/" }: MarketingFooterProps) {
   return (
     <footer className="mt-10 pb-8">
-      <Card className="overflow-hidden bg-[linear-gradient(145deg,rgba(18,35,59,0.97),rgba(33,58,87,0.95))] text-white">
+      <Card className="overflow-hidden rounded-[18px] border-[#2d4964] bg-[linear-gradient(145deg,rgba(18,35,59,0.97),rgba(33,58,87,0.95))] text-white shadow-[0_18px_44px_-34px_rgba(9,24,39,0.72)]">
         <div className="grid gap-8 px-6 py-8 sm:px-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:px-10 lg:py-10">
           <section aria-label="Synagogue contact" className="space-y-5">
             <Badge className="border-white/15 bg-white/10 text-[rgba(255,255,255,0.78)]">Center City Synagogue</Badge>
@@ -156,7 +156,7 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePa
               </div>
             </div>
 
-            <div className="space-y-3 rounded-[26px] border border-white/12 bg-white/6 p-5">
+            <div className="space-y-3 rounded-[12px] border border-white/12 bg-white/6 p-5">
               <h4 className="text-xs font-semibold uppercase tracking-[0.26em] text-[rgba(255,255,255,0.78)]">
                 Subscribe to our weekly newsletter
               </h4>
@@ -183,7 +183,7 @@ export function MarketingFooter({ ctas = DEFAULT_FOOTER_CTAS, newsletterSourcePa
                     style={cardStyle}
                     target={external ? "_blank" : undefined}
                     rel={external ? "noreferrer noopener" : undefined}
-                    className="group rounded-[26px] border border-white/12 bg-white/6 px-4 py-4 transition hover:-translate-y-0.5 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                    className="group rounded-[12px] border border-white/12 bg-white/6 px-4 py-4 transition hover:-translate-y-0.5 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                   >
                     <div className="mb-3 h-1.5 w-14 rounded-full bg-[var(--footer-accent)]" />
                     <p className="text-sm font-semibold tracking-[0.02em] text-white">{cta.label}</p>

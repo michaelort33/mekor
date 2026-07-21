@@ -1,9 +1,7 @@
 .page {
   background:
-    radial-gradient(960px 420px at 8% -14%, rgba(198, 212, 229, 0.24) 0%, rgba(198, 212, 229, 0) 70%),
-    radial-gradient(920px 420px at 94% -20%, rgba(233, 214, 183, 0.26) 0%, rgba(233, 214, 183, 0) 72%),
-    linear-gradient(180deg, rgba(251, 248, 241, 0.98) 0%, rgba(243, 238, 228, 0.98) 100%),
-    #f7f3ea;
+    linear-gradient(180deg, rgba(24, 55, 83, 0.08) 0, transparent 30rem),
+    #f5f3ee;
 }
 
 .stack {
@@ -12,14 +10,11 @@
 }
 
 .heroSection {
-  border-radius: 14px !important;
-  border: 1px solid #c8bda9 !important;
-  box-shadow: 0 14px 32px rgba(29, 43, 57, 0.12) !important;
+  border-color: #c7d2dc !important;
 }
 
 .heroSection > :global(div:nth-child(2)) {
-  background:
-    linear-gradient(180deg, rgba(244, 235, 219, 0.2) 0%, rgba(232, 218, 197, 0.72) 72%, rgba(222, 205, 182, 0.9) 100%) !important;
+  background: linear-gradient(180deg, rgba(24, 55, 83, 0.02), rgba(24, 55, 83, 0.2)) !important;
 }
 
 .heroSection :global(h1) {
@@ -65,9 +60,9 @@
 
 .sectionCard {
   border-radius: 14px !important;
-  border: 1px solid #d4cbb9 !important;
-  background: linear-gradient(180deg, rgba(255, 253, 250, 0.98) 0%, rgba(251, 248, 242, 0.98) 100%) !important;
-  box-shadow: 0 10px 26px rgba(34, 47, 62, 0.1) !important;
+  border: 1px solid #cbd6df !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 14px 32px -28px rgba(15, 35, 55, 0.58) !important;
 }
 
 .sectionCard :global(h3) {
@@ -82,13 +77,13 @@
 }
 
 .memberCard {
-  border: 1px solid #d5ccbb;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #fff 0%, #fdfaf4 100%);
+  border: 1px solid #cbd6df;
+  border-radius: 12px;
+  background: #fff;
   overflow: hidden;
   display: grid;
   grid-template-rows: auto 1fr;
-  box-shadow: 0 10px 22px rgba(31, 42, 56, 0.09);
+  box-shadow: none;
 }
 
 .memberPhoto {
