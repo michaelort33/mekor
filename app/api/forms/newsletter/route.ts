@@ -11,10 +11,13 @@ import {
 } from "@/lib/admin/inbox";
 import { sendAdminInboxAlerts } from "@/lib/notifications/admin-alerts";
 import {
+  buildNewsletterWelcomeEmail,
+  buildUnsubscribeUrl,
   NEWSLETTER_TOPICS,
   normalizeNewsletterEmail,
-  requestNewsletterSubscription,
+  subscribeEmailToNewsletterLists,
 } from "@/lib/newsletter/subscriptions";
+import { sendSendGridEmail } from "@/lib/notifications/sendgrid";
 import { resolveSiteOriginFromRequest } from "@/lib/site-origin";
 import { allowWithinWindow } from "@/lib/invitations/rate-limit";
 
@@ -69,26 +72,48 @@ export async function POST(request: Request) {
     .limit(1);
 
   if (existing) {
-    const subscriptionResult = await requestNewsletterSubscription({
+    // Same email within the dedupe window: make sure they're subscribed, but
+    // don't send a second welcome email.
+    await subscribeEmailToNewsletterLists({
       email,
-      topic,
+      topics: [topic],
       source: "native_homepage_form",
-      siteOrigin: resolveSiteOriginFromRequest(request),
+      allowResubscribe: true,
     });
     return NextResponse.json({
       ok: true,
       signupEventId: existing.id,
       deduped: true,
-      subscriptionStatus: subscriptionResult.alreadySubscribed ? "subscribed" : "pending_confirmation",
+      subscriptionStatus: "subscribed",
     });
   }
 
-  const subscriptionResult = await requestNewsletterSubscription({
+  const subscriptionResult = await subscribeEmailToNewsletterLists({
     email,
-    topic,
+    topics: [topic],
     source: "native_homepage_form",
-    siteOrigin: resolveSiteOriginFromRequest(request),
+    allowResubscribe: true,
   });
+
+  // Single opt-in: they're on the list as of now. Greet new subscribers with a
+  // welcome email (which carries the unsubscribe link); never block the signup
+  // on email delivery.
+  if (subscriptionResult.newlySubscribedTopics.length > 0 && subscriptionResult.weeklyUnsubscribeToken) {
+    const welcome = buildNewsletterWelcomeEmail(
+      buildUnsubscribeUrl(resolveSiteOriginFromRequest(request), subscriptionResult.weeklyUnsubscribeToken),
+    );
+    try {
+      await sendSendGridEmail({
+        to: email,
+        subject: welcome.subject,
+        text: welcome.text,
+        html: welcome.html,
+        categories: ["newsletter-welcome"],
+      });
+    } catch (error) {
+      console.error("Failed to send newsletter welcome email", error);
+    }
+  }
 
   const occurredAt = new Date();
   const eventKey = ["subscribe", LIST_ID, email.toLowerCase(), occurredAt.toISOString()].join(":");
@@ -162,7 +187,7 @@ export async function POST(request: Request) {
     {
       ok: true,
       signupEventId: signupEvent.id,
-      subscriptionStatus: subscriptionResult.alreadySubscribed ? "subscribed" : "pending_confirmation",
+      subscriptionStatus: "subscribed",
     },
     { status: 201 },
   );
