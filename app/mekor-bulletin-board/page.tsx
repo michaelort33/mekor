@@ -3,23 +3,6 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
-import {
-  Baby,
-  BookOpen,
-  Briefcase,
-  Building2,
-  Flame,
-  HeartHandshake,
-  HeartPulse,
-  Languages,
-  MapPinned,
-  Scale,
-  ScrollText,
-  Sparkles,
-  UsersRound,
-  Wine,
-} from "lucide-react";
 
 import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page-shell";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
@@ -34,28 +17,8 @@ import {
   PATH,
   STANDING_INFO,
   type BulletinCard,
-  type BulletinIcon,
 } from "./content";
 import styles from "./page.module.css";
-
-const ICON_MAP: Record<BulletinIcon, LucideIcon> = {
-  tot: Baby,
-  davening: Flame,
-  membership: UsersRound,
-  hebrew: Languages,
-  wine: Wine,
-  israel: Sparkles,
-  volunteer: HeartHandshake,
-  yizkor: ScrollText,
-  eruv: MapPinned,
-  mikvah: Building2,
-  class: BookOpen,
-  community: UsersRound,
-  notary: Scale,
-  career: Briefcase,
-  health: HeartPulse,
-  matchmaking: HeartHandshake,
-};
 
 function isHttpLink(href: string) {
   return /^https?:\/\//i.test(href);
@@ -78,17 +41,8 @@ function BoardLink({ href, children, className }: { href: string; children: Reac
       rel={isHttpLink(href) ? "noreferrer noopener" : undefined}
     >
       {children}
+      {isHttpLink(href) ? <span className="sr-only"> (opens in a new tab)</span> : null}
     </a>
-  );
-}
-
-function CardIcon({ icon }: { icon?: BulletinIcon }) {
-  if (!icon) return null;
-  const Icon = ICON_MAP[icon];
-  return (
-    <span className={styles.iconBadge} aria-hidden="true">
-      <Icon size={18} strokeWidth={2.1} />
-    </span>
   );
 }
 
@@ -115,18 +69,13 @@ function FeaturedCard({ item }: { item: BulletinCard }) {
             src={item.image.src}
             alt={item.image.alt}
             fill
-            sizes={flyer ? "(max-width: 900px) 90vw, 360px" : "(max-width: 900px) 100vw, 640px"}
-            className={styles.featuredImage}
+            sizes={flyer ? "(max-width: 1024px) 90vw, 360px" : "(max-width: 1024px) 100vw, 640px"}
+            className={flyer ? styles.flyerImage : styles.featuredImage}
             loading="lazy"
           />
-          <div className={styles.featuredMediaShade} />
         </div>
       ) : null}
       <div className={styles.featuredBody}>
-        <div className={styles.cardMeta}>
-          <CardIcon icon={item.icon} />
-          {item.eyebrow ? <p className={styles.eyebrow}>{item.eyebrow}</p> : null}
-        </div>
         <h3>{item.title}</h3>
         {item.paragraphs.map((paragraph, index) => (
           <p key={`${item.title}-${index}`}>{paragraph}</p>
@@ -139,7 +88,7 @@ function FeaturedCard({ item }: { item: BulletinCard }) {
 
 function StandingCard({ item }: { item: BulletinCard }) {
   return (
-    <article className={`${styles.standingCard} ${item.tone === "support" ? styles.standingSupport : ""}`}>
+    <article className={styles.standingCard}>
       {item.image ? (
         <div className={styles.standingMedia}>
           <Image
@@ -151,21 +100,9 @@ function StandingCard({ item }: { item: BulletinCard }) {
             className={styles.standingImage}
             loading="lazy"
           />
-          {item.ribbon ? <span className={styles.ribbon}>{item.ribbon}</span> : null}
         </div>
-      ) : (
-        <div className={styles.standingRibbonBar}>
-          <CardIcon icon={item.icon} />
-          {item.ribbon || item.eyebrow ? <span>{item.ribbon || item.eyebrow}</span> : null}
-        </div>
-      )}
+      ) : null}
       <div className={styles.standingBody}>
-        {!item.image ? null : (
-          <div className={styles.cardMeta}>
-            <CardIcon icon={item.icon} />
-            {item.eyebrow ? <p className={styles.eyebrow}>{item.eyebrow}</p> : null}
-          </div>
-        )}
         <h3>{item.title}</h3>
         {item.paragraphs.map((paragraph, index) => (
           <p key={`${item.title}-${index}`}>{paragraph}</p>
@@ -178,17 +115,8 @@ function StandingCard({ item }: { item: BulletinCard }) {
 
 function PinCard({ item }: { item: BulletinCard }) {
   return (
-    <article
-      className={`${styles.pinCard} ${item.tone === "urgent" ? styles.pinUrgent : ""}`}
-      data-tone={item.tone || "default"}
-    >
-      <div className={styles.pinHead}>
-        <CardIcon icon={item.icon} />
-        <div>
-          {item.eyebrow ? <p className={styles.eyebrow}>{item.eyebrow}</p> : null}
-          <h3>{item.title}</h3>
-        </div>
-      </div>
+    <article className={`${styles.pinCard} ${item.tone === "urgent" ? styles.pinUrgent : ""}`}>
+      <h3>{item.title}</h3>
       {item.paragraphs.map((paragraph, index) => (
         <p key={`${item.title}-${index}`}>{paragraph}</p>
       ))}
@@ -201,10 +129,6 @@ function ClassifiedRow({ item }: { item: BulletinCard }) {
   return (
     <article className={styles.classifiedRow}>
       <div className={styles.classifiedCopy}>
-        <div className={styles.cardMeta}>
-          <CardIcon icon={item.icon} />
-          {item.eyebrow ? <p className={styles.eyebrow}>{item.eyebrow}</p> : null}
-        </div>
         <h3>{item.title}</h3>
         {item.paragraphs.map((paragraph, index) => (
           <p key={`${item.title}-${index}`}>{paragraph}</p>
@@ -231,7 +155,7 @@ export default async function BulletinBoardPage() {
 
   return (
     <MarketingPageShell currentPath={PATH} className={styles.page} contentClassName={styles.stack}>
-      <header className={styles.hero}>
+      <header id="board-top" className={styles.hero}>
         <div className={styles.heroMedia} aria-hidden="true">
           <Image
             src={BOARD_IMAGES.hero}
@@ -244,7 +168,6 @@ export default async function BulletinBoardPage() {
           <div className={styles.heroShade} />
         </div>
         <div className={styles.heroInner}>
-          <p className={styles.heroEyebrow}>Flyers · Programs · Notices</p>
           <h1>Mekor Bulletin Board</h1>
           <p className={styles.heroLead}>
             Classes, campaigns, volunteer opportunities, and neighborly offers — posted in one place and kept up to
@@ -260,24 +183,24 @@ export default async function BulletinBoardPage() {
         </div>
       </header>
 
-      <section className={styles.boardSection} aria-labelledby="featured-now-title">
-        <div id="featured-now" className={styles.anchor} />
-        <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Pinned flyers</p>
-          <h2 id="featured-now-title">Featured Now</h2>
-          <p>This season&apos;s campaigns and classes, happening right now.</p>
-        </div>
-        <div className={styles.featuredGrid}>
-          {FEATURED_NOW.map((item) => (
-            <FeaturedCard key={item.title} item={item} />
-          ))}
-        </div>
-      </section>
+      {FEATURED_NOW.length > 0 ? (
+        <section className={styles.boardSection} aria-labelledby="featured-now-title">
+          <div id="featured-now" className={styles.anchor} />
+          <div className={styles.sectionHeading}>
+            <h2 id="featured-now-title">Featured Now</h2>
+            <p>This season&apos;s campaigns and classes, happening right now.</p>
+          </div>
+          <div className={styles.featuredGrid}>
+            {FEATURED_NOW.map((item) => (
+              <FeaturedCard key={item.title} item={item} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className={styles.boardSection} aria-labelledby="standing-info-title">
         <div id="standing-info" className={styles.anchor} />
         <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Keep handy</p>
           <h2 id="standing-info-title">Community Essentials</h2>
           <p>The programs, contacts, and resources you&apos;ll come back to all year.</p>
         </div>
@@ -291,7 +214,6 @@ export default async function BulletinBoardPage() {
       <section className={styles.boardSection} aria-labelledby="community-updates-title">
         <div id="community-updates" className={styles.anchor} />
         <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Pinned notices</p>
           <h2 id="community-updates-title">Community Updates</h2>
           <p>Current opportunities and notices from Mekor.</p>
         </div>
@@ -305,7 +227,6 @@ export default async function BulletinBoardPage() {
       <section className={styles.boardSection} aria-labelledby="community-announcements-title">
         <div id="community-announcements" className={styles.anchor} />
         <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Classifieds</p>
           <h2 id="community-announcements-title">Jewish Community Events and Announcements</h2>
           <p>Useful local notices shared with the Mekor community.</p>
         </div>
@@ -316,29 +237,30 @@ export default async function BulletinBoardPage() {
         </div>
       </section>
 
-      <section className={`${styles.boardSection} ${styles.supportSection}`} aria-labelledby="support-mekor-title">
+      <section className={styles.boardSection} aria-labelledby="support-mekor-title">
         <div id="support-mekor" className={styles.anchor} />
         <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Give back</p>
           <h2 id="support-mekor-title">Support Mekor</h2>
         </div>
         <div className={styles.supportPanel}>
+          <div className={styles.supportActions}>
+            <BoardLink href="/donations" className={styles.supportPrimary}>
+              Donate to Mekor
+            </BoardLink>
+            <BoardLink href={ERUV_DONATION_LINK} className={styles.supportPrimary}>
+              Donate to the Center City Eruv
+            </BoardLink>
+          </div>
           <p className={styles.supportLead}>
             If you use the following Mekor-specific links when ordering from Kosherwine.com and Judaica.com, Mekor will
             earn 5% back!
           </p>
           <div className={styles.supportActions}>
-            <BoardLink href="https://tinyurl.com/mekorwine" className={styles.supportPrimary}>
+            <BoardLink href="https://tinyurl.com/mekorwine" className={styles.supportSecondary}>
               Kosherwine.com via Mekor Link
             </BoardLink>
-            <BoardLink href="https://tinyurl.com/mekorjudaica" className={styles.supportPrimary}>
+            <BoardLink href="https://tinyurl.com/mekorjudaica" className={styles.supportSecondary}>
               Judaica.com via Mekor Link
-            </BoardLink>
-            <BoardLink href={ERUV_DONATION_LINK} className={styles.supportSecondary}>
-              Center City Eruv Donation
-            </BoardLink>
-            <BoardLink href="/donations" className={styles.supportSecondary}>
-              Donate to Mekor
             </BoardLink>
           </div>
         </div>
@@ -346,7 +268,6 @@ export default async function BulletinBoardPage() {
 
       <section className={styles.boardSection} aria-labelledby="quick-contacts-title">
         <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Reach us</p>
           <h2 id="quick-contacts-title">Quick Contacts and Links</h2>
         </div>
         <div className={styles.contactStrip}>
@@ -363,6 +284,9 @@ export default async function BulletinBoardPage() {
             Past Newsletters
           </BoardLink>
         </div>
+        <p className={styles.backToTop}>
+          <a href="#board-top">Back to top ↑</a>
+        </p>
       </section>
 
       <MarketingFooter />
