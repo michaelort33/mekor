@@ -31,12 +31,8 @@ import {
 import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import type { newsletterTemplates } from "@/db/schema";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
-import {
-  NEWSLETTER_AUDIENCE_OPTIONS,
-  NEWSLETTER_RECIPIENT_LISTS,
-  type NewsletterAudienceKey,
-  type NewsletterRecipientListKey,
-} from "@/lib/newsletter/recipient-lists";
+import { NEWSLETTER_RECIPIENT_LISTS } from "@/lib/newsletter/recipient-lists";
+import { useNewsletterAudiences, type NewsletterAudienceChoice } from "@/lib/newsletter/use-audiences";
 import { extractLatestBodyHtmlFromMessages } from "@/lib/newsletter/studio-live-html";
 import styles from "./page.module.css";
 
@@ -46,12 +42,12 @@ type StudioClientProps = {
   template: TemplateRow;
   initialMessages: NewsletterStudioMessage[];
   fromNew?: boolean;
-  initialAudience?: NewsletterAudienceKey;
+  initialAudience?: string;
+  initialAudiences?: NewsletterAudienceChoice[];
 };
 
 type SendPhase = "idle" | "saving" | "sending" | "done";
-type RecipientGroupPreset = "newsletter_subscribers" | "admins_only";
-type NewsletterAudienceOption = (typeof NEWSLETTER_AUDIENCE_OPTIONS)[number];
+type NewsletterAudienceOption = NewsletterAudienceChoice;
 
 export type NewsletterStudioMessageMetadata = {
   persisted?: boolean;
@@ -108,6 +104,7 @@ export function NewsletterStudioClient({
   initialMessages,
   fromNew = false,
   initialAudience,
+  initialAudiences,
 }: StudioClientProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -128,15 +125,18 @@ export function NewsletterStudioClient({
   const [recipientMenuOpen, setRecipientMenuOpen] = useState(false);
   const [recipientOptions, setRecipientOptions] = useState<SubscriberOption[]>([]);
   const [selectedRecipients, setSelectedRecipients] = useState<SubscriberOption[]>([]);
-  const [recipientGroupPreset, setRecipientGroupPreset] = useState<RecipientGroupPreset | null>(
-    fromNew && (initialAudience === "newsletter_subscribers" || initialAudience === "admins_only")
-      ? initialAudience
-      : null,
-  );
-  const [recipientListKey, setRecipientListKey] = useState<NewsletterRecipientListKey | null>(
-    fromNew && (!initialAudience || initialAudience === "michael_test") ? "michael_test" : null,
+  const [selectedAudienceKey, setSelectedAudienceKey] = useState<string | null>(
+    fromNew ? (initialAudience ?? "michael_test") : null,
   );
   const [loadingRecipients, setLoadingRecipients] = useState(false);
+  const { audiences, audiencesLoaded } = useNewsletterAudiences(initialAudiences);
+
+  useEffect(() => {
+    if (!audiencesLoaded || !selectedAudienceKey) return;
+    if (!audiences.some((option) => option.key === selectedAudienceKey)) {
+      setSelectedAudienceKey("michael_test");
+    }
+  }, [audiences, audiencesLoaded, selectedAudienceKey]);
 
   const htmlRef = useRef(html);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -167,11 +167,11 @@ export function NewsletterStudioClient({
   const changeCount = messages.filter((message) => message.role === "user").length;
   const filteredAudienceOptions = useMemo(() => {
     const query = recipientQuery.trim().toLowerCase();
-    if (!query) return NEWSLETTER_AUDIENCE_OPTIONS;
-    return NEWSLETTER_AUDIENCE_OPTIONS.filter((option) =>
+    if (!query) return audiences;
+    return audiences.filter((option) =>
       [option.name, option.description].some((value) => value.toLowerCase().includes(query)),
     );
-  }, [recipientQuery]);
+  }, [audiences, recipientQuery]);
 
   useEffect(() => {
     const nextHtml = extractLatestBodyHtmlFromMessages(messages);
@@ -302,8 +302,7 @@ export function NewsletterStudioClient({
   }
 
   function addRecipient(option: SubscriberOption) {
-    setRecipientGroupPreset(null);
-    setRecipientListKey(null);
+    setSelectedAudienceKey(null);
     setSelectedRecipients((prev) => {
       if (prev.some((item) => item.personId === option.personId)) return prev;
       return [...prev, option];
@@ -317,26 +316,19 @@ export function NewsletterStudioClient({
   }
 
   function selectAudienceOption(option: NewsletterAudienceOption) {
-    if (option.recipientGroup === "recipient_list") {
-      setRecipientListKey(option.key);
-      setRecipientGroupPreset(null);
-    } else {
-      setRecipientListKey(null);
-      setRecipientGroupPreset(option.recipientGroup);
-    }
+    setSelectedAudienceKey(option.key);
     setSelectedRecipients([]);
     setRecipientQuery("");
     setRecipientMenuOpen(false);
   }
 
-  const activeRecipientList = recipientListKey
-    ? NEWSLETTER_RECIPIENT_LISTS.find((list) => list.key === recipientListKey)!
-    : null;
-  const activeAudienceOption = NEWSLETTER_AUDIENCE_OPTIONS.find((option) =>
-    option.key === (recipientGroupPreset ?? recipientListKey),
-  ) ?? null;
-  const recipientCount = activeRecipientList?.emails.length ?? selectedRecipients.length;
-  const hasAudience = Boolean(recipientGroupPreset || activeRecipientList || selectedRecipients.length > 0);
+  const activeAudienceOption = audiences.find((option) => option.key === selectedAudienceKey) ?? null;
+  const activeRecipientList =
+    activeAudienceOption?.recipientGroup === "recipient_list"
+      ? NEWSLETTER_RECIPIENT_LISTS.find((list) => list.key === activeAudienceOption.key) ?? null
+      : null;
+  const recipientCount = activeRecipientList?.emails.length ?? activeAudienceOption?.count ?? selectedRecipients.length;
+  const hasAudience = Boolean(activeAudienceOption || selectedRecipients.length > 0);
   const selectedAudienceLabel = activeAudienceOption?.name
     ?? `${selectedRecipients.length} individual subscriber${selectedRecipients.length === 1 ? "" : "s"}`;
 
@@ -352,14 +344,14 @@ export function NewsletterStudioClient({
       setFlowFocus("send");
       return;
     }
-    if (recipientListKey !== "michael_test") {
+    if (activeAudienceOption?.key !== "michael_test") {
       const confirmed = window.confirm(
         `Send this newsletter now to ${selectedAudienceLabel}?`,
       );
       if (!confirmed) return;
     }
 
-    const resolvedRecipientGroup = recipientGroupPreset ?? (recipientListKey ? "recipient_list" : "selected");
+    const resolvedRecipientGroup = activeAudienceOption?.recipientGroup ?? "selected";
 
     setSending(true);
     setSendPhase("saving");
@@ -380,10 +372,12 @@ export function NewsletterStudioClient({
           templateId: template.id,
           recipientGroup: resolvedRecipientGroup,
           ...(resolvedRecipientGroup === "recipient_list"
-            ? { recipientListKey }
-            : resolvedRecipientGroup === "selected"
-              ? { personIds: selectedRecipients.map((item) => item.personId) }
-              : {}),
+            ? { recipientListKey: activeAudienceOption!.key }
+            : resolvedRecipientGroup === "newsletter_subscribers"
+              ? { topic: activeAudienceOption?.topic ?? "weekly" }
+              : resolvedRecipientGroup === "selected"
+                ? { personIds: selectedRecipients.map((item) => item.personId) }
+                : {}),
           mode: "send",
           subjectOverride: subject || undefined,
           bodyHtmlOverride: html,
@@ -761,10 +755,7 @@ export function NewsletterStudioClient({
                     <button
                       type="button"
                       aria-label={`Remove ${activeAudienceOption.name}`}
-                      onClick={() => {
-                        setRecipientGroupPreset(null);
-                        setRecipientListKey(null);
-                      }}
+                      onClick={() => setSelectedAudienceKey(null)}
                     >
                       ×
                     </button>
