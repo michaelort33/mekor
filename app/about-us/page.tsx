@@ -78,7 +78,7 @@ export default function AboutUsPage() {
               Since it was founded in 2007, the Shul has attracted a diverse group of people including students, young
               professionals, newlyweds, families, and empty nesters. Mekor has helped expand{" "}
               <InlineLink href="/center-city">Center City kosher dining</InlineLink>, establish the{" "}
-              <InlineLink href="http://www.centercityeruv.org/">Center City Eruv</InlineLink>, and support the{" "}
+              <InlineLink href="https://www.centercityeruv.com/">Center City Eruv</InlineLink>, and support the{" "}
               <InlineLink href="https://philamikvah.org/">Philadelphia Mikvah</InlineLink>.
             </>,
             <>

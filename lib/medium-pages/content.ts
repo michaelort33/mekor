@@ -618,7 +618,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
           "South Street Bridge connects to the University City Eruv when extension is up.",
           "Columbus Boulevard and waterfront remain outside the eruv.",
         ],
-        links: [{ label: "Center City Eruv Map", href: "http://www.centercityeruv.org/map.asp", external: true }],
+        links: [{ label: "Center City Eruv Map", href: "https://www.centercityeruv.com/#map", external: true }],
       },
       {
         heading: "Kosher establishments",

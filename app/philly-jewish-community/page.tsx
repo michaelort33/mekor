@@ -60,7 +60,7 @@ export default async function PhillyJewishCommunityPage() {
           paragraphs={[
             "The Center City Eruv includes most of Center City and South Philadelphia, roughly between the Schuylkill and Delaware Rivers. It is maintained weekly and was originally constructed under the halachic guidance of Rav Dov Aaron Brisman zt\"l, former Av Beit Din of Philadelphia.",
             <>
-              Review the boundaries on the <InlineLink href="http://www.centercityeruv.org/map.asp">Center City Eruv website</InlineLink> or <InlineLink href={ERUV_MAP_EMBED}>open the interactive eruv map in a new tab</InlineLink>. The map is not perfectly to scale, so use the guidelines below for accuracy.
+              Review the boundaries on the <InlineLink href="https://www.centercityeruv.com/#map">Center City Eruv website</InlineLink> or <InlineLink href={ERUV_MAP_EMBED}>open the interactive eruv map in a new tab</InlineLink>. The map is not perfectly to scale, so use the guidelines below for accuracy.
             </>,
           ]}
         />
@@ -150,7 +150,7 @@ export default async function PhillyJewishCommunityPage() {
         <CTACluster
           className={styles.communityLinks}
           items={[
-            { label: "Center City Eruv", href: "http://www.centercityeruv.org/map.asp" },
+            { label: "Center City Eruv", href: "https://www.centercityeruv.com/#map" },
             { label: "Kosher Map", href: "/kosher-map" },
             { label: "Center City Kosher Places", href: "/center-city" },
             { label: "Philadelphia Mikvah", href: "https://philamikvah.org/" },
