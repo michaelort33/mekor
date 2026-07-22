@@ -52,11 +52,12 @@ export default function RootLayout({
   const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
   return (
-    <html lang="en" style={{ backgroundColor: "#f7f3eb" }}>
-      <body
-        className={`${bodyFont.variable} ${headingFont.variable}`}
-        style={{ backgroundColor: "#f7f3eb", color: "#1f3043" }}
-      >
+    <html
+      lang="en"
+      className={`${bodyFont.variable} ${headingFont.variable}`}
+      style={{ backgroundColor: "#f7f3eb" }}
+    >
+      <body style={{ backgroundColor: "#f7f3eb", color: "#1f3043" }}>
         <script type="application/ld+json">{serializeJsonLd(SITE_STRUCTURED_DATA)}</script>
         {gtmId ? (
           <Script

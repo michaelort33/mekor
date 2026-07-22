@@ -42,11 +42,8 @@ export const PATH = "/mekor-bulletin-board" as const;
 
 export const BOARD_IMAGES = {
   hero: "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/c2c6235de9c6d719cd098e19d77b7f21c18899f1-11062b_8135b27108d04d2a97adc750a341fb79-mv2.jpeg",
-  davening:
-    "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/b562092e8484e9d5c6e62671c670e606b2d338cc-92f487_34e64b1fb2e94c56886578290ef2bcd0-mv2.jpeg",
   jerusalem:
     "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/6232f3d6a49758d6fe2d88551b5e72e6b5861a20-banner.jpg",
-  logo: "/newsletters/archive/assets/238810f8b9cd-75d082cb-45f0-420c-95dd-3f153937e7ef.png",
   shabbatBanner: "/newsletters/archive/assets/01b4787397a5-210e849f-0dff-f50d-8135-5cfaa09eb671.png",
   weekdaysBanner: "/newsletters/archive/assets/47336a43df3d-b5a03dc5-f2eb-209c-827e-02771fe762b5.png",
   volunteersBanner: "/newsletters/archive/assets/0edff6a4f916-239cd781-49f2-2aa8-92d7-7eb7a6d7091e.png",
@@ -54,8 +51,10 @@ export const BOARD_IMAGES = {
   israelFlag: "/newsletters/archive/assets/23882a236001-bfb69b9c-c1c0-4a73-bf44-92ffd837623e.jpg",
 } as const;
 
-export const ERUV_DONATION_LINK =
-  "https://ccshul.us2.list-manage.com/track/click?u=f9fe87a16c42c24704c099073&id=78b2ea75cf&e=dac02e1995";
+// Direct PayPal donate button used by centercityeruv.com itself. (The previous
+// Mailchimp click-tracker resolved to a Fundly campaign, and Fundly has shut
+// down — that link now lands on a SignUpGenius ad.)
+export const ERUV_DONATION_LINK = "https://www.paypal.com/donate/?hosted_button_id=MP2WKX3QTP34Y";
 
 export const ERUV_CAMPAIGN_TEAM =
   "https://thechesedfund.com/centercityeruv/ep2026/teams/mekorhabracha";
@@ -220,7 +219,7 @@ export const FEATURED_NOW: BulletinCard[] = [
     links: [
       { label: "Donate via Mekor team", href: ERUV_CAMPAIGN_TEAM },
       { label: "Full campaign details", href: ERUV_CAMPAIGN_INFO },
-      { label: "Monthly Eruv support", href: ERUV_DONATION_LINK },
+      { label: "Donate to the Center City Eruv", href: ERUV_DONATION_LINK },
     ],
   },
   {
@@ -305,7 +304,7 @@ export const COMMUNITY_UPDATES: BulletinCard[] = [
       "We rely entirely on donations for these expenses, and we need a financial cushion to ensure that emergency repairs can be made in time for Shabbat the next time they are necessary. If you & your family benefit from our Eruv, we respectfully ask that you make a recurring monthly donation of at least $18. Thank you for your continued support of the Center City Eruv!",
     ],
     links: [
-      { label: "Donate to the Eruv", href: ERUV_DONATION_LINK },
+      { label: "Donate to the Center City Eruv", href: ERUV_DONATION_LINK },
       { label: "General Donations", href: "/donations" },
     ],
   },
