@@ -9,7 +9,7 @@ import { DesktopNav } from "@/components/navigation/desktop-nav";
 import { DesktopUtilityNav } from "@/components/navigation/desktop-utility-nav";
 import { MobileDrawer } from "@/components/navigation/mobile-drawer";
 import { NavBrand } from "@/components/navigation/nav-brand";
-import { NavCta } from "@/components/navigation/nav-cta";
+import { NavGiveButton, NavSearchButton } from "@/components/navigation/nav-cta";
 import { UniversalSearch } from "@/components/navigation/universal-search";
 import { Button } from "@/components/ui/button";
 import { normalizeNavigationPath } from "@/lib/navigation/path";
@@ -123,6 +123,7 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
           currentPath={activePath}
           isSignedIn={authenticated}
           isCheckingAuth={isCheckingAuth}
+          isCollapsed={isScrolled}
         />
 
         <div
@@ -133,16 +134,19 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
         >
           <NavBrand compact={isScrolled} />
 
-          <DesktopNav
-            items={DESKTOP_BROWSE_MENU}
-            currentPath={activePath}
-            openGroupId={openDesktopGroupId}
-            setOpenGroupId={setOpenDesktopGroupId}
-          />
+          <div className="hidden flex-1 items-center justify-center gap-3 min-[1441px]:flex">
+            <DesktopNav
+              items={DESKTOP_BROWSE_MENU}
+              currentPath={activePath}
+              openGroupId={openDesktopGroupId}
+              setOpenGroupId={setOpenDesktopGroupId}
+            />
+            <NavGiveButton />
+          </div>
 
           <div className="flex flex-none items-center gap-2">
             <div className="hidden min-[1441px]:flex">
-              <NavCta />
+              <NavSearchButton />
             </div>
             <Button
               asChild
