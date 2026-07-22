@@ -8,7 +8,6 @@ import {
   newsletterSubscriptions,
   people,
 } from "@/db/schema";
-import { sendSendGridEmail } from "@/lib/notifications/sendgrid";
 
 export const NEWSLETTER_TOPICS = [
   "weekly",
@@ -30,13 +29,15 @@ export const PRIMARY_NEWSLETTER_TOPIC: NewsletterTopic = "weekly";
 // explicit unsubscribe/bounce/complaint should be respected, not resurrected.
 const PROTECTED_SUBSCRIPTION_STATUSES = new Set(["unsubscribed", "bounced", "complained"]);
 
+// Protected even when the person explicitly re-opts-in: these addresses are on
+// provider suppression lists, so "resubscribing" them is a deliverability trap.
+const HARD_PROTECTED_SUBSCRIPTION_STATUSES = new Set(["bounced", "complained"]);
+
 // Resolve the full set of topics for a subscription, always including the
 // primary Shabbat list and de-duplicating the rest.
 export function resolveSubscriptionTopics(topics?: readonly NewsletterTopic[]): NewsletterTopic[] {
   return Array.from(new Set<NewsletterTopic>([PRIMARY_NEWSLETTER_TOPIC, ...(topics ?? [])]));
 }
-
-const CONFIRMATION_TTL_MS = 48 * 60 * 60 * 1000;
 
 function escapeHtml(value: string) {
   return value
@@ -47,24 +48,21 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#39;");
 }
 
-export function buildNewsletterConfirmationEmail(confirmUrl: string) {
-  const safeConfirmUrl = escapeHtml(confirmUrl);
+export function buildNewsletterWelcomeEmail(unsubscribeUrl: string) {
+  const safeUnsubscribeUrl = escapeHtml(unsubscribeUrl);
 
   return {
-    subject: "Welcome to Mekor Habracha — confirm your subscription",
+    subject: "Welcome to Mekor Habracha — you're on the list",
     text: [
       "Shalom,",
       "",
-      "Thank you for signing up for the Mekor Habracha newsletter.",
+      "Thank you for signing up for the Mekor Habracha newsletter — you're on the list.",
       "",
       "Mekor Habracha / Center City Synagogue is a vibrant, inclusive Modern Orthodox community located in the heart of Center City, Philadelphia. Our newsletter will keep you connected to religious, educational, and social opportunities, along with community news and upcoming events.",
       "",
-      "Please confirm your subscription:",
-      confirmUrl,
-      "",
       "Whether you are joining us from across the street or across the world, you are always warmly welcome.",
       "",
-      "This confirmation link expires in 48 hours. If you did not request this subscription, you can simply ignore this email.",
+      `If you did not request this subscription, you can unsubscribe here: ${unsubscribeUrl}`,
       "",
       "Mekor Habracha · Center City Synagogue",
       "1500 Walnut St, Suite 206, Philadelphia, PA 19102",
@@ -75,7 +73,7 @@ export function buildNewsletterConfirmationEmail(confirmUrl: string) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Confirm your Mekor Habracha newsletter subscription</title>
+    <title>Welcome to the Mekor Habracha newsletter</title>
   </head>
   <body style="margin:0;padding:0;background:#f3eee3;color:#24374a;">
     <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
@@ -117,33 +115,21 @@ export function buildNewsletterConfirmationEmail(confirmUrl: string) {
                       <p style="margin:0 0 22px;font-size:16px;line-height:1.75;">
                         Mekor Habracha / Center City Synagogue is a <strong>vibrant, inclusive Modern Orthodox community</strong> located in the heart of Center City, Philadelphia. Our newsletter will keep you connected to religious, educational, and social opportunities, along with community news and upcoming events.
                       </p>
-                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 26px;">
-                        <tr>
-                          <td align="center" style="padding:8px 0;">
-                            <a href="${safeConfirmUrl}" style="display:inline-block;padding:15px 25px;border-radius:999px;background:#1d527c;color:#ffffff;font-size:16px;line-height:1.2;font-weight:bold;text-decoration:none;box-shadow:0 10px 22px rgba(29,82,124,0.2);">
-                              Confirm my subscription
-                            </a>
-                          </td>
-                        </tr>
-                      </table>
                       <div style="margin:0 0 24px;padding:20px 22px;border-left:4px solid #c69a5b;border-radius:0 18px 18px 0;background:#f7f1e5;">
                         <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.65;color:#33475a;">
                           Whether you are joining us from across the street or across the world, you are always warmly welcome.
                         </p>
                       </div>
-                      <p style="margin:0 0 8px;font-size:13px;line-height:1.65;color:#697a8a;">
-                        This confirmation link expires in 48 hours. If you did not request this subscription, you can simply ignore this email.
-                      </p>
-                      <p style="margin:0 0 26px;font-size:13px;line-height:1.65;word-break:break-word;color:#697a8a;">
-                        If the button does not open, copy and paste this link into your browser:<br />
-                        <a href="${safeConfirmUrl}" style="color:#1d527c;text-decoration:underline;">${safeConfirmUrl}</a>
+                      <p style="margin:0 0 26px;font-size:15px;line-height:1.7;color:#33475a;">
+                        You're on the list — look for our next newsletter in your inbox.
                       </p>
                       <div style="padding-top:22px;border-top:1px solid #e7ddcf;font-size:13px;line-height:1.75;color:#697a8a;">
                         <strong style="color:#2b3e51;">Mekor Habracha · Center City Synagogue</strong><br />
                         1500 Walnut St, Suite 206, Philadelphia, PA 19102<br />
                         <a href="mailto:admin@mekorhabracha.org" style="color:#1d527c;text-decoration:underline;">admin@mekorhabracha.org</a>
                         &nbsp;·&nbsp;
-                        <a href="tel:+12155254246" style="color:#1d527c;text-decoration:none;">(215) 525-4246</a>
+                        <a href="tel:+12155254246" style="color:#1d527c;text-decoration:none;">(215) 525-4246</a><br />
+                        <a href="${safeUnsubscribeUrl}" style="color:#697a8a;text-decoration:underline;">Unsubscribe</a> if you did not request this or change your mind.
                       </div>
                     </td>
                   </tr>
@@ -209,107 +195,24 @@ async function ensureNewsletterPerson(input: {
   return person;
 }
 
-export async function requestNewsletterSubscription(input: {
-  email: string;
-  topic?: NewsletterTopic;
-  source: string;
-  siteOrigin: string;
-}) {
-  const email = normalizeNewsletterEmail(input.email);
-  const topic = input.topic ?? "weekly";
-  const db = getDb();
-  const now = new Date();
-
-  const person = await ensureNewsletterPerson({ email, source: input.source, now });
-
-  await db
-    .insert(communicationPreferences)
-    .values({
-      personId: person.id,
-      emailOptIn: false,
-      preferredChannel: "email",
-      createdAt: now,
-      updatedAt: now,
-    })
-    .onConflictDoUpdate({
-      target: communicationPreferences.personId,
-      set: { updatedAt: now },
-    });
-
-  const [existing] = await db
-    .select()
-    .from(newsletterSubscriptions)
-    .where(and(eq(newsletterSubscriptions.personId, person.id), eq(newsletterSubscriptions.topic, topic)))
-    .limit(1);
-
-  if (existing?.status === "subscribed") {
-    await db
-      .update(communicationPreferences)
-      .set({ emailOptIn: true, updatedAt: now })
-      .where(eq(communicationPreferences.personId, person.id));
-    return { subscription: existing, alreadySubscribed: true, confirmationSent: false };
-  }
-
-  const confirmationToken = newToken();
-  const unsubscribeToken = existing?.unsubscribeToken ?? newToken();
-  const confirmationExpiresAt = new Date(now.getTime() + CONFIRMATION_TTL_MS);
-
-  const [subscription] = existing
-    ? await db
-        .update(newsletterSubscriptions)
-        .set({
-          status: "pending",
-          source: input.source,
-          confirmationTokenHash: tokenHash(confirmationToken),
-          confirmationExpiresAt,
-          unsubscribeToken,
-          unsubscribedAt: null,
-          updatedAt: now,
-        })
-        .where(eq(newsletterSubscriptions.id, existing.id))
-        .returning()
-    : await db
-        .insert(newsletterSubscriptions)
-        .values({
-          personId: person.id,
-          topic,
-          status: "pending",
-          source: input.source,
-          confirmationTokenHash: tokenHash(confirmationToken),
-          confirmationExpiresAt,
-          unsubscribeToken,
-          createdAt: now,
-          updatedAt: now,
-        })
-        .returning();
-
-  if (!subscription) throw new Error("Unable to create newsletter subscription");
-
-  const confirmUrl = `${input.siteOrigin}/api/newsletter/confirm?token=${encodeURIComponent(confirmationToken)}`;
-  const confirmationEmail = buildNewsletterConfirmationEmail(confirmUrl);
-  await sendSendGridEmail({
-    to: email,
-    subject: confirmationEmail.subject,
-    text: confirmationEmail.text,
-    html: confirmationEmail.html,
-    categories: ["newsletter-confirmation"],
-  });
-
-  return { subscription, alreadySubscribed: false, confirmationSent: true };
-}
-
 /**
  * Directly subscribe a contact (single opt-in) to one or more newsletter lists,
  * always including the primary Shabbat list. Used for flows where the person is
- * explicitly opting in by providing their details (e.g. becoming a member),
- * so no double opt-in confirmation email is sent. Existing explicit unsubscribes
- * are respected and never resurrected.
+ * explicitly opting in by providing their details (the homepage signup form,
+ * becoming a member), so no double opt-in confirmation email is sent.
+ *
+ * Existing opt-outs are respected by default. Pass `allowResubscribe` for
+ * surfaces where the person is explicitly asking to be re-added (typing their
+ * email into the signup form is fresh consent); even then, hard-bounced and
+ * spam-complaint addresses are never resurrected — SendGrid suppresses them
+ * and mailing them again only hurts deliverability.
  */
 export async function subscribeEmailToNewsletterLists(input: {
   email: string;
   displayName?: string;
   topics?: readonly NewsletterTopic[];
   source: string;
+  allowResubscribe?: boolean;
 }) {
   const email = normalizeNewsletterEmail(input.email);
   const db = getDb();
@@ -338,6 +241,10 @@ export async function subscribeEmailToNewsletterLists(input: {
     });
 
   const subscribedTopics: NewsletterTopic[] = [];
+  const newlySubscribedTopics: NewsletterTopic[] = [];
+  const protectedStatuses = input.allowResubscribe
+    ? HARD_PROTECTED_SUBSCRIPTION_STATUSES
+    : PROTECTED_SUBSCRIPTION_STATUSES;
 
   for (const topic of topics) {
     const [existing] = await db
@@ -346,8 +253,8 @@ export async function subscribeEmailToNewsletterLists(input: {
       .where(and(eq(newsletterSubscriptions.personId, person.id), eq(newsletterSubscriptions.topic, topic)))
       .limit(1);
 
-    if (existing && PROTECTED_SUBSCRIPTION_STATUSES.has(existing.status)) {
-      // Respect an explicit opt-out; do not re-subscribe.
+    if (existing && protectedStatuses.has(existing.status)) {
+      // Respect the opt-out; do not re-subscribe.
       continue;
     }
 
@@ -382,11 +289,24 @@ export async function subscribeEmailToNewsletterLists(input: {
         },
       });
     subscribedTopics.push(topic);
+    newlySubscribedTopics.push(topic);
   }
 
   await syncNewsletterEmailPreference(person.id);
 
-  return { personId: person.id, topics, subscribedTopics };
+  const [weeklyRow] = await db
+    .select({ status: newsletterSubscriptions.status, unsubscribeToken: newsletterSubscriptions.unsubscribeToken })
+    .from(newsletterSubscriptions)
+    .where(and(eq(newsletterSubscriptions.personId, person.id), eq(newsletterSubscriptions.topic, PRIMARY_NEWSLETTER_TOPIC)))
+    .limit(1);
+
+  return {
+    personId: person.id,
+    topics,
+    subscribedTopics,
+    newlySubscribedTopics,
+    weeklyUnsubscribeToken: weeklyRow?.status === "subscribed" ? weeklyRow.unsubscribeToken : null,
+  };
 }
 
 export async function confirmNewsletterSubscription(token: string) {
