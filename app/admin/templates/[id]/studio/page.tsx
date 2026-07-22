@@ -4,10 +4,7 @@ import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { getDb } from "@/db/client";
 import { adminAuditLog, newsletterTemplates } from "@/db/schema";
-import {
-  NEWSLETTER_AUDIENCE_OPTIONS,
-  type NewsletterAudienceKey,
-} from "@/lib/newsletter/recipient-lists";
+import { listNewsletterAudiences } from "@/lib/newsletter/audiences";
 import {
   NewsletterStudioClient,
   type NewsletterStudioMessage,
@@ -35,8 +32,10 @@ export default async function NewsletterStudioPage({ params, searchParams }: Pag
   const fromNew = fromParam === "new" || (Array.isArray(fromParam) && fromParam.includes("new"));
   const audienceParam = resolvedSearchParams.audience;
   const requestedAudience = Array.isArray(audienceParam) ? audienceParam[0] : audienceParam;
-  const initialAudience = NEWSLETTER_AUDIENCE_OPTIONS.some((option) => option.key === requestedAudience)
-    ? requestedAudience as NewsletterAudienceKey
+  // Audience keys are dynamic (michael_test, admins_only, newsletter_subscribers, topic:<key>);
+  // the client resolves them against the fetched audience list.
+  const initialAudience = requestedAudience && /^[a-z0-9_:-]{1,100}$/.test(requestedAudience)
+    ? requestedAudience
     : undefined;
   const templateId = Number(id);
 
@@ -71,6 +70,8 @@ export default async function NewsletterStudioPage({ params, searchParams }: Pag
   if (!template) {
     notFound();
   }
+
+  const initialAudiences = await listNewsletterAudiences().catch(() => undefined);
 
   const historyRows = await db
     .select({
@@ -120,6 +121,7 @@ export default async function NewsletterStudioPage({ params, searchParams }: Pag
       initialMessages={initialMessages}
       fromNew={fromNew}
       initialAudience={initialAudience}
+      initialAudiences={initialAudiences}
     />
   );
 }

@@ -8,10 +8,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import adminStyles from "@/components/admin/admin-shell.module.css";
 import { NewsletterFlowSteps } from "@/components/admin/newsletter-flow-steps";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
-import {
-  NEWSLETTER_AUDIENCE_OPTIONS,
-  type NewsletterAudienceKey,
-} from "@/lib/newsletter/recipient-lists";
+import { useNewsletterAudiences } from "@/lib/newsletter/use-audiences";
 import {
   buildWeeklyCleanedTemplateDraft,
   WEEKLY_CLEANED_TEMPLATE_TITLE,
@@ -89,7 +86,8 @@ export default function NewTemplatePage() {
   const [templateMenuOpen, setTemplateMenuOpen] = useState(false);
   const [audienceQuery, setAudienceQuery] = useState("");
   const [audienceMenuOpen, setAudienceMenuOpen] = useState(false);
-  const [selectedAudience, setSelectedAudience] = useState<NewsletterAudienceKey>("michael_test");
+  const [selectedAudience, setSelectedAudience] = useState<string>("michael_test");
+  const { audiences } = useNewsletterAudiences();
   const [starterKind, setStarterKind] = useState<StarterKind>("weekly-cleaned");
   const [selectedBaseId, setSelectedBaseId] = useState<number | null>(null);
   const [baseLabel, setBaseLabel] = useState(WEEKLY_CLEANED_TEMPLATE_TITLE);
@@ -172,13 +170,13 @@ export default function NewTemplatePage() {
 
   const filteredAudienceOptions = useMemo(() => {
     const query = audienceQuery.trim().toLowerCase();
-    if (!query) return NEWSLETTER_AUDIENCE_OPTIONS;
-    return NEWSLETTER_AUDIENCE_OPTIONS.filter((option) =>
+    if (!query) return audiences;
+    return audiences.filter((option) =>
       [option.name, option.description].some((value) => value.toLowerCase().includes(query)),
     );
-  }, [audienceQuery]);
+  }, [audienceQuery, audiences]);
 
-  const selectedAudienceOption = NEWSLETTER_AUDIENCE_OPTIONS.find((option) => option.key === selectedAudience)!;
+  const selectedAudienceOption = audiences.find((option) => option.key === selectedAudience) ?? audiences[0];
 
   const previewHtml = useMemo(() => sanitizeNewsletterHtml(form.bodyHtml), [form.bodyHtml]);
 
@@ -193,7 +191,7 @@ export default function NewTemplatePage() {
     setTemplateMenuOpen(false);
   }
 
-  function chooseAudience(key: NewsletterAudienceKey) {
+  function chooseAudience(key: string) {
     setSelectedAudience(key);
     setAudienceQuery("");
     setAudienceMenuOpen(false);

@@ -16,6 +16,8 @@ import { resolveSiteOriginFromRequest } from "@/lib/site-origin";
 const payloadSchema = z.object({
   templateId: z.number().int().min(1),
   recipientGroup: z.enum(["newsletter_subscribers", "admins_only", "selected", "recipient_list"]).default("newsletter_subscribers"),
+  /** Subscription topic for subscriber sends (weekly, announcements, events, kids, …). */
+  topic: z.string().trim().toLowerCase().regex(/^[a-z0-9_-]{1,80}$/).optional(),
   recipientListKey: z.enum(NEWSLETTER_RECIPIENT_LIST_KEYS).optional(),
   personIds: z.array(z.number().int().min(1)).max(5000).optional(),
   mode: z.enum(["preview", "send", "schedule"]).default("send"),
@@ -55,6 +57,18 @@ export async function POST(request: Request) {
   }
   if (parsed.data.recipientGroup === "recipient_list" && !parsed.data.recipientListKey) {
     return NextResponse.json({ error: "Select a newsletter recipient list." }, { status: 400 });
+  }
+
+  const topic = parsed.data.recipientGroup === "newsletter_subscribers" ? (parsed.data.topic ?? "weekly") : "weekly";
+  if (topic !== "weekly") {
+    const [topicRow] = await getDb()
+      .select({ personId: newsletterSubscriptions.personId })
+      .from(newsletterSubscriptions)
+      .where(and(eq(newsletterSubscriptions.topic, topic), eq(newsletterSubscriptions.status, "subscribed")))
+      .limit(1);
+    if (!topicRow) {
+      return NextResponse.json({ error: `No confirmed subscribers found for the "${topic}" list.` }, { status: 400 });
+    }
   }
 
   let personIds: number[] | undefined;
@@ -122,11 +136,12 @@ export async function POST(request: Request) {
       subject,
       body,
       segmentKey: parsed.data.recipientGroup === "admins_only" ? undefined : "newsletter_subscribers",
+      newsletterTopic: topic,
       personIds,
       previewOnly: parsed.data.mode === "preview",
       scheduledAt: parsed.data.mode === "schedule" ? new Date(parsed.data.scheduledAt!) : null,
       templateId: template.id,
-      publishOnComplete: parsed.data.recipientGroup === "newsletter_subscribers" && template.publishOnSend,
+      publishOnComplete: parsed.data.recipientGroup === "newsletter_subscribers" && topic === "weekly" && template.publishOnSend,
       siteOrigin: resolveSiteOriginFromRequest(request),
     });
 
@@ -138,6 +153,7 @@ export async function POST(request: Request) {
       payload: {
         campaignId: "campaignId" in result ? result.campaignId : null,
         recipientGroup: parsed.data.recipientGroup,
+        topic: parsed.data.recipientGroup === "newsletter_subscribers" ? topic : null,
         recipientListKey: parsed.data.recipientListKey ?? null,
         selectedCount: personIds?.length ?? null,
         recipientCount: result.recipientCount,
@@ -148,6 +164,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ...result,
       recipientGroup: parsed.data.recipientGroup,
+      topic: parsed.data.recipientGroup === "newsletter_subscribers" ? topic : null,
       recipientListKey: parsed.data.recipientListKey ?? null,
       subject,
     });

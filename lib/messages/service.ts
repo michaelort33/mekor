@@ -44,6 +44,8 @@ export type MessageSendInput = {
   subject: string;
   body: string;
   segmentKey?: MessageSegmentKey;
+  /** Subscription topic for newsletter sends; defaults to "weekly". */
+  newsletterTopic?: string;
   personIds?: number[];
   previewOnly?: boolean;
   scheduledAt?: Date | null;
@@ -105,7 +107,7 @@ function recipientSelection() {
   };
 }
 
-async function resolveRecipientsByPersonIds(personIds: number[]) {
+async function resolveRecipientsByPersonIds(personIds: number[], newsletterTopic = "weekly") {
   if (personIds.length === 0) return [];
   return getDb()
     .select(recipientSelection())
@@ -113,13 +115,13 @@ async function resolveRecipientsByPersonIds(personIds: number[]) {
     .leftJoin(communicationPreferences, eq(communicationPreferences.personId, people.id))
     .leftJoin(
       newsletterSubscriptions,
-      and(eq(newsletterSubscriptions.personId, people.id), eq(newsletterSubscriptions.topic, "weekly")),
+      and(eq(newsletterSubscriptions.personId, people.id), eq(newsletterSubscriptions.topic, newsletterTopic)),
     )
     .where(inArray(people.id, personIds))
     .orderBy(asc(people.displayName), asc(people.id));
 }
 
-async function resolveRecipientsBySegment(segment: MessageSegmentKey) {
+async function resolveRecipientsBySegment(segment: MessageSegmentKey, newsletterTopic = "weekly") {
   if (segment === "newsletter_subscribers") {
     return getDb()
       .select(recipientSelection())
@@ -128,7 +130,7 @@ async function resolveRecipientsBySegment(segment: MessageSegmentKey) {
       .leftJoin(communicationPreferences, eq(communicationPreferences.personId, people.id))
       .where(
         and(
-          eq(newsletterSubscriptions.topic, "weekly"),
+          eq(newsletterSubscriptions.topic, newsletterTopic),
           eq(newsletterSubscriptions.status, "subscribed"),
         ),
       )
@@ -188,10 +190,27 @@ async function resolveRecipientsBySegment(segment: MessageSegmentKey) {
     .orderBy(asc(people.displayName), asc(people.id));
 }
 
-async function resolveRecipients(input: { segmentKey?: MessageSegmentKey; personIds?: number[] }) {
+async function resolveRecipients(input: { segmentKey?: MessageSegmentKey; personIds?: number[]; newsletterTopic?: string }) {
   const ids = uniquePositiveNumbers(input.personIds ?? []);
-  if (ids.length > 0) return resolveRecipientsByPersonIds(ids);
-  return resolveRecipientsBySegment(input.segmentKey ?? "active_members");
+  if (ids.length > 0) return resolveRecipientsByPersonIds(ids, input.newsletterTopic);
+  return resolveRecipientsBySegment(input.segmentKey ?? "active_members", input.newsletterTopic);
+}
+
+/**
+ * Newsletter campaigns persist the topic inside segmentKey
+ * ("newsletter_subscribers:kids") so scheduled sends and the cron resume
+ * path keep targeting — and unsubscribing — the right list.
+ */
+function storedSegmentKey(segmentKey: MessageSegmentKey | undefined, newsletterTopic: string) {
+  if (segmentKey === "newsletter_subscribers" && newsletterTopic !== "weekly") {
+    return `newsletter_subscribers:${newsletterTopic}`;
+  }
+  return segmentKey ?? "";
+}
+
+function campaignNewsletterTopic(storedKey: string) {
+  const match = /^newsletter_subscribers:([a-z0-9_-]{1,80})$/.exec(storedKey);
+  return match ? match[1] : "weekly";
 }
 
 async function isSuppressed(input: { personId: number; channel: Channel; email: string; phone: string }) {
@@ -340,7 +359,8 @@ export async function createMessageCampaign(input: MessageSendInput) {
     throw new Error("Newsletters must target confirmed subscribers or explicit test recipients");
   }
 
-  const recipients = await resolveRecipients({ segmentKey: input.segmentKey, personIds: input.personIds });
+  const newsletterTopic = input.newsletterTopic?.trim().toLowerCase() || "weekly";
+  const recipients = await resolveRecipients({ segmentKey: input.segmentKey, personIds: input.personIds, newsletterTopic });
   if (recipients.length === 0) throw new Error("No recipients found");
   if (input.previewOnly) {
     return {
@@ -362,7 +382,7 @@ export async function createMessageCampaign(input: MessageSendInput) {
       name: clean(input.name) || (input.source === "newsletter" ? "Newsletter" : "Manual outreach"),
       subject,
       body,
-      segmentKey: input.segmentKey ?? "",
+      segmentKey: storedSegmentKey(input.segmentKey, newsletterTopic),
       senderEmail: process.env.SENDGRID_FROM_EMAIL || "",
       scheduledAt: input.scheduledAt ?? null,
       publishOnComplete: input.publishOnComplete ?? false,
@@ -385,7 +405,7 @@ export async function createMessageCampaign(input: MessageSendInput) {
       subject: personalize(subject, { displayName: recipient.displayName, email: targetEmail }),
       body: personalize(body, { displayName: recipient.displayName, email: targetEmail }),
       status: recipient.status,
-      segmentKey: input.segmentKey ?? "",
+      segmentKey: storedSegmentKey(input.segmentKey, newsletterTopic),
     };
     await getDb().insert(messageDeliveries).values({
       campaignId: campaign.id,
@@ -421,6 +441,7 @@ export async function processMessageCampaign(campaignId: number, batchSize = 50,
     try {
       let unsubscribeToken = "";
       if (delivery.personId) {
+        const campaignTopic = campaignNewsletterTopic(campaign.segmentKey);
         const [current] = await getDb()
           .select({
             emailOptIn: communicationPreferences.emailOptIn,
@@ -434,14 +455,14 @@ export async function processMessageCampaign(campaignId: number, batchSize = 50,
           .leftJoin(communicationPreferences, eq(communicationPreferences.personId, people.id))
           .leftJoin(
             newsletterSubscriptions,
-            and(eq(newsletterSubscriptions.personId, people.id), eq(newsletterSubscriptions.topic, "weekly")),
+            and(eq(newsletterSubscriptions.personId, people.id), eq(newsletterSubscriptions.topic, campaignTopic)),
           )
           .where(eq(people.id, delivery.personId))
           .limit(1);
         const suppressed = current
           ? await isSuppressed({ personId: delivery.personId, channel: campaign.channel, email: current.email, phone: current.phone })
           : true;
-        const subscriberRequired = campaign.source === "newsletter" && campaign.segmentKey === "newsletter_subscribers";
+        const subscriberRequired = campaign.source === "newsletter" && campaign.segmentKey.startsWith("newsletter_subscribers");
         const allowed = Boolean(current) && current?.doNotContact !== true && current?.emailOptIn !== false && !suppressed && (!subscriberRequired || current?.subscriptionStatus === "subscribed");
         if (!allowed) {
           await getDb().update(messageDeliveries).set({ status: "skipped", errorMessage: "Recipient opted out before delivery", updatedAt: new Date() }).where(and(eq(messageDeliveries.id, delivery.id), eq(messageDeliveries.status, "processing")));
