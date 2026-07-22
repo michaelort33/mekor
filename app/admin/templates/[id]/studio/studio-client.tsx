@@ -32,7 +32,9 @@ import { buildSendFeedback } from "@/lib/admin/send-feedback";
 import type { newsletterTemplates } from "@/db/schema";
 import { sanitizeNewsletterHtml } from "@/lib/newsletter/html-sanitize";
 import {
+  NEWSLETTER_AUDIENCE_OPTIONS,
   NEWSLETTER_RECIPIENT_LISTS,
+  type NewsletterAudienceKey,
   type NewsletterRecipientListKey,
 } from "@/lib/newsletter/recipient-lists";
 import { extractLatestBodyHtmlFromMessages } from "@/lib/newsletter/studio-live-html";
@@ -44,9 +46,12 @@ type StudioClientProps = {
   template: TemplateRow;
   initialMessages: NewsletterStudioMessage[];
   fromNew?: boolean;
+  initialAudience?: NewsletterAudienceKey;
 };
 
 type SendPhase = "idle" | "saving" | "sending" | "done";
+type RecipientGroupPreset = "newsletter_subscribers" | "admins_only";
+type NewsletterAudienceOption = (typeof NEWSLETTER_AUDIENCE_OPTIONS)[number];
 
 export type NewsletterStudioMessageMetadata = {
   persisted?: boolean;
@@ -98,7 +103,12 @@ function historyTime(value: string) {
   }).format(new Date(value));
 }
 
-export function NewsletterStudioClient({ template, initialMessages, fromNew = false }: StudioClientProps) {
+export function NewsletterStudioClient({
+  template,
+  initialMessages,
+  fromNew = false,
+  initialAudience,
+}: StudioClientProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [html, setHtml] = useState(template.bodyHtml);
@@ -118,8 +128,13 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
   const [recipientMenuOpen, setRecipientMenuOpen] = useState(false);
   const [recipientOptions, setRecipientOptions] = useState<SubscriberOption[]>([]);
   const [selectedRecipients, setSelectedRecipients] = useState<SubscriberOption[]>([]);
+  const [recipientGroupPreset, setRecipientGroupPreset] = useState<RecipientGroupPreset | null>(
+    fromNew && (initialAudience === "newsletter_subscribers" || initialAudience === "admins_only")
+      ? initialAudience
+      : null,
+  );
   const [recipientListKey, setRecipientListKey] = useState<NewsletterRecipientListKey | null>(
-    fromNew ? "michael_test" : null,
+    fromNew && (!initialAudience || initialAudience === "michael_test") ? "michael_test" : null,
   );
   const [loadingRecipients, setLoadingRecipients] = useState(false);
 
@@ -150,6 +165,13 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
   const busy = status === "submitted" || status === "streaming";
   const previewHtml = useMemo(() => sanitizeNewsletterHtml(html), [html]);
   const changeCount = messages.filter((message) => message.role === "user").length;
+  const filteredAudienceOptions = useMemo(() => {
+    const query = recipientQuery.trim().toLowerCase();
+    if (!query) return NEWSLETTER_AUDIENCE_OPTIONS;
+    return NEWSLETTER_AUDIENCE_OPTIONS.filter((option) =>
+      [option.name, option.description].some((value) => value.toLowerCase().includes(query)),
+    );
+  }, [recipientQuery]);
 
   useEffect(() => {
     const nextHtml = extractLatestBodyHtmlFromMessages(messages);
@@ -280,6 +302,7 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
   }
 
   function addRecipient(option: SubscriberOption) {
+    setRecipientGroupPreset(null);
     setRecipientListKey(null);
     setSelectedRecipients((prev) => {
       if (prev.some((item) => item.personId === option.personId)) return prev;
@@ -293,8 +316,14 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
     setSelectedRecipients((prev) => prev.filter((item) => item.personId !== personId));
   }
 
-  function selectRecipientList(key: NewsletterRecipientListKey) {
-    setRecipientListKey(key);
+  function selectAudienceOption(option: NewsletterAudienceOption) {
+    if (option.recipientGroup === "recipient_list") {
+      setRecipientListKey(option.key);
+      setRecipientGroupPreset(null);
+    } else {
+      setRecipientListKey(null);
+      setRecipientGroupPreset(option.recipientGroup);
+    }
     setSelectedRecipients([]);
     setRecipientQuery("");
     setRecipientMenuOpen(false);
@@ -303,7 +332,13 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
   const activeRecipientList = recipientListKey
     ? NEWSLETTER_RECIPIENT_LISTS.find((list) => list.key === recipientListKey)!
     : null;
+  const activeAudienceOption = NEWSLETTER_AUDIENCE_OPTIONS.find((option) =>
+    option.key === (recipientGroupPreset ?? recipientListKey),
+  ) ?? null;
   const recipientCount = activeRecipientList?.emails.length ?? selectedRecipients.length;
+  const hasAudience = Boolean(recipientGroupPreset || activeRecipientList || selectedRecipients.length > 0);
+  const selectedAudienceLabel = activeAudienceOption?.name
+    ?? `${selectedRecipients.length} individual subscriber${selectedRecipients.length === 1 ? "" : "s"}`;
 
   function scrollToSend() {
     setFlowFocus("send");
@@ -312,17 +347,19 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
   }
 
   async function runSend() {
-    if (!recipientListKey && selectedRecipients.length === 0) {
-      setError("Select at least one recipient from the searchable list.");
+    if (!hasAudience) {
+      setError("Choose a newsletter audience from the searchable dropdown.");
       setFlowFocus("send");
       return;
     }
     if (recipientListKey !== "michael_test") {
       const confirmed = window.confirm(
-        `Send this newsletter now to ${recipientCount || "the selected"} recipient(s)?`,
+        `Send this newsletter now to ${selectedAudienceLabel}?`,
       );
       if (!confirmed) return;
     }
+
+    const resolvedRecipientGroup = recipientGroupPreset ?? (recipientListKey ? "recipient_list" : "selected");
 
     setSending(true);
     setSendPhase("saving");
@@ -341,10 +378,12 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           templateId: template.id,
-          recipientGroup: recipientListKey ? "recipient_list" : "selected",
-          ...(recipientListKey
+          recipientGroup: resolvedRecipientGroup,
+          ...(resolvedRecipientGroup === "recipient_list"
             ? { recipientListKey }
-            : { personIds: selectedRecipients.map((item) => item.personId) }),
+            : resolvedRecipientGroup === "selected"
+              ? { personIds: selectedRecipients.map((item) => item.personId) }
+              : {}),
           mode: "send",
           subjectOverride: subject || undefined,
           bodyHtmlOverride: html,
@@ -614,78 +653,119 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
               </label>
 
               <div className={styles.fieldLabel}>
-                Recipients
-                <div className={styles.recipientLists} aria-label="Newsletter recipient lists">
-                  {NEWSLETTER_RECIPIENT_LISTS.map((list) => (
-                    <button
-                      key={list.key}
-                      type="button"
-                      className={recipientListKey === list.key ? styles.recipientListActive : styles.recipientList}
-                      aria-pressed={recipientListKey === list.key}
-                      onClick={() => selectRecipientList(list.key)}
-                    >
-                      <strong>{list.name}</strong>
-                      <span>{list.description}</span>
-                    </button>
-                  ))}
-                </div>
-                <div className={styles.recipientShell}>
-                  <div className={styles.recipientSearchRow}>
-                    <input
-                      value={recipientQuery}
-                      onChange={(event) => {
-                        setRecipientQuery(event.target.value);
-                        setRecipientMenuOpen(true);
-                      }}
-                      onFocus={() => {
-                        setRecipientMenuOpen(true);
-                        void loadRecipients(recipientQuery);
-                      }}
-                      placeholder="Search subscribers by name or email"
-                      aria-label="Search recipients"
-                    />
-                    <button
-                      type="button"
-                      className={styles.ghostButton}
-                      onClick={() => {
-                        setRecipientMenuOpen((open) => !open);
-                        if (!recipientMenuOpen) void loadRecipients(recipientQuery);
-                      }}
-                    >
-                      {loadingRecipients ? "…" : "Browse"}
-                    </button>
-                  </div>
+                <span className={styles.fieldLabelRow}>
+                  <span>Newsletter audience</span>
+                  <small>Searchable dropdown</small>
+                </span>
+                <div
+                  className={styles.audiencePicker}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) setRecipientMenuOpen(false);
+                  }}
+                >
+                  <button
+                    type="button"
+                    className={styles.audienceTrigger}
+                    role="combobox"
+                    aria-label="Newsletter audience"
+                    aria-expanded={recipientMenuOpen}
+                    aria-controls="studio-audience-options"
+                    aria-haspopup="listbox"
+                    onClick={() => setRecipientMenuOpen((open) => !open)}
+                  >
+                    <span className={styles.audienceIcon} aria-hidden="true">◎</span>
+                    <span className={styles.audienceValue}>
+                      <strong>{activeAudienceOption?.name ?? (selectedRecipients.length > 0 ? selectedAudienceLabel : "Choose an audience")}</strong>
+                      <span>
+                        {activeAudienceOption?.description
+                          ?? (selectedRecipients.length > 0
+                            ? "Selected confirmed weekly subscribers"
+                            : "Search an audience or individual subscriber")}
+                      </span>
+                    </span>
+                    <span className={styles.audienceAction}>Search & change <span aria-hidden="true">⌄</span></span>
+                  </button>
                   {recipientMenuOpen ? (
-                    <div className={styles.recipientMenu} role="listbox" aria-label="Recipient matches">
-                      {recipientOptions.length === 0 ? (
-                        <button type="button" className={styles.recipientOption} disabled>
-                          <span>{loadingRecipients ? "Searching…" : "No matching subscribed recipients"}</span>
-                        </button>
-                      ) : (
-                        recipientOptions.map((option) => (
-                          <button
-                            key={option.personId}
-                            type="button"
-                            className={styles.recipientOption}
-                            onClick={() => addRecipient(option)}
-                          >
-                            <span>
-                              <strong>{option.displayName}</strong>
-                              <span>{option.email}</span>
-                            </span>
-                          </button>
-                        ))
-                      )}
+                    <div className={styles.audienceMenu}>
+                      <label className={styles.audienceSearch} htmlFor="studio-audience-search">
+                        <span>Search audiences or subscribers</span>
+                        <input
+                          id="studio-audience-search"
+                          type="search"
+                          value={recipientQuery}
+                          onChange={(event) => setRecipientQuery(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Escape") setRecipientMenuOpen(false);
+                          }}
+                          placeholder="Audience name, subscriber name, or email…"
+                          autoComplete="off"
+                        />
+                      </label>
+                      <div id="studio-audience-options" className={styles.audienceOptions} role="listbox" aria-label="Newsletter audiences and subscribers">
+                        <p className={styles.audienceGroupLabel}>Saved audiences</p>
+                        {filteredAudienceOptions.length === 0 ? (
+                          <p className={styles.audienceEmpty}>No matching saved audiences.</p>
+                        ) : null}
+                        {filteredAudienceOptions.map((option) => {
+                          const selected = option.key === activeAudienceOption?.key;
+                          return (
+                            <button
+                              type="button"
+                              role="option"
+                              aria-selected={selected}
+                              key={option.key}
+                              className={selected ? styles.audienceOptionActive : styles.audienceOption}
+                              onClick={() => selectAudienceOption(option)}
+                            >
+                              <span>
+                                <strong>{option.name}</strong>
+                                <span>{option.description}</span>
+                              </span>
+                              <span>{selected ? "Selected" : "Choose"}</span>
+                            </button>
+                          );
+                        })}
+                        <p className={styles.audienceGroupLabel}>Individual confirmed subscribers</p>
+                        {recipientOptions.length === 0 ? (
+                          <p className={styles.audienceEmpty}>
+                            {loadingRecipients ? "Searching subscribers…" : "No matching confirmed subscribers."}
+                          </p>
+                        ) : (
+                          recipientOptions.map((option) => (
+                            <button
+                              key={option.personId}
+                              type="button"
+                              role="option"
+                              aria-selected={false}
+                              className={styles.audienceOption}
+                              onClick={() => addRecipient(option)}
+                            >
+                              <span>
+                                <strong>{option.displayName}</strong>
+                                <span>{option.email}</span>
+                              </span>
+                              <span>Add</span>
+                            </button>
+                          ))
+                        )}
+                      </div>
                     </div>
                   ) : null}
                 </div>
               </div>
 
-              {activeRecipientList ? (
+              {activeAudienceOption ? (
                 <div className={styles.chipRow}>
                   <span className={styles.chip}>
-                    {activeRecipientList.name} · {activeRecipientList.emails.length} recipient
-                    <button type="button" aria-label={`Remove ${activeRecipientList.name}`} onClick={() => setRecipientListKey(null)}>
+                    {activeAudienceOption.name}
+                    <button
+                      type="button"
+                      aria-label={`Remove ${activeAudienceOption.name}`}
+                      onClick={() => {
+                        setRecipientGroupPreset(null);
+                        setRecipientListKey(null);
+                      }}
+                    >
                       ×
                     </button>
                   </span>
@@ -702,7 +782,7 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
                   ))}
                 </div>
               ) : (
-                <p className={styles.statusText}>Choose one or more confirmed weekly subscribers, then send via SendGrid.</p>
+                <p className={styles.statusText}>Choose a saved audience or one or more confirmed weekly subscribers.</p>
               )}
             </div>
 
@@ -710,15 +790,17 @@ export function NewsletterStudioClient({ template, initialMessages, fromNew = fa
               <button
                 type="button"
                 className={styles.dangerButton}
-                disabled={sending || recipientCount === 0}
+                disabled={sending || !hasAudience}
                 onClick={() => void runSend()}
               >
-                {sending ? "Sending…" : `Send to ${recipientCount || "…"}`}
+                {sending ? "Sending…" : activeAudienceOption ? `Send to ${activeAudienceOption.name}` : `Send to ${recipientCount || "…"}`}
               </button>
               <p className={styles.statusText}>
                 {activeRecipientList
                   ? `Test list is restricted to ${activeRecipientList.emails.join(", ")}.`
-                  : "Uses the current HTML snapshot through the existing SendGrid campaign pipeline."}
+                  : activeAudienceOption
+                    ? activeAudienceOption.description
+                    : "Uses the current HTML snapshot through the existing SendGrid campaign pipeline."}
               </p>
             </div>
           </div>

@@ -5,6 +5,10 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { getDb } from "@/db/client";
 import { adminAuditLog, newsletterTemplates } from "@/db/schema";
 import {
+  NEWSLETTER_AUDIENCE_OPTIONS,
+  type NewsletterAudienceKey,
+} from "@/lib/newsletter/recipient-lists";
+import {
   NewsletterStudioClient,
   type NewsletterStudioMessage,
 } from "./studio-client";
@@ -29,6 +33,11 @@ export default async function NewsletterStudioPage({ params, searchParams }: Pag
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const fromParam = resolvedSearchParams.from;
   const fromNew = fromParam === "new" || (Array.isArray(fromParam) && fromParam.includes("new"));
+  const audienceParam = resolvedSearchParams.audience;
+  const requestedAudience = Array.isArray(audienceParam) ? audienceParam[0] : audienceParam;
+  const initialAudience = NEWSLETTER_AUDIENCE_OPTIONS.some((option) => option.key === requestedAudience)
+    ? requestedAudience as NewsletterAudienceKey
+    : undefined;
   const templateId = Number(id);
 
   if (!Number.isInteger(templateId) || templateId < 1) {
@@ -110,6 +119,7 @@ export default async function NewsletterStudioPage({ params, searchParams }: Pag
       template={template}
       initialMessages={initialMessages}
       fromNew={fromNew}
+      initialAudience={initialAudience}
     />
   );
 }

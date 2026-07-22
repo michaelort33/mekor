@@ -94,8 +94,7 @@
 
 .sectionHeading h2,
 .builderToolbar h2,
-.panelHeader h3,
-.pickerHeader h3 {
+.panelHeader h3 {
   margin: 0;
   color: var(--ink);
 }
@@ -108,7 +107,6 @@
 }
 
 .sectionHeading > p:last-child,
-.pickerHeader p,
 .startActions p {
   margin: 7px 0 0;
   color: var(--muted);
@@ -125,96 +123,215 @@
   text-transform: uppercase;
 }
 
-.blankCard,
-.templateCard {
+.selectorGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.searchablePicker {
   position: relative;
   display: grid;
-  text-align: left;
-  border: 1px solid var(--line);
+  gap: 7px;
+  min-width: 0;
+}
+
+.selectorLabel {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  color: #41566a;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.selectorLabel small {
+  color: #5f7890;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.selectorTrigger {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 104px;
+  width: 100%;
+  border: 1px solid #b8cbd9;
+  border-radius: 14px;
+  padding: 14px;
   color: var(--ink);
-  background: #fff;
+  background: linear-gradient(145deg, #ffffff, #f6f9fb);
+  text-align: left;
   cursor: pointer;
+  box-shadow: 0 14px 32px -30px rgba(24, 43, 61, 0.85);
   transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
 }
 
-.blankCard:hover,
-.templateCard:hover {
-  border-color: #8cabc2;
-  box-shadow: 0 15px 32px -27px rgba(24, 43, 61, 0.8);
+.selectorTrigger:hover,
+.selectorTrigger[aria-expanded="true"] {
+  border-color: #4d7d9f;
+  box-shadow: 0 16px 34px -27px rgba(24, 43, 61, 0.9);
   transform: translateY(-1px);
 }
 
-.blankCard {
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 14px;
-  min-height: 88px;
-  padding: 17px;
-  border-radius: 14px;
+.selectorTrigger:focus-visible,
+.selectorSearch input:focus-visible,
+.selectorOption:focus-visible,
+.selectorOptionActive:focus-visible {
+  outline: 3px solid rgba(31, 95, 145, 0.24);
+  outline-offset: 2px;
 }
 
-.blankCard > span:nth-child(2) {
-  display: grid;
-  gap: 4px;
-}
-
-.blankCard strong,
-.templateCard strong {
-  font-size: 0.94rem;
-}
-
-.blankCard small,
-.templateCard small {
-  color: var(--muted);
-  font-size: 0.78rem;
-  line-height: 1.35;
-}
-
-.blankIcon {
+.selectorIcon {
   display: grid;
   width: 42px;
   height: 42px;
   place-items: center;
-  border-radius: 11px;
+  border-radius: 12px;
   color: #fff;
-  background: #1f5f91;
-  font-size: 1.45rem;
-  font-weight: 300;
+  background: linear-gradient(155deg, #2f719f, #184b73);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.25rem;
 }
 
-.selectedCard {
-  border-color: #1f5f91;
-  box-shadow: 0 0 0 2px rgba(31, 95, 145, 0.12);
-}
-
-.selectionMark {
-  align-self: end;
-  color: #1f5f91;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-
-.templatePicker {
+.selectorValue {
   display: grid;
-  gap: 14px;
-  padding-top: 18px;
-  border-top: 1px solid #e5ebf0;
+  gap: 4px;
+  min-width: 0;
 }
 
-.pickerHeader {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 18px;
+.selectorValue strong {
+  font-size: 0.96rem;
 }
 
-.pickerHeader h3 {
+.selectorValue > span {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.selectorAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--blue);
+  font-size: 0.7rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.selectorAction span {
   font-size: 1rem;
 }
 
-.searchField,
+.selectorPopover {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  border: 1px solid #b8cbd9;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 28px 56px -28px rgba(18, 43, 63, 0.58);
+}
+
+.selectorSearch {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border-bottom: 1px solid #e1e8ee;
+  color: #41566a;
+  background: #f7fafc;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.selectorSearch input {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid #bfcfdb;
+  border-radius: 10px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.selectorOptions {
+  max-height: 310px;
+  overflow-y: auto;
+}
+
+.selectorOption,
+.selectorOptionActive {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 0;
+  border-bottom: 1px solid #edf1f4;
+  padding: 11px 12px;
+  color: var(--ink);
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.selectorOption:hover,
+.selectorOptionActive {
+  background: #edf5fa;
+}
+
+.selectorOption > span:first-child,
+.selectorOptionActive > span:first-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.selectorOption strong,
+.selectorOptionActive strong {
+  font-size: 0.83rem;
+}
+
+.selectorOption small,
+.selectorOptionActive small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.selectorOption > span:last-child,
+.selectorOptionActive > span:last-child {
+  flex: 0 0 auto;
+  color: #517089;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.selectorEmpty {
+  margin: 0;
+  padding: 18px 12px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
 .detailsBar label,
 .composer > label {
   display: grid;
@@ -224,11 +341,6 @@
   font-weight: 750;
 }
 
-.searchField {
-  width: min(100%, 320px);
-}
-
-.searchField input,
 .detailsBar input,
 .composer textarea {
   width: 100%;
@@ -239,48 +351,16 @@
   font: inherit;
 }
 
-.searchField input,
 .detailsBar input {
   min-height: 40px;
   padding: 0 11px;
 }
 
-.searchField input:focus,
 .detailsBar input:focus,
 .composer textarea:focus,
 .htmlDetails textarea:focus {
   outline: 2px solid rgba(31, 95, 145, 0.25);
   border-color: #1f5f91;
-}
-
-.templateGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.templateCard {
-  min-height: 142px;
-  gap: 7px;
-  padding: 14px;
-  border-radius: 12px;
-}
-
-.templateMeta {
-  color: #6f8193;
-  font-size: 0.68rem;
-  font-weight: 750;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.loadingState {
-  margin: 0;
-  padding: 18px;
-  border: 1px dashed #c9d5df;
-  border-radius: 12px;
-  color: var(--muted);
-  text-align: center;
 }
 
 .startActions,
@@ -301,6 +381,10 @@
 
 .startActions p {
   margin: 0;
+}
+
+.startActions p strong {
+  color: var(--ink);
 }
 
 .primaryButton,
@@ -351,6 +435,12 @@
 
 .builderToolbar h2 {
   font-size: 1rem;
+}
+
+.builderAudience {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.74rem;
 }
 
 .builderActions {
@@ -647,7 +737,7 @@
 
 @media (max-width: 1050px) {
   .workspace,
-  .templateGrid {
+  .selectorGrid {
     grid-template-columns: 1fr;
   }
 
@@ -674,17 +764,20 @@
     padding: 18px;
   }
 
-  .pickerHeader,
+  .selectorTrigger {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .selectorAction {
+    grid-column: 2;
+  }
+
   .startActions,
   .builderToolbar,
   .builderActions,
   .composer > div {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  .searchField {
-    width: 100%;
   }
 
   .detailsBar {
