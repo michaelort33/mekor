@@ -81,18 +81,10 @@ function resolve(input: WeeklyCleanedInput) {
 
 function section(title: string, bodyHtml: string) {
   return `<tr>
-  <td style="padding:0 0 18px;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #d7e3f0;border-radius:14px;background:#ffffff;overflow:hidden;">
-      <tr>
-        <td style="height:4px;line-height:4px;font-size:0;background:linear-gradient(90deg,#214e79,#b58646);">&nbsp;</td>
-      </tr>
-      <tr>
-        <td style="padding:18px 20px;">
-          <h2 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:20px;line-height:1.25;color:#1f4467;">${esc(title)}</h2>
-          <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#24384d;">${bodyHtml}</div>
-        </td>
-      </tr>
-    </table>
+  <td style="padding:26px 28px 24px;border-top:1px solid #e7e0d2;">
+    <h2 style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:19px;line-height:1.25;color:#1f4467;">${esc(title)}</h2>
+    <div style="width:40px;height:3px;margin:0 0 14px;border-radius:999px;background:#b58646;font-size:0;line-height:0;">&nbsp;</div>
+    <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.62;color:#24384d;">${bodyHtml}</div>
   </td>
 </tr>`;
 }
@@ -108,11 +100,10 @@ export function generateWeeklyCleanedHtml(input: WeeklyCleanedInput = {}) {
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4efe6;">
     <tr>
       <td align="center" style="padding:20px 12px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:#ffffff;border:1px solid #e0d3bf;border-radius:18px;overflow:hidden;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:#ffffff;border:1px solid #e0d3bf;border-radius:12px;overflow:hidden;">
           <tr>
-            <td style="padding:22px 22px 10px;background:linear-gradient(180deg,#f8f3eb 0%,#ffffff 100%);text-align:center;">
-              <img src="${WEEKLY_CLEANED_LOGO_URL}" alt="Mekor Habracha - Center City Synagogue" width="280" style="display:block;margin:0 auto 14px;width:280px;max-width:80%;height:auto;border:0;" />
-              <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:#8a6428;font-weight:700;">Mekor Habracha Weekly Newsletter</p>
+            <td style="padding:26px 28px 20px;text-align:center;">
+              <img src="${WEEKLY_CLEANED_LOGO_URL}" alt="Mekor Habracha - Center City Synagogue" width="260" style="display:block;margin:0 auto 16px;width:260px;max-width:80%;height:auto;border:0;" />
               <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.18;color:#1f4467;">${esc(values.parshaName)}</h1>
               <p style="margin:10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;color:#3f5d79;">${esc(values.shabbatDate)} · ${esc(values.hebrewDate)}</p>
             </td>
@@ -123,7 +114,7 @@ export function generateWeeklyCleanedHtml(input: WeeklyCleanedInput = {}) {
             </td>
           </tr>
           <tr>
-            <td style="padding:22px 20px 8px;">
+            <td style="padding:0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 ${section(
                   "Shabbat Schedule",
@@ -144,11 +135,10 @@ export function generateWeeklyCleanedHtml(input: WeeklyCleanedInput = {}) {
   <li>Kosher wine &amp; Judaica affiliate links</li>
   <li>Eruv support, Israel initiatives, and ongoing notices</li>
 </ul>
-<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border:1px solid #e0d3bf;border-radius:14px;background:linear-gradient(135deg,#f8f3eb,#eef4fb);">
+<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;">
   <tr>
-    <td style="padding:18px 18px;text-align:center;">
-      <p style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:18px;line-height:1.3;color:#1f4467;">Browse the community board</p>
-      <a href="${WEEKLY_CLEANED_BULLETIN_URL}" style="display:inline-block;background:#214e79;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;padding:13px 20px;border-radius:999px;">Open the Bulletin Board</a>
+    <td style="padding:4px 0 2px;text-align:center;">
+      <a href="${WEEKLY_CLEANED_BULLETIN_URL}" style="display:inline-block;background:#214e79;color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;padding:13px 22px;border-radius:999px;">Open the Bulletin Board</a>
     </td>
   </tr>
 </table>`,
@@ -157,7 +147,7 @@ export function generateWeeklyCleanedHtml(input: WeeklyCleanedInput = {}) {
             </td>
           </tr>
           <tr>
-            <td style="padding:8px 24px 24px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#526579;text-align:center;">
+            <td style="padding:20px 28px 26px;border-top:1px solid #e7e0d2;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#526579;text-align:center;">
               <p style="margin:0 0 8px;">
                 <a href="${WEEKLY_CLEANED_SITE_URL}/membership" style="color:#1f4f81;font-weight:700;text-decoration:none;">Membership</a>
                 &nbsp;·&nbsp;
