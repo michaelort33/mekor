@@ -123,7 +123,6 @@ export function SiteNavigation({ currentPath }: SiteNavigationProps) {
           currentPath={activePath}
           isSignedIn={authenticated}
           isCheckingAuth={isCheckingAuth}
-          isCollapsed={isScrolled}
         />
 
         <div
