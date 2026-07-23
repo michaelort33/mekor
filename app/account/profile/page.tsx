@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -67,10 +68,10 @@ type FormState = {
 };
 
 const VISIBILITY_HINTS: Record<ProfileVisibility, string> = {
-  private: "Your profile is hidden everywhere; individual field toggles are currently inactive.",
-  members: "Fields marked public will be visible to approved members only.",
-  public: "Fields marked public will appear in both the public directory and the members area.",
-  anonymous: "Anonymous mode hides your identity even when fields are marked public.",
+  private: "Hidden from every directory. Other members cannot find or message you.",
+  members: "Visible to approved members. They can open your profile and message you.",
+  public: "Visible in the public directory and to members. Members can message you.",
+  anonymous: "Listed without your name. Members can still message this anonymous listing.",
 };
 
 export default function AccountProfilePage() {
@@ -250,6 +251,29 @@ export default function AccountProfilePage() {
                 </CardBody>
               </Card>
 
+              {hasMemberAccess ? (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: "var(--bk-space-3)",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                    padding: "var(--bk-space-3) var(--bk-space-4)",
+                    borderRadius: "var(--bk-radius-md)",
+                    background: "var(--bk-accent-soft)",
+                    border: "1px solid var(--bk-info-border)",
+                  }}
+                >
+                  <p style={{ margin: 0, color: "var(--bk-text)", fontSize: "var(--bk-text-sm)", maxWidth: "52ch" }}>
+                    Members can find and message you only when directory visibility is Members only, Public, or Anonymous.
+                  </p>
+                  <Link href="/members" style={{ color: "var(--bk-text-link)", fontWeight: 700, fontSize: "var(--bk-text-sm)" }}>
+                    Preview directory →
+                  </Link>
+                </div>
+              ) : null}
+
               <Card padded>
                 <CardHeader title="Public profile" description="These fields appear in the directory according to your visibility setting." />
                 <CardBody>
@@ -329,23 +353,25 @@ export default function AccountProfilePage() {
                     )}
                   </Field>
 
-                  <Field
-                    label="Directory visibility"
-                    hint={VISIBILITY_HINTS[form.profileVisibility]}
-                  >
-                    {(props) => (
-                      <Select
-                        {...props}
-                        value={form.profileVisibility}
-                        onChange={(e) => update("profileVisibility", e.target.value as ProfileVisibility)}
-                      >
-                        <option value="private">Private</option>
-                        <option value="members">Members only</option>
-                        <option value="public">Public</option>
-                        <option value="anonymous">Anonymous</option>
-                      </Select>
-                    )}
-                  </Field>
+                  <div id="directory-visibility">
+                    <Field
+                      label="Directory visibility"
+                      hint={VISIBILITY_HINTS[form.profileVisibility]}
+                    >
+                      {(props) => (
+                        <Select
+                          {...props}
+                          value={form.profileVisibility}
+                          onChange={(e) => update("profileVisibility", e.target.value as ProfileVisibility)}
+                        >
+                          <option value="private">Private — hidden from all directories</option>
+                          <option value="members">Members only — visible to approved members</option>
+                          <option value="public">Public — visible in public and members directories</option>
+                          <option value="anonymous">Anonymous — listed without your name</option>
+                        </Select>
+                      )}
+                    </Field>
+                  </div>
                 </CardBody>
               </Card>
 

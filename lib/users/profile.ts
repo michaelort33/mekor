@@ -1,4 +1,9 @@
-import { isVisibleToMembers, isVisibleToPublic, type ProfileVisibility } from "@/lib/users/visibility";
+import {
+  isAnonymousVisibility,
+  isVisibleToMembers,
+  isVisibleToPublic,
+  type ProfileVisibility,
+} from "@/lib/users/visibility";
 
 export const PROFILE_FIELD_KEYS = [
   "displayName",
@@ -97,4 +102,30 @@ export function getVisibleProfileValue(input: {
   }
 
   return isProfileFieldVisible(input) ? normalized : "";
+}
+
+/** Directory-safe name for members audience (anonymous / name-private → Community Member). */
+export function getDirectoryDisplayName(input: {
+  displayName: string;
+  profileVisibility: ProfileVisibility;
+  profileFieldVisibility: UserProfileFieldVisibility | null | undefined;
+}) {
+  if (isAnonymousVisibility(input.profileVisibility)) {
+    return "Community Member";
+  }
+  const fieldVisibility = normalizeProfileFieldVisibility(input.profileFieldVisibility);
+  return (
+    getVisibleProfileValue({
+      value: input.displayName,
+      profileVisibility: input.profileVisibility,
+      fieldVisibility: fieldVisibility.displayName,
+      audience: "members",
+    }) || "Community Member"
+  );
+}
+
+export function directoryRoleLabel(role: string) {
+  if (role === "admin" || role === "super_admin") return "Staff";
+  if (role === "member") return "Member";
+  return "";
 }

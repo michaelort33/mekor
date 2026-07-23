@@ -33,14 +33,14 @@ type MembersBreadcrumbsProps = {
 
 const memberLinks: Array<{ section: MembersNavSection; label: string; href: string }> = [
   { section: "dashboard", label: "Dashboard", href: "/account" },
+  { section: "members", label: "Find members", href: "/members" },
+  { section: "inbox", label: "Inbox", href: "/account/inbox" },
+  { section: "family", label: "Family", href: "/account/family" },
+  { section: "host-events", label: "Host events", href: "/account/member-events" },
   { section: "profile", label: "Profile", href: "/account/profile" },
   { section: "payments", label: "Payments", href: "/account/payments" },
   { section: "dues", label: "Dues", href: "/account/dues" },
-  { section: "host-events", label: "Host Events", href: "/account/member-events" },
-  { section: "family", label: "Family", href: "/account/family" },
-  { section: "inbox", label: "Inbox", href: "/account/inbox" },
-  { section: "members", label: "Members Area", href: "/members" },
-  { section: "community", label: "Community Directory", href: "/community" },
+  { section: "community", label: "Public directory", href: "/community" },
 ];
 
 const publicLinks: Array<{ section: MembersNavSection; label: string; href: string }> = [

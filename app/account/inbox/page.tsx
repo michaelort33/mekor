@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -17,6 +18,8 @@ import {
   ToolbarFilters,
   ToolbarSearch,
 } from "@/components/backend/ui/toolbar";
+
+import styles from "./page.module.css";
 
 type ThreadType = "family_invite" | "family_chat" | "direct" | "system";
 
@@ -60,6 +63,11 @@ const THREAD_TONES: Record<ThreadType, BadgeTone> = {
   system: "warning",
 };
 
+function parseThreadParam(raw: string | null) {
+  const id = Number.parseInt(raw ?? "", 10);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
 function getActionPayload(payload: Record<string, unknown>): ThreadActionPayload | null {
   const kind = payload.kind;
   if (kind !== "family_invite" && kind !== "member_event_request") return null;
@@ -89,12 +97,13 @@ function getActionPayload(payload: Record<string, unknown>): ThreadActionPayload
 export default function AccountInboxPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const requestedId = Number.parseInt(searchParams.get("thread") ?? "", 10);
+  const deepLinkId = parseThreadParam(searchParams.get("thread"));
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"" | ThreadType>("");
   const [readFilter, setReadFilter] = useState<"all" | "unread">("all");
-  const [selectedId, setSelectedId] = useState<number | null>(Number.isInteger(requestedId) ? requestedId : null);
+  const [selectedId, setSelectedId] = useState<number | null>(deepLinkId);
+  const [mobilePane, setMobilePane] = useState<"list" | "detail">(deepLinkId ? "detail" : "list");
   const [messageBody, setMessageBody] = useState("");
   const [sending, setSending] = useState(false);
   const [actionKey, setActionKey] = useState("");
@@ -111,6 +120,13 @@ export default function AccountInboxPage() {
     }
   }, [threadsResource.error, router]);
 
+  // Honor ?thread= when Message (or a link) navigates here — including while already on inbox.
+  useEffect(() => {
+    if (deepLinkId == null) return;
+    setSelectedId(deepLinkId);
+    setMobilePane("detail");
+  }, [deepLinkId]);
+
   const threads = threadsResource.data?.items ?? [];
 
   const filtered = useMemo(() => {
@@ -126,14 +142,30 @@ export default function AccountInboxPage() {
   }, [threads, search, typeFilter, readFilter]);
 
   useEffect(() => {
+    // Don't clear selection while threads are still loading — that wiped ?thread= deep links.
+    if (threadsResource.loading) return;
+
+    if (deepLinkId != null) {
+      if (threads.some((t) => t.threadId === deepLinkId)) {
+        if (selectedId !== deepLinkId) {
+          setSelectedId(deepLinkId);
+        }
+        return;
+      }
+      // Deep-link thread is gone after load; fall through to a safe default.
+    }
+
     if (filtered.length === 0) {
-      setSelectedId(null);
+      if (selectedId != null) {
+        setSelectedId(null);
+      }
       return;
     }
-    if (!selectedId || !filtered.some((t) => t.threadId === selectedId)) {
+
+    if (selectedId == null || !filtered.some((t) => t.threadId === selectedId)) {
       setSelectedId(filtered[0].threadId);
     }
-  }, [filtered, selectedId]);
+  }, [threadsResource.loading, threads, filtered, deepLinkId, selectedId]);
 
   const messagesResource = useResource<ThreadMessagesResponse>(
     (signal) =>
@@ -146,6 +178,18 @@ export default function AccountInboxPage() {
 
   const messages = messagesResource.data?.messages ?? [];
   const selectedThread = useMemo(() => threads.find((t) => t.threadId === selectedId) ?? null, [threads, selectedId]);
+
+  function selectThread(threadId: number) {
+    setSelectedId(threadId);
+    setMobilePane("detail");
+    if (deepLinkId !== threadId) {
+      router.replace(`/account/inbox?thread=${threadId}`, { scroll: false });
+    }
+  }
+
+  function showThreadList() {
+    setMobilePane("list");
+  }
 
   async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -188,29 +232,45 @@ export default function AccountInboxPage() {
     { label: "Visible", value: String(filtered.length), hint: `${threads.length} total` },
     { label: "Unread", value: String(threads.filter((t) => t.unread).length), hint: "Needs review" },
     {
-      label: "Family",
-      value: String(threads.filter((t) => t.threadType === "family_invite" || t.threadType === "family_chat").length),
-      hint: "Invites + chat",
+      label: "Direct",
+      value: String(threads.filter((t) => t.threadType === "direct").length),
+      hint: "Member-to-member",
     },
   ];
+
+  const deepLinkMissing =
+    !threadsResource.loading && deepLinkId != null && !threads.some((t) => t.threadId === deepLinkId);
 
   return (
     <AccountShell
       currentPath="/account/inbox"
       title="Inbox"
-      description="Family invites, member event requests, and household chat in one queue."
+      description="Message members from the directory, plus family invites and event requests."
       stats={stats}
+      actions={
+        <>
+          <Link href="/members">
+            <Button size="sm">Find members to message</Button>
+          </Link>
+          <Button size="sm" variant="ghost" onClick={() => void threadsResource.refresh()}>
+            Refresh
+          </Button>
+        </>
+      }
     >
       {error ? <Alert tone="danger">{error}</Alert> : null}
+      {deepLinkMissing ? (
+        <Alert tone="danger">That conversation was not found or you no longer have access.</Alert>
+      ) : null}
 
       <Toolbar>
         <ToolbarSearch value={search} onChange={setSearch} placeholder="Search subjects and messages…" />
         <ToolbarFilters>
           <Select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as ThreadType | "")}>
             <option value="">All types</option>
+            <option value="direct">Direct messages</option>
             <option value="family_invite">Family invite</option>
             <option value="family_chat">Family chat</option>
-            <option value="direct">Direct</option>
             <option value="system">System</option>
           </Select>
           <Select value={readFilter} onChange={(e) => setReadFilter(e.target.value as "all" | "unread")}>
@@ -229,56 +289,51 @@ export default function AccountInboxPage() {
           ) : null}
         </ToolbarFilters>
         <ToolbarActions>
-          <Button size="sm" variant="ghost" onClick={() => void threadsResource.refresh()}>
-            Refresh
-          </Button>
+          <Link href="/members">
+            <Button size="sm" variant="ghost">
+              New message
+            </Button>
+          </Link>
         </ToolbarActions>
       </Toolbar>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(260px, 320px) 1fr",
-          gap: "var(--bk-space-4)",
-          marginTop: "var(--bk-space-4)",
-        }}
-      >
-        <Card padded>
+      <div className={`${styles.layout} ${mobilePane === "detail" ? styles.mobileDetail : styles.mobileList}`}>
+        <Card padded className={styles.listPane}>
           <CardHeader title="Threads" description={`${filtered.length} visible`} />
           <CardBody>
             {threadsResource.loading ? (
-              <p style={{ color: "var(--bk-text-soft)" }}>Loading…</p>
+              <p className={styles.muted}>Loading…</p>
             ) : filtered.length === 0 ? (
-              <EmptyState title="No threads" description="No threads match the current filters." />
+              <EmptyState
+                title={threads.length === 0 ? "No conversations yet" : "No matching threads"}
+                description={
+                  threads.length === 0
+                    ? "Find a visible member in the directory, then tap Message to start a private conversation."
+                    : "No threads match the current filters."
+                }
+                actions={
+                  <Link href="/members">
+                    <Button size="sm">Browse members</Button>
+                  </Link>
+                }
+              />
             ) : (
-              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "var(--bk-space-2)" }}>
+              <ul className={styles.threadList}>
                 {filtered.map((t) => {
                   const active = t.threadId === selectedId;
                   return (
                     <li key={t.threadId}>
                       <button
                         type="button"
-                        onClick={() => setSelectedId(t.threadId)}
-                        style={{
-                          width: "100%",
-                          textAlign: "left",
-                          padding: "var(--bk-space-2)",
-                          background: active ? "var(--bk-surface-soft)" : "transparent",
-                          border: active ? "1px solid var(--bk-border)" : "1px solid transparent",
-                          borderRadius: "var(--bk-radius-md)",
-                          cursor: "pointer",
-                          display: "grid",
-                          gap: 4,
-                        }}
+                        onClick={() => selectThread(t.threadId)}
+                        className={`${styles.threadButton} ${active ? styles.threadActive : ""}`}
                       >
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                        <div className={styles.threadTop}>
                           <strong style={{ fontWeight: t.unread ? 700 : 500 }}>{t.subject || "Conversation"}</strong>
                           <Badge tone={THREAD_TONES[t.threadType]}>{t.threadType.replace("_", " ")}</Badge>
                         </div>
-                        <span style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {t.latestMessage?.body || "No messages yet."}
-                        </span>
-                        <span style={{ fontSize: "var(--bk-text-xs)", color: "var(--bk-text-soft)" }}>
+                        <span className={styles.threadPreview}>{t.latestMessage?.body || "No messages yet."}</span>
+                        <span className={styles.threadMeta}>
                           {new Date(t.updatedAt).toLocaleString()}
                           {t.unread ? " · Unread" : ""}
                         </span>
@@ -291,45 +346,37 @@ export default function AccountInboxPage() {
           </CardBody>
         </Card>
 
-        <Card padded>
+        <Card padded className={styles.detailPane}>
           <CardHeader
             title={selectedThread ? selectedThread.subject || `Thread #${selectedThread.threadId}` : "Select a thread"}
             description={selectedThread?.familyName || undefined}
+            actions={
+              <Button size="sm" variant="ghost" className={styles.backButton} onClick={showThreadList}>
+                Back to list
+              </Button>
+            }
           />
           <CardBody>
             {!selectedThread ? (
-              <EmptyState title="No thread selected" description="Pick a thread on the left to see messages." />
+              <EmptyState title="No thread selected" description="Pick a thread to see messages." />
             ) : messagesResource.loading ? (
-              <p style={{ color: "var(--bk-text-soft)" }}>Loading messages…</p>
+              <p className={styles.muted}>Loading messages…</p>
             ) : (
-              <div style={{ display: "grid", gap: "var(--bk-space-3)", maxHeight: 480, overflowY: "auto" }}>
+              <div className={styles.messages}>
                 {messages.map((m) => {
                   const payload = getActionPayload(m.actionPayloadJson);
                   return (
                     <div
                       key={m.id}
-                      style={{
-                        padding: "var(--bk-space-3)",
-                        borderRadius: "var(--bk-radius-md)",
-                        background: m.messageType === "system" ? "var(--bk-surface-soft)" : "var(--bk-surface)",
-                        border: "1px solid var(--bk-border)",
-                      }}
+                      className={`${styles.message} ${m.messageType === "system" ? styles.messageSystem : ""}`}
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          fontSize: "var(--bk-text-xs)",
-                          color: "var(--bk-text-soft)",
-                          marginBottom: 4,
-                        }}
-                      >
+                      <div className={styles.messageMeta}>
                         <strong>{m.senderDisplayName || "System"}</strong>
                         <span>{new Date(m.createdAt).toLocaleString()}</span>
                       </div>
-                      <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{m.body}</p>
+                      <p>{m.body}</p>
                       {payload ? (
-                        <div style={{ display: "flex", gap: 8, marginTop: "var(--bk-space-2)" }}>
+                        <div className={styles.messageActions}>
                           {payload.actions.map((action) => {
                             const key = `${selectedId}-${action.type}-${payload.kind === "family_invite" ? payload.inviteId : 0}-${payload.kind === "member_event_request" ? payload.eventId : 0}-${payload.kind === "member_event_request" ? payload.requestId : 0}`;
                             return (
@@ -355,12 +402,12 @@ export default function AccountInboxPage() {
                     </div>
                   );
                 })}
-                {messages.length === 0 ? <p style={{ color: "var(--bk-text-soft)" }}>No messages in this thread yet.</p> : null}
+                {messages.length === 0 ? <p className={styles.muted}>No messages in this thread yet.</p> : null}
               </div>
             )}
 
             {selectedThread ? (
-              <form onSubmit={sendMessage} style={{ display: "grid", gap: "var(--bk-space-2)", marginTop: "var(--bk-space-3)" }}>
+              <form onSubmit={sendMessage} className={styles.compose}>
                 <Textarea
                   value={messageBody}
                   onChange={(e) => setMessageBody(e.target.value)}
@@ -368,7 +415,7 @@ export default function AccountInboxPage() {
                   maxLength={4000}
                   rows={3}
                 />
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div className={styles.composeActions}>
                   <Button type="submit" disabled={sending || !messageBody.trim()}>
                     {sending ? "Sending…" : "Send"}
                   </Button>

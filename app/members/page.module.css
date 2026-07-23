@@ -3,37 +3,179 @@
   margin: 0 auto;
   padding: 28px 20px 56px;
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
-.header h1 {
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.headerCopy h1 {
   margin: 0 0 6px;
   color: #1c3046;
   font-size: 1.9rem;
+  text-wrap: balance;
 }
 
-.header p {
+.headerCopy p {
   margin: 0;
+  max-width: 52ch;
+  color: #3f556b;
+  line-height: 1.55;
+}
+
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.secondaryAction {
+  border: 1px solid #2f689d;
+  border-radius: 999px;
+  padding: 9px 14px;
+  text-decoration: none;
+  font-weight: 700;
+  color: #1f4f79;
+  background: #f6fbff;
+  transition: background 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.secondaryAction:hover {
+  background: #e8f2fb;
+}
+
+.secondaryAction:focus-visible {
+  outline: 2px solid #2c648d;
+  outline-offset: 2px;
+}
+
+.searchBar {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid #d2dbe6;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.searchLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #274863;
+}
+
+.searchRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1 1 220px;
+  min-width: 0;
+  border: 1px solid #c5d1df;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  color: #1c3046;
+  background: #fff;
+}
+
+.searchInput::placeholder {
+  color: #5a7085;
+}
+
+.searchInput:focus-visible {
+  outline: 2px solid #2c648d;
+  outline-offset: 1px;
+}
+
+.searchButton {
+  appearance: none;
+  border: 1px solid #234d78;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 700;
+  color: #f8fbff;
+  background: #2f6396;
+  cursor: pointer;
+}
+
+.searchButton:hover {
+  background: #234d78;
+}
+
+.searchButton:focus-visible {
+  outline: 2px solid #2c648d;
+  outline-offset: 2px;
+}
+
+.clearSearch {
+  color: #1f4f83;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 4px;
+}
+
+.clearSearch:hover {
+  text-decoration: underline;
+}
+
+.searchHint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #4e6277;
+}
+
+.resultCount {
+  margin: 0;
+  font-size: 0.9rem;
   color: #4e6277;
 }
 
 .empty {
   border: 1px solid #d8e2ed;
   border-radius: 14px;
-  background: #f8fbff;
+  background: #ffffff;
   padding: 22px;
-  color: #4e6277;
+  color: #3f556b;
   display: grid;
-  gap: 8px;
+  gap: 10px;
+}
+
+.empty h2 {
+  margin: 0;
+  color: #1c3046;
+  font-size: 1.15rem;
 }
 
 .empty p {
   margin: 0;
+  max-width: 60ch;
+  line-height: 1.55;
 }
 
-.empty a {
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.emptyActions a {
   color: #245c8f;
   font-weight: 600;
+  text-decoration: none;
+}
+
+.emptyActions a:hover {
+  text-decoration: underline;
 }
 
 .grid {
@@ -50,6 +192,14 @@
   display: grid;
   gap: 12px;
   grid-template-columns: 72px minmax(0, 1fr);
+  transition:
+    border-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card:hover {
+  border-color: #b9c9db;
+  box-shadow: 0 4px 14px rgba(24, 43, 65, 0.06);
 }
 
 .avatar {
@@ -76,6 +226,7 @@
 .body {
   display: grid;
   gap: 6px;
+  min-width: 0;
 }
 
 .role {
@@ -91,6 +242,7 @@
   margin: 0;
   color: #1f354c;
   font-size: 1.1rem;
+  text-wrap: balance;
 }
 
 .city {
@@ -103,22 +255,40 @@
   margin: 0;
   color: #3f556b;
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.body a {
+.cardActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.profileLink {
   color: #245c8f;
   font-weight: 600;
   text-decoration: none;
 }
 
-.body a:hover {
+.profileLink:hover {
   text-decoration: underline;
+}
+
+.selfNote {
+  font-size: 0.82rem;
+  color: #58748f;
+  font-weight: 600;
 }
 
 .loadMoreWrap {
   display: flex;
   justify-content: center;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 .loadMoreButton {
@@ -129,4 +299,26 @@
   font-weight: 700;
   color: #1f4f79;
   background: #f6fbff;
+}
+
+.loadMoreButton:hover {
+  background: #e8f2fb;
+}
+
+.loadMoreButton:focus-visible {
+  outline: 2px solid #2c648d;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .secondaryAction {
+    transition: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .card {
+    grid-template-columns: 1fr;
+  }
 }

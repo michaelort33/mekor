@@ -22,9 +22,10 @@ export const ACCOUNT_ROUTES: AccountRouteItem[] = [
   { href: "/account/profile", label: "Profile", section: "overview" },
   { href: "/account/dues", label: "Dues", section: "finance", membersOnly: true },
   { href: "/account/payments", label: "Payments", section: "finance", membersOnly: true },
+  { href: "/members", label: "Find members", section: "community", membersOnly: true },
+  { href: "/account/inbox", label: "Inbox", section: "community", membersOnly: true },
   { href: "/account/family", label: "Family", section: "community", membersOnly: true },
   { href: "/account/member-events", label: "Host events", section: "community", membersOnly: true },
-  { href: "/account/inbox", label: "Inbox", section: "community", membersOnly: true },
   { href: "/account/security", label: "Security", section: "settings" },
   { href: "/account/notifications", label: "Notifications", section: "settings" },
   { href: "/account/delete", label: "Delete account", section: "settings" },
@@ -45,7 +46,7 @@ function buildNavSections(membersAreaEnabled: boolean): BackendNavSection[] {
       .map((r) => ({
         href: r.href,
         label: r.label,
-        matchPrefix: r.href !== "/account",
+        matchPrefix: r.href !== "/account" && r.href !== "/members",
       })),
   })).filter((s) => s.items.length > 0);
 }

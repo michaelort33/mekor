@@ -16,6 +16,7 @@ import {
 } from "@/db/schema";
 import { sendSendGridEmail } from "@/lib/notifications/sendgrid";
 import { generateInvitationToken, hashInvitationToken, invitationExpiryFromNow } from "@/lib/invitations/token";
+import { getDirectoryDisplayName } from "@/lib/users/profile";
 import { normalizeUserEmail } from "@/lib/users/validation";
 
 type UserRole = "visitor" | "member" | "admin" | "super_admin";
@@ -1313,12 +1314,14 @@ export async function getInboxThreadMessages(input: { actorUserId: number; threa
     fail(404, "THREAD_NOT_FOUND", "Thread not found");
   }
 
-  const messages = await db
+  const messageRows = await db
     .select({
       id: inboxMessages.id,
       threadId: inboxMessages.threadId,
       senderUserId: inboxMessages.senderUserId,
       senderDisplayName: users.displayName,
+      senderProfileVisibility: users.profileVisibility,
+      senderProfileFieldVisibility: users.profileFieldVisibilityJson,
       messageType: inboxMessages.messageType,
       body: inboxMessages.body,
       actionPayloadJson: inboxMessages.actionPayloadJson,
@@ -1329,6 +1332,24 @@ export async function getInboxThreadMessages(input: { actorUserId: number; threa
     .where(eq(inboxMessages.threadId, input.threadId))
     .orderBy(asc(inboxMessages.createdAt), asc(inboxMessages.id))
     .limit(1000);
+
+  const messages = messageRows.map((row) => ({
+    id: row.id,
+    threadId: row.threadId,
+    senderUserId: row.senderUserId,
+    senderDisplayName:
+      row.senderUserId == null || row.senderProfileVisibility == null
+        ? null
+        : getDirectoryDisplayName({
+            displayName: row.senderDisplayName ?? "",
+            profileVisibility: row.senderProfileVisibility,
+            profileFieldVisibility: row.senderProfileFieldVisibility,
+          }),
+    messageType: row.messageType,
+    body: row.body,
+    actionPayloadJson: row.actionPayloadJson,
+    createdAt: row.createdAt,
+  }));
 
   await db
     .update(inboxParticipants)

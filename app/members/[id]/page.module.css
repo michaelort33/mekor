@@ -2,6 +2,8 @@
   max-width: 760px;
   margin: 0 auto;
   padding: 28px 20px 56px;
+  display: grid;
+  gap: 16px;
 }
 
 .card {
@@ -17,7 +19,13 @@
   display: grid;
   grid-template-columns: 96px minmax(0, 1fr);
   gap: 14px;
-  align-items: center;
+  align-items: start;
+}
+
+.headerText {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
 }
 
 .avatar {
@@ -54,16 +62,49 @@
   margin: 0;
   color: #1f354c;
   font-size: 1.8rem;
+  text-wrap: balance;
 }
 
 .city {
-  margin: 6px 0 0;
+  margin: 0;
   color: #4e6277;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.secondaryLink {
+  color: #245c8f;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.secondaryLink:hover {
+  text-decoration: underline;
+}
+
+.selfNote {
+  font-size: 0.82rem;
+  color: #58748f;
+  font-weight: 600;
 }
 
 .bio {
   margin: 0;
   color: #385068;
+  line-height: 1.65;
+  max-width: 65ch;
+}
+
+.bioMuted {
+  margin: 0;
+  color: #5a7085;
   line-height: 1.65;
 }
 
@@ -82,11 +123,9 @@
 
 .detailLabel {
   margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #58748f;
+  color: #45627c;
 }
 
 .detailValue {
@@ -103,4 +142,10 @@
 
 .backLink:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+  .header {
+    grid-template-columns: 1fr;
+  }
 }
