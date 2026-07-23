@@ -119,20 +119,24 @@ export function DonationCheckoutForm({
     window.location.assign(payload.url);
   }
 
+  const amountLabel = Number.isFinite(currentAmountCents) && currentAmountCents >= 100
+    ? formatCents(currentAmountCents)
+    : "Enter an amount";
+
   const formBody = (
     <div className="grid gap-6">
       <div className="space-y-3">
         <h3>{title}</h3>
         <p className="max-w-3xl text-base leading-7 text-[var(--color-muted)]">{description}</p>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">
-          Secure checkout via Stripe · Tax receipt when applicable
+        <p className="text-sm font-medium text-[var(--color-foreground)]">
+          Secure Stripe checkout · tax receipt emailed when applicable
         </p>
       </div>
 
       <form onSubmit={onSubmit} className="grid gap-6">
         {showSuggestedAmounts ? (
           <div className="grid gap-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">1. What is your gift for?</span>
+            <span className="text-sm font-semibold text-[var(--color-foreground)]">1. What is your gift for?</span>
             <div className="flex flex-wrap gap-2">
               {DESIGNATION_OPTIONS.map((option) => {
                 const active = option === designation;
@@ -168,7 +172,7 @@ export function DonationCheckoutForm({
 
         {suggestedAmounts.length > 0 ? (
           <div className="grid gap-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">2. Choose an amount</span>
+            <span className="text-sm font-semibold text-[var(--color-foreground)]">2. Choose an amount</span>
             <div className="flex flex-wrap gap-2">
               {suggestedAmounts.map((cents) => {
                 const active = cents === currentAmountCents;
@@ -196,8 +200,9 @@ export function DonationCheckoutForm({
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <label className="grid gap-2">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">
+            <span className="text-sm font-semibold text-[var(--color-foreground)]">
               {showSuggestedAmounts ? "3. Donation amount (USD)" : "Donation amount (USD)"}
+              <span className="text-rose-700" aria-hidden="true"> *</span>
             </span>
             <div className="relative">
               <span
@@ -220,7 +225,7 @@ export function DonationCheckoutForm({
           </label>
 
           <label className="grid gap-2">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">What is this donation for?</span>
+            <span className="text-sm font-semibold text-[var(--color-foreground)]">What is this donation for?</span>
             <div className="relative">
               <select
                 value={designation}
@@ -250,7 +255,10 @@ export function DonationCheckoutForm({
           </label>
 
           <label className="grid gap-2">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Donor name</span>
+            <span className="text-sm font-semibold text-[var(--color-foreground)]">
+              Donor name
+              <span className="text-rose-700" aria-hidden="true"> *</span>
+            </span>
             <Input
               value={resolvedDonorName}
               onChange={(event) => {
@@ -263,7 +271,10 @@ export function DonationCheckoutForm({
           </label>
 
           <label className="grid gap-2">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Email for receipt</span>
+            <span className="text-sm font-semibold text-[var(--color-foreground)]">
+              Email for receipt
+              <span className="text-rose-700" aria-hidden="true"> *</span>
+            </span>
             <Input
               type="email"
               value={resolvedDonorEmail}
@@ -277,7 +288,7 @@ export function DonationCheckoutForm({
           </label>
 
           <label className="grid gap-2 md:col-span-2 xl:col-span-1">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Phone</span>
+            <span className="text-sm font-semibold text-[var(--color-foreground)]">Phone (optional)</span>
             <Input
               value={resolvedDonorPhone}
               onChange={(event) => {
@@ -290,7 +301,7 @@ export function DonationCheckoutForm({
           </label>
 
           <label className="grid gap-2 md:col-span-2 xl:col-span-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">
+            <span className="text-sm font-semibold text-[var(--color-foreground)]">
               Dedication / in honor of (optional)
             </span>
             <Input
@@ -302,15 +313,34 @@ export function DonationCheckoutForm({
           </label>
         </div>
 
-        {error ? <p className="text-sm font-medium text-rose-700">{error}</p> : null}
-
-        <div className="flex flex-col gap-4 border-t border-[var(--color-border)] pt-5 lg:flex-row lg:items-center lg:justify-between">
-          <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
-            {loading ? "Opening checkout..." : "Continue to secure payment"}
-          </Button>
-          <p className="max-w-2xl text-sm leading-6 text-[var(--color-muted)]">
-            The thank-you note is distinct from the tax receipt. Qualifying gifts receive a separate standardized receipt for tax records.
-          </p>
+        <div className="grid gap-3 rounded-2xl border border-[var(--color-border-strong)] bg-white/80 p-4 sm:p-5">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="m-0 text-sm text-[var(--color-muted)]">You&apos;re giving</p>
+              <p className="m-0 text-3xl font-bold tracking-tight text-[var(--color-foreground)]">{amountLabel}</p>
+            </div>
+            <p className="m-0 max-w-sm text-sm leading-6 text-[var(--color-muted)]">
+              Toward <strong className="text-[var(--color-foreground)]">{designation}</strong>
+              {dedicationNote.trim() ? ` · ${dedicationNote.trim()}` : ""}
+            </p>
+          </div>
+          {error ? (
+            <p role="alert" className="m-0 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-800">
+              {error}
+            </p>
+          ) : null}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
+              {loading
+                ? "Opening Stripe…"
+                : amountLabel === "Enter an amount"
+                  ? "Continue to secure payment"
+                  : `Continue to pay ${amountLabel}`}
+            </Button>
+            <p className="m-0 max-w-xl text-sm leading-6 text-[var(--color-muted)]">
+              You&apos;ll finish on Stripe, then return here. Qualifying gifts get a separate tax receipt by email.
+            </p>
+          </div>
         </div>
       </form>
     </div>
@@ -322,7 +352,7 @@ export function DonationCheckoutForm({
 
   return (
     <section className="w-full">
-      <Card className="overflow-hidden bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(245,239,229,0.92))] p-5 sm:p-7">
+      <Card className="overflow-hidden bg-[linear-gradient(145deg,rgba(255,255,255,0.97),rgba(240,246,252,0.96))] p-5 sm:p-7">
         {formBody}
       </Card>
     </section>

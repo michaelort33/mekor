@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { AccountShell } from "@/components/account/account-shell";
 import { Badge, type BadgeTone } from "@/components/backend/ui/badge";
 import { Button } from "@/components/backend/ui/button";
+import { Card, CardBody, CardHeader } from "@/components/backend/ui/card";
 import { DataState } from "@/components/backend/data/data-state";
 import { DataTable, type DataTableColumn } from "@/components/backend/ui/data-table";
 import { fetchJson, useResource } from "@/components/backend/data/use-resource";
@@ -16,6 +18,7 @@ import {
   ToolbarActions,
   ToolbarFilters,
 } from "@/components/backend/ui/toolbar";
+import styles from "./page.module.css";
 
 type Schedule = {
   id: number;
@@ -68,6 +71,12 @@ function money(cents: number, currency: string) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: currency.toUpperCase() }).format(cents / 100);
 }
 
+function formatDueDate(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
 export default function AccountDuesPage() {
   const [invoiceStatus, setInvoiceStatus] = useState<"" | OpenInvoice["status"]>("");
   const [paymentStatus, setPaymentStatus] = useState<"" | Payment["status"]>("");
@@ -80,9 +89,14 @@ export default function AccountDuesPage() {
     [],
   );
 
-  const totalDue = useMemo(
-    () => (resource.data?.openInvoices ?? []).reduce((sum, inv) => sum + inv.amountCents, 0),
+  const payableInvoices = useMemo(
+    () => (resource.data?.openInvoices ?? []).filter((inv) => inv.status === "open" || inv.status === "overdue"),
     [resource.data],
+  );
+
+  const totalDue = useMemo(
+    () => payableInvoices.reduce((sum, inv) => sum + inv.amountCents, 0),
+    [payableInvoices],
   );
 
   const filteredInvoices = useMemo(
@@ -96,7 +110,8 @@ export default function AccountDuesPage() {
     [resource.data, paymentStatus],
   );
 
-  const primaryRenewal = resource.data?.openInvoices[0] ?? null;
+  const primaryRenewal = payableInvoices[0] ?? null;
+  const overdueCount = payableInvoices.filter((inv) => inv.status === "overdue").length;
 
   async function payInvoice(invoiceId: number) {
     setError("");
@@ -104,9 +119,13 @@ export default function AccountDuesPage() {
     try {
       const body = await fetchJson<{ url?: string }>(`/api/account/dues/${invoiceId}/checkout`, { method: "POST" });
       if (body.url) window.location.assign(body.url);
-      else setError("Checkout URL missing");
+      else setError("We couldn't start checkout because the payment link was missing. Try again, or manage cards below.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to start checkout");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "We couldn't open Stripe checkout. Check your connection and try again.",
+      );
     } finally {
       setCheckoutId(null);
     }
@@ -118,8 +137,9 @@ export default function AccountDuesPage() {
     try {
       const body = await fetchJson<{ url?: string }>("/api/account/stripe/portal", { method: "POST" });
       if (body.url) window.location.assign(body.url);
+      else setError("We couldn't open the payment methods portal. Try again in a moment.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to open portal");
+      setError(err instanceof Error ? err.message : "Unable to open payment methods portal.");
     } finally {
       setPortalLoading(false);
     }
@@ -143,7 +163,7 @@ export default function AccountDuesPage() {
     {
       id: "dueDate",
       header: "Due",
-      accessor: (r) => r.dueDate,
+      accessor: (r) => formatDueDate(r.dueDate),
       sortValue: (r) => r.dueDate,
       exportValue: (r) => r.dueDate,
     },
@@ -190,7 +210,9 @@ export default function AccountDuesPage() {
       header: "Receipt",
       accessor: (r) =>
         r.stripeReceiptUrl ? (
-          <a href={r.stripeReceiptUrl} target="_blank" rel="noreferrer noopener">Open</a>
+          <a href={r.stripeReceiptUrl} target="_blank" rel="noreferrer noopener">
+            Open receipt
+          </a>
         ) : (
           "—"
         ),
@@ -217,7 +239,7 @@ export default function AccountDuesPage() {
     {
       id: "nextDue",
       header: "Next due",
-      accessor: (r) => r.nextDueDate,
+      accessor: (r) => formatDueDate(r.nextDueDate),
       sortValue: (r) => r.nextDueDate,
       exportValue: (r) => r.nextDueDate,
     },
@@ -232,7 +254,11 @@ export default function AccountDuesPage() {
 
   const stats = resource.data
     ? [
-        { label: "Amount due", value: money(totalDue, "usd"), hint: `${resource.data.openInvoices.length} open invoice(s)` },
+        {
+          label: "Amount due",
+          value: money(totalDue, "usd"),
+          hint: `${payableInvoices.length} payable invoice${payableInvoices.length === 1 ? "" : "s"}`,
+        },
         { label: "Schedules", value: String(resource.data.schedules.length), hint: "Recurring dues rules" },
         { label: "Payments", value: String(resource.data.payments.length), hint: "Recorded history" },
       ]
@@ -242,7 +268,7 @@ export default function AccountDuesPage() {
     <AccountShell
       currentPath="/account/dues"
       title="Dues"
-      description="Review open dues, recurring schedules, and payment history."
+      description="Pay open invoices, manage saved payment methods, and review your dues history."
       stats={stats}
       actions={
         <>
@@ -252,71 +278,160 @@ export default function AccountDuesPage() {
               onClick={() => payInvoice(primaryRenewal.id)}
               disabled={checkoutId === primaryRenewal.id}
             >
-              {checkoutId === primaryRenewal.id ? "Opening…" : "Click to Renew"}
+              {checkoutId === primaryRenewal.id
+                ? "Opening checkout…"
+                : `Pay ${money(primaryRenewal.amountCents, primaryRenewal.currency)}`}
             </Button>
           ) : null}
           <Button size="sm" variant="secondary" disabled={portalLoading} onClick={openPortal}>
-            {portalLoading ? "Opening…" : "Payment methods"}
+            {portalLoading ? "Opening…" : "Manage payment methods"}
           </Button>
         </>
       }
     >
-      {error ? <Alert tone="danger">{error}</Alert> : null}
+      {error ? (
+        <Alert tone="danger">
+          {error}{" "}
+          <Link href="/account/payments" style={{ fontWeight: 700 }}>
+            View payment history
+          </Link>
+        </Alert>
+      ) : null}
 
-      <Toolbar>
-        <ToolbarFilters>
-          <Select value={invoiceStatus} onChange={(e) => setInvoiceStatus(e.target.value as OpenInvoice["status"] | "")}>
-            <option value="">All invoice statuses</option>
-            <option value="open">Open</option>
-            <option value="overdue">Overdue</option>
-            <option value="paid">Paid</option>
-            <option value="void">Void</option>
-          </Select>
-          <Select value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value as Payment["status"] | "")}>
-            <option value="">All payment statuses</option>
-            <option value="pending">Pending</option>
-            <option value="succeeded">Succeeded</option>
-            <option value="failed">Failed</option>
-            <option value="refunded">Refunded</option>
-          </Select>
-          {(invoiceStatus || paymentStatus) ? (
-            <FilterChip
-              label="Clear filters"
-              onRemove={() => {
-                setInvoiceStatus("");
-                setPaymentStatus("");
-              }}
-            />
-          ) : null}
-        </ToolbarFilters>
-        <ToolbarActions>
-          <Button size="sm" variant="ghost" onClick={() => void resource.refresh()}>
-            Refresh
-          </Button>
-        </ToolbarActions>
-      </Toolbar>
-
-      <DataState resource={resource} empty={{ title: "No dues data", description: "We couldn't load your dues." }}>
+      <DataState
+        resource={resource}
+        empty={{
+          title: "No dues data yet",
+          description: "Once membership dues are issued, open invoices and payment history will appear here.",
+        }}
+      >
         {() => (
-          <div style={{ display: "grid", gap: "var(--bk-space-4)" }}>
-            <section>
-              <h3 style={{ margin: "var(--bk-space-2) 0" }}>Open invoices</h3>
+          <div className={styles.stack}>
+            <Card padded className={styles.checkoutCard}>
+              <CardHeader
+                title={totalDue > 0 ? "Ready to pay" : "You're caught up"}
+                description={
+                  totalDue > 0
+                    ? overdueCount > 0
+                      ? `${overdueCount} invoice${overdueCount === 1 ? " is" : "s are"} past due. Pay securely through Stripe.`
+                      : "Review the amount below, then continue to Stripe secure checkout."
+                    : "No open dues right now. You can still update saved cards or review history."
+                }
+              />
+              <CardBody>
+                <div className={styles.checkoutGrid}>
+                  <div>
+                    <p className={styles.checkoutLabel}>Total due</p>
+                    <p className={styles.checkoutTotal}>{money(totalDue, "usd")}</p>
+                    {primaryRenewal ? (
+                      <p className={styles.checkoutMeta}>
+                        Next invoice: {primaryRenewal.label} · due {formatDueDate(primaryRenewal.dueDate)}
+                      </p>
+                    ) : (
+                      <p className={styles.checkoutMeta}>Nothing to pay at the moment.</p>
+                    )}
+                  </div>
+                  <div className={styles.checkoutActions}>
+                    {primaryRenewal ? (
+                      <Button
+                        onClick={() => payInvoice(primaryRenewal.id)}
+                        disabled={checkoutId === primaryRenewal.id}
+                      >
+                        {checkoutId === primaryRenewal.id
+                          ? "Opening Stripe…"
+                          : `Continue to pay ${money(primaryRenewal.amountCents, primaryRenewal.currency)}`}
+                      </Button>
+                    ) : (
+                      <Link href="/membership/apply">
+                        <Button variant="secondary">Apply or renew membership</Button>
+                      </Link>
+                    )}
+                    <Button variant="ghost" disabled={portalLoading} onClick={openPortal}>
+                      {portalLoading ? "Opening…" : "Update payment methods"}
+                    </Button>
+                    <p className={styles.trustNote}>
+                      Checkout opens on Stripe. You&apos;ll return here after payment completes or if you cancel.
+                    </p>
+                  </div>
+                </div>
+                {payableInvoices.length > 1 ? (
+                  <ul className={styles.invoicePreview}>
+                    {payableInvoices.map((invoice) => (
+                      <li key={invoice.id}>
+                        <div>
+                          <strong>{invoice.label}</strong>
+                          <span>
+                            {money(invoice.amountCents, invoice.currency)} · due {formatDueDate(invoice.dueDate)}
+                          </span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant={invoice.id === primaryRenewal?.id ? "primary" : "secondary"}
+                          disabled={checkoutId === invoice.id}
+                          onClick={() => payInvoice(invoice.id)}
+                        >
+                          {checkoutId === invoice.id ? "Opening…" : `Pay ${money(invoice.amountCents, invoice.currency)}`}
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </CardBody>
+            </Card>
+
+            <Toolbar>
+              <ToolbarFilters>
+                <Select value={invoiceStatus} onChange={(e) => setInvoiceStatus(e.target.value as OpenInvoice["status"] | "")}>
+                  <option value="">All invoice statuses</option>
+                  <option value="open">Open</option>
+                  <option value="overdue">Overdue</option>
+                  <option value="paid">Paid</option>
+                  <option value="void">Void</option>
+                </Select>
+                <Select value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value as Payment["status"] | "")}>
+                  <option value="">All payment statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="succeeded">Succeeded</option>
+                  <option value="failed">Failed</option>
+                  <option value="refunded">Refunded</option>
+                </Select>
+                {invoiceStatus || paymentStatus ? (
+                  <FilterChip
+                    label="Clear filters"
+                    onRemove={() => {
+                      setInvoiceStatus("");
+                      setPaymentStatus("");
+                    }}
+                  />
+                ) : null}
+              </ToolbarFilters>
+              <ToolbarActions>
+                <Button size="sm" variant="ghost" onClick={() => void resource.refresh()}>
+                  Refresh
+                </Button>
+              </ToolbarActions>
+            </Toolbar>
+
+            <section className={styles.section}>
+              <h3 className={styles.sectionTitle}>Open invoices</h3>
               <DataTable<OpenInvoice>
                 rows={filteredInvoices}
                 rowId={(r) => r.id}
                 columns={invoiceColumns}
-                rowActions={(r) => (
-                  <Button size="sm" disabled={checkoutId === r.id} onClick={() => payInvoice(r.id)}>
-                    {checkoutId === r.id ? "Redirecting…" : "Pay"}
-                  </Button>
-                )}
+                rowActions={(r) =>
+                  r.status === "open" || r.status === "overdue" ? (
+                    <Button size="sm" disabled={checkoutId === r.id} onClick={() => payInvoice(r.id)}>
+                      {checkoutId === r.id ? "Redirecting…" : `Pay ${money(r.amountCents, r.currency)}`}
+                    </Button>
+                  ) : null
+                }
                 exportFilename="open-invoices.csv"
-                emptyState="No open invoices match the current filter"
+                emptyState="No invoices match the current filter"
               />
             </section>
 
-            <section>
-              <h3 style={{ margin: "var(--bk-space-2) 0" }}>Recurring schedules</h3>
+            <section className={styles.section}>
+              <h3 className={styles.sectionTitle}>Recurring schedules</h3>
               <DataTable<Schedule>
                 rows={resource.data?.schedules ?? []}
                 rowId={(r) => r.id}
@@ -326,14 +441,14 @@ export default function AccountDuesPage() {
               />
             </section>
 
-            <section>
-              <h3 style={{ margin: "var(--bk-space-2) 0" }}>Payment history</h3>
+            <section className={styles.section}>
+              <h3 className={styles.sectionTitle}>Payment history</h3>
               <DataTable<Payment>
                 rows={filteredPayments}
                 rowId={(r) => r.id}
                 columns={paymentColumns}
                 exportFilename="dues-payments.csv"
-                emptyState="No payments recorded yet"
+                emptyState="No dues payments recorded yet"
               />
             </section>
           </div>
