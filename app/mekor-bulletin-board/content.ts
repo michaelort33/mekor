@@ -106,7 +106,7 @@ export const STANDING_INFO: BulletinCard[] = [
     ],
     links: [
       { label: "Davening schedule", href: "/davening" },
-      { label: "Email the shul about minyan", href: "mailto:mekorhabracha@gmail.com?subject=Minyan%20RSVP" },
+      { label: "Email the shul about minyan", href: "mailto:admin@mekorhabracha.org?subject=Minyan%20RSVP" },
     ],
   },
   {
@@ -132,7 +132,7 @@ export const STANDING_INFO: BulletinCard[] = [
     links: [
       {
         label: "Email about Hebrew Help",
-        href: "mailto:mekorhabracha@gmail.com?subject=Hebrew%20Help%20Sign-up",
+        href: "mailto:admin@mekorhabracha.org?subject=Hebrew%20Help%20Sign-up",
       },
     ],
   },
@@ -182,7 +182,7 @@ export const STANDING_INFO: BulletinCard[] = [
     ],
     links: [
       { label: "Volunteer hub", href: "/team-4" },
-      { label: "Email about volunteering", href: "mailto:mekorhabracha@gmail.com?subject=Volunteer" },
+      { label: "Email about volunteering", href: "mailto:admin@mekorhabracha.org?subject=Volunteer" },
       { label: "Erik Schneiman (cholent)", href: "mailto:erik.schneiman@gmail.com" },
     ],
   },
@@ -196,7 +196,7 @@ export const STANDING_INFO: BulletinCard[] = [
     links: [
       {
         label: "Email Yizkor submissions",
-        href: "mailto:mekorhabracha@gmail.com?subject=Yizkor%20Book%202026-2027",
+        href: "mailto:admin@mekorhabracha.org?subject=Yizkor%20Book%202026-2027",
       },
     ],
   },
@@ -268,7 +268,7 @@ export const COMMUNITY_UPDATES: BulletinCard[] = [
       "It is exciting that our list of Center City kosher restaurants is expanding once again, but we rely on volunteers to help in this process! No experience is necessary; Rabbi Hirsch will provide training. For more info, please email the shul.",
     ],
     links: [
-      { label: "Email the Shul", href: "mailto:mekorhabracha@gmail.com?subject=Mashgiach%20Volunteers" },
+      { label: "Email the Shul", href: "mailto:admin@mekorhabracha.org?subject=Mashgiach%20Volunteers" },
       { label: "Kosher Guide", href: "/kosher-map" },
     ],
   },
@@ -366,7 +366,7 @@ export const COMMUNITY_ANNOUNCEMENTS: BulletinCard[] = [
     links: [
       {
         label: "Request Rabbi Referral",
-        href: "mailto:mekorhabracha@gmail.com?subject=JEVS%20Referral&body=Please%20refer%20me%20to%20JEVS%20for%20my%20free%20career%20strategies%20consultation.",
+        href: "mailto:admin@mekorhabracha.org?subject=JEVS%20Referral&body=Please%20refer%20me%20to%20JEVS%20for%20my%20free%20career%20strategies%20consultation.",
       },
       { label: "Call Wendy Rosenfeldt", href: "tel:+12158320878" },
       { label: "JEVS Career Strategies", href: "https://www.jevshumanservices.org/careerstrategies/" },

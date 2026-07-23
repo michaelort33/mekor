@@ -271,7 +271,7 @@ export default async function BulletinBoardPage() {
           <h2 id="quick-contacts-title">Quick Contacts and Links</h2>
         </div>
         <div className={styles.contactStrip}>
-          <BoardLink href="mailto:mekorhabracha@gmail.com" className={styles.contactChip}>
+          <BoardLink href="mailto:admin@mekorhabracha.org" className={styles.contactChip}>
             General Shul Email
           </BoardLink>
           <BoardLink href="tel:+12155254246" className={styles.contactChip}>

@@ -45,7 +45,7 @@ export default async function ContactUsPage() {
         }}
         description={["We'd love to hear from you!"]}
         actions={[
-          { label: "Email mekorhabracha@gmail.com", href: "mailto:mekorhabracha@gmail.com" },
+          { label: "Email admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org" },
           { label: "Call (215) 525-4246", href: "tel:+12155254246" },
         ]}
       />
@@ -73,7 +73,7 @@ export default async function ContactUsPage() {
           <article className={styles.detailCard}>
             <h3>General Email</h3>
             <p>
-              <a href="mailto:mekorhabracha@gmail.com">mekorhabracha@gmail.com</a>
+              <a href="mailto:admin@mekorhabracha.org">admin@mekorhabracha.org</a>
             </p>
           </article>
           <article className={styles.detailCard}>
@@ -109,7 +109,7 @@ export default async function ContactUsPage() {
               className={styles.visitLinks}
               items={[
                 { label: "Open in Google Maps", href: "https://maps.google.com/?q=1500+Walnut+St+Suite+206+Philadelphia+PA+19102" },
-                { label: "Email for Visiting Info", href: "mailto:mekorhabracha@gmail.com?subject=Visiting%20Mekor" },
+                { label: "Email for Visiting Info", href: "mailto:admin@mekorhabracha.org?subject=Visiting%20Mekor" },
               ]}
             />
           </div>

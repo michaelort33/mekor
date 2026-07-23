@@ -93,22 +93,21 @@ export default async function MembershipPage() {
           objectPosition: "50% 44%",
         }}
         description={[
-          "Choose from annual membership options below or connect directly by email for payment support.",
+          "We offer 2 simple ways to join or renew: choose one of the membership options below, or email us.",
         ]}
         actions={[
-          { label: "Apply for membership", href: MEMBERSHIP_FORM_URL },
-          { label: "Email membership team", href: "mailto:mekorhabracha@gmail.com?subject=Membership%20Question" },
+          { label: "Join Now!", href: MEMBERSHIP_FORM_URL },
+          { label: "Email admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org?subject=Membership%20Question" },
         ]}
       />
 
       <SectionCard className={styles.overviewCard}>
         <div className={styles.overviewGrid}>
           <div className={styles.overviewCopy}>
-            <p className={styles.sectionEyebrow}>Join or renew</p>
             <h2 className={styles.panelTitle}>We offer 2 simple ways to join or renew:</h2>
             <p className={styles.leadText}>
               We try to make everyone, member &amp; nonmember alike, feel welcome in our community. Visitors to our shul
-              speak glowingly about the way we assist them in so many ways.
+              speak glowingly about the way we assist them in so many ways. But our shul can&apos;t live on love alone!
             </p>
             <p className={styles.bodyText}>
               Mekor Habracha cannot exist and provide so many services without paying members and the generosity of
@@ -119,15 +118,21 @@ export default async function MembershipPage() {
           </div>
 
           <aside className={styles.overviewAside}>
-            <p className={styles.sectionEyebrow}>At a glance</p>
-            <ul className={styles.factList}>
-              <li>Choose one of the membership options below.</li>
-              <li>Email the shul directly if you prefer to join or renew via email.</li>
-              <li>Auxiliary membership available outside Center City.</li>
-              <li>No one is turned away for lack of funds.</li>
-            </ul>
+            <ol className={styles.factList}>
+              <li>Choose one of the membership options below</li>
+              <li>
+                Email{" "}
+                <a href="mailto:admin@mekorhabracha.org?subject=Membership%20Question">admin@mekorhabracha.org</a>
+              </li>
+            </ol>
             <p className={styles.asideNote}>
-              <Link href="/auxiliary-membership">Auxiliary Membership rates</Link> are available for those living outside Center City Philadelphia.
+              Please note: If you prefer to join or renew via email, simply let us know whether you&apos;re renewing your
+              membership or joining for the first time. Please also specify your desired membership type and your preferred
+              payment method (e.g., Venmo, PayPal, or personal check).
+            </p>
+            <p className={styles.asideNote}>
+              <Link href="/auxiliary-membership">Auxiliary Membership rates</Link> are available for those living outside
+              Center City Philadelphia.
             </p>
           </aside>
         </div>
@@ -135,7 +140,7 @@ export default async function MembershipPage() {
 
       <SectionCard title="Membership Categories & Rates">
         <p className={styles.intro}>
-          Year {hebrewYear.currentHebrewYearLabel} ({hebrewYear.currentCivilSpanLabel}) membership rates for new and
+          Year {hebrewYear.currentHebrewYearLabel} ({hebrewYear.currentCivilSpanLabel}) Membership Rates For new &amp;
           renewing members:
         </p>
         <div className={styles.rateGrid}>
@@ -143,9 +148,9 @@ export default async function MembershipPage() {
             <article className={styles.rateCard} key={label}>
               <p className={styles.rateTitle}>{label}</p>
               <p className={styles.rateAmount}>{amount}</p>
-              <p className={styles.rateTerm}>Until Rosh Hashana {hebrewYear.currentHebrewYearLabel}</p>
+              <p className={styles.rateTerm}>Until Rosh Hashana {hebrewYear.nextRoshHashanaHebrewYearLabel}</p>
               <Link href={MEMBERSHIP_FORM_URL} className={styles.inlineAction}>
-                Join now
+                Join Now!
               </Link>
             </article>
           ))}
@@ -153,23 +158,24 @@ export default async function MembershipPage() {
         <div className={styles.noteStack}>
           <p className={styles.note}>We also request a suggested donation of <strong>$100</strong> as a security fee.</p>
           <p className={styles.note}>We also request a <strong>$180</strong> eruv fee to support the Center City Eruv.</p>
-          <p className={styles.note}>Please Note: If you joined sometime during the year and paid for a year&apos;s membership, your following year&apos;s dues will be prorated.</p>
+          <p className={styles.note}>
+            Please Note: If you joined sometime during the year and paid for a year&apos;s membership, your following
+            year&apos;s dues will be prorated.
+          </p>
         </div>
       </SectionCard>
 
       <SectionCard>
         <div className={styles.storyGrid}>
           <div className={styles.storyCopy}>
-            <p className={styles.sectionEyebrow}>Why join</p>
             <h2 className={styles.panelTitle}>Why Join?</h2>
             <p className={styles.bodyText}>
-              We try to make everyone, member &amp; nonmember alike, feel welcome in our community. Visitors to our
-              shul speak glowingly about the way we assist them in so many ways.
-            </p>
-            <p className={styles.bodyText}>
-              But our shul can&apos;t live on love alone! Mekor Habracha cannot exist and provide so many services
-              without paying members and the generosity of donors. The Center City Jewish life that you enjoy depends on
-              Mekor Habracha, and Mekor Habracha depends on membership dues.
+              We try to make everyone, member &amp; nonmember alike, feel welcome in our community. Visitors to our shul
+              speak glowingly about the way we assist them in so many ways. But our shul can&apos;t live on love alone!
+              Mekor Habracha cannot exist and provide so many services without paying members and the generosity of donors.
+              The Center City Jewish life that you enjoy depends on Mekor Habracha, and Mekor Habracha depends on membership
+              dues. When you join, you become part of a shul community which will always feel great devotion to its loyal
+              members.
             </p>
           </div>
           <div className={styles.imageFrame}>
@@ -188,7 +194,9 @@ export default async function MembershipPage() {
         <div className={styles.benefitsLayout}>
           <div className={styles.benefitColumns}>
             <article className={styles.benefitCard}>
-              <p className={styles.sectionEyebrow}>Community life</p>
+              <p className={styles.benefitIntro}>
+                Here&apos;s just a partial list of how Mekor contributes to your Center City Jewish community:
+              </p>
               <ul className={styles.bulletList}>
                 {COMMUNITY_BENEFITS.map((item) => (
                   <li key={item}>{item}</li>
@@ -196,7 +204,7 @@ export default async function MembershipPage() {
               </ul>
             </article>
             <article className={styles.benefitCard}>
-              <p className={styles.sectionEyebrow}>Member extras</p>
+              <p className={styles.benefitIntro}>And here&apos;s a partial list of special member benefits:</p>
               <ul className={styles.bulletList}>
                 {MEMBER_BENEFITS.map((item) => (
                   <li key={item}>{item}</li>
@@ -219,24 +227,22 @@ export default async function MembershipPage() {
       <SectionCard className={styles.joinCard}>
         <div className={styles.joinGrid}>
           <div className={styles.joinCopy}>
-            <p className={styles.sectionEyebrow}>How to join or renew</p>
             <h2 className={styles.panelTitle}>How to Join or Renew</h2>
+            <p className={styles.bodyText}>We offer 2 simple ways to join or renew:</p>
             <p className={styles.bodyText}>
-              Use this form OR Email mekorhabracha@gmail.com. Tell us if you&apos;re renewing or joining for the first time,
-              and please specify the type of membership and method of payment you will use (Venmo, Paypal, personal check, etc.).
+              Use <Link href={MEMBERSHIP_FORM_URL}>this form</Link> OR Email{" "}
+              <a href="mailto:admin@mekorhabracha.org?subject=Membership%20Question">admin@mekorhabracha.org</a>.
             </p>
-            <ul className={styles.checkList}>
-              <li>Tell us whether you are joining for the first time or renewing.</li>
-              <li>Include your preferred membership type.</li>
-              <li>Let us know your preferred payment method.</li>
-              <li>Reach out directly if you need a payment plan or reduction.</li>
-            </ul>
+            <p className={styles.bodyText}>
+              Tell us if you&apos;re renewing or joining for the first time, and please specify the type of membership and
+              method of payment you will use (Venmo, Paypal, personal check, etc.)
+            </p>
             <div className={styles.actionRow}>
               <Link href={MEMBERSHIP_FORM_URL} className={styles.actionButton}>
-                Apply for membership
+                Join Now!
               </Link>
-              <a href="mailto:mekorhabracha@gmail.com?subject=Membership%20Question" className={styles.actionButtonSecondary}>
-                Email us
+              <a href="mailto:admin@mekorhabracha.org?subject=Membership%20Question" className={styles.actionButtonSecondary}>
+                Email admin@mekorhabracha.org
               </a>
             </div>
           </div>
@@ -252,9 +258,11 @@ export default async function MembershipPage() {
               />
             </div>
             <div className={styles.supportPanel}>
-              <p className={styles.sectionEyebrow}>Support available</p>
               <p className={styles.supportText}>
-                We never turn anyone away for lack of funds. If you need a payment plan or reduction, call <a href="tel:+12155254246">(215) 525-4246</a> or email the shul.
+                Please note that we never turn anyone away for lack of funds. If you would like to request a payment plan
+                or reduction to fit your budget, please email the shul or call{" "}
+                <a href="tel:+12155254246">(215) 525-4246</a>, or contact a Board member or Rabbi Hirsch. All requests will
+                remain confidential.
               </p>
             </div>
           </div>
@@ -264,24 +272,22 @@ export default async function MembershipPage() {
       <SectionCard className={styles.auxiliaryCard}>
         <div className={styles.auxiliaryGrid}>
           <div className={styles.auxiliaryCopy}>
-            <p className={styles.sectionEyebrow}>Outside Center City?</p>
             <h2 className={styles.panelTitle}>Auxiliary Membership</h2>
             <p className={styles.leadText}>
               Auxiliary Membership rates are available for those living outside Center City Philadelphia.
             </p>
             <p className={styles.bodyText}>
-              It is intended for alumni and others outside the Philadelphia region who want to stay connected to Mekor.
-              See the full details, rates, and request form on the dedicated page.
+              Please <Link href="/auxiliary-membership">CLICK HERE</Link> for info.
             </p>
             <div className={styles.actionRow}>
               <Link href="/auxiliary-membership" className={styles.actionButton}>
-                View auxiliary membership
+                CLICK HERE for info
               </Link>
               <a
                 href="mailto:admin@mekorhabracha.org?subject=Auxiliary%20Membership"
                 className={styles.actionButtonSecondary}
               >
-                Email about auxiliary membership
+                Email admin@mekorhabracha.org
               </a>
             </div>
           </div>

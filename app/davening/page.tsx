@@ -218,7 +218,7 @@ export default async function DaveningPage() {
         </div>
 
         <div className={styles.infoBand}>
-          <p>RSVP by afternoon on Friday to mekorhabracha@gmail.com.</p>
+          <p>RSVP by afternoon on Friday to admin@mekorhabracha.org.</p>
           <p>At this time, weekday Mincha and Ma&apos;ariv will only be held if there is sufficient interest.</p>
         </div>
 

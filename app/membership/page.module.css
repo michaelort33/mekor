@@ -134,6 +134,14 @@
   line-height: 1.66;
 }
 
+.benefitIntro {
+  margin: 0 0 10px;
+  color: #3f4359;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
 .factList li::marker,
 .bulletList li::marker,
 .checkList li::marker {
