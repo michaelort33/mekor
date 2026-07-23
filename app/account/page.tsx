@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
 import { AccountShell } from "@/components/account/account-shell";
@@ -139,6 +139,8 @@ const gridStyle: React.CSSProperties = {
 
 export default function AccountDashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const justApplied = searchParams.get("membership") === "pending";
 
   const dashboard = useResource<DashboardResponse>(
     (signal) => fetchJson<DashboardResponse>("/api/account/dashboard", { signal }),
@@ -210,12 +212,21 @@ export default function AccountDashboardPage() {
 
   const heroTitle = data ? `Welcome, ${data.summary.displayName}` : "Welcome";
   const heroDescription = hasMemberAccess
-    ? "Track dues, events, and community updates from one operational dashboard."
+    ? "Find members, message neighbors, track dues, and stay on top of community life."
     : stats?.accessState === "pending_approval"
       ? "Manage your account while your membership application is being reviewed."
       : stats?.accessState === "declined"
         ? "Manage your account and follow up with Mekor leadership about membership."
         : "Your account is active. Manage your profile here; member features unlock after approval.";
+
+  const visibilityLabel =
+    data?.summary.profileVisibility === "private"
+      ? "Hidden from the directory"
+      : data?.summary.profileVisibility === "anonymous"
+        ? "Listed anonymously"
+        : data?.summary.profileVisibility === "public"
+          ? "Visible publicly"
+          : "Visible to members";
 
   return (
     <AccountShell
@@ -227,19 +238,19 @@ export default function AccountDashboardPage() {
       membersAreaEnabled={hasMemberAccess}
       actions={
         <>
-          <Link href="/account/profile">
-            <Button size="sm" variant="ghost">Profile</Button>
-          </Link>
           {hasMemberAccess ? (
             <>
-              <Link href="/account/payments">
-                <Button size="sm" variant="ghost">Payments</Button>
+              <Link href="/members">
+                <Button size="sm">Find members</Button>
               </Link>
               <Link href="/account/inbox">
                 <Button size="sm" variant="ghost">Inbox</Button>
               </Link>
             </>
           ) : null}
+          <Link href="/account/profile">
+            <Button size="sm" variant="ghost">Profile</Button>
+          </Link>
         </>
       }
     >
@@ -250,27 +261,144 @@ export default function AccountDashboardPage() {
               <Card padded style={{ marginTop: "var(--bk-space-4)" }}>
                 <CardHeader
                   title={
-                    d.summary.accessState === "pending_approval"
-                      ? "Your account is pending member approval"
+                    justApplied || d.summary.accessState === "pending_approval"
+                      ? justApplied
+                        ? "Application received — thanks for applying"
+                        : "Your account is pending member approval"
                       : d.summary.accessState === "declined"
                         ? "Your membership application needs follow-up"
                         : "Your account is active"
                   }
                   description={
-                    d.summary.accessState === "pending_approval"
-                      ? "We're reviewing your application. You can update your profile while we work."
+                    justApplied || d.summary.accessState === "pending_approval"
+                      ? justApplied
+                        ? "Your application is in Mekor's review queue. You can update your profile now; member tools unlock after approval."
+                        : "We're reviewing your application. You can update your profile while we work."
                       : d.summary.accessState === "declined"
                         ? "Reach out to Mekor leadership if you'd like to reapply."
-                        : "Member tools unlock once approval is complete."
+                        : "Member tools unlock once approval is complete. If you haven't applied yet, start a membership application."
                   }
                   actions={
-                    <Link href="/account/profile">
-                      <Button size="sm">Update profile</Button>
-                    </Link>
+                    <>
+                      <Link href="/account/profile">
+                        <Button size="sm">Update profile</Button>
+                      </Link>
+                      {d.summary.accessState === "visitor" && !justApplied ? (
+                        <Link href="/membership/apply">
+                          <Button size="sm" variant="secondary">
+                            Apply for membership
+                          </Button>
+                        </Link>
+                      ) : null}
+                    </>
                   }
                 />
               </Card>
             ) : (
+              <>
+              <section
+                aria-labelledby="community-hub-title"
+                style={{
+                  marginTop: "var(--bk-space-5)",
+                  padding: "var(--bk-space-5)",
+                  border: "1px solid var(--bk-border)",
+                  borderRadius: "var(--bk-radius-lg)",
+                  background: "var(--bk-surface)",
+                  display: "grid",
+                  gap: "var(--bk-space-4)",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+                  <div style={{ maxWidth: "56ch" }}>
+                    <h2
+                      id="community-hub-title"
+                      style={{
+                        margin: 0,
+                        fontFamily: "var(--bk-font-heading)",
+                        fontSize: "var(--bk-text-xl)",
+                        color: "var(--bk-text)",
+                      }}
+                    >
+                      Community
+                    </h2>
+                    <p style={{ margin: "6px 0 0", color: "var(--bk-text-soft)", lineHeight: 1.55 }}>
+                      Discover neighbors who opted into the directory, message them in your inbox,
+                      and manage how you appear.
+                    </p>
+                  </div>
+                  <p style={{ margin: 0, fontSize: "var(--bk-text-sm)", color: "var(--bk-text-soft)" }}>
+                    Your listing: <strong style={{ color: "var(--bk-text)" }}>{visibilityLabel}</strong>
+                  </p>
+                </div>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    margin: 0,
+                    padding: 0,
+                    display: "grid",
+                    gap: "var(--bk-space-3)",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                  }}
+                >
+                  {[
+                    {
+                      href: "/members",
+                      title: "Find members",
+                      description: "Search the directory and open profiles.",
+                    },
+                    {
+                      href: "/account/inbox",
+                      title: "Inbox",
+                      description: "Direct messages, family invites, and event requests.",
+                    },
+                    {
+                      href: "/account/family",
+                      title: "Family",
+                      description: "Household members and invites.",
+                    },
+                    {
+                      href: "/account/member-events",
+                      title: "Host events",
+                      description: "Create gatherings and review join requests.",
+                    },
+                    {
+                      href: "/account/profile#directory-visibility",
+                      title: "Visibility settings",
+                      description: "Choose who can see you in the directory.",
+                    },
+                    {
+                      href: "/community",
+                      title: "Public directory",
+                      description: "Profiles marked public for the wider community.",
+                    },
+                  ].map((item) => (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        style={{
+                          display: "grid",
+                          gap: 4,
+                          textDecoration: "none",
+                          padding: "var(--bk-space-3)",
+                          borderRadius: "var(--bk-radius-md)",
+                          background: "var(--bk-surface-soft)",
+                          border: "1px solid transparent",
+                          minHeight: 88,
+                          transition: "border-color 180ms cubic-bezier(0.22, 1, 0.36, 1), background 180ms cubic-bezier(0.22, 1, 0.36, 1)",
+                        }}
+                      >
+                        <strong style={{ color: "var(--bk-text)", fontSize: "var(--bk-text-sm)" }}>
+                          {item.title}
+                        </strong>
+                        <span style={{ color: "var(--bk-text-soft)", fontSize: "var(--bk-text-xs)", lineHeight: 1.45 }}>
+                          {item.description}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
               <div style={gridStyle}>
                 <Card padded>
                   <CardHeader
@@ -440,6 +568,7 @@ export default function AccountDashboardPage() {
                   </Card>
                 ) : null}
               </div>
+              </>
             )}
           </>
         )}

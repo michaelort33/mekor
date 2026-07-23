@@ -4,9 +4,11 @@ import { notFound, redirect } from "next/navigation";
 
 import { getDb } from "@/db/client";
 import { users } from "@/db/schema";
+import { MessageMemberButton } from "@/components/members/message-member-button";
 import { MembersBreadcrumbs } from "@/components/members/members-breadcrumbs";
 import { getUserSession } from "@/lib/auth/session";
 import {
+  directoryRoleLabel,
   getVisibleProfileValue,
   normalizeProfileDetails,
   normalizeProfileFieldVisibility,
@@ -98,20 +100,62 @@ export default async function MemberProfilePage({ params }: PageProps) {
   const extraFields = anonymous
     ? []
     : [
-        { label: "School", value: getVisibleProfileValue({ value: details.school, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.school, audience: "members" }) },
-        { label: "Occupation", value: getVisibleProfileValue({ value: details.occupation, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.occupation, audience: "members" }) },
-        { label: "Interests", value: getVisibleProfileValue({ value: details.interests, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.interests, audience: "members" }) },
-        { label: "Hobbies", value: getVisibleProfileValue({ value: details.hobbies, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.hobbies, audience: "members" }) },
-        { label: "Fun facts", value: getVisibleProfileValue({ value: details.funFacts, profileVisibility: member.profileVisibility, fieldVisibility: fieldVisibility.funFacts, audience: "members" }) },
+        {
+          label: "School",
+          value: getVisibleProfileValue({
+            value: details.school,
+            profileVisibility: member.profileVisibility,
+            fieldVisibility: fieldVisibility.school,
+            audience: "members",
+          }),
+        },
+        {
+          label: "Occupation",
+          value: getVisibleProfileValue({
+            value: details.occupation,
+            profileVisibility: member.profileVisibility,
+            fieldVisibility: fieldVisibility.occupation,
+            audience: "members",
+          }),
+        },
+        {
+          label: "Interests",
+          value: getVisibleProfileValue({
+            value: details.interests,
+            profileVisibility: member.profileVisibility,
+            fieldVisibility: fieldVisibility.interests,
+            audience: "members",
+          }),
+        },
+        {
+          label: "Hobbies",
+          value: getVisibleProfileValue({
+            value: details.hobbies,
+            profileVisibility: member.profileVisibility,
+            fieldVisibility: fieldVisibility.hobbies,
+            audience: "members",
+          }),
+        },
+        {
+          label: "Fun facts",
+          value: getVisibleProfileValue({
+            value: details.funFacts,
+            profileVisibility: member.profileVisibility,
+            fieldVisibility: fieldVisibility.funFacts,
+            audience: "members",
+          }),
+        },
       ].filter((item) => item.value);
+
+  const isSelf = member.id === session.userId;
 
   return (
     <main className={styles.page}>
       <MembersBreadcrumbs
         items={[
           { label: "Home", href: "/" },
-          { label: "Members Area", href: "/members" },
-          { label: "Member Profile" },
+          { label: "Members", href: "/members" },
+          { label: displayName },
         ]}
         context="member"
         activeSection="members"
@@ -120,20 +164,42 @@ export default async function MemberProfilePage({ params }: PageProps) {
       <article className={styles.card}>
         <header className={styles.header}>
           {avatarUrl ? (
-            <img src={avatarUrl} alt={`${displayName} avatar`} className={styles.avatar} />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="" className={styles.avatar} />
           ) : (
             <div className={styles.avatarPlaceholder} aria-hidden="true">
               {(anonymous ? "C" : displayName).charAt(0).toUpperCase()}
             </div>
           )}
-          <div>
-            {!anonymous ? <p className={styles.role}>{member.role}</p> : null}
+          <div className={styles.headerText}>
+            {!anonymous && directoryRoleLabel(member.role) ? (
+              <p className={styles.role}>{directoryRoleLabel(member.role)}</p>
+            ) : null}
             <h1>{displayName}</h1>
             {city ? <p className={styles.city}>{city}</p> : null}
+            <div className={styles.actions}>
+              {!isSelf ? (
+                <MessageMemberButton recipientUserId={member.id} label={`Message ${displayName}`} />
+              ) : (
+                <>
+                  <Link href="/account/profile#directory-visibility" className={styles.secondaryLink}>
+                    Edit your visibility
+                  </Link>
+                  <span className={styles.selfNote}>This is your directory profile</span>
+                </>
+              )}
+              <Link href="/account/inbox" className={styles.secondaryLink}>
+                Open inbox
+              </Link>
+            </div>
           </div>
         </header>
 
-        {bio ? <p className={styles.bio}>{bio}</p> : anonymous ? null : <p className={styles.bio}>No bio provided.</p>}
+        {bio ? (
+          <p className={styles.bio}>{bio}</p>
+        ) : anonymous ? null : (
+          <p className={styles.bioMuted}>No bio provided.</p>
+        )}
 
         {extraFields.length > 0 ? (
           <dl className={styles.detailsList}>
