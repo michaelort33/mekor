@@ -1,6 +1,12 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Parent lockfiles outside this repo make Turbopack pick the wrong workspace root
+  // and fail CSS package resolution (e.g. tw-animate-css).
+  turbopack: {
+    root: path.join(__dirname),
+  },
   images: {
     remotePatterns: [
       {
