@@ -26,9 +26,9 @@ export async function generateMetadata(): Promise<Metadata> {
 const VOLUNTEER_SECTIONS = [
   {
     title: "Kiddush Preparation",
-    body: "We are famous for our wonderful kiddush every Shabbat, but it doesn't happen by itself. Thanks to our community volunteers, we enjoy an amazing kiddush week after week. Volunteering to set up kiddush is a great way to give back to the community. Please, consider signing up to make cholent before candle lighting or to setup and take down kiddush on Shabbat and Yom Tov. Please contact mekorhabracha@gmail.com to volunteer or to send your suggestions and comments.",
+    body: "We are famous for our wonderful kiddush every Shabbat, but it doesn't happen by itself. Thanks to our community volunteers, we enjoy an amazing kiddush week after week. Volunteering to set up kiddush is a great way to give back to the community. Please, consider signing up to make cholent before candle lighting or to setup and take down kiddush on Shabbat and Yom Tov. Please contact admin@mekorhabracha.org to volunteer or to send your suggestions and comments.",
     links: [
-      { label: "Volunteer by email", href: "mailto:mekorhabracha@gmail.com?subject=Kiddush%20Volunteer" },
+      { label: "Volunteer by email", href: "mailto:admin@mekorhabracha.org?subject=Kiddush%20Volunteer" },
       { label: "Kiddush page", href: "/kiddush" },
     ],
   },
@@ -54,7 +54,7 @@ const VOLUNTEER_SECTIONS = [
     links: [
       { label: "Eruv (Andres)", href: "mailto:andres.catalan@gmail.com" },
       { label: "Eruv (Jon)", href: "mailto:jzgradman@gmail.com" },
-      { label: "Volunteer mashgiach", href: "mailto:mekorhabracha@gmail.com?subject=Volunteer%20Mashgiach" },
+      { label: "Volunteer mashgiach", href: "mailto:admin@mekorhabracha.org?subject=Volunteer%20Mashgiach" },
     ],
   },
 ] as const;
@@ -85,7 +85,7 @@ export default async function Team4Page() {
         ]}
         actions={[
           { label: "Jump to Volunteer Form", href: "#volunteer-signup" },
-          { label: "Email Volunteer Team", href: "mailto:mekorhabracha@gmail.com?subject=Volunteer%20at%20Mekor" },
+          { label: "Email Volunteer Team", href: "mailto:admin@mekorhabracha.org?subject=Volunteer%20at%20Mekor" },
         ]}
       />
 
@@ -154,7 +154,7 @@ export default async function Team4Page() {
       <SectionCard title="Quick Contacts" className={styles.flatSection}>
         <CTACluster
           items={[
-            { label: "General Volunteer", href: "mailto:mekorhabracha@gmail.com?subject=Volunteer%20at%20Mekor" },
+            { label: "General Volunteer", href: "mailto:admin@mekorhabracha.org?subject=Volunteer%20at%20Mekor" },
             { label: "Laining", href: "mailto:mekorlaining@gmail.com" },
             { label: "Hospitality / Meal Train", href: "mailto:mekorhospitality@gmail.com" },
             { label: "Call the Shul Office", href: "tel:+12155254246" },

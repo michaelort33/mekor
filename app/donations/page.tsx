@@ -47,8 +47,8 @@ const ONLINE_METHODS = [
   },
   {
     label: "Zelle",
-    detail: "mekorhabracha@gmail.com",
-    href: "mailto:mekorhabracha@gmail.com",
+    detail: "admin@mekorhabracha.org",
+    href: "mailto:admin@mekorhabracha.org",
     brand: "zelle" as const,
   },
 ] as const;
@@ -170,7 +170,7 @@ export default async function DonationsPage() {
             <>
               Give right on this page with the donation form above, sponsor through the{" "}
               <InlineLink href="/kiddush">Kiddush sponsorship page</InlineLink>, or{" "}
-              <InlineLink href="mailto:mekorhabracha@gmail.com">email the shul office</InlineLink> with your donation
+              <InlineLink href="mailto:admin@mekorhabracha.org">email the shul office</InlineLink> with your donation
               details and any dedication you would like to make.
             </>,
           ]}

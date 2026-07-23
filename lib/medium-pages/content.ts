@@ -125,7 +125,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
       },
     ],
     secondaryLinks: [
-      { label: "Zelle: mekorhabracha@gmail.com", href: "mailto:mekorhabracha@gmail.com" },
+      { label: "Zelle: admin@mekorhabracha.org", href: "mailto:admin@mekorhabracha.org" },
       {
         label: "PayPal Checkout",
         href: "https://www.paypal.com/ncp/payment/C5ZNZELMHX2A4",
@@ -166,7 +166,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
           "Contributions are acknowledged, and tax receipts are issued when applicable.",
           "For dedication details or custom giving options, email the shul office.",
         ],
-        links: [{ label: "Email the Shul", href: "mailto:mekorhabracha@gmail.com" }],
+        links: [{ label: "Email the Shul", href: "mailto:admin@mekorhabracha.org" }],
       },
     ],
   },
@@ -225,8 +225,8 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
       { label: "Phone", value: "(215) 525-4246", href: "tel:+12155254246" },
       {
         label: "General Email",
-        value: "mekorhabracha@gmail.com",
-        href: "mailto:mekorhabracha@gmail.com",
+        value: "admin@mekorhabracha.org",
+        href: "mailto:admin@mekorhabracha.org",
       },
       {
         label: "Admin Email",
@@ -446,7 +446,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
       "A running board of volunteer needs, communal announcements, and member opportunities.",
       "To post an item for community circulation, contact the shul office.",
     ],
-    primaryLinks: [{ label: "Email the Shul", href: "mailto:mekorhabracha@gmail.com" }],
+    primaryLinks: [{ label: "Email the Shul", href: "mailto:admin@mekorhabracha.org" }],
     groups: [
       {
         heading: "Current highlights",
@@ -459,7 +459,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
           {
             title: "Volunteer mashgiachs",
             body: "As kosher dining options expand, volunteers are needed. Training is provided.",
-            links: [{ label: "Contact Mekor", href: "mailto:mekorhabracha@gmail.com?subject=Mashgiach%20Volunteers" }],
+            links: [{ label: "Contact Mekor", href: "mailto:admin@mekorhabracha.org?subject=Mashgiach%20Volunteers" }],
           },
           {
             title: "Center City Mikvah",
@@ -483,7 +483,7 @@ export const MEDIUM_STATIC_PAGE_CONFIGS: Record<MediumStaticPath, MediumStaticPa
             title: "Career strategy resources",
             body: "JEVS support includes resume review, mock interviews, and career transition support.",
             links: [
-              { label: "Request referral", href: "mailto:mekorhabracha@gmail.com?subject=JEVS%20Referral" },
+              { label: "Request referral", href: "mailto:admin@mekorhabracha.org?subject=JEVS%20Referral" },
               {
                 label: "JEVS career resources",
                 href: "https://www.jevshumanservices.org/careerstrategies/",

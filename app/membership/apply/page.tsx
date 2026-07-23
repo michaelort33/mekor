@@ -27,7 +27,7 @@ export default function MembershipApplicationPage() {
           <Link href="/membership" className={styles.secondaryAction}>
             Membership details &amp; rates
           </Link>
-          <a href="mailto:mekorhabracha@gmail.com?subject=Membership%20Application" className={styles.primaryAction}>
+          <a href="mailto:admin@mekorhabracha.org?subject=Membership%20Application" className={styles.primaryAction}>
             Email membership team
           </a>
         </div>
@@ -43,7 +43,7 @@ export default function MembershipApplicationPage() {
           </p>
         </div>
         <div className={styles.helpActions}>
-          <a href="mailto:mekorhabracha@gmail.com?subject=Membership%20Question" className={styles.primaryAction}>
+          <a href="mailto:admin@mekorhabracha.org?subject=Membership%20Question" className={styles.primaryAction}>
             Email the membership team
           </a>
           <Link href="/membership" className={styles.secondaryAction}>
