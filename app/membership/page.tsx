@@ -158,7 +158,6 @@ export default async function MembershipPage() {
         </div>
         <div className={styles.noteStack}>
           <p className={styles.note}>We also request a suggested donation of <strong>$100</strong> as a security fee.</p>
-          <p className={styles.note}>We also request a <strong>$180</strong> eruv fee to support the Center City Eruv.</p>
           <p className={styles.note}>
             Please Note: If you joined sometime during the year and paid for a year&apos;s membership, your following
             year&apos;s dues will be prorated.
