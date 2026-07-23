@@ -8,6 +8,7 @@ import { MarketingFooter, MarketingPageShell } from "@/components/marketing/page
 import { getHebrewYearContext } from "@/lib/calendar/hebrew-year";
 import { buildDocumentMetadata } from "@/lib/templates/metadata";
 import { getNativeDocumentByPath } from "@/lib/native-content/content-loader";
+import { EruvSupportPrompt } from "./eruv-support-prompt";
 import styles from "./page.module.css";
 
 const PATH = "/membership" as const;
@@ -164,6 +165,8 @@ export default async function MembershipPage() {
           </p>
         </div>
       </SectionCard>
+
+      <EruvSupportPrompt />
 
       <SectionCard>
         <div className={styles.storyGrid}>

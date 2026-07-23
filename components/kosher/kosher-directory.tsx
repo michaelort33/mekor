@@ -5,10 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import styles from "@/components/kosher/kosher-directory.module.css";
 import { cn } from "@/lib/utils";
 import type { KosherNeighborhood } from "@/lib/kosher/neighborhoods";
 import type { ManagedKosherPlace } from "@/lib/kosher/store";
@@ -18,21 +15,23 @@ type KosherDirectoryProps = {
   defaultNeighborhood?: KosherNeighborhood | "all";
 };
 
-const KOSHER_FALLBACK_IMAGE_SRC = "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/fcd909c6286c1cb51d76acc1726731f3ca21d3d5-fallback-food.svg";
+const KOSHER_FALLBACK_IMAGE_SRC =
+  "https://wxacuvlwlalejd25.public.blob.vercel-storage.com/mekor/fcd909c6286c1cb51d76acc1726731f3ca21d3d5-fallback-food.svg";
 
+// Short labels match the old neighborhood tab strip.
 const NEIGHBORHOOD_OPTIONS: Array<{ value: KosherNeighborhood | "all"; label: string }> = [
   { value: "all", label: "All" },
   { value: "center-city", label: "Center City" },
   { value: "main-line-manyunk", label: "Main Line" },
-  { value: "old-yorkroad-northeast", label: "Old York Rd / NE" },
+  { value: "old-yorkroad-northeast", label: "Old York Road" },
   { value: "cherry-hill", label: "Cherry Hill" },
 ];
 
 const NEIGHBORHOOD_FULL_LABELS: Record<string, string> = {
   all: "All Neighborhoods",
   "center-city": "Center City & Vicinity",
-  "main-line-manyunk": "Main Line / Manyunk",
-  "old-yorkroad-northeast": "Old York Road / Northeast",
+  "main-line-manyunk": "Main Line/Manyunk",
+  "old-yorkroad-northeast": "Northeast Philly / Old York Road",
   "cherry-hill": "Cherry Hill",
   unknown: "Other",
 };
@@ -58,14 +57,20 @@ function formatPhone(phone: string) {
   return phone;
 }
 
+function phoneHref(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  if (!digits) {
+    return "";
+  }
+  const normalized = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
+  return normalized.length === 10 ? `tel:+1${normalized}` : `tel:${digits}`;
+}
+
 function normalizeWebsiteLabel(website: string) {
   if (!website) {
     return "";
   }
 
-  // Some imported records put a long asset / CDN URL in the website field
-  // (e.g. *.public.blob.vercel-storage.com). Show a generic label for these
-  // so a 47-char unbreakable hostname doesn't blow out the card width.
   const ASSET_HOST_PATTERNS = [/\.blob\.vercel-storage\.com$/i, /\.amazonaws\.com$/i];
   const MAX_LABEL_LENGTH = 24;
 
@@ -195,95 +200,106 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
   }, [places, search, selectedNeighborhood, selectedCategoryValue]);
 
   function renderPlaceCard(place: ManagedKosherPlace) {
+    const phone = formatPhone(place.phone);
+    const tel = phoneHref(place.phone);
+
     return (
-      <article key={place.path}>
-        <Card className="h-full overflow-hidden rounded-[14px] border-[#d8cfbe] bg-[#fdf8ef] shadow-[0_1px_0_rgba(255,255,255,0.75)_inset]">
-          <Link href={place.path} className="block" aria-label={`Open ${place.title}`}>
-            <div className="overflow-hidden">
-              <Image
-                src={place.heroImage || KOSHER_FALLBACK_IMAGE_SRC}
-                alt={place.title}
-                width={960}
-                height={720}
-                sizes="(max-width: 900px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="h-52 w-full object-cover transition duration-300 hover:scale-[1.02] sm:h-56"
-                onError={(event) => {
-                  const image = event.currentTarget;
-                  if (!image.src.endsWith(KOSHER_FALLBACK_IMAGE_SRC)) {
-                    image.src = KOSHER_FALLBACK_IMAGE_SRC;
-                  }
-                }}
-              />
-            </div>
-          </Link>
+      <article key={place.path} className={styles.card}>
+        <Link href={place.path} className={styles.imageLink} aria-label={`Open ${place.title}`}>
+          <Image
+            src={place.heroImage || KOSHER_FALLBACK_IMAGE_SRC}
+            alt={place.title}
+            width={960}
+            height={720}
+            sizes="(max-width: 900px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className={styles.image}
+            onError={(event) => {
+              const image = event.currentTarget;
+              if (!image.src.endsWith(KOSHER_FALLBACK_IMAGE_SRC)) {
+                image.src = KOSHER_FALLBACK_IMAGE_SRC;
+              }
+            }}
+          />
+        </Link>
 
-          <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge className="rounded-full border-[#cbbca2] bg-[#efe3d2] text-[#4f5f72]">{place.neighborhoodLabel}</Badge>
-              {place.tags.map((tag) => (
-                <button
-                  key={`${place.path}-${tag}`}
-                  type="button"
-                  className={cn(
-                    "inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition",
-                    selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
-                      ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                      : "border-[#ccbea6] bg-[#f7ecdb] text-[#5b4933] hover:border-[#baa88d] hover:bg-[#f0dfc8] hover:text-[#473724]",
-                  )}
-                  style={
-                    selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
-                      ? { color: "#f8fbff" }
-                      : undefined
-                  }
-                  onClick={() =>
-                    setSelectedCategory((current) => (normalize(current) === normalize(tag) ? "all" : tag))
-                  }
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="font-[family-name:var(--font-heading)] text-[clamp(1.65rem,2.5vw,2.15rem)] leading-[1.04] tracking-[-0.02em] text-[#24374d]">
-                {place.title}
-              </h3>
-              {place.summary ? <p className="text-sm leading-7 text-[#445365]">{place.summary}</p> : null}
-              <div className="space-y-2 text-sm leading-6 text-[#526173]">
-                {place.address ? <p>{place.address}</p> : null}
-                {place.supervision ? <p>{place.supervision}</p> : null}
-                {place.phone ? <p>{formatPhone(place.phone)}</p> : null}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 pt-1">
-              <Button asChild size="sm" className="bg-[#8a5a2f] text-[#fffdfa] hover:bg-[#744a26]">
-                <Link href={place.path}>Details</Link>
-              </Button>
-              {place.locationHref ? (
-                <Button asChild size="sm" variant="outline" className="border-[#cdb99e] bg-[#fbf3e8] text-[#5a3e24] hover:bg-[#f1e3d2]">
-                  <a href={place.locationHref} target="_blank" rel="noreferrer noopener">
-                    Map
-                  </a>
-                </Button>
-              ) : null}
-              {place.certificateHref ? (
-                <Button asChild size="sm" variant="outline" className="border-[#cdb99e] bg-[#fbf3e8] text-[#5a3e24] hover:bg-[#f1e3d2]">
-                  <a href={place.certificateHref} target="_blank" rel="noreferrer noopener">
-                    Certificate
-                  </a>
-                </Button>
-              ) : null}
-              {place.website ? (
-                <Button asChild size="sm" variant="ghost" className="text-[#5a3e24] hover:bg-[#f2e6d4]">
-                  <a href={place.website} target="_blank" rel="noreferrer noopener">
-                    {normalizeWebsiteLabel(place.website)}
-                  </a>
-                </Button>
-              ) : null}
-            </div>
+        <div className={styles.body}>
+          <div className={styles.tagRow}>
+            <span className={styles.tag}>{place.neighborhoodLabel}</span>
+            {place.tags.map((tag) => (
+              <button
+                key={`${place.path}-${tag}`}
+                type="button"
+                className={cn(styles.tag, selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue && styles.tagActive)}
+                onClick={() => setSelectedCategory((current) => (normalize(current) === normalize(tag) ? "all" : tag))}
+              >
+                {tag}
+              </button>
+            ))}
           </div>
-        </Card>
+
+          <h3 className={styles.cardTitle}>{place.title}</h3>
+          {place.summary ? <p className={styles.summary}>{place.summary}</p> : null}
+
+          <dl className={styles.facts}>
+            {place.supervision ? (
+              <>
+                <dt>Supervision</dt>
+                <dd className={styles.supervision}>{place.supervision}</dd>
+              </>
+            ) : null}
+            {place.address ? (
+              <>
+                <dt>Address</dt>
+                <dd>{place.address}</dd>
+              </>
+            ) : null}
+            {phone ? (
+              <>
+                <dt>Phone</dt>
+                <dd>
+                  {tel ? (
+                    <a className={styles.phoneLink} href={tel}>
+                      {phone}
+                    </a>
+                  ) : (
+                    phone
+                  )}
+                </dd>
+              </>
+            ) : null}
+          </dl>
+
+          <div className={styles.cardActions}>
+            <Link href={place.path} className={styles.cardAction}>
+              Details
+            </Link>
+            {place.locationHref ? (
+              <a
+                href={place.locationHref}
+                target="_blank"
+                rel="noreferrer noopener"
+                className={styles.cardActionGhost}
+              >
+                Map
+              </a>
+            ) : null}
+            {place.certificateHref ? (
+              <a
+                href={place.certificateHref}
+                target="_blank"
+                rel="noreferrer noopener"
+                className={styles.cardActionGhost}
+              >
+                Certificate
+              </a>
+            ) : null}
+            {place.website ? (
+              <a href={place.website} target="_blank" rel="noreferrer noopener" className={styles.cardActionGhost}>
+                {normalizeWebsiteLabel(place.website)}
+              </a>
+            ) : null}
+          </div>
+        </div>
       </article>
     );
   }
@@ -291,117 +307,97 @@ export function KosherDirectory({ places, defaultNeighborhood = "all" }: KosherD
   return (
     <>
       <div id="kosher-directory" className="sr-only" />
-      <section id="directory" className="grid gap-6" aria-label="Kosher places directory">
-        <Card className="overflow-hidden rounded-[14px] border-[#d6cfbf] bg-[#fdf9f1] px-4 py-5 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset] sm:px-6 sm:py-6">
-          <div className="grid gap-5">
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-end">
-              <div className="space-y-3">
-                <Badge className="rounded-full border-[#cbbca2] bg-[#efe3d2] text-[#4f5f72]">Filter the guide</Badge>
-                <div className="space-y-2">
-                  <h2 className="font-[family-name:var(--font-heading)] text-[clamp(1.8rem,4vw,2.55rem)] tracking-[-0.02em] text-[#23374d]">
-                    One kosher directory, all neighborhoods
-                  </h2>
-                  <p className="max-w-2xl text-base leading-7 text-[#445365]">
-                    Search by name, filter by neighborhood, and narrow by category without jumping between separate archive pages.
-                  </p>
-                </div>
-              </div>
-              <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5a6777]">Search the guide</span>
-                <Input
-                  type="search"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search restaurants, bakeries, cafes, supervision..."
-                />
-              </label>
-            </div>
+      <section id="directory" className={styles.directory} aria-label="Kosher places directory">
+        <div className={styles.filters}>
+          <label className={styles.searchLabel}>
+            <span>Search</span>
+            <input
+              className={styles.searchInput}
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Name, address, supervision…"
+              autoComplete="off"
+            />
+          </label>
 
-            <div className="grid gap-5">
-              <div className="grid gap-3">
-                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5a6777]">Neighborhood</span>
-                <div className="flex flex-wrap gap-2" role="tablist" aria-label="Neighborhood filter">
-                  {NEIGHBORHOOD_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      className={cn(
-                        "rounded-full border px-4 py-2.5 text-sm font-semibold tracking-[0.01em] transition",
-                        selectedNeighborhood === option.value
-                          ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                          : "border-[#ccbea6] bg-[#f7ecdb] text-[#5b4933] hover:border-[#baa88d] hover:bg-[#f0dfc8] hover:text-[#473724]",
-                      )}
-                      style={selectedNeighborhood === option.value ? { color: "#f8fbff" } : undefined}
-                      onClick={() => setSelectedNeighborhood(option.value)}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {tagOptions.length > 1 ? (
-                <div className="grid gap-3">
-                  <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#5a6777]">Category</span>
-                  <div className="flex flex-wrap gap-2" role="tablist" aria-label="Category filter">
-                    {tagOptions
-                      .filter((tag) => tag !== "all")
-                      .map((tag) => (
-                        <button
-                          key={tag}
-                          type="button"
-                          className={cn(
-                            "rounded-full border px-4 py-2.5 text-sm font-semibold tracking-[0.01em] transition",
-                            selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
-                              ? "border-[var(--color-accent)] bg-[var(--color-accent)]"
-                              : "border-[#ccbea6] bg-[#f7ecdb] text-[#5b4933] hover:border-[#baa88d] hover:bg-[#f0dfc8] hover:text-[#473724]",
-                          )}
-                          style={
-                            selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue
-                              ? { color: "#f8fbff" }
-                              : undefined
-                          }
-                          onClick={() =>
-                            setSelectedCategory((current) => (normalize(current) === normalize(tag) ? "all" : tag))
-                          }
-                        >
-                          {tag}
-                        </button>
-                      ))}
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d4dbe2] pt-4">
-                <p className="text-sm leading-6 text-[#4f5f72]">
-                  Showing {filteredPlaces.length} of {places.length} listings
-                  {selectedNeighborhood !== "all" ? ` in ${NEIGHBORHOOD_FULL_LABELS[selectedNeighborhood]}` : ""}.
-                </p>
-                <Button
+          <div className={styles.filterGroup}>
+            <span>Neighborhood</span>
+            <div className={styles.chipRow} role="tablist" aria-label="Neighborhood filter">
+              {NEIGHBORHOOD_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSearch("");
-                    setSelectedNeighborhood(defaultNeighborhood);
-                    setSelectedCategory("all");
-                  }}
+                  role="tab"
+                  aria-selected={selectedNeighborhood === option.value}
+                  className={cn(styles.chip, selectedNeighborhood === option.value && styles.chipActive)}
+                  onClick={() => setSelectedNeighborhood(option.value)}
                 >
-                  Reset filters
-                </Button>
-              </div>
+                  {option.label}
+                </button>
+              ))}
             </div>
           </div>
-        </Card>
+
+          {tagOptions.length > 1 ? (
+            <div className={styles.filterGroup}>
+              <span>Category</span>
+              <div className={styles.chipRow} role="tablist" aria-label="Category filter">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedCategoryValue === "all"}
+                  className={cn(styles.chip, selectedCategoryValue === "all" && styles.chipActive)}
+                  onClick={() => setSelectedCategory("all")}
+                >
+                  All
+                </button>
+                {tagOptions
+                  .filter((tag) => tag !== "all")
+                  .map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      role="tab"
+                      aria-selected={selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue}
+                      className={cn(
+                        styles.chip,
+                        selectedCategoryValue !== "all" && normalize(tag) === selectedCategoryValue && styles.chipActive,
+                      )}
+                      onClick={() =>
+                        setSelectedCategory((current) => (normalize(current) === normalize(tag) ? "all" : tag))
+                      }
+                    >
+                      {tag}
+                    </button>
+                  ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className={styles.statusRow}>
+            <p className={styles.statusText}>
+              Showing {filteredPlaces.length} of {places.length}
+              {selectedNeighborhood !== "all" ? ` in ${NEIGHBORHOOD_FULL_LABELS[selectedNeighborhood]}` : ""}
+            </p>
+            <button
+              type="button"
+              className={styles.resetButton}
+              onClick={() => {
+                setSearch("");
+                setSelectedNeighborhood(defaultNeighborhood);
+                setSelectedCategory("all");
+              }}
+            >
+              Clear filters
+            </button>
+          </div>
+        </div>
 
         {filteredPlaces.length === 0 ? (
-          <Card className="rounded-[14px] border-[#d6cfbf] bg-[#fdf9f1] px-6 py-8 text-center shadow-[0_1px_0_rgba(255,255,255,0.7)_inset]">
-            <p className="text-base leading-7 text-[#445365]">
-              No kosher places match those filters right now. Try another neighborhood, category, or search term.
-            </p>
-          </Card>
+          <p className={styles.empty}>No kosher places match those filters right now. Try another neighborhood, category, or search term.</p>
         ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{filteredPlaces.map(renderPlaceCard)}</div>
+          <div className={styles.grid}>{filteredPlaces.map(renderPlaceCard)}</div>
         )}
       </section>
     </>
