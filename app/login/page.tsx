@@ -26,7 +26,7 @@ export default function LoginPage() {
   const familyInviteToken = useMemo(() => searchParams.get("family_invite_token") ?? "", [searchParams]);
   const resetNotice = useMemo(() => {
     if (searchParams.get("reset") === "success") {
-      return "Your password has been reset. Log in with your new password.";
+      return "Your password has been reset. Sign in with your new password.";
     }
     return "";
   }, [searchParams]);
@@ -57,14 +57,14 @@ export default function LoginPage() {
 
       const data = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) {
-        setError(data.error || "Login failed");
+        setError(data.error || "We couldn't sign you in. Check your email and password, then try again.");
         setSubmitting(false);
         return;
       }
 
       window.location.assign(nextPath);
     } catch {
-      setError("Login timed out. Please try again.");
+      setError("Sign-in timed out. Check your connection and try again.");
       setSubmitting(false);
       return;
     } finally {
@@ -75,11 +75,14 @@ export default function LoginPage() {
   return (
     <main className={styles.page}>
       <form className={styles.card} onSubmit={handleSubmit}>
-        <h1>Log in</h1>
-        <p className={styles.subtitle}>Sign in to manage your account. Member features unlock after approval.</p>
+        <p className={styles.brand}>Mekor Habracha</p>
+        <h1>Sign in</h1>
+        <p className={styles.subtitle}>
+          Manage your account, dues, and member tools. Member features unlock after approval.
+        </p>
         <div className={styles.quickLinks}>
-          <Link href="/">← Back to Site Home</Link>
-          <Link href="/members">Members Area</Link>
+          <Link href="/">Back to site</Link>
+          <Link href="/membership/apply">Apply for membership</Link>
         </div>
 
         <label className={styles.field}>
@@ -91,6 +94,7 @@ export default function LoginPage() {
             required
             maxLength={255}
             autoComplete="email"
+            inputMode="email"
           />
         </label>
 
@@ -112,17 +116,18 @@ export default function LoginPage() {
           />
         </div>
 
-        {resetNotice ? <p className={styles.notice}>{resetNotice}</p> : null}
-        {error ? <p className={styles.error}>{error}</p> : null}
+        {resetNotice ? <p className={styles.notice} role="status">{resetNotice}</p> : null}
+        {error ? <p className={styles.error} role="alert">{error}</p> : null}
 
         <button className={styles.button} type="submit" disabled={submitting}>
-          {submitting ? "Logging in..." : "Log in"}
+          {submitting ? "Signing in…" : "Sign in"}
         </button>
 
         <GoogleSignInButton nextPath={nextPath} familyInviteToken={familyInviteToken} />
 
         <p className={styles.footer}>
-          New here? Google sign-in creates your account automatically. Prefer a password? <Link href="/signup">Sign up with email</Link>
+          New here? Google sign-in creates your account automatically. Prefer email and password?{" "}
+          <Link href="/membership/apply">Apply and create an account</Link>
         </p>
       </form>
     </main>

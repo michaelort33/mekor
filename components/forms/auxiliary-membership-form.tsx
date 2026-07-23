@@ -45,6 +45,7 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
   const profile = usePublicProfilePrefill();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
   const [form, setForm] = useState<FormValues>({
     firstName: "",
     lastName: "",
@@ -93,11 +94,13 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
 
     if (!firstName || !lastName || !email || !membershipOption || !paymentPreference) {
       setStatus("error");
+      setErrorMessage("Please fill in first name, last name, email, membership option, and payment preference.");
       return;
     }
 
     setIsSubmitting(true);
     setStatus("idle");
+    setErrorMessage("");
 
     const response = await fetch("/api/forms/auxiliary-membership", {
       method: "POST",
@@ -131,6 +134,7 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
 
     if (!response || !response.ok) {
       setStatus("error");
+      setErrorMessage("We couldn't send your request. Try again, or email admin@mekorhabracha.org.");
       return;
     }
 
@@ -145,10 +149,15 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
   }
 
   return (
-    <form className="grid gap-6" onSubmit={handleSubmit}>
+    <form className="grid gap-6" onSubmit={handleSubmit} noValidate>
+      <p className="m-0 text-sm leading-6 text-[var(--color-muted)]">
+        Tell us how you&apos;d like to stay connected. Required fields are marked with *.
+      </p>
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">First name</span>
+          <span className="text-sm font-semibold text-[var(--color-foreground)]">
+            First name<span className="text-rose-700" aria-hidden="true"> *</span>
+          </span>
           <Input
             name="firstName"
             type="text"
@@ -162,7 +171,9 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
           />
         </label>
         <label className="grid gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Last name</span>
+          <span className="text-sm font-semibold text-[var(--color-foreground)]">
+            Last name<span className="text-rose-700" aria-hidden="true"> *</span>
+          </span>
           <Input
             name="lastName"
             type="text"
@@ -179,7 +190,9 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Email</span>
+          <span className="text-sm font-semibold text-[var(--color-foreground)]">
+            Email<span className="text-rose-700" aria-hidden="true"> *</span>
+          </span>
           <Input
             name="email"
             type="email"
@@ -193,7 +206,7 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
           />
         </label>
         <label className="grid gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Phone</span>
+          <span className="text-sm font-semibold text-[var(--color-foreground)]">Phone (optional)</span>
           <Input
             name="phone"
             type="tel"
@@ -209,12 +222,11 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">City or region</span>
+          <span className="text-sm font-semibold text-[var(--color-foreground)]">City or region (optional)</span>
           <Input
             name="city"
             type="text"
             autoComplete="address-level2"
-            placeholder="Optional"
             value={resolvedCity}
             onChange={(event) => {
               onFieldChange(event);
@@ -223,7 +235,9 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
           />
         </label>
         <label className="grid gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Payment preference</span>
+          <span className="text-sm font-semibold text-[var(--color-foreground)]">
+            Payment preference<span className="text-rose-700" aria-hidden="true"> *</span>
+          </span>
           <div className="relative">
             <select
               name="paymentPreference"
@@ -252,7 +266,9 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="grid gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Membership option</span>
+          <span className="text-sm font-semibold text-[var(--color-foreground)]">
+            Membership option<span className="text-rose-700" aria-hidden="true"> *</span>
+          </span>
           <div className="relative">
             <select
               name="membershipOption"
@@ -278,7 +294,7 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
           </div>
         </label>
         <label className="grid gap-2">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Connection to Mekor</span>
+          <span className="text-sm font-semibold text-[var(--color-foreground)]">Connection to Mekor (optional)</span>
           <div className="relative">
             <select
               name="connectionToMekor"
@@ -303,22 +319,32 @@ export function AuxiliaryMembershipForm({ sourcePath }: AuxiliaryMembershipFormP
       </div>
 
       <label className="grid gap-2">
-        <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--color-muted)]">Notes</span>
+        <span className="text-sm font-semibold text-[var(--color-foreground)]">Notes (optional)</span>
         <Textarea
           name="note"
           rows={5}
-          placeholder="Optional: alumni background, household details, questions about rates, or anything else we should know."
+          placeholder="Alumni background, household details, questions about rates, or anything else we should know."
           value={form.note}
           onChange={onFieldChange}
         />
       </label>
 
-      <div className="flex flex-wrap items-center gap-4 border-t border-[var(--color-border)] pt-4">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Request membership"}
-        </Button>
-        {status === "success" ? <p role="status" className="text-sm font-medium text-emerald-700">Thanks. We received your request.</p> : null}
-        {status === "error" ? <p role="alert" className="text-sm font-medium text-rose-700">Unable to submit right now. Please try again.</p> : null}
+      <div className="grid gap-3 border-t border-[var(--color-border)] pt-4">
+        <div className="flex flex-wrap items-center gap-4">
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Sending request…" : "Request auxiliary membership"}
+          </Button>
+          {status === "success" ? (
+            <p role="status" className="m-0 text-sm font-medium text-emerald-800">
+              Thanks — we received your request and will follow up by email.
+            </p>
+          ) : null}
+        </div>
+        {status === "error" ? (
+          <p role="alert" className="m-0 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-medium text-rose-800">
+            {errorMessage || "Something went wrong. Please try again."}
+          </p>
+        ) : null}
       </div>
     </form>
   );

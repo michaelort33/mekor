@@ -3,29 +3,41 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: linear-gradient(180deg, #f6f8fb 0%, #edf3f8 100%);
+  background:
+    radial-gradient(80% 50% at 100% 0%, rgba(47, 107, 161, 0.12) 0%, rgba(47, 107, 161, 0) 55%),
+    linear-gradient(180deg, #eef3f8 0%, #f5f8fb 100%);
 }
 
 .card {
-  width: min(420px, 100%);
+  width: min(440px, 100%);
   display: grid;
   gap: 14px;
-  background: #ffffff;
-  border: 1px solid #d7e1ec;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 10px 24px rgba(28, 48, 70, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(31, 79, 120, 0.16);
+  border-radius: 18px;
+  padding: 28px 24px;
+  box-shadow: 0 16px 34px rgba(28, 48, 70, 0.08);
+}
+
+.brand {
+  margin: 0;
+  color: #1f4f78;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .card h1 {
   margin: 0;
-  color: #1b2f45;
-  font-size: 1.6rem;
+  color: #1a2d40;
+  font-size: 1.85rem;
+  line-height: 1.1;
 }
 
 .subtitle {
   margin: 0;
-  color: #4f6174;
+  color: #45586c;
+  line-height: 1.55;
 }
 
 .quickLinks {
@@ -35,8 +47,8 @@
 }
 
 .quickLinks a {
-  color: #245c8f;
-  font-weight: 600;
+  color: #1f4f78;
+  font-weight: 700;
   text-decoration: none;
   font-size: 0.92rem;
 }
@@ -52,7 +64,7 @@
 
 .field span,
 .fieldHeader label {
-  font-weight: 600;
+  font-weight: 700;
   color: #2c4258;
 }
 
@@ -64,7 +76,7 @@
 }
 
 .secondaryLink {
-  color: #245c8f;
+  color: #1f4f78;
   font-size: 0.85rem;
   font-weight: 700;
   text-decoration: none;
@@ -75,40 +87,58 @@
 }
 
 .field input {
-  min-height: 42px;
-  border-radius: 10px;
+  min-height: 48px;
+  border-radius: 12px;
   border: 1px solid #c8d6e4;
-  padding: 0 12px;
-  font-size: 0.95rem;
+  padding: 0 14px;
+  font-size: 1rem;
+  background: #fff;
 }
 
-.field input:focus {
+.field input:focus-visible {
   outline: none;
   border-color: #2f6ea9;
-  box-shadow: 0 0 0 3px rgba(47, 110, 169, 0.15);
+  box-shadow: 0 0 0 3px rgba(47, 110, 169, 0.16);
 }
 
 .error {
   margin: 0;
-  color: #a11d2d;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(163, 33, 41, 0.08);
+  color: #8f2028;
   font-weight: 600;
+  line-height: 1.45;
 }
 
 .notice {
   margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(28, 100, 68, 0.08);
   color: #1c4f33;
   font-weight: 600;
 }
 
 .button {
-  min-height: 44px;
-  border: 1px solid #295f92;
-  border-radius: 10px;
-  background: linear-gradient(160deg, #3f80c4 0%, #28557e 100%);
+  min-height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: #1f4f78;
   color: #ffffff;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 10px 22px rgba(17, 39, 63, 0.14);
+}
+
+.button:hover {
+  background: #1a4265;
+}
+
+.button:focus-visible {
+  outline: 2px solid #2c648d;
+  outline-offset: 2px;
 }
 
 .button:disabled {
@@ -127,9 +157,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #6a7a8a;
+  color: #5a6d80;
   font-size: 0.86rem;
-  text-transform: uppercase;
 }
 
 .divider::before,
@@ -146,16 +175,23 @@
 
 .googleStatus {
   margin: 0;
-  color: #4f6174;
+  color: #45586c;
   font-size: 0.88rem;
 }
 
 .footer {
   margin: 0;
-  color: #4f6174;
+  color: #45586c;
+  line-height: 1.55;
 }
 
 .footer a {
-  color: #245c8f;
-  font-weight: 600;
+  color: #1f4f78;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
 }
