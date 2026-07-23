@@ -1,0 +1,164 @@
+.page {
+  --kosher-ink: #1e2f42;
+  --kosher-soft: #445365;
+  --kosher-muted: #5a6777;
+  --kosher-line: #c5d0db;
+  --kosher-surface: #f7f9fb;
+  --kosher-panel: #ffffff;
+  --kosher-accent: #2f4d6d;
+  --kosher-accent-hover: #284462;
+  --kosher-accent-soft: #e8eef4;
+  display: grid;
+  gap: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.hero {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border: 1px solid var(--kosher-line);
+  border-radius: 12px;
+  background:
+    linear-gradient(165deg, color-mix(in srgb, var(--kosher-accent) 8%, white) 0%, var(--kosher-surface) 55%, white 100%);
+}
+
+.heroTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+}
+
+.kicker {
+  margin: 0 0 0.45rem;
+  color: var(--kosher-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.title {
+  margin: 0;
+  max-width: 18ch;
+  color: var(--kosher-ink);
+  font-family: var(--font-heading), Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.description {
+  margin: 0.65rem 0 0;
+  max-width: 62ch;
+  color: var(--kosher-soft);
+  font-size: 1.02rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.meta {
+  margin: 0;
+  color: var(--kosher-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.actionPrimary,
+.actionSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 160ms cubic-bezier(0.22, 1, 0.36, 1), border-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.actionPrimary {
+  border: 1px solid var(--kosher-accent);
+  background: var(--kosher-accent);
+  color: #f8fbff;
+}
+
+.actionPrimary:hover {
+  background: var(--kosher-accent-hover);
+  border-color: var(--kosher-accent-hover);
+}
+
+.actionSecondary {
+  border: 1px solid var(--kosher-line);
+  background: var(--kosher-panel);
+  color: var(--kosher-accent);
+}
+
+.actionSecondary:hover {
+  background: var(--kosher-accent-soft);
+}
+
+.panel {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.15rem, 2.5vw, 1.6rem);
+  border: 1px solid var(--kosher-line);
+  border-radius: 12px;
+  background: var(--kosher-panel);
+}
+
+.panelTitle {
+  margin: 0;
+  color: var(--kosher-ink);
+  font-family: var(--font-heading), Georgia, serif;
+  font-size: clamp(1.55rem, 3vw, 2.1rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.panelBody {
+  margin: 0;
+  max-width: 65ch;
+  color: var(--kosher-soft);
+  font-size: 1rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.mapLayout {
+  display: grid;
+  gap: 1rem;
+}
+
+.mapFrame {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--kosher-line);
+  border-radius: 12px;
+  background: var(--kosher-panel);
+  padding: 0.65rem;
+}
+
+@media (min-width: 960px) {
+  .mapLayout {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionPrimary,
+  .actionSecondary {
+    transition: none;
+  }
+}

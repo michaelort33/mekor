@@ -16,9 +16,7 @@ export default async function OldYorkRoadNortheastKosherPage() {
       currentPath="/old-yorkroad-northeast"
       heading="Northeast Philly / Old York Road"
       kicker="Kosher Restaurants"
-      description="Browse the Northeast Philly and Old York Road neighborhood listings in our kosher guide."
       defaultNeighborhood="old-yorkroad-northeast"
-      neighborhoodLead="Get in Touch About Local Kashrut. Have questions, updates, or suggestions regarding our list of kosher-certified establishments? Send us a message-we'd love to hear from you!"
     />
   );
 }
