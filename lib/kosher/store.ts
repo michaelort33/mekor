@@ -10,6 +10,7 @@ import {
   type KosherNeighborhood,
 } from "@/lib/kosher/neighborhoods";
 import { resolveKosherCertificateLink } from "@/lib/kosher/certificates";
+import { applyKosherPlaceOverride, MANUAL_KOSHER_PLACES } from "@/lib/kosher/manual-places";
 import { validateManagedKosherPlacesContract } from "@/lib/native/contracts";
 
 type NeighborhoodFilter = KosherNeighborhood | "all";
@@ -344,13 +345,16 @@ export async function getManagedKosherPlaces(filters: KosherPlaceFilters = {}) {
   const rows = dbRows.filter((row) => !isHiddenContentPath(row.path));
 
   const managed = rows.map((row) =>
-    toManagedKosherPlace({
-      ...row,
-      neighborhood: toKosherNeighborhood(row.neighborhood),
-      neighborhoodLabel:
-        row.neighborhoodLabel || KOSHER_NEIGHBORHOOD_LABELS[toKosherNeighborhood(row.neighborhood)],
-    }),
+    applyKosherPlaceOverride(
+      toManagedKosherPlace({
+        ...row,
+        neighborhood: toKosherNeighborhood(row.neighborhood),
+        neighborhoodLabel:
+          row.neighborhoodLabel || KOSHER_NEIGHBORHOOD_LABELS[toKosherNeighborhood(row.neighborhood)],
+      }),
+    ),
   );
+  managed.push(...MANUAL_KOSHER_PLACES);
   const filtered = filterKosherPlaces(managed, filters);
   return validateManagedKosherPlacesContract(filtered, "getManagedKosherPlaces: db output");
 }

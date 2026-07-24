@@ -69,6 +69,7 @@ export const KOSHER_MAP_LOCATIONS: Record<string, KosherMapLocation> = {
   "/post/rita-s-water-ice-2": { lat: 40.0788026, lng: -75.1277838 },
   "/post/rita-s-water-ice-3": { lat: 39.9394573, lng: -75.0086132 },
   "/post/rollings-bakery": { lat: 40.0713918, lng: -75.1267261 },
+  "/post/sababa-falafel": { lat: 40.0010403, lng: -75.2388422 },
   "/post/say-she-ate-caf%C3%A9": { lat: 39.9436332, lng: -75.1659843 },
   "/post/shevy-s-babka-paradise": { lat: 39.963386, lng: -75.1711487 },
   "/post/shevy-s-babka-paradise-1": { lat: 39.951644, lng: -75.204485 },
